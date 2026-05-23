@@ -2,10 +2,16 @@
 # Downstream users get the published hook via `.pre-commit-hooks.yaml`;
 # this file is for working on riskratchet itself.
 #
+# riskratchet check is intentionally NOT wired as a pre-commit hook here:
+# pre-commit stashes unstaged changes before running hooks, which conflicts
+# with riskratchet's analysis of the working tree. Run it directly instead:
+#   uv run pytest --cov --cov-report=json:coverage.json
+#   uv run riskratchet check src --coverage coverage.json --baseline .riskratchet.json
+# Or wire it through the pytest plugin (--riskratchet flag).
+#
 # Usage:
-#   uv run pre-commit install                       # wire into git
-#   uv run pre-commit run --all-files               # one-shot on the tree
-#   uv run pre-commit run --hook-stage manual       # opt-in riskratchet pass
+#   uv run pre-commit install         # install into .git/hooks
+#   uv run pre-commit run --all-files # one-shot on the whole tree
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -42,15 +48,3 @@ repos:
         types: [python]
         pass_filenames: false
         require_serial: true
-
-      - id: riskratchet
-        name: riskratchet check (manual, dogfood)
-        # Requires a baseline at .riskratchet.json and coverage.json at the
-        # repo root. Generate them with:
-        #   uv run pytest --cov --cov-report=json:coverage.json
-        #   uv run riskratchet baseline src --coverage coverage.json --output .riskratchet.json
-        entry: uv run riskratchet check src --coverage coverage.json --baseline .riskratchet.json
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [manual]
