@@ -8,7 +8,7 @@ as warnings on stderr and the offending file is skipped.
 from __future__ import annotations
 
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from riskratchet.analysis import ParsedFile, ParseError, iter_python_files, parse_file
@@ -27,7 +27,7 @@ from riskratchet.models import (
     FunctionRisk,
     RiskReport,
 )
-from riskratchet.scoring import compute_components, crap_score, total_risk
+from riskratchet.scoring import compute_components, crap_score, resolve_weights, total_risk
 
 
 def analyze(
@@ -38,6 +38,7 @@ def analyze(
     include: Sequence[str] = (),
     exclude: Sequence[str] = (),
     use_git: bool = True,
+    weights: Mapping[str, float] | None = None,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -53,6 +54,7 @@ def analyze(
         exclude=list(exclude),
     )
 
+    resolved_weights = resolve_weights(weights)
     coverage_data = load_coverage(Path(coverage_path)) if coverage_path is not None else empty_coverage()
     parsed_files: list[ParsedFile] = []
     function_risks: list[FunctionRisk] = []
@@ -76,7 +78,7 @@ def analyze(
     )
 
     for parsed in parsed_files:
-        function_risks.extend(_risks_for_file(parsed, coverage_data, churn_by_function))
+        function_risks.extend(_risks_for_file(parsed, coverage_data, churn_by_function, resolved_weights))
 
     return RiskReport(
         functions=tuple(function_risks),
@@ -89,6 +91,7 @@ def _risks_for_file(
     parsed: ParsedFile,
     coverage_data: CoverageData,
     churn_by_function: dict[FunctionId, ChurnStats],
+    weights: Mapping[str, float],
 ) -> list[FunctionRisk]:
     complexity_by_line = complexity_for_file(parsed)
     file_coverage = coverage_data.lookup(parsed.relative_path)
@@ -116,7 +119,7 @@ def _risks_for_file(
                 churn=function_churn,
                 file_stats=parsed.file_stats,
                 components=components,
-                score=total_risk(components),
+                score=total_risk(components, weights=weights),
                 crap=crap_score(complexity, coverage),
                 fingerprint=fn.fingerprint,
             )

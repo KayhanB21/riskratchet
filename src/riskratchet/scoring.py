@@ -8,6 +8,8 @@ and tests can introspect them.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from riskratchet.models import (
     ChurnStats,
     ComplexityStats,
@@ -18,9 +20,12 @@ from riskratchet.models import (
     Severity,
 )
 
-# Weights for the six risk components. They sum to 1.0 so the total risk score
-# stays bounded in [0, 100] when each component is also in [0, 100].
-WEIGHTS: dict[str, float] = {
+# Default weights for the six risk components. They sum to 1.0 so the total
+# risk score stays bounded in [0, 100] when each component is also in [0, 100].
+# Callers can override individual weights via `[tool.riskratchet.weights]` in
+# `pyproject.toml`; `resolve_weights` merges and renormalizes so the bound is
+# always preserved.
+DEFAULT_WEIGHTS: dict[str, float] = {
     "coverage_gap": 0.30,
     "structural_complexity": 0.25,
     "branch_gap": 0.15,
@@ -28,6 +33,11 @@ WEIGHTS: dict[str, float] = {
     "public_surface": 0.10,
     "sprawl": 0.10,
 }
+
+# Back-compat alias. Prefer `DEFAULT_WEIGHTS` in new code.
+WEIGHTS = DEFAULT_WEIGHTS
+
+COMPONENT_NAMES: frozenset[str] = frozenset(DEFAULT_WEIGHTS)
 
 # Saturation thresholds. A value at or above the saturation point scores 100.
 COMPLEXITY_SATURATION_CC = 20
@@ -95,14 +105,57 @@ def sprawl_score(span: FunctionSpan, file_stats: FileStats) -> float:
     return (function_score + file_score) / 2.0
 
 
-def total_risk(components: RiskComponents) -> float:
+class InvalidWeightsError(ValueError):
+    """Raised when user-supplied weights cannot be reconciled with the schema."""
+
+
+def resolve_weights(overrides: Mapping[str, float] | None) -> dict[str, float]:
+    """Merge `overrides` onto `DEFAULT_WEIGHTS` and renormalize to sum to 1.0.
+
+    Renormalizing means callers can express "I don't care about churn" by setting
+    it to `0`, or "double the weight of coverage" by setting it to `0.6`, without
+    having to hand-tune the other five values. Unknown keys and negative values
+    are rejected: silently dropping them would let a typo quietly weaken the
+    score.
+    """
+    if not overrides:
+        return dict(DEFAULT_WEIGHTS)
+
+    unknown = set(overrides) - COMPONENT_NAMES
+    if unknown:
+        raise InvalidWeightsError(
+            f"unknown weight keys: {sorted(unknown)}. valid keys: {sorted(COMPONENT_NAMES)}"
+        )
+
+    merged = dict(DEFAULT_WEIGHTS)
+    for name, raw in overrides.items():
+        try:
+            value = float(raw)
+        except (TypeError, ValueError) as exc:
+            raise InvalidWeightsError(f"weight `{name}` must be a number, got {raw!r}") from exc
+        if value < 0:
+            raise InvalidWeightsError(f"weight `{name}` must be non-negative, got {value}")
+        merged[name] = value
+
+    total = sum(merged.values())
+    if total <= 0:
+        raise InvalidWeightsError("at least one weight must be greater than zero")
+    return {name: value / total for name, value in merged.items()}
+
+
+def total_risk(
+    components: RiskComponents,
+    *,
+    weights: Mapping[str, float] | None = None,
+) -> float:
+    w = weights if weights is not None else DEFAULT_WEIGHTS
     raw = (
-        WEIGHTS["coverage_gap"] * components.coverage_gap
-        + WEIGHTS["structural_complexity"] * components.structural_complexity
-        + WEIGHTS["branch_gap"] * components.branch_gap
-        + WEIGHTS["churn"] * components.churn
-        + WEIGHTS["public_surface"] * components.public_surface
-        + WEIGHTS["sprawl"] * components.sprawl
+        w["coverage_gap"] * components.coverage_gap
+        + w["structural_complexity"] * components.structural_complexity
+        + w["branch_gap"] * components.branch_gap
+        + w["churn"] * components.churn
+        + w["public_surface"] * components.public_surface
+        + w["sprawl"] * components.sprawl
     )
     return max(0.0, min(100.0, raw))
 

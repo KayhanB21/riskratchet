@@ -118,3 +118,14 @@ auto_coverage = true
 coverage_cache = ".riskratchet/coverage.json"
 test_command = "pytest --cov --cov-branch --cov-report=json:{output} -q"
 exclude = ["tests/**", "migrations/**", "*/generated/**"]
+
+# Optional: override individual risk-component weights. Missing keys keep their
+# default; non-zero weights are renormalized so the total still maps to [0, 100].
+# Defaults shown below for reference.
+# [tool.riskratchet.weights]
+# coverage_gap          = 0.30
+# structural_complexity = 0.25
+# branch_gap            = 0.15
+# churn                 = 0.10
+# public_surface        = 0.10
+# sprawl                = 0.10

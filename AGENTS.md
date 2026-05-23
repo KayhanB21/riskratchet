@@ -60,6 +60,17 @@ success and `2` on usage errors.
   Additive changes (new optional fields) may land in any release; renames
   or removals are called out in `CHANGELOG.md` under a **Breaking** heading.
 - Paths in JSON output are repo-relative POSIX paths.
+- Risk weights are configurable in `pyproject.toml` under
+  `[tool.riskratchet.weights]`. Any subset of the six component keys may be
+  overridden; missing keys keep their default, and the whole vector is
+  renormalized so the total still maps to `[0, 100]`. Invalid keys or
+  negative values exit `2`. See the README for the default values.
+
+## CI is the source of truth
+
+GitHub Actions runs the canonical check set. If you are unsure whether a
+change is safe, run the same commands the workflow runs (see the README
+Local development section) rather than inventing a local approximation.
 
 ## Developing on this repo
 

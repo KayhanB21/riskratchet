@@ -240,6 +240,21 @@ Each function gets six component scores in `[0, 100]`:
 The total risk is the weighted sum. Severity bands: 0-24 low, 25-49
 medium, 50-74 high, 75-100 critical.
 
+Weights are configurable per project. Drop a `[tool.riskratchet.weights]`
+table in `pyproject.toml` to override any subset; the remaining
+components keep their defaults and the whole vector is renormalized so the
+total still maps to `[0, 100]`. For example, to ignore churn entirely and
+double-weight coverage:
+
+```toml
+[tool.riskratchet.weights]
+coverage_gap = 0.6
+churn = 0.0
+```
+
+Unknown keys and negative values are rejected at startup so a typo cannot
+silently weaken the score.
+
 ## Output formats
 
 ```bash
@@ -323,10 +338,29 @@ ratchet's job is to keep those numbers from getting worse over time.
 
 ## Local development
 
+The same commands run in GitHub Actions. Run them locally before pushing.
+
 ```bash
-uv sync
+uv sync --locked
 uv run ruff check .
-uv run mypy src tests
-uv run pytest --cov
-uv run riskratchet scan src --coverage coverage.json
+uv run ruff format --check .
+uv run mypy src
+uv run pytest --cov=src/riskratchet --cov-branch --cov-report=term-missing
+uv build --clear
 ```
+
+Typing `tests/` is on the roadmap but not yet enforced; CI only runs
+`mypy src`.
+
+## Release
+
+CI validates every push and pull request. Publishing is still manual.
+
+```bash
+./scripts/publish.sh
+```
+
+The script runs the same gates CI does, then `uv build` and `twine
+upload`. The GitHub Actions workflow under `.github/workflows/` is the
+source of truth for what "green" means; if a check fails there, do not
+ship.

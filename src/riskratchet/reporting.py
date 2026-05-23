@@ -265,9 +265,7 @@ def _sarif_log(results: list[dict[str, Any]]) -> dict[str, Any]:
                             {
                                 "id": "riskratchet.function-risk",
                                 "name": "Function maintainability risk",
-                                "shortDescription": {
-                                    "text": "Function-level maintainability risk score."
-                                },
+                                "shortDescription": {"text": "Function-level maintainability risk score."},
                                 "helpUri": "https://github.com/KayhanB21/riskratchet",
                             },
                             {

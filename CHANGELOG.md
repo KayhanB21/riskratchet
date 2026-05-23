@@ -13,6 +13,18 @@ release; renames or removals are called out below under **Breaking**.
 
 ### Added
 
+- Configurable risk weights via `[tool.riskratchet.weights]` in
+  `pyproject.toml`. Any subset of the six component keys may be
+  overridden; remaining keys keep their default and the whole vector is
+  renormalized so the total stays in `[0, 100]`. Unknown keys, negative
+  values, or an all-zero table cause the CLI to exit `2`. See README
+  "How risk is scored" for the defaults.
+- README "Release" section pointing at `scripts/publish.sh` and
+  describing GitHub Actions as the source of truth for package health.
+- README "Local development" section now mirrors the exact command
+  sequence CI runs, so local green and CI green mean the same thing.
+- AGENTS.md notes that CI is the canonical check set.
+
 - `--json` flag on `scan` and `check` as a shortcut for `--format json`.
 - `--quiet` / `-q` flag on `scan` to suppress the trailing summary line
   for pipe-friendly use from CI and agents.

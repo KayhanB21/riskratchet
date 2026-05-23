@@ -34,6 +34,7 @@ from riskratchet.reporting import (
     render_report_sarif,
     render_report_table,
 )
+from riskratchet.scoring import InvalidWeightsError, resolve_weights
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -111,6 +112,7 @@ def scan(
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
+        weights=_resolved_weights(cfg),
     )
     _emit_report(report, format=effective_format, output=output, limit=limit, quiet=quiet)
 
@@ -156,6 +158,7 @@ def baseline(
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
+        weights=_resolved_weights(cfg),
     )
     target = output or Path(cfg.get("baseline", ".riskratchet.json"))
     save_baseline(baseline_from_report(report), target)
@@ -240,6 +243,7 @@ def check(
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
+        weights=_resolved_weights(cfg),
     )
     regressions = compare(
         report,
@@ -297,6 +301,7 @@ def explain(
         [file_path],
         coverage_path=coverage_path,
         use_git=not no_git,
+        weights=_resolved_weights(cfg),
     )
     fn = report.find(target)
     if fn is None:
@@ -371,6 +376,31 @@ def _load_config(config_path: Path | None) -> dict[str, Any]:
         return {}
     section = raw.get("tool", {}).get("riskratchet", {})
     return section if isinstance(section, dict) else {}
+
+
+def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
+    """Pull `[tool.riskratchet.weights]` out of config, exiting on invalid input.
+
+    Returning `None` (no table or empty table) lets `engine.analyze` use its
+    default weights without an extra branch in each command.
+    """
+    raw = cfg.get("weights")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        typer.secho(
+            "config error: [tool.riskratchet.weights] must be a table.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if not raw:
+        return None
+    try:
+        return resolve_weights(raw)
+    except InvalidWeightsError as exc:
+        typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
 
 
 def _resolved_paths(paths: list[Path], cfg: dict[str, Any]) -> list[Path]:
