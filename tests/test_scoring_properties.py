@@ -101,7 +101,17 @@ def _fn(qualname: str, score: float) -> FunctionRisk:
     )
 
 
-@given(st.lists(st.tuples(st.text(min_size=1, max_size=8, alphabet=st.characters(min_codepoint=97, max_codepoint=122)), st.floats(min_value=0.0, max_value=100.0)), min_size=1, max_size=10, unique_by=lambda pair: pair[0]))
+@given(
+    st.lists(
+        st.tuples(
+            st.text(min_size=1, max_size=8, alphabet=st.characters(min_codepoint=97, max_codepoint=122)),
+            st.floats(min_value=0.0, max_value=100.0),
+        ),
+        min_size=1,
+        max_size=10,
+        unique_by=lambda pair: pair[0],
+    )
+)
 def test_compare_is_order_independent(pairs: list[tuple[str, float]]) -> None:
     forward = tuple(_fn(name, score) for name, score in pairs)
     reverse = tuple(reversed(forward))

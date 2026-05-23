@@ -80,8 +80,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if not baseline_path.exists():
         _emit(
             session,
-            f"riskratchet: baseline file not found: {baseline_path}. "
-            "Run `riskratchet baseline` first.",
+            f"riskratchet: baseline file not found: {baseline_path}. Run `riskratchet baseline` first.",
         )
         session.exitstatus = 1
         return

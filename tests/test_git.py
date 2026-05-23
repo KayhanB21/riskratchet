@@ -47,9 +47,7 @@ def test_collect_counts_commits_per_file(tmp_path: Path) -> None:
     assert counts.get("b.py", 0) == 1
 
 
-def test_collect_returns_empty_when_git_log_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_collect_returns_empty_when_git_log_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # An empty repo (no .git) returns {}; verified above. Here we point to a
     # path that has a .git file (not a directory) so git log fails with a
     # non-zero status. That hits the `result.returncode != 0` branch.

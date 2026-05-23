@@ -51,9 +51,7 @@ def analyze(
         exclude=list(exclude),
     )
 
-    coverage_data = (
-        load_coverage(Path(coverage_path)) if coverage_path is not None else empty_coverage()
-    )
+    coverage_data = load_coverage(Path(coverage_path)) if coverage_path is not None else empty_coverage()
     churn_by_path = collect_file_churn(root_path, enabled=use_git)
 
     function_risks: list[FunctionRisk] = []

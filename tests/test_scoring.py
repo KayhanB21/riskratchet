@@ -110,14 +110,7 @@ def test_total_risk_matches_weighted_sum() -> None:
         public_surface=20.0,
         sprawl=10.0,
     )
-    expected = (
-        0.30 * 50.0
-        + 0.25 * 80.0
-        + 0.15 * 40.0
-        + 0.10 * 30.0
-        + 0.10 * 20.0
-        + 0.10 * 10.0
-    )
+    expected = 0.30 * 50.0 + 0.25 * 80.0 + 0.15 * 40.0 + 0.10 * 30.0 + 0.10 * 20.0 + 0.10 * 10.0
     assert total_risk(components) == pytest.approx(expected)
 
 

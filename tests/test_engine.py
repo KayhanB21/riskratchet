@@ -18,7 +18,10 @@ def _write(tmp_path: Path, name: str, source: str) -> Path:
 
 
 def test_analyze_produces_function_risks(tmp_path: Path) -> None:
-    _write(tmp_path, "m.py", """
+    _write(
+        tmp_path,
+        "m.py",
+        """
         def trivial():
             return 1
 
@@ -28,7 +31,8 @@ def test_analyze_produces_function_risks(tmp_path: Path) -> None:
             if x < 0:
                 return -1
             return 0
-    """)
+    """,
+    )
     report = analyze([tmp_path], root=tmp_path, use_git=False)
     by_name = {fn.id.qualname: fn for fn in report.functions}
     assert set(by_name.keys()) == {"trivial", "branchy"}
@@ -37,13 +41,17 @@ def test_analyze_produces_function_risks(tmp_path: Path) -> None:
 
 
 def test_analyze_with_coverage_lowers_score(tmp_path: Path) -> None:
-    _write(tmp_path, "m.py", """
+    _write(
+        tmp_path,
+        "m.py",
+        """
         def covered():
             return 1
 
         def uncovered():
             return 2
-    """)
+    """,
+    )
     coverage = {
         "files": {
             "m.py": {
@@ -67,10 +75,14 @@ def test_analyze_with_coverage_lowers_score(tmp_path: Path) -> None:
 
 
 def test_analyze_skips_files_with_syntax_errors(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    _write(tmp_path, "good.py", """
+    _write(
+        tmp_path,
+        "good.py",
+        """
         def ok():
             return 1
-    """)
+    """,
+    )
     (tmp_path / "broken.py").write_text("def broken(:\n    pass\n", encoding="utf-8")
     report = analyze([tmp_path], root=tmp_path, use_git=False)
     assert {fn.id.qualname for fn in report.functions} == {"ok"}

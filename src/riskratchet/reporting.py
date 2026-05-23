@@ -186,14 +186,11 @@ def _remediation(fn: FunctionRisk) -> str:
         triggers.append(f"{fn.churn.commits} recent commits touch this file")
     if fn.components.sprawl >= 50:
         triggers.append(
-            f"function spans {fn.span.line_count} lines "
-            f"in a {fn.file_stats.total_lines}-line file"
+            f"function spans {fn.span.line_count} lines in a {fn.file_stats.total_lines}-line file"
         )
     if not triggers:
         return "  remediation : risk is within tolerance."
-    advice = (
-        "Add tests for missing branches or split this function before changing it further."
-    )
+    advice = "Add tests for missing branches or split this function before changing it further."
     return "  remediation : " + "; ".join(triggers) + ".\n                " + advice
 
 

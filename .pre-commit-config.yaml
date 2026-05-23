@@ -1,0 +1,56 @@
+# Repo-local pre-commit hooks for the riskratchet source tree.
+# Downstream users get the published hook via `.pre-commit-hooks.yaml`;
+# this file is for working on riskratchet itself.
+#
+# Usage:
+#   uv run pre-commit install                       # wire into git
+#   uv run pre-commit run --all-files               # one-shot on the tree
+#   uv run pre-commit run --hook-stage manual       # opt-in riskratchet pass
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (with --fix)
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+        require_serial: true
+
+      - id: mypy
+        name: mypy --strict (src)
+        entry: uv run mypy src
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
+
+      - id: riskratchet
+        name: riskratchet check (manual, dogfood)
+        # Requires a baseline at .riskratchet.json and coverage.json at the
+        # repo root. Generate them with:
+        #   uv run pytest --cov --cov-report=json:coverage.json
+        #   uv run riskratchet baseline src --coverage coverage.json --output .riskratchet.json
+        entry: uv run riskratchet check src --coverage coverage.json --baseline .riskratchet.json
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]

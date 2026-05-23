@@ -54,8 +54,10 @@ def test_plugin_passes_when_no_regressions(pytester: pytest.Pytester) -> None:
 
     result = pytester.runpytest_subprocess(
         "--riskratchet",
-        "--riskratchet-paths", str(src),
-        "--riskratchet-baseline", str(baseline),
+        "--riskratchet-paths",
+        str(src),
+        "--riskratchet-baseline",
+        str(baseline),
     )
     assert result.ret == 0, result.stdout.str()
 
@@ -88,9 +90,12 @@ def test_plugin_fails_on_new_risky_function(pytester: pytest.Pytester) -> None:
 
     result = pytester.runpytest_subprocess(
         "--riskratchet",
-        "--riskratchet-paths", str(src),
-        "--riskratchet-baseline", str(baseline),
-        "--riskratchet-fail-new-above", "10",
+        "--riskratchet-paths",
+        str(src),
+        "--riskratchet-baseline",
+        str(baseline),
+        "--riskratchet-fail-new-above",
+        "10",
     )
     assert result.ret == 1, result.stdout.str()
     assert "riskratchet" in result.stdout.str().lower()
@@ -106,8 +111,10 @@ def test_plugin_fails_when_baseline_missing(pytester: pytest.Pytester) -> None:
 
     result = pytester.runpytest_subprocess(
         "--riskratchet",
-        "--riskratchet-paths", str(src),
-        "--riskratchet-baseline", str(pytester.path / "nope.json"),
+        "--riskratchet-paths",
+        str(src),
+        "--riskratchet-baseline",
+        str(pytester.path / "nope.json"),
     )
     assert result.ret == 1, result.stdout.str()
     assert "baseline file not found" in result.stdout.str().lower()
@@ -122,6 +129,7 @@ def test_plugin_inactive_when_flag_absent(pytester: pytest.Pytester) -> None:
         "def test_truthy():\n    assert True\n",
     )
     result = pytester.runpytest_subprocess(
-        "--riskratchet-paths", str(src),
+        "--riskratchet-paths",
+        str(src),
     )
     assert result.ret == 0, result.stdout.str()

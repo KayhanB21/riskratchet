@@ -20,13 +20,17 @@ def _write(tmp_path: Path, name: str, source: str) -> Path:
 
 
 def test_discovers_module_level_functions(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         def foo():
             return 1
 
         def bar(x):
             return x + 1
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     names = [fn.id.qualname for fn in parsed.functions]
@@ -34,14 +38,18 @@ def test_discovers_module_level_functions(tmp_path: Path) -> None:
 
 
 def test_discovers_class_methods_with_qualified_names(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         class Foo:
             def bar(self):
                 return 1
 
             def _internal(self):
                 return 2
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     qualnames = sorted(fn.id.qualname for fn in parsed.functions)
@@ -49,12 +57,16 @@ def test_discovers_class_methods_with_qualified_names(tmp_path: Path) -> None:
 
 
 def test_discovers_nested_functions(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         def outer():
             def inner():
                 return 1
             return inner()
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     qualnames = sorted(fn.id.qualname for fn in parsed.functions)
@@ -62,24 +74,32 @@ def test_discovers_nested_functions(tmp_path: Path) -> None:
 
 
 def test_discovers_async_functions(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         async def fetch():
             return 1
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     assert parsed.functions[0].is_async is True
 
 
 def test_decorators_do_not_change_qualname(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         def deco(fn):
             return fn
 
         @deco
         def wrapped():
             return 1
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     qualnames = sorted(fn.id.qualname for fn in parsed.functions)
@@ -104,13 +124,17 @@ def test_parse_error_returned_for_syntax_error(tmp_path: Path) -> None:
 
 
 def test_file_stats_count_lines_and_functions(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         def a():
             return 1
 
         def b():
             return 2
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     assert parsed.file_stats.function_count == 2
@@ -148,7 +172,10 @@ def test_iter_python_files_skips_hidden_directories(tmp_path: Path) -> None:
 
 
 def test_staticmethod_and_classmethod_keep_class_qualname(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         class Foo:
             @staticmethod
             def static_one():
@@ -157,7 +184,8 @@ def test_staticmethod_and_classmethod_keep_class_qualname(tmp_path: Path) -> Non
             @classmethod
             def class_one(cls):
                 return 2
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     qualnames = sorted(fn.id.qualname for fn in parsed.functions)
@@ -165,14 +193,18 @@ def test_staticmethod_and_classmethod_keep_class_qualname(tmp_path: Path) -> Non
 
 
 def test_multiline_signature_spans_whole_definition(tmp_path: Path) -> None:
-    path = _write(tmp_path, "m.py", """
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
         def wide(
             a: int,
             b: int,
             c: int,
         ) -> int:
             return a + b + c
-    """)
+    """,
+    )
     parsed = parse_file(path, root=tmp_path)
     assert not isinstance(parsed, ParseError)
     fn = parsed.functions[0]

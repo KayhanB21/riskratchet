@@ -159,9 +159,7 @@ def test_render_function_explanation_includes_all_signals() -> None:
 
 
 def test_remediation_low_risk_message() -> None:
-    out = render_function_explanation(
-        _fn("foo", 5.0, cyclomatic=1, line_coverage=1.0, branch_coverage=1.0)
-    )
+    out = render_function_explanation(_fn("foo", 5.0, cyclomatic=1, line_coverage=1.0, branch_coverage=1.0))
     assert "within tolerance" in out
 
 
