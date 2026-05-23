@@ -1,0 +1,12 @@
+- id: riskratchet
+  name: riskratchet check
+  description: >-
+    Fail the commit when function-level risk regresses past the configured
+    tolerance. Requires a baseline (run `riskratchet baseline` once) and an
+    up-to-date coverage.json (run your test suite with coverage first).
+  entry: riskratchet check
+  language: python
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit, pre-push, manual]
+  args: []
