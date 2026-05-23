@@ -14,6 +14,12 @@ from typing import Annotated, Any
 import typer
 
 from riskratchet import __version__
+from riskratchet.auto_coverage import (
+    DEFAULT_CACHE_PATH,
+    DEFAULT_TEST_COMMAND,
+    AutoCoverageResult,
+    ensure_coverage,
+)
 from riskratchet.baseline import baseline_from_report, compare, load_baseline, save_baseline
 from riskratchet.engine import analyze
 from riskratchet.models import Regression, RiskReport
@@ -79,13 +85,29 @@ def scan(
     exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
     no_git: Annotated[bool, typer.Option("--no-git", help="Disable churn collection.")] = False,
     limit: Annotated[int, typer.Option("--limit", help="Max table rows; 0 for all.")] = 20,
+    no_auto_cov: Annotated[
+        bool,
+        typer.Option(
+            "--no-auto-cov",
+            help="Skip auto-generating coverage by running the test command.",
+        ),
+    ] = False,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg = _load_config(config)
     effective_format = _effective_format(format, json_output)
+    resolved_paths = _resolved_paths(paths, cfg)
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=False,
+        allow_missing=True,
+    )
     report = analyze(
-        _resolved_paths(paths, cfg),
-        coverage_path=_resolved_scan_coverage(coverage, cfg.get("coverage")),
+        resolved_paths,
+        coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -109,16 +131,28 @@ def baseline(
             help="Allow baselining without configured coverage data.",
         ),
     ] = False,
+    no_auto_cov: Annotated[
+        bool,
+        typer.Option(
+            "--no-auto-cov",
+            help="Skip auto-generating coverage by running the test command.",
+        ),
+    ] = False,
 ) -> None:
     """Compute current risk and save it as the new baseline."""
     cfg = _load_config(config)
+    resolved_paths = _resolved_paths(paths, cfg)
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    )
     report = analyze(
-        _resolved_paths(paths, cfg),
-        coverage_path=_required_coverage(
-            coverage,
-            cfg.get("coverage"),
-            allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
-        ),
+        resolved_paths,
+        coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -170,6 +204,13 @@ def check(
             help="Allow checking without configured coverage data.",
         ),
     ] = False,
+    no_auto_cov: Annotated[
+        bool,
+        typer.Option(
+            "--no-auto-cov",
+            help="Skip auto-generating coverage by running the test command.",
+        ),
+    ] = False,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg = _load_config(config)
@@ -184,13 +225,18 @@ def check(
         )
         raise typer.Exit(code=2)
     old = load_baseline(baseline_file)
+    resolved_paths = _resolved_paths(paths, cfg)
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    )
     report = analyze(
-        _resolved_paths(paths, cfg),
-        coverage_path=_required_coverage(
-            coverage,
-            cfg.get("coverage"),
-            allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
-        ),
+        resolved_paths,
+        coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -225,15 +271,31 @@ def explain(
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    no_auto_cov: Annotated[
+        bool,
+        typer.Option(
+            "--no-auto-cov",
+            help="Skip auto-generating coverage by running the test command.",
+        ),
+    ] = False,
 ) -> None:
     """Print full risk breakdown for one function."""
     if "::" not in target:
         raise typer.BadParameter("target must be `path::qualname` (e.g. src/foo.py::Bar.baz)")
     cfg = _load_config(config)
     file_part, _ = target.split("::", 1)
+    file_path = Path(file_part)
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=[file_path],
+        no_auto_cov=no_auto_cov,
+        required=False,
+        allow_missing=True,
+    )
     report = analyze(
-        [Path(file_part)],
-        coverage_path=_resolved_optional(coverage, cfg.get("coverage")),
+        [file_path],
+        coverage_path=coverage_path,
         use_git=not no_git,
     )
     fn = report.find(target)
@@ -291,8 +353,7 @@ def _validate_format(format: str) -> None:
 def _validate_baseline_format(format: str) -> None:
     if format not in VALID_BASELINE_FORMATS:
         typer.secho(
-            f"unsupported baseline format: {format}. "
-            f"Supported values: {', '.join(VALID_BASELINE_FORMATS)}.",
+            f"unsupported baseline format: {format}. Supported values: {', '.join(VALID_BASELINE_FORMATS)}.",
             fg=typer.colors.RED,
             err=True,
         )
@@ -350,36 +411,62 @@ def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, 
     return None, False
 
 
-def _resolved_scan_coverage(value: Path | None, default: Any) -> Path | None:
-    candidate, was_configured = _coverage_candidate(value, default)
-    if candidate is None:
-        return None
-    if candidate.exists():
-        return candidate
-    if was_configured and value is not None:
-        typer.secho(
-            f"warning: coverage file not found: {candidate}; scanning without coverage.",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
-    return None
+def _resolve_coverage(
+    value: Path | None,
+    cfg: dict[str, Any],
+    *,
+    sources: list[Path],
+    no_auto_cov: bool,
+    required: bool,
+    allow_missing: bool,
+) -> Path | None:
+    """Resolve which coverage JSON to use, generating one via tests if needed.
 
+    Precedence: an explicit existing `--coverage` path wins; then the
+    configured `coverage` path if it exists; then the auto-coverage cache
+    (regenerated by running the configured test command when stale). If
+    everything fails and the command requires coverage, exit with code 2
+    unless `--allow-missing-coverage` was set.
+    """
+    requested, was_configured = _coverage_candidate(value, cfg.get("coverage"))
+    if requested is not None and requested.exists():
+        return requested
 
-def _required_coverage(value: Path | None, default: Any, *, allow_missing: bool) -> Path | None:
-    candidate, was_configured = _coverage_candidate(value, default)
-    if candidate is None or candidate.exists():
-        return candidate
-    if allow_missing:
+    auto_enabled = not no_auto_cov and _resolved_bool(True, cfg.get("auto_coverage"), default=True)
+    cache_path = Path(str(cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH))))
+    test_command = str(cfg.get("test_command", DEFAULT_TEST_COMMAND))
+
+    result: AutoCoverageResult = ensure_coverage(
+        requested=requested if was_configured else None,
+        sources=sources,
+        cache_path=cache_path,
+        test_command=test_command,
+        enabled=auto_enabled,
+    )
+    if result.path is not None:
+        return result.path
+
+    if not required or allow_missing:
+        if requested is not None and value is not None and not requested.exists():
+            typer.secho(
+                f"warning: coverage file not found: {requested}; continuing without coverage.",
+                fg=typer.colors.YELLOW,
+                err=True,
+            )
         return None
-    if was_configured:
-        typer.secho(
-            f"coverage file not found: {candidate}. "
-            "Generate coverage JSON or pass --allow-missing-coverage.",
-            fg=typer.colors.RED,
-            err=True,
-        )
-        raise typer.Exit(code=2)
-    return None
+
+    typer.secho(
+        (
+            "coverage data is required but none could be produced. "
+            f"Tried --coverage path ({requested}), the auto-coverage cache "
+            f"({cache_path}), and `{test_command.format(output=str(cache_path))}`. "
+            "Generate coverage manually, pass --allow-missing-coverage, "
+            "or disable auto-generation with --no-auto-cov."
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
 
 
 def _resolved_float(

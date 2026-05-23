@@ -114,4 +114,7 @@ fail_regression_above = 5
 allow_missing_coverage = false
 fail_component_regression_above = 15
 component_regression_gate = true
+auto_coverage = true
+coverage_cache = ".riskratchet/coverage.json"
+test_command = "pytest --cov --cov-branch --cov-report=json:{output} -q"
 exclude = ["tests/**", "migrations/**", "*/generated/**"]

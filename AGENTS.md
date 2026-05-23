@@ -25,6 +25,14 @@ riskratchet check src --coverage coverage.json --baseline .riskratchet.json --js
 - Append `--quiet` to `scan` to drop the trailing summary line (pipe-friendly).
 - All error and progress messages go to stderr; stdout is reserved for the
   payload.
+- If `--coverage` is omitted (or the file is missing), riskratchet runs the
+  configured `[tool.riskratchet] test_command` (default
+  `pytest --cov --cov-branch --cov-report=json:{output} -q`) and caches the
+  result at `.riskratchet/coverage.json`. The cache is reused while no `.py`
+  file under the scan paths is newer. Pass `--no-auto-cov` to opt out (for
+  CI pipelines that produce coverage themselves) and
+  `--allow-missing-coverage` to tolerate the resulting absence on `baseline`
+  and `check`.
 
 ## Exit codes
 

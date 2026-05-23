@@ -89,10 +89,12 @@ repos:
         args: ["src", "--coverage", "coverage.json", "--baseline", ".riskratchet.json"]
 ```
 
-The hook expects you to have generated `coverage.json` already in your
-pre-commit pipeline. Wire a `pytest --cov` step before riskratchet, or
-generate it once locally and skip the hook stage on machines that don't
-have coverage data.
+If `coverage.json` is missing, riskratchet runs the configured test
+command itself (default `pytest --cov --cov-branch --cov-report=json:{output} -q`)
+and caches the result under `.riskratchet/coverage.json`. The cache is
+reused on later runs until any `.py` file under the scan paths is newer.
+Override the command via `[tool.riskratchet] test_command = "..."` in your
+`pyproject.toml`, or disable the behaviour with `--no-auto-cov`.
 
 ## Using riskratchet from an AI coding agent
 
@@ -144,7 +146,12 @@ JSON output is validated against the schemas under
   (typically on `main`) and the resulting `.riskratchet.json` checked in.
   Exits with code `2` when missing.
 - Passing `coverage.xml` to `--coverage`. riskratchet reads
-  `coverage.json`. Generate it with `pytest --cov --cov-report=json:coverage.json`.
+  `coverage.json`. Generate it with `pytest --cov --cov-report=json:coverage.json`
+  or let riskratchet auto-generate it (see Pre-commit integration).
+- Relying on the auto-coverage runner inside a sandbox with no pytest
+  installed. Pass `--no-auto-cov` plus `--allow-missing-coverage`, or set
+  `[tool.riskratchet] test_command` to a runner that does work in your
+  environment.
 - Running without `--no-git` inside a sandbox that has no git history. Churn
   collection will be empty rather than failing, but pass `--no-git` to be
   explicit and slightly faster.

@@ -120,7 +120,7 @@ def test_no_args_prints_help() -> None:
 
 def test_explain_missing_separator_returns_usage_error(tmp_path: Path) -> None:
     # Even if the function exists in some file, missing `::` is a usage error.
-    result = runner.invoke(app, ["explain", "no-separator", "--no-git"])
+    result = runner.invoke(app, ["explain", "no-separator", "--no-auto-cov", "--no-git"])
     assert result.exit_code != 0
 
 
@@ -128,7 +128,7 @@ def test_scan_invalid_format_returns_usage_error(tmp_path: Path) -> None:
     src = tmp_path / "src"
     src.mkdir()
     (src / "m.py").write_text("def f(): pass\n", encoding="utf-8")
-    result = runner.invoke(app, ["scan", str(src), "--format", "xml", "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--format", "xml", "--no-auto-cov", "--no-git"])
     assert result.exit_code != 0
 
 
@@ -139,7 +139,7 @@ def test_scan_writes_to_output_file(tmp_path: Path) -> None:
     target = tmp_path / "report.json"
     result = runner.invoke(
         app,
-        ["scan", str(src), "--format", "json", "--output", str(target), "--no-git"],
+        ["scan", str(src), "--format", "json", "--output", str(target), "--no-auto-cov", "--no-git"],
     )
     assert result.exit_code == 0
     payload = json.loads(target.read_text(encoding="utf-8"))
@@ -153,7 +153,15 @@ def test_check_emits_markdown_to_output_when_clean(tmp_path: Path) -> None:
     baseline = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     out = tmp_path / "out.md"
     result = runner.invoke(
@@ -168,6 +176,7 @@ def test_check_emits_markdown_to_output_when_clean(tmp_path: Path) -> None:
             "--output",
             str(out),
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )

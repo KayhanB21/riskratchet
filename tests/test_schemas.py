@@ -59,7 +59,7 @@ def test_schema_is_valid_draft_2020_12(schema_name: str) -> None:
 
 def test_scan_json_matches_report_schema(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--json", "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--json", "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     Draft202012Validator(_load_schema("report.schema.json")).validate(payload)
@@ -70,7 +70,15 @@ def test_check_json_matches_regressions_schema(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -81,6 +89,7 @@ def test_check_json_matches_regressions_schema(tmp_path: Path) -> None:
             str(baseline_path),
             "--json",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -94,7 +103,15 @@ def test_baseline_file_matches_baseline_schema(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     result = runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     assert result.exit_code == 0
     payload = json.loads(baseline_path.read_text(encoding="utf-8"))

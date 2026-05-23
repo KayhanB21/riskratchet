@@ -43,14 +43,14 @@ def test_version_flag() -> None:
 
 def test_scan_succeeds_and_prints_summary(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0
     assert "Summary" in result.stdout
 
 
 def test_scan_json_output_is_valid(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     assert "functions" in payload
@@ -59,7 +59,7 @@ def test_scan_json_output_is_valid(tmp_path: Path) -> None:
 
 def test_scan_sarif_output_is_valid(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--format", "sarif", "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--format", "sarif", "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     assert payload["version"] == "2.1.0"
@@ -81,6 +81,7 @@ def test_baseline_writes_file(tmp_path: Path) -> None:
             "--output",
             str(baseline_path),
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -95,9 +96,9 @@ def test_baseline_rejects_missing_configured_coverage(tmp_path: Path) -> None:
     src = _project(tmp_path)
     config = tmp_path / "pyproject.toml"
     config.write_text("[tool.riskratchet]\ncoverage = 'missing.json'\n", encoding="utf-8")
-    result = runner.invoke(app, ["baseline", str(src), "--config", str(config), "--no-git"])
+    result = runner.invoke(app, ["baseline", str(src), "--config", str(config), "--no-auto-cov", "--no-git"])
     assert result.exit_code == 2
-    assert "coverage file not found" in result.stderr
+    assert "coverage data is required" in result.stderr
 
 
 def test_baseline_allow_missing_coverage_preserves_no_coverage_mode(tmp_path: Path) -> None:
@@ -115,6 +116,7 @@ def test_baseline_allow_missing_coverage_preserves_no_coverage_mode(tmp_path: Pa
             "--output",
             str(baseline_path),
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -127,11 +129,27 @@ def test_check_against_clean_baseline_exits_zero(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
-        ["check", str(src), "--baseline", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     assert result.exit_code == 0, result.stdout
 
@@ -141,7 +159,15 @@ def test_check_fail_existing_above_flags_current_debt(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -154,6 +180,7 @@ def test_check_fail_existing_above_flags_current_debt(tmp_path: Path) -> None:
             "10",
             "--allow-missing-coverage",
             "--json",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -167,7 +194,15 @@ def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_pa
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -179,6 +214,7 @@ def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_pa
             "--format",
             "sarif",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -192,7 +228,15 @@ def test_check_flags_new_risky_function(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
 
     risky_file = src / "risky.py"
@@ -236,6 +280,7 @@ def test_check_flags_new_risky_function(tmp_path: Path) -> None:
             "--fail-new-above",
             "10",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -247,7 +292,15 @@ def test_check_sarif_reports_regressions(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
 
     (src / "risky.py").write_text(
@@ -292,6 +345,7 @@ def test_check_sarif_reports_regressions(tmp_path: Path) -> None:
             "--format",
             "sarif",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -307,7 +361,7 @@ def test_check_missing_baseline_returns_exit_2(tmp_path: Path) -> None:
     src = _project(tmp_path)
     result = runner.invoke(
         app,
-        ["check", str(src), "--baseline", str(tmp_path / "nope.json"), "--no-git"],
+        ["check", str(src), "--baseline", str(tmp_path / "nope.json"), "--no-auto-cov", "--no-git"],
     )
     assert result.exit_code == 2
 
@@ -315,7 +369,7 @@ def test_check_missing_baseline_returns_exit_2(tmp_path: Path) -> None:
 def test_explain_renders_for_known_function(tmp_path: Path) -> None:
     src = _project(tmp_path)
     target = f"{src.as_posix()}/m.py::branchy"
-    result = runner.invoke(app, ["explain", target, "--no-git"])
+    result = runner.invoke(app, ["explain", target, "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0, result.stdout
     assert "branchy" in result.stdout
     assert "complexity" in result.stdout
@@ -324,14 +378,14 @@ def test_explain_renders_for_known_function(tmp_path: Path) -> None:
 def test_explain_unknown_function_returns_exit_2(tmp_path: Path) -> None:
     src = _project(tmp_path)
     target = f"{src.as_posix()}/m.py::ghost"
-    result = runner.invoke(app, ["explain", target, "--no-git"])
+    result = runner.invoke(app, ["explain", target, "--no-auto-cov", "--no-git"])
     assert result.exit_code == 2
 
 
 def test_scan_json_flag_matches_format_json(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    via_flag = runner.invoke(app, ["scan", str(src), "--json", "--no-git"])
-    via_format = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-git"])
+    via_flag = runner.invoke(app, ["scan", str(src), "--json", "--no-auto-cov", "--no-git"])
+    via_format = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-auto-cov", "--no-git"])
     assert via_flag.exit_code == 0
     assert via_format.exit_code == 0
     assert json.loads(via_flag.stdout) == json.loads(via_format.stdout)
@@ -339,15 +393,17 @@ def test_scan_json_flag_matches_format_json(tmp_path: Path) -> None:
 
 def test_scan_json_flag_overrides_format(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--format", "table", "--json", "--no-git"])
+    result = runner.invoke(
+        app, ["scan", str(src), "--format", "table", "--json", "--no-auto-cov", "--no-git"]
+    )
     assert result.exit_code == 0
     json.loads(result.stdout)
 
 
 def test_scan_quiet_suppresses_summary(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    loud = runner.invoke(app, ["scan", str(src), "--no-git"])
-    quiet = runner.invoke(app, ["scan", str(src), "--quiet", "--no-git"])
+    loud = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git"])
+    quiet = runner.invoke(app, ["scan", str(src), "--quiet", "--no-auto-cov", "--no-git"])
     assert loud.exit_code == 0
     assert quiet.exit_code == 0
     assert "Summary" in loud.stdout
@@ -359,7 +415,15 @@ def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -370,6 +434,7 @@ def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
             str(baseline_path),
             "--json",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -384,7 +449,15 @@ def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) 
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -396,6 +469,7 @@ def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) 
             "--baseline-format",
             "riskratchet",
             "--allow-missing-coverage",
+            "--no-auto-cov",
             "--no-git",
         ],
     )
@@ -407,7 +481,15 @@ def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
     )
     result = runner.invoke(
         app,
@@ -418,6 +500,7 @@ def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
             str(baseline_path),
             "--baseline-format",
             "sarif",
+            "--no-auto-cov",
             "--no-git",
         ],
     )

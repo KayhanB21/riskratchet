@@ -23,6 +23,13 @@ release; renames or removals are called out below under **Breaking**.
   what guarantees the output contract provides.
 - README "Using riskratchet from an AI coding agent" section with
   one-shot, CI, and PR-comment recipes plus a common-mistakes list.
+- Auto-coverage: when no usable `coverage.json` is present, riskratchet
+  runs the configured `[tool.riskratchet] test_command` (default
+  `pytest --cov --cov-branch --cov-report=json:{output} -q`) and caches
+  the result at `.riskratchet/coverage.json`. The cache is reused while
+  no source `.py` file is newer. Disable with `--no-auto-cov` or
+  `auto_coverage = false`. Override the cache path with
+  `coverage_cache = "..."`. `.riskratchet/` is gitignored.
 
 ## [0.2.0]
 

@@ -74,7 +74,7 @@ ALLOWED_SEVERITIES = {"low", "medium", "high", "critical"}
 
 def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
     src = _project(tmp_path)
-    result = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-git"])
+    result = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-auto-cov", "--no-git"])
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
 
@@ -117,7 +117,7 @@ def test_scan_markdown_snapshot_is_stable(tmp_path: Path) -> None:
     src = _project(tmp_path)
     result = runner.invoke(
         app,
-        ["scan", str(src), "--format", "markdown", "--no-git"],
+        ["scan", str(src), "--format", "markdown", "--no-auto-cov", "--no-git"],
     )
     assert result.exit_code == 0, result.stdout
 
