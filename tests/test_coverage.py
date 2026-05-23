@@ -62,7 +62,7 @@ def test_coverage_for_span_partial_lines() -> None:
 
 
 def test_coverage_for_span_uses_branch_data() -> None:
-    file_cov = {
+    file_cov: dict[str, Any] = {
         "executed_lines": [2],
         "missing_lines": [],
         "executed_branches": [[2, 3]],
@@ -74,7 +74,7 @@ def test_coverage_for_span_uses_branch_data() -> None:
 
 
 def test_coverage_for_span_no_branch_section_returns_none() -> None:
-    file_cov = {"executed_lines": [2], "missing_lines": [3]}
+    file_cov: dict[str, Any] = {"executed_lines": [2], "missing_lines": [3]}
     stats = coverage_for_span(file_cov, FunctionSpan(1, 10))
     assert stats.branch_coverage is None
 

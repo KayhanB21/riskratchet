@@ -30,7 +30,7 @@ from riskratchet.reporting import (
 if sys.version_info >= (3, 11):
     import tomllib
 else:
-    import tomli as tomllib  # type: ignore[import-not-found,no-redef]
+    import tomli as tomllib  # type: ignore[import-not-found]
 
 VALID_FORMATS = ("table", "json", "markdown")
 

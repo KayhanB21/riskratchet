@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from textwrap import dedent
 
+import pytest
+
 from riskratchet.engine import analyze
 
 
@@ -64,7 +66,7 @@ def test_analyze_with_coverage_lowers_score(tmp_path: Path) -> None:
     assert by_name["uncovered"].score > by_name["covered"].score
 
 
-def test_analyze_skips_files_with_syntax_errors(tmp_path: Path, capsys) -> None:
+def test_analyze_skips_files_with_syntax_errors(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     _write(tmp_path, "good.py", """
         def ok():
             return 1
