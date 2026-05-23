@@ -1,0 +1,88 @@
+# AGENTS.md
+
+Operational guide for AI coding agents (Claude Code, Cursor, Copilot, Codex,
+Devin, Gemini CLI, Aider) working in this repo or invoking `riskratchet`
+from elsewhere.
+
+## What this repo is
+
+`riskratchet` is a Python CLI and pytest plugin that scores per-function
+maintainability risk and fails CI when risk grows past a baseline. One
+binary, one command, structured output.
+
+## Running the tool
+
+```bash
+pip install riskratchet              # or: uvx riskratchet --help
+riskratchet --help
+riskratchet --version
+riskratchet scan src --coverage coverage.json --json
+riskratchet baseline src --coverage coverage.json --output .riskratchet.json
+riskratchet check src --coverage coverage.json --baseline .riskratchet.json --json
+```
+
+- Append `--json` to any reporting subcommand for machine-readable stdout.
+- Append `--quiet` to `scan` to drop the trailing summary line (pipe-friendly).
+- All error and progress messages go to stderr; stdout is reserved for the
+  payload.
+
+## Exit codes
+
+| Code | Meaning |
+| ---: | --- |
+| `0` | success; for `check`, no regressions |
+| `1` | for `check`: at least one regression past tolerance |
+| `2` | usage error (missing baseline, unknown format, unknown function) |
+
+`scan`, `baseline`, and `explain` never exit with `1`. They exit `0` on
+success and `2` on usage errors.
+
+## Output contract and stability
+
+- JSON schemas live in [`schemas/`](schemas/): `report.schema.json`,
+  `regressions.schema.json`, `baseline.schema.json`.
+- Field names are stable within a minor version (0.x). Additive changes
+  (new optional fields) may land in any release; renames or removals are
+  called out in `CHANGELOG.md` under a **Breaking** heading.
+- Paths in JSON output are repo-relative POSIX paths.
+
+## Developing on this repo
+
+```bash
+uv sync
+uv run ruff check .
+uv run mypy src tests
+uv run pytest --cov
+uv run riskratchet scan src --coverage coverage.json --json
+```
+
+Conventions:
+
+- Python 3.10+, strict mypy, ruff format. Line length 110.
+- Tests live under `tests/`, mirroring `src/riskratchet/` module names.
+- CLI logic stays thin in `src/riskratchet/cli.py`; business logic lives in
+  the per-module files (`scoring.py`, `engine.py`, `baseline.py`, etc.).
+- Snapshot tests for renderers live in `tests/test_cli_snapshots.py`. If a
+  JSON shape changes, update the schema in `schemas/` *and* the snapshot in
+  the same commit.
+
+## Do not
+
+- Do not edit files under `dist/`, `.venv/`, or any `__pycache__/`.
+- Do not change a JSON field name or remove a field without also updating
+  the matching schema in `schemas/` and adding a **Breaking** entry to
+  `CHANGELOG.md`.
+- Do not bump the package `version` in `pyproject.toml` as part of a feature
+  PR. Releases are cut separately.
+- Do not add color codes or progress bars to stdout. They break agent
+  consumers that parse stdout. Use stderr.
+
+## Where to look first
+
+- CLI entry: `src/riskratchet/cli.py`
+- Scoring: `src/riskratchet/scoring.py`
+- Renderers (table / JSON / markdown): `src/riskratchet/reporting.py`
+- Baseline I/O and comparison: `src/riskratchet/baseline.py`
+- Pytest plugin: `src/riskratchet/pytest_plugin.py`
+- Schemas: `schemas/`
+- Roadmap and punch list: `PLAN.md`, `TODO.md`

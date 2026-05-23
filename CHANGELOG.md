@@ -1,0 +1,33 @@
+# Changelog
+
+All notable changes to `riskratchet` are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
+uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+JSON-output stability policy (see [`AGENTS.md`](AGENTS.md)): field names
+in `scan --json`, `check --json`, and the baseline file are stable within
+a minor version. Additive changes (new optional fields) may land in any
+release; renames or removals are called out below under **Breaking**.
+
+## [Unreleased]
+
+### Added
+
+- `--json` flag on `scan` and `check` as a shortcut for `--format json`.
+- `--quiet` / `-q` flag on `scan` to suppress the trailing summary line
+  for pipe-friendly use from CI and agents.
+- JSON Schemas published under `schemas/`:
+  `report.schema.json`, `regressions.schema.json`, `baseline.schema.json`.
+  Validated against actual CLI output in `tests/test_schemas.py`.
+- `AGENTS.md` documenting how AI coding agents should invoke the tool and
+  what guarantees the output contract provides.
+- README "Using riskratchet from an AI coding agent" section with
+  one-shot, CI, and PR-comment recipes plus a common-mistakes list.
+
+## [0.2.0]
+
+- First documented release. CLI subcommands: `scan`, `baseline`, `check`,
+  `explain`. Pytest plugin available via `--riskratchet`.
+- Risk score combines coverage gap, structural complexity, branch gap,
+  churn, public surface, and sprawl.
+- Baseline file format version `1`.
