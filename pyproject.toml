@@ -1,6 +1,6 @@
 [project]
 name = "riskratchet"
-version = "0.1.0"
+version = "0.2.0"
 description = "A maintainability ratchet for AI-assisted Python."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,9 @@ dependencies = [
 
 [project.scripts]
 riskratchet = "riskratchet.cli:app"
+
+[project.entry-points.pytest11]
+riskratchet = "riskratchet.pytest_plugin"
 
 [project.urls]
 Homepage = "https://github.com/KayhanB21/riskratchet"
