@@ -23,6 +23,15 @@ release; renames or removals are called out below under **Breaking**.
   what guarantees the output contract provides.
 - README "Using riskratchet from an AI coding agent" section with
   one-shot, CI, and PR-comment recipes plus a common-mistakes list.
+- `.pre-commit-hooks.yaml` now defaults to
+  `--no-auto-cov --allow-missing-coverage` so the published hook works in
+  pre-commit's isolated environment (no pytest available by default). The
+  README now documents two intentional integration patterns: pre-generate
+  coverage in a separate hook, or use `language: system` to give riskratchet
+  access to your pytest.
+- AGENTS.md documents the SARIF 2.1.0 output contract, including the
+  driver name and rule IDs (`riskratchet.function-risk`,
+  `riskratchet.regression`).
 - Auto-coverage: when no usable `coverage.json` is present, riskratchet
   runs the configured `[tool.riskratchet] test_command` (default
   `pytest --cov --cov-branch --cov-report=json:{output} -q`) and caches

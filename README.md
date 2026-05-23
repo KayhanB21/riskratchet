@@ -78,23 +78,64 @@ exit 2 for usage errors (e.g. missing baseline), and 0 otherwise.
 
 ## Pre-commit integration
 
-Add this to `.pre-commit-config.yaml`:
+The published hook ships with `--no-auto-cov --allow-missing-coverage` by
+default. pre-commit runs each hook in an isolated environment without your
+project's pytest, so auto-coverage would usually fail there. Pick one of the
+two patterns below.
+
+### Pattern A: pre-generate coverage in a separate hook (recommended)
 
 ```yaml
 repos:
+  - repo: local
+    hooks:
+      - id: pytest-cov
+        name: pytest --cov (produces coverage.json for riskratchet)
+        entry: pytest --cov --cov-branch --cov-report=json:coverage.json -q
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/KayhanB21/riskratchet
     rev: v0.2.0
     hooks:
       - id: riskratchet
-        args: ["src", "--coverage", "coverage.json", "--baseline", ".riskratchet.json"]
+        args:
+          - "src"
+          - "--coverage"
+          - "coverage.json"
+          - "--baseline"
+          - ".riskratchet.json"
 ```
 
-If `coverage.json` is missing, riskratchet runs the configured test
-command itself (default `pytest --cov --cov-branch --cov-report=json:{output} -q`)
-and caches the result under `.riskratchet/coverage.json`. The cache is
-reused on later runs until any `.py` file under the scan paths is newer.
-Override the command via `[tool.riskratchet] test_command = "..."` in your
-`pyproject.toml`, or disable the behaviour with `--no-auto-cov`.
+riskratchet uses the freshly produced `coverage.json` directly, no auto-cov
+needed. The `pytest-cov` hook also catches test failures early.
+
+### Pattern B: let riskratchet run pytest itself
+
+Only viable if pre-commit's hook environment can find `pytest`. The simplest
+way is `language: system` instead of `python`, so the hook inherits the
+user's shell PATH:
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: riskratchet
+        entry: riskratchet check src --baseline .riskratchet.json
+        language: system
+        pass_filenames: false
+        always_run: true
+```
+
+riskratchet will run the configured `[tool.riskratchet] test_command`
+(default `pytest --cov --cov-branch --cov-report=json:{output} -q`) and
+cache the result under `.riskratchet/coverage.json`. The cache is reused
+until any `.py` file under the scan paths is newer.
+
+For local development outside pre-commit, the auto-coverage default applies
+to plain `riskratchet scan|baseline|check` invocations as well; pass
+`--no-auto-cov` to opt out.
 
 ## Using riskratchet from an AI coding agent
 

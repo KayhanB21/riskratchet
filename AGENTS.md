@@ -48,10 +48,17 @@ success and `2` on usage errors.
 ## Output contract and stability
 
 - JSON schemas live in [`schemas/`](schemas/): `report.schema.json`,
-  `regressions.schema.json`, `baseline.schema.json`.
-- Field names are stable within a minor version (0.x). Additive changes
-  (new optional fields) may land in any release; renames or removals are
-  called out in `CHANGELOG.md` under a **Breaking** heading.
+  `regressions.schema.json`, `baseline.schema.json`. Each is exercised
+  against real CLI output in `tests/test_schemas.py`.
+- `--format sarif` emits a SARIF 2.1.0 log. The output references
+  `https://json.schemastore.org/sarif-2.1.0.json` in its `$schema` field;
+  the upstream OASIS definition is the [SARIF 2.1.0 spec](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
+  riskratchet does not ship a separate SARIF schema. Driver name is
+  `riskratchet`; rule IDs are `riskratchet.function-risk` (from `scan`) and
+  `riskratchet.regression` (from `check`).
+- Field names in our native JSON are stable within a minor version (0.x).
+  Additive changes (new optional fields) may land in any release; renames
+  or removals are called out in `CHANGELOG.md` under a **Breaking** heading.
 - Paths in JSON output are repo-relative POSIX paths.
 
 ## Developing on this repo

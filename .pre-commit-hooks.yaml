@@ -2,11 +2,14 @@
   name: riskratchet check
   description: >-
     Fail the commit when function-level risk regresses past the configured
-    tolerance. Requires a baseline (run `riskratchet baseline` once) and an
-    up-to-date coverage.json (run your test suite with coverage first).
+    tolerance. Requires a baseline (`riskratchet baseline` once, committed).
+    Auto-coverage is OFF by default in this hook because pre-commit runs each
+    hook in an isolated environment that usually has no pytest available; if
+    you want riskratchet to generate coverage itself, override `args` to drop
+    `--no-auto-cov` and ensure your hook env has pytest (see README).
   entry: riskratchet check
   language: python
   pass_filenames: false
   always_run: true
   stages: [pre-commit, pre-push, manual]
-  args: []
+  args: ["--no-auto-cov", "--allow-missing-coverage"]
