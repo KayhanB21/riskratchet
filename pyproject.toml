@@ -38,6 +38,8 @@ riskratchet = "riskratchet.pytest_plugin"
 [project.urls]
 Homepage = "https://github.com/KayhanB21/riskratchet"
 Source = "https://github.com/KayhanB21/riskratchet"
+PyPI = "https://pypi.org/project/riskratchet/"
+Post = "https://kayhan.dev/posts/014-letting-agents-write-code-without-ratcheting-up-risk/"
 
 [build-system]
 requires = ["hatchling"]

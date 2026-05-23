@@ -1,6 +1,12 @@
+<p align="center">
+  <img src="assets/logo.png" alt="riskratchet logo" width="180">
+</p>
+
 # riskratchet
 
 A maintainability ratchet for AI-assisted Python.
+
+[PyPI](https://pypi.org/project/riskratchet/) · [Source](https://github.com/KayhanB21/riskratchet) · [Post](https://kayhan.dev/posts/014-letting-agents-write-code-without-ratcheting-up-risk/)
 
 riskratchet computes a function-level risk score from coverage gaps,
 cyclomatic complexity, churn, public surface, and sprawl signals. Snapshot
@@ -166,6 +172,32 @@ JSON output (truncated):
 
 Markdown output is suitable for posting as a PR comment via `gh pr
 comment`.
+
+## Sample output on real libraries
+
+I ran riskratchet against four widely-used Python libraries to show
+what its output looks like on production code. Each was cloned fresh,
+its own test suite run with `pytest --cov --cov-report=json:coverage.json`,
+then scanned. Top findings:
+
+| Library | Function | Score | CC | Line cov |
+| --- | --- | ---: | ---: | ---: |
+| python-slugify | `__main__::main` | 53.1 (high) | 3 | 11% (0% branch) |
+| python-slugify | `slugify` | 33.3 | 27 | 88% |
+| tabulate | `_CustomTextWrap._wrap_chunks` | 44.4 | 31 | 60% |
+| tabulate | `_normalize_tabular_data` | 42.6 | 76 | 78% |
+| tabulate | `tabulate` (entry) | 37.1 | 62 | 97% |
+| humanize | `precisedelta` | 32.9 | 26 | 100% |
+| humanize | `naturaldelta` | 32.4 | 33 | 100% |
+| inflect | `engine._sinoun` | 36.7 | 108 | 98% |
+| inflect | `engine._plnoun` | 36.2 | 100 | 99% |
+
+The point is not that these libraries are bad. They have all-green CI
+and many users. The point is that even mature, well-tested code
+accumulates functions where complexity, coverage, and sprawl combine
+into something worth a second pair of eyes. A CC=108 function with 98%
+coverage is not on fire. It is a function that works and is tested. The
+ratchet's job is to keep those numbers from getting worse over time.
 
 ## Comparison with other tools
 
