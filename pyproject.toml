@@ -1,0 +1,107 @@
+[project]
+name = "riskratchet"
+version = "0.1.0"
+description = "A maintainability ratchet for AI-assisted Python."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Kayhan Babaee", email = "me@kayhan.dev" },
+]
+keywords = ["complexity", "coverage", "maintainability", "crap", "code-quality"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Typing :: Typed",
+]
+dependencies = [
+    "radon>=6.0.1",
+    "coverage>=7.4",
+    "typer>=0.12",
+    "rich>=13.7",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.scripts]
+riskratchet = "riskratchet.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/KayhanB21/riskratchet"
+Source = "https://github.com/KayhanB21/riskratchet"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/riskratchet"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
+    "hypothesis>=6.100",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "SIM",
+    "RUF",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src"]
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["radon.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "-ra"]
+
+[tool.coverage.run]
+source = ["src/riskratchet"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]
+
+[tool.riskratchet]
+paths = ["src"]
+coverage = "coverage.json"
+baseline = ".riskratchet.json"
+fail_new_above = 50
+fail_regression_above = 5
+exclude = ["tests/**", "migrations/**", "*/generated/**"]
