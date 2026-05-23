@@ -11,6 +11,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from riskratchet.pytest_plugin import _emit, _resolve, pytest_sessionfinish
 
 
@@ -86,7 +88,7 @@ def test_emit_prefers_terminal_reporter_when_available() -> None:
     assert reporter.lines == ["hello"]
 
 
-def test_emit_falls_back_to_print_when_no_reporter(capsys) -> None:
+def test_emit_falls_back_to_print_when_no_reporter(capsys: pytest.CaptureFixture[str]) -> None:
     session = _make_session(Path("."), reporter=None)
     _emit(session, "fallback")  # type: ignore[arg-type]
     assert "fallback" in capsys.readouterr().out

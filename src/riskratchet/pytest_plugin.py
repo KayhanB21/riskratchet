@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     import pytest
 
 
-def pytest_addoption(parser: "pytest.Parser") -> None:
+def pytest_addoption(parser: pytest.Parser) -> None:
     group = parser.getgroup("riskratchet", "maintainability ratchet")
     group.addoption(
         "--riskratchet",
@@ -64,7 +64,7 @@ def pytest_addoption(parser: "pytest.Parser") -> None:
     )
 
 
-def pytest_sessionfinish(session: "pytest.Session", exitstatus: int) -> None:
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     config = session.config
     if not config.getoption("--riskratchet"):
         return
@@ -112,7 +112,7 @@ def _resolve(rootdir: Path, value: object) -> Path:
     return candidate if candidate.is_absolute() else (rootdir / candidate)
 
 
-def _emit(session: "pytest.Session", message: str) -> None:
+def _emit(session: pytest.Session, message: str) -> None:
     reporter = session.config.pluginmanager.get_plugin("terminalreporter")
     if reporter is not None:
         reporter.write_line(message)
