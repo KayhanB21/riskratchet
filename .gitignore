@@ -55,6 +55,9 @@ cover/
 # riskratchet artifacts
 .riskratchet.json
 
+# Local-only operational scripts (not for the package)
+scripts/
+
 # Translations
 *.mo
 *.pot
