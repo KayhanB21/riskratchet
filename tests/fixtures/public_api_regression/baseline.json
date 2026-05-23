@@ -1,0 +1,31 @@
+{
+  "version": "1",
+  "entries": [
+    {
+      "path": "src/m.py",
+      "qualname": "public_api",
+      "score": 10.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      }
+    },
+    {
+      "path": "src/m.py",
+      "qualname": "_private_helper",
+      "score": 0.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      }
+    }
+  ]
+}

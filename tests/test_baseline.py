@@ -124,6 +124,35 @@ def test_compare_ignores_deleted_functions() -> None:
     assert compare(report, old, fail_new_above=100.0, fail_regression_above=5.0) == []
 
 
+def test_compare_matches_by_qualname_even_when_lines_change() -> None:
+    # FunctionId is keyed by (path, qualname). The line span moving (e.g.
+    # because someone added imports above the function) must not be treated
+    # as the function disappearing and a new one appearing.
+    fn = _fn("a.py", "foo", 60.0)
+    old_entry = BaselineEntry(id=fn.id, score=50.0, components=_components(50.0))
+    old = Baseline(version="1", entries={fn.id: old_entry})
+
+    # Same function, same qualname; the FunctionRisk's span would be different
+    # in practice but compare() does not look at spans, only at the FunctionId.
+    moved = FunctionRisk(
+        id=fn.id,
+        span=FunctionSpan(start_line=42, end_line=50),
+        is_public=fn.is_public,
+        complexity=fn.complexity,
+        coverage=fn.coverage,
+        churn=fn.churn,
+        file_stats=fn.file_stats,
+        components=_components(60.0),
+        score=60.0,
+        crap=fn.crap,
+    )
+    report = RiskReport(functions=(moved,), files=())
+    regressions = compare(report, old, fail_new_above=100.0, fail_regression_above=5.0)
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.REGRESSED
+    assert regressions[0].delta == pytest.approx(10.0)
+
+
 def test_baseline_json_is_sorted_for_stable_diffs(tmp_path: Path) -> None:
     report = RiskReport(
         functions=(

@@ -145,3 +145,46 @@ def test_iter_python_files_skips_hidden_directories(tmp_path: Path) -> None:
     files = iter_python_files([tmp_path], root=tmp_path)
     rel = sorted(p.relative_to(tmp_path).as_posix() for p in files)
     assert rel == ["src.py"]
+
+
+def test_staticmethod_and_classmethod_keep_class_qualname(tmp_path: Path) -> None:
+    path = _write(tmp_path, "m.py", """
+        class Foo:
+            @staticmethod
+            def static_one():
+                return 1
+
+            @classmethod
+            def class_one(cls):
+                return 2
+    """)
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    qualnames = sorted(fn.id.qualname for fn in parsed.functions)
+    assert qualnames == ["Foo.class_one", "Foo.static_one"]
+
+
+def test_multiline_signature_spans_whole_definition(tmp_path: Path) -> None:
+    path = _write(tmp_path, "m.py", """
+        def wide(
+            a: int,
+            b: int,
+            c: int,
+        ) -> int:
+            return a + b + c
+    """)
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    fn = parsed.functions[0]
+    # The function starts on the `def` line and ends at `return`, so the span
+    # has to cover the whole signature plus the body.
+    assert fn.span.start_line == 1
+    assert fn.span.end_line >= 6
+
+
+def test_parse_error_returned_for_non_utf8_file(tmp_path: Path) -> None:
+    path = tmp_path / "binary.py"
+    path.write_bytes(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00")
+    result = parse_file(path, root=tmp_path)
+    assert isinstance(result, ParseError)
+    assert "cannot read file" in result.message or "syntax error" in result.message
