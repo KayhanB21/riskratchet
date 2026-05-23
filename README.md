@@ -195,8 +195,9 @@ medium, 50-74 high, 75-100 critical.
 
 ```bash
 riskratchet scan src --coverage coverage.json --format table     # default
-riskratchet scan src --coverage coverage.json --format json
+riskratchet scan src --coverage coverage.json --json             # shortcut for --format json
 riskratchet scan src --coverage coverage.json --format markdown  # for PR comments
+riskratchet scan src --coverage coverage.json --quiet            # drops the trailing summary line
 ```
 
 JSON output (truncated):
@@ -276,5 +277,3 @@ uv run mypy src tests
 uv run pytest --cov
 uv run riskratchet scan src --coverage coverage.json
 ```
-
-See `PLAN.md` for the v1 roadmap and `TODO.md` for the punch list.
