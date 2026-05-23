@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
+  "title": "riskratchet scan report",
+  "description": "Output of `riskratchet scan --json` (also `--format json`).",
+  "type": "object",
+  "required": ["summary", "functions"],
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["total_functions", "total_files", "by_severity"],
+      "additionalProperties": false,
+      "properties": {
+        "total_functions": { "type": "integer", "minimum": 0 },
+        "total_files": { "type": "integer", "minimum": 0 },
+        "by_severity": {
+          "type": "object",
+          "required": ["low", "medium", "high", "critical"],
+          "additionalProperties": false,
+          "properties": {
+            "low": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "critical": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "functions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/function" }
+    }
+  },
+  "$defs": {
+    "function": {
+      "type": "object",
+      "required": [
+        "path",
+        "qualname",
+        "severity",
+        "score",
+        "crap",
+        "complexity",
+        "line_coverage",
+        "branch_coverage",
+        "churn_commits",
+        "is_public",
+        "lines",
+        "components"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "description": "Repo-relative POSIX path." },
+        "qualname": { "type": "string" },
+        "severity": { "enum": ["low", "medium", "high", "critical"] },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "crap": { "type": "number", "minimum": 0 },
+        "complexity": { "type": "integer", "minimum": 1 },
+        "line_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "branch_coverage": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "churn_commits": { "type": "integer", "minimum": 0 },
+        "is_public": { "type": "boolean" },
+        "lines": {
+          "type": "object",
+          "required": ["start", "end"],
+          "additionalProperties": false,
+          "properties": {
+            "start": { "type": "integer", "minimum": 1 },
+            "end": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "components": { "$ref": "#/$defs/components" }
+      }
+    },
+    "components": {
+      "type": "object",
+      "required": [
+        "coverage_gap",
+        "structural_complexity",
+        "branch_gap",
+        "churn",
+        "public_surface",
+        "sprawl"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "coverage_gap": { "type": "number", "minimum": 0, "maximum": 100 },
+        "structural_complexity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "branch_gap": { "type": "number", "minimum": 0, "maximum": 100 },
+        "churn": { "type": "number", "minimum": 0, "maximum": 100 },
+        "public_surface": { "type": "number", "minimum": 0, "maximum": 100 },
+        "sprawl": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  }
+}

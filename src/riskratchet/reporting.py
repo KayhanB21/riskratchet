@@ -27,7 +27,7 @@ _SEVERITY_STYLE: dict[Severity, str] = {
 }
 
 
-def render_report_table(report: RiskReport, *, limit: int | None = 20) -> str:
+def render_report_table(report: RiskReport, *, limit: int | None = 20, include_summary: bool = True) -> str:
     sorted_fns = _sorted_by_risk(report.functions)
     displayed = sorted_fns if limit is None else sorted_fns[:limit]
 
@@ -58,7 +58,8 @@ def render_report_table(report: RiskReport, *, limit: int | None = 20) -> str:
     console.print(table)
     if limit is not None and len(sorted_fns) > limit:
         console.print(f"... {len(sorted_fns) - limit} more functions hidden (use --limit to show more)")
-    console.print(_summary_line(report))
+    if include_summary:
+        console.print(_summary_line(report))
     return buf.getvalue()
 
 

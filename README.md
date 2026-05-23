@@ -94,6 +94,64 @@ pre-commit pipeline. Wire a `pytest --cov` step before riskratchet, or
 generate it once locally and skip the hook stage on machines that don't
 have coverage data.
 
+## Using riskratchet from an AI coding agent
+
+riskratchet is designed to be called from agents and parsed without
+screen-scraping. See [`AGENTS.md`](AGENTS.md) for the full operational
+contract; the recipes below cover the common cases.
+
+One-shot: list the top three highest-risk functions.
+
+```bash
+riskratchet scan src --coverage coverage.json --json \
+  | jq '.functions[:3] | .[] | {qualname, score, severity}'
+```
+
+Gate a CI job on regressions, printing the list when it fails.
+
+```bash
+riskratchet check src \
+  --coverage coverage.json \
+  --baseline .riskratchet.json \
+  --json > regressions.json
+status=$?
+if [ "$status" -eq 1 ]; then
+  jq -r '.regressions[] | "- \(.qualname): \(.reason)"' regressions.json
+  exit 1
+fi
+exit "$status"
+```
+
+Post regressions as a PR comment.
+
+```bash
+riskratchet check src --coverage coverage.json \
+  --baseline .riskratchet.json --format markdown \
+  | gh pr comment --body-file -
+```
+
+JSON output is validated against the schemas under
+[`schemas/`](schemas/) on every release:
+
+- `schemas/report.schema.json` — `scan --json`
+- `schemas/regressions.schema.json` — `check --json`
+- `schemas/baseline.schema.json` — `.riskratchet.json` on disk
+
+### Common mistakes
+
+- Running `check` without a baseline. `riskratchet baseline` must run first
+  (typically on `main`) and the resulting `.riskratchet.json` checked in.
+  Exits with code `2` when missing.
+- Passing `coverage.xml` to `--coverage`. riskratchet reads
+  `coverage.json`. Generate it with `pytest --cov --cov-report=json:coverage.json`.
+- Running without `--no-git` inside a sandbox that has no git history. Churn
+  collection will be empty rather than failing, but pass `--no-git` to be
+  explicit and slightly faster.
+- Parsing stdout as both prose and JSON. Pick a format. With `--json`,
+  stdout is a single JSON object; status messages go to stderr.
+- Bumping the baseline to silence a regression. The baseline is the bar; if
+  it has to move up, do it in a dedicated PR with a written justification.
+
 ## Pytest plugin
 
 riskratchet ships a pytest plugin that runs `check` as part of your test

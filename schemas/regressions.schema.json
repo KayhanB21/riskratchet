@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json",
+  "title": "riskratchet check regressions",
+  "description": "Output of `riskratchet check --json`. The CLI exits 1 when `regressions` is non-empty, 2 on usage error, 0 otherwise.",
+  "type": "object",
+  "required": ["regressions"],
+  "additionalProperties": false,
+  "properties": {
+    "regressions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "qualname", "kind", "current_score", "previous_score", "delta", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "qualname": { "type": "string" },
+          "kind": { "enum": ["new_above_threshold", "regressed"] },
+          "current_score": { "type": "number", "minimum": 0, "maximum": 100 },
+          "previous_score": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "delta": { "type": ["number", "null"] },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

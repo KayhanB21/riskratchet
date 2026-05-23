@@ -156,3 +156,43 @@ def test_explain_unknown_function_returns_exit_2(tmp_path: Path) -> None:
     target = f"{src.as_posix()}/m.py::ghost"
     result = runner.invoke(app, ["explain", target, "--no-git"])
     assert result.exit_code == 2
+
+
+def test_scan_json_flag_matches_format_json(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    via_flag = runner.invoke(app, ["scan", str(src), "--json", "--no-git"])
+    via_format = runner.invoke(app, ["scan", str(src), "--format", "json", "--no-git"])
+    assert via_flag.exit_code == 0
+    assert via_format.exit_code == 0
+    assert json.loads(via_flag.stdout) == json.loads(via_format.stdout)
+
+
+def test_scan_json_flag_overrides_format(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--format", "table", "--json", "--no-git"])
+    assert result.exit_code == 0
+    json.loads(result.stdout)
+
+
+def test_scan_quiet_suppresses_summary(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    loud = runner.invoke(app, ["scan", str(src), "--no-git"])
+    quiet = runner.invoke(app, ["scan", str(src), "--quiet", "--no-git"])
+    assert loud.exit_code == 0
+    assert quiet.exit_code == 0
+    assert "Summary" in loud.stdout
+    assert "Summary" not in quiet.stdout
+
+
+def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    result = runner.invoke(
+        app,
+        ["check", str(src), "--baseline", str(baseline_path), "--json", "--no-git"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert "regressions" in payload
+    assert payload["regressions"] == []

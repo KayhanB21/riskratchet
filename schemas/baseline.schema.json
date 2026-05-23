@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/baseline.schema.json",
+  "title": "riskratchet baseline file",
+  "description": "Format of `.riskratchet.json` written by `riskratchet baseline`.",
+  "type": "object",
+  "required": ["version", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "const": "1" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "qualname", "score", "components"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "qualname": { "type": "string" },
+          "score": { "type": "number", "minimum": 0, "maximum": 100 },
+          "components": {
+            "type": "object",
+            "required": [
+              "coverage_gap",
+              "structural_complexity",
+              "branch_gap",
+              "churn",
+              "public_surface",
+              "sprawl"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "coverage_gap": { "type": "number" },
+              "structural_complexity": { "type": "number" },
+              "branch_gap": { "type": "number" },
+              "churn": { "type": "number" },
+              "public_surface": { "type": "number" },
+              "sprawl": { "type": "number" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

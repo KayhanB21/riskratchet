@@ -60,6 +60,17 @@ def scan(
     coverage: Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")] = None,
     config: Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")] = None,
     format: Annotated[str, typer.Option("--format", help="Output format.")] = "table",
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
+    ] = False,
+    quiet: Annotated[
+        bool,
+        typer.Option(
+            "--quiet",
+            "-q",
+            help="Suppress the trailing summary line on table output (pipe-friendly).",
+        ),
+    ] = False,
     output: Annotated[Path | None, typer.Option("--output", help="Write output to file.")] = None,
     include: Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
@@ -68,7 +79,7 @@ def scan(
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg = _load_config(config)
-    _validate_format(format)
+    effective_format = _effective_format(format, json_output)
     report = analyze(
         _resolved_paths(paths, cfg),
         coverage_path=_resolved_optional(coverage, cfg.get("coverage")),
@@ -76,7 +87,7 @@ def scan(
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
     )
-    _emit_report(report, format=format, output=output, limit=limit)
+    _emit_report(report, format=effective_format, output=output, limit=limit, quiet=quiet)
 
 
 @app.command()
@@ -110,6 +121,9 @@ def check(
     baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     format: Annotated[str, typer.Option("--format")] = "table",
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
+    ] = False,
     output: Annotated[Path | None, typer.Option("--output")] = None,
     fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
@@ -119,7 +133,7 @@ def check(
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg = _load_config(config)
-    _validate_format(format)
+    effective_format = _effective_format(format, json_output)
     baseline_file = baseline_path or Path(cfg.get("baseline", ".riskratchet.json"))
     if not baseline_file.exists():
         typer.secho(
@@ -144,7 +158,7 @@ def check(
             fail_regression_above, cfg.get("fail_regression_above"), default=5.0
         ),
     )
-    rendered = _render_regressions(regressions, format=format)
+    rendered = _render_regressions(regressions, format=effective_format)
     _write(rendered, output)
     if regressions:
         raise typer.Exit(code=1)
@@ -174,15 +188,24 @@ def explain(
     typer.echo(render_function_explanation(fn), nl=False)
 
 
-def _emit_report(report: RiskReport, *, format: str, output: Path | None, limit: int) -> None:
+def _emit_report(
+    report: RiskReport, *, format: str, output: Path | None, limit: int, quiet: bool = False
+) -> None:
     effective_limit = None if limit == 0 else limit
     if format == "json":
         rendered = render_report_json(report)
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit)
     else:
-        rendered = render_report_table(report, limit=effective_limit)
+        rendered = render_report_table(report, limit=effective_limit, include_summary=not quiet)
     _write(rendered, output)
+
+
+def _effective_format(format: str, json_output: bool) -> str:
+    if json_output:
+        return "json"
+    _validate_format(format)
+    return format
 
 
 def _render_regressions(regressions: list[Regression], *, format: str) -> str:
