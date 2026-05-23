@@ -91,9 +91,7 @@ def _is_private_segment(segment: str) -> bool:
     """Return True for `_foo` style names; False for `__init__` dunders."""
     if not segment.startswith("_"):
         return False
-    if segment.startswith("__") and segment.endswith("__") and len(segment) > 4:
-        return False
-    return True
+    return not (segment.startswith("__") and segment.endswith("__") and len(segment) > 4)
 
 
 def is_public_qualname(qualname: str) -> bool:
@@ -188,10 +186,7 @@ def _walk_python(entry: Path) -> list[Path]:
 
 
 def _has_hidden_parent(path: Path, root: Path) -> bool:
-    for part in path.relative_to(root).parts[:-1]:
-        if part.startswith("."):
-            return True
-    return False
+    return any(part.startswith(".") for part in path.relative_to(root).parts[:-1])
 
 
 def _any_match(value: str, patterns: list[str]) -> bool:

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import typer
 
@@ -30,7 +30,7 @@ from riskratchet.reporting import (
 if sys.version_info >= (3, 11):
     import tomllib
 else:
-    import tomli as tomllib
+    import tomli as tomllib  # type: ignore[import-not-found,no-redef]
 
 VALID_FORMATS = ("table", "json", "markdown")
 
@@ -41,26 +41,30 @@ app = typer.Typer(
 )
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def _root(
+    ctx: typer.Context,
     version: Annotated[bool, typer.Option("--version", help="Show version and exit.")] = False,
 ) -> None:
     if version:
         typer.echo(__version__)
+        raise typer.Exit()
+    if ctx.invoked_subcommand is None:
+        typer.echo(ctx.get_help())
         raise typer.Exit()
 
 
 @app.command()
 def scan(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to scan.")],
-    coverage: Annotated[Optional[Path], typer.Option("--coverage", help="Path to coverage.json.")] = None,
-    config: Annotated[Optional[Path], typer.Option("--config", help="Path to pyproject.toml.")] = None,
+    coverage: Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")] = None,
+    config: Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")] = None,
     format: Annotated[str, typer.Option("--format", help="Output format.")] = "table",
-    output: Annotated[Optional[Path], typer.Option("--output", help="Write output to file instead of stdout.")] = None,
-    include: Annotated[Optional[list[str]], typer.Option("--include", help="Glob include patterns.")] = None,
-    exclude: Annotated[Optional[list[str]], typer.Option("--exclude", help="Glob exclude patterns.")] = None,
-    no_git: Annotated[bool, typer.Option("--no-git", help="Disable git churn collection.")] = False,
-    limit: Annotated[int, typer.Option("--limit", help="Max rows in table/markdown output. Use 0 for all.")] = 20,
+    output: Annotated[Path | None, typer.Option("--output", help="Write output to file.")] = None,
+    include: Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")] = None,
+    exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
+    no_git: Annotated[bool, typer.Option("--no-git", help="Disable churn collection.")] = False,
+    limit: Annotated[int, typer.Option("--limit", help="Max table rows; 0 for all.")] = 20,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg = _load_config(config)
@@ -78,11 +82,11 @@ def scan(
 @app.command()
 def baseline(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to baseline.")],
-    coverage: Annotated[Optional[Path], typer.Option("--coverage")] = None,
-    config: Annotated[Optional[Path], typer.Option("--config")] = None,
-    output: Annotated[Optional[Path], typer.Option("--output", help="Where to write the baseline JSON.")] = None,
-    include: Annotated[Optional[list[str]], typer.Option("--include")] = None,
-    exclude: Annotated[Optional[list[str]], typer.Option("--exclude")] = None,
+    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    config: Annotated[Path | None, typer.Option("--config")] = None,
+    output: Annotated[Path | None, typer.Option("--output", help="Where to write the baseline JSON.")] = None,
+    include: Annotated[list[str] | None, typer.Option("--include")] = None,
+    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
 ) -> None:
     """Compute current risk and save it as the new baseline."""
@@ -102,15 +106,15 @@ def baseline(
 @app.command()
 def check(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to check.")],
-    coverage: Annotated[Optional[Path], typer.Option("--coverage")] = None,
-    baseline_path: Annotated[Optional[Path], typer.Option("--baseline", help="Path to the baseline JSON.")] = None,
-    config: Annotated[Optional[Path], typer.Option("--config")] = None,
+    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
+    config: Annotated[Path | None, typer.Option("--config")] = None,
     format: Annotated[str, typer.Option("--format")] = "table",
-    output: Annotated[Optional[Path], typer.Option("--output")] = None,
-    fail_new_above: Annotated[Optional[float], typer.Option("--fail-new-above")] = None,
-    fail_regression_above: Annotated[Optional[float], typer.Option("--fail-regression-above")] = None,
-    include: Annotated[Optional[list[str]], typer.Option("--include")] = None,
-    exclude: Annotated[Optional[list[str]], typer.Option("--exclude")] = None,
+    output: Annotated[Path | None, typer.Option("--output")] = None,
+    fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
+    fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
+    include: Annotated[list[str] | None, typer.Option("--include")] = None,
+    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
@@ -149,8 +153,8 @@ def check(
 @app.command()
 def explain(
     target: Annotated[str, typer.Argument(help="Function target as `path/to/file.py::qualname`.")],
-    coverage: Annotated[Optional[Path], typer.Option("--coverage")] = None,
-    config: Annotated[Optional[Path], typer.Option("--config")] = None,
+    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    config: Annotated[Path | None, typer.Option("--config")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
 ) -> None:
     """Print full risk breakdown for one function."""
@@ -170,7 +174,7 @@ def explain(
     typer.echo(render_function_explanation(fn), nl=False)
 
 
-def _emit_report(report: RiskReport, *, format: str, output: Optional[Path], limit: int) -> None:
+def _emit_report(report: RiskReport, *, format: str, output: Path | None, limit: int) -> None:
     effective_limit = None if limit == 0 else limit
     if format == "json":
         rendered = render_report_json(report)
@@ -189,7 +193,7 @@ def _render_regressions(regressions: list[Regression], *, format: str) -> str:
     return render_regressions_table(regressions)
 
 
-def _write(rendered: str, output: Optional[Path]) -> None:
+def _write(rendered: str, output: Path | None) -> None:
     if output is None:
         typer.echo(rendered, nl=False)
         return
@@ -202,7 +206,7 @@ def _validate_format(format: str) -> None:
         raise typer.BadParameter(f"format must be one of {', '.join(VALID_FORMATS)}")
 
 
-def _load_config(config_path: Optional[Path]) -> dict[str, Any]:
+def _load_config(config_path: Path | None) -> dict[str, Any]:
     candidate = config_path or Path("pyproject.toml")
     if not candidate.exists():
         return {}
@@ -224,18 +228,27 @@ def _resolved_paths(paths: list[Path], cfg: dict[str, Any]) -> list[Path]:
     return [Path(".")]
 
 
-def _resolved_optional(value: Optional[Path], default: Any) -> Optional[Path]:
+def _resolved_optional(value: Path | None, default: Any) -> Path | None:
+    """Pick the explicit CLI value when given, else fall back to config.
+
+    Config-derived paths must actually exist on disk; otherwise we treat them
+    as absent. This keeps a stale `coverage = "coverage.json"` line in
+    pyproject.toml from crashing the CLI in directories that never produced
+    a coverage report.
+    """
     if value is not None:
         return value
     if isinstance(default, str):
-        return Path(default)
-    if isinstance(default, Path):
-        return default
-    return None
+        candidate = Path(default)
+    elif isinstance(default, Path):
+        candidate = default
+    else:
+        return None
+    return candidate if candidate.exists() else None
 
 
 def _resolved_float(
-    cli_value: Optional[float],
+    cli_value: float | None,
     cfg_value: Any,
     *,
     default: float,

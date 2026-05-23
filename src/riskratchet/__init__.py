@@ -1,8 +1,6 @@
 """riskratchet: A maintainability ratchet for AI-assisted Python."""
 
 from riskratchet.baseline import (
-    Baseline,
-    BaselineEntry,
     baseline_from_report,
     compare,
     load_baseline,
@@ -10,6 +8,8 @@ from riskratchet.baseline import (
 )
 from riskratchet.engine import analyze
 from riskratchet.models import (
+    Baseline,
+    BaselineEntry,
     ChurnStats,
     ComplexityStats,
     CoverageStats,

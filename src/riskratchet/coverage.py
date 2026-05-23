@@ -39,10 +39,8 @@ class CoverageData:
         if not candidates:
             return None
         for candidate in candidates:
-            if candidate.endswith(relative_posix_path):
+            if candidate.endswith("/" + relative_posix_path) or candidate == relative_posix_path:
                 return self._files[candidate]
-        if len(candidates) == 1:
-            return self._files[candidates[0]]
         return None
 
 

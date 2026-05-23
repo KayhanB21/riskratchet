@@ -83,20 +83,7 @@ def render_report_markdown(report: RiskReport, *, limit: int | None = 20) -> str
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |",
     ]
     for fn in displayed:
-        sev = severity(fn.score)
-        lines.append(
-            "| {sev} | {score:.1f} | {crap:.1f} | {cc} | {lcov}% | {bcov} | `{target}` | {start}-{end} |".format(
-                sev=sev.value,
-                score=fn.score,
-                crap=fn.crap,
-                cc=fn.complexity.cyclomatic,
-                lcov=int(round(fn.coverage.line_coverage * 100)),
-                bcov=_branch_markdown(fn),
-                target=fn.id.as_target(),
-                start=fn.span.start_line,
-                end=fn.span.end_line,
-            )
-        )
+        lines.append(_markdown_row(fn))
     if limit is not None and len(sorted_fns) > limit:
         lines.append("")
         lines.append(f"_... {len(sorted_fns) - limit} more functions hidden._")
@@ -155,16 +142,7 @@ def render_regressions_markdown(regressions: list[Regression]) -> str:
         "| --- | --- | ---: | ---: | ---: | --- |",
     ]
     for reg in regressions:
-        lines.append(
-            "| {kind} | `{target}` | {before} | {after:.1f} | {delta} | {reason} |".format(
-                kind=reg.kind.value,
-                target=reg.id.as_target(),
-                before=_fmt_optional(reg.previous_score),
-                after=reg.current_score,
-                delta=_fmt_optional(reg.delta, signed=True),
-                reason=reg.reason,
-            )
-        )
+        lines.append(_regression_markdown_row(reg))
     return "\n".join(lines) + "\n"
 
 
@@ -207,10 +185,42 @@ def _remediation(fn: FunctionRisk) -> str:
     if fn.components.churn >= 50:
         triggers.append(f"{fn.churn.commits} recent commits touch this file")
     if fn.components.sprawl >= 50:
-        triggers.append(f"function spans {fn.span.line_count} lines in a {fn.file_stats.total_lines}-line file")
+        triggers.append(
+            f"function spans {fn.span.line_count} lines "
+            f"in a {fn.file_stats.total_lines}-line file"
+        )
     if not triggers:
         return "  remediation : risk is within tolerance."
-    return "  remediation : " + "; ".join(triggers) + ".\n                Add tests for missing branches or split this function before changing it further."
+    advice = (
+        "Add tests for missing branches or split this function before changing it further."
+    )
+    return "  remediation : " + "; ".join(triggers) + ".\n                " + advice
+
+
+def _markdown_row(fn: FunctionRisk) -> str:
+    cells = [
+        severity(fn.score).value,
+        f"{fn.score:.1f}",
+        f"{fn.crap:.1f}",
+        str(fn.complexity.cyclomatic),
+        f"{round(fn.coverage.line_coverage * 100)}%",
+        _branch_markdown(fn),
+        f"`{fn.id.as_target()}`",
+        f"{fn.span.start_line}-{fn.span.end_line}",
+    ]
+    return "| " + " | ".join(cells) + " |"
+
+
+def _regression_markdown_row(reg: Regression) -> str:
+    cells = [
+        reg.kind.value,
+        f"`{reg.id.as_target()}`",
+        _fmt_optional(reg.previous_score),
+        f"{reg.current_score:.1f}",
+        _fmt_optional(reg.delta, signed=True),
+        reg.reason,
+    ]
+    return "| " + " | ".join(cells) + " |"
 
 
 def _sorted_by_risk(functions: Iterable[FunctionRisk]) -> list[FunctionRisk]:
@@ -274,7 +284,7 @@ def _branch_cell(fn: FunctionRisk) -> str:
 def _branch_markdown(fn: FunctionRisk) -> str:
     if fn.coverage.branch_coverage is None:
         return "n/a"
-    return f"{int(round(fn.coverage.branch_coverage * 100))}%"
+    return f"{round(fn.coverage.branch_coverage * 100)}%"
 
 
 def _branch_pct(value: float | None) -> str:

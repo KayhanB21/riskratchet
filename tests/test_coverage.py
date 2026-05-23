@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -11,7 +12,7 @@ from riskratchet.coverage import coverage_for_span, empty_coverage, load_coverag
 from riskratchet.models import FunctionSpan
 
 
-def _write(tmp_path: Path, payload: dict) -> Path:
+def _write(tmp_path: Path, payload: dict[str, Any]) -> Path:
     path = tmp_path / "coverage.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
@@ -45,13 +46,13 @@ def test_coverage_for_span_no_data_means_uncovered() -> None:
 
 
 def test_coverage_for_span_empty_span_is_treated_as_covered() -> None:
-    file_cov = {"executed_lines": [], "missing_lines": []}
+    file_cov: dict[str, Any] = {"executed_lines": [], "missing_lines": []}
     stats = coverage_for_span(file_cov, FunctionSpan(1, 10))
     assert stats.line_coverage == 1.0
 
 
 def test_coverage_for_span_partial_lines() -> None:
-    file_cov = {
+    file_cov: dict[str, Any] = {
         "executed_lines": [2, 3],
         "missing_lines": [4, 5],
     }
