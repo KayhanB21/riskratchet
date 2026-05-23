@@ -85,4 +85,3 @@ Conventions:
 - Baseline I/O and comparison: `src/riskratchet/baseline.py`
 - Pytest plugin: `src/riskratchet/pytest_plugin.py`
 - Schemas: `schemas/`
-- Roadmap and punch list: `PLAN.md`, `TODO.md`

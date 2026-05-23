@@ -21,9 +21,11 @@ from riskratchet.reporting import (
     render_function_explanation,
     render_regressions_json,
     render_regressions_markdown,
+    render_regressions_sarif,
     render_regressions_table,
     render_report_json,
     render_report_markdown,
+    render_report_sarif,
     render_report_table,
 )
 
@@ -32,7 +34,8 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib  # type: ignore[import-not-found]
 
-VALID_FORMATS = ("table", "json", "markdown")
+VALID_FORMATS = ("table", "json", "markdown", "sarif")
+VALID_BASELINE_FORMATS = ("riskratchet",)
 
 app = typer.Typer(
     help="A maintainability ratchet for AI-assisted Python.",
@@ -124,6 +127,13 @@ def check(
     json_output: Annotated[
         bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
     ] = False,
+    baseline_format: Annotated[
+        str,
+        typer.Option(
+            "--baseline-format",
+            help="Baseline input format. Currently only 'riskratchet' is supported.",
+        ),
+    ] = "riskratchet",
     output: Annotated[Path | None, typer.Option("--output")] = None,
     fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
@@ -134,6 +144,7 @@ def check(
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg = _load_config(config)
     effective_format = _effective_format(format, json_output)
+    _validate_baseline_format(baseline_format)
     baseline_file = baseline_path or Path(cfg.get("baseline", ".riskratchet.json"))
     if not baseline_file.exists():
         typer.secho(
@@ -196,6 +207,8 @@ def _emit_report(
         rendered = render_report_json(report)
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit)
+    elif format == "sarif":
+        rendered = render_report_sarif(report)
     else:
         rendered = render_report_table(report, limit=effective_limit, include_summary=not quiet)
     _write(rendered, output)
@@ -213,6 +226,8 @@ def _render_regressions(regressions: list[Regression], *, format: str) -> str:
         return render_regressions_json(regressions)
     if format == "markdown":
         return render_regressions_markdown(regressions)
+    if format == "sarif":
+        return render_regressions_sarif(regressions)
     return render_regressions_table(regressions)
 
 
@@ -227,6 +242,17 @@ def _write(rendered: str, output: Path | None) -> None:
 def _validate_format(format: str) -> None:
     if format not in VALID_FORMATS:
         raise typer.BadParameter(f"format must be one of {', '.join(VALID_FORMATS)}")
+
+
+def _validate_baseline_format(format: str) -> None:
+    if format not in VALID_BASELINE_FORMATS:
+        typer.secho(
+            f"unsupported baseline format: {format}. "
+            f"Supported values: {', '.join(VALID_BASELINE_FORMATS)}.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
 
 
 def _load_config(config_path: Path | None) -> dict[str, Any]:

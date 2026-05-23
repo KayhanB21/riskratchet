@@ -19,9 +19,11 @@ from riskratchet.coverage import (
     empty_coverage,
     load_coverage,
 )
-from riskratchet.git import churn_for_file, collect_file_churn
+from riskratchet.git import churn_for_function, collect_function_churn
 from riskratchet.models import (
+    ChurnStats,
     FileStats,
+    FunctionId,
     FunctionRisk,
     RiskReport,
 )
@@ -52,8 +54,7 @@ def analyze(
     )
 
     coverage_data = load_coverage(Path(coverage_path)) if coverage_path is not None else empty_coverage()
-    churn_by_path = collect_file_churn(root_path, enabled=use_git)
-
+    parsed_files: list[ParsedFile] = []
     function_risks: list[FunctionRisk] = []
     file_stats_list: list[FileStats] = []
 
@@ -65,8 +66,17 @@ def analyze(
                 file=sys.stderr,
             )
             continue
+        parsed_files.append(parsed)
         file_stats_list.append(parsed.file_stats)
-        function_risks.extend(_risks_for_file(parsed, coverage_data, churn_by_path))
+
+    churn_by_function = collect_function_churn(
+        root_path,
+        [(fn.id, fn.span) for parsed in parsed_files for fn in parsed.functions],
+        enabled=use_git,
+    )
+
+    for parsed in parsed_files:
+        function_risks.extend(_risks_for_file(parsed, coverage_data, churn_by_function))
 
     return RiskReport(
         functions=tuple(function_risks),
@@ -77,22 +87,22 @@ def analyze(
 def _risks_for_file(
     parsed: ParsedFile,
     coverage_data: CoverageData,
-    churn_by_path: dict[str, int],
+    churn_by_function: dict[FunctionId, ChurnStats],
 ) -> list[FunctionRisk]:
     complexity_by_line = complexity_for_file(parsed)
     file_coverage = coverage_data.lookup(parsed.relative_path)
-    file_churn = churn_for_file(churn_by_path, parsed.relative_path)
 
     risks: list[FunctionRisk] = []
     for fn in parsed.functions:
         complexity = complexity_by_line[fn.span.start_line]
         coverage = coverage_for_span(file_coverage, fn.span)
+        function_churn = churn_for_function(churn_by_function, fn.id)
         components = compute_components(
             is_public=fn.is_public,
             span=fn.span,
             complexity=complexity,
             coverage=coverage,
-            churn=file_churn,
+            churn=function_churn,
             file_stats=parsed.file_stats,
         )
         risks.append(
@@ -102,7 +112,7 @@ def _risks_for_file(
                 is_public=fn.is_public,
                 complexity=complexity,
                 coverage=coverage,
-                churn=file_churn,
+                churn=function_churn,
                 file_stats=parsed.file_stats,
                 components=components,
                 score=total_risk(components),

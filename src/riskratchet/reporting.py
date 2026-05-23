@@ -1,14 +1,16 @@
 """Renderers for RiskReport and Regression lists.
 
-Three formats are supported: a rich-rendered table for terminals, JSON for
-scripts and snapshot tests, and markdown for PR comments. Each format has a
-function for the full risk report and a function for a regressions list; the
-two surfaces are kept symmetric so the CLI can pick either uniformly.
+Four formats are supported: a rich-rendered table for terminals, JSON for
+scripts and snapshot tests, markdown for PR comments, and SARIF for code
+scanning systems. Each format has a function for the full risk report and a
+function for a regressions list; the surfaces are kept symmetric so the CLI
+can pick either uniformly.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from collections.abc import Iterable
 from io import StringIO
 from typing import Any
@@ -91,6 +93,11 @@ def render_report_markdown(report: RiskReport, *, limit: int | None = 20) -> str
     return "\n".join(lines) + "\n"
 
 
+def render_report_sarif(report: RiskReport) -> str:
+    results = [_function_sarif_result(fn) for fn in _sorted_by_risk(report.functions)]
+    return json.dumps(_sarif_log(results), indent=2) + "\n"
+
+
 def render_regressions_table(regressions: list[Regression]) -> str:
     buf = StringIO()
     console = Console(file=buf, force_terminal=False, color_system=None, width=120)
@@ -145,6 +152,10 @@ def render_regressions_markdown(regressions: list[Regression]) -> str:
     for reg in regressions:
         lines.append(_regression_markdown_row(reg))
     return "\n".join(lines) + "\n"
+
+
+def render_regressions_sarif(regressions: list[Regression]) -> str:
+    return json.dumps(_sarif_log([_regression_sarif_result(reg) for reg in regressions]), indent=2) + "\n"
 
 
 def render_function_explanation(fn: FunctionRisk) -> str:
@@ -234,6 +245,137 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
         "total_files": len(report.files),
         "by_severity": counts,
     }
+
+
+def _sarif_log(results: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "riskratchet",
+                        "informationUri": "https://github.com/KayhanB21/riskratchet",
+                        "rules": [
+                            {
+                                "id": "riskratchet.function-risk",
+                                "name": "Function maintainability risk",
+                                "shortDescription": {
+                                    "text": "Function-level maintainability risk score."
+                                },
+                                "helpUri": "https://github.com/KayhanB21/riskratchet",
+                            },
+                            {
+                                "id": "riskratchet.regression",
+                                "name": "Risk regression",
+                                "shortDescription": {
+                                    "text": "Function risk increased beyond the configured ratchet."
+                                },
+                                "helpUri": "https://github.com/KayhanB21/riskratchet",
+                            },
+                        ],
+                    }
+                },
+                "results": results,
+            }
+        ],
+    }
+
+
+def _function_sarif_result(fn: FunctionRisk) -> dict[str, Any]:
+    sev = severity(fn.score)
+    return {
+        "ruleId": "riskratchet.function-risk",
+        "level": _sarif_level_for_severity(sev),
+        "message": {
+            "text": (
+                f"{fn.id.as_target()} has {sev.value} risk: score {fn.score:.1f}, "
+                f"CRAP {fn.crap:.1f}, line coverage {fn.coverage.line_coverage * 100:.0f}%, "
+                f"branch coverage {_branch_pct(fn.coverage.branch_coverage)}, "
+                f"complexity {fn.complexity.cyclomatic}, churn {fn.churn.commits} commits."
+            )
+        },
+        "locations": [_sarif_location(fn.id.path, fn.span.start_line, fn.span.end_line)],
+        "properties": _sarif_function_properties(fn),
+    }
+
+
+def _regression_sarif_result(reg: Regression) -> dict[str, Any]:
+    fn = reg.current
+    sev = severity(reg.current_score)
+    result: dict[str, Any] = {
+        "ruleId": "riskratchet.regression",
+        "level": _sarif_level_for_severity(sev),
+        "message": {
+            "text": (
+                f"{reg.id.as_target()} regressed: {reg.reason}. "
+                f"Current severity is {sev.value} with score {reg.current_score:.1f}."
+            )
+        },
+        "locations": [_sarif_location(fn.id.path, fn.span.start_line, fn.span.end_line)]
+        if fn is not None
+        else [_sarif_location(reg.id.path, 1, 1)],
+        "properties": {
+            "kind": reg.kind.value,
+            "current_score": reg.current_score,
+            "previous_score": reg.previous_score,
+            "delta": reg.delta,
+            "reason": reg.reason,
+        },
+    }
+    if fn is not None:
+        result["properties"].update(_sarif_function_properties(fn))
+    return result
+
+
+def _sarif_location(path: str, start_line: int, end_line: int) -> dict[str, Any]:
+    return {
+        "physicalLocation": {
+            "artifactLocation": {"uri": _sarif_uri(path)},
+            "region": {
+                "startLine": start_line,
+                "endLine": end_line,
+            },
+        }
+    }
+
+
+def _sarif_uri(path: str) -> str:
+    if os.path.isabs(path):
+        return os.path.relpath(path).replace(os.sep, "/")
+    return path
+
+
+def _sarif_function_properties(fn: FunctionRisk) -> dict[str, Any]:
+    return {
+        "path": fn.id.path,
+        "qualname": fn.id.qualname,
+        "severity": severity(fn.score).value,
+        "score": fn.score,
+        "crap": fn.crap,
+        "complexity": fn.complexity.cyclomatic,
+        "line_coverage": fn.coverage.line_coverage,
+        "branch_coverage": fn.coverage.branch_coverage,
+        "churn_commits": fn.churn.commits,
+        "is_public": fn.is_public,
+        "components": {
+            "coverage_gap": fn.components.coverage_gap,
+            "structural_complexity": fn.components.structural_complexity,
+            "branch_gap": fn.components.branch_gap,
+            "churn": fn.components.churn,
+            "public_surface": fn.components.public_surface,
+            "sprawl": fn.components.sprawl,
+        },
+    }
+
+
+def _sarif_level_for_severity(sev: Severity) -> str:
+    if sev is Severity.CRITICAL:
+        return "error"
+    if sev in {Severity.MEDIUM, Severity.HIGH}:
+        return "warning"
+    return "note"
 
 
 def _function_payload(fn: FunctionRisk) -> dict[str, Any]:

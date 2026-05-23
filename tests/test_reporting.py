@@ -21,14 +21,18 @@ from riskratchet.models import (
     RegressionKind,
     RiskComponents,
     RiskReport,
+    Severity,
 )
 from riskratchet.reporting import (
+    _sarif_level_for_severity,
     render_function_explanation,
     render_regressions_json,
     render_regressions_markdown,
+    render_regressions_sarif,
     render_regressions_table,
     render_report_json,
     render_report_markdown,
+    render_report_sarif,
     render_report_table,
 )
 
@@ -105,6 +109,20 @@ def test_render_report_markdown_handles_missing_branch_coverage() -> None:
     assert "n/a" in out
 
 
+def test_render_report_sarif_includes_all_functions() -> None:
+    payload = json.loads(render_report_sarif(_report(_fn("a", 80.0), _fn("b", 10.0))))
+    assert payload["version"] == "2.1.0"
+    assert payload["$schema"] == "https://json.schemastore.org/sarif-2.1.0.json"
+    run = payload["runs"][0]
+    assert run["tool"]["driver"]["name"] == "riskratchet"
+    assert len(run["tool"]["driver"]["rules"]) >= 1
+    results = run["results"]
+    assert len(results) == 2
+    assert {result["ruleId"] for result in results} == {"riskratchet.function-risk"}
+    assert {result["properties"]["qualname"] for result in results} == {"a", "b"}
+    assert results[0]["locations"][0]["physicalLocation"]["region"] == {"startLine": 1, "endLine": 10}
+
+
 def test_render_regressions_table_empty_and_populated() -> None:
     assert "No risk regressions" in render_regressions_table([])
     regression = Regression(
@@ -147,6 +165,33 @@ def test_render_regressions_markdown_empty_and_populated() -> None:
     assert "# riskratchet regressions" in out
     assert "| Kind |" in out
     assert "foo" in out
+
+
+def test_render_regressions_sarif_includes_location_and_message() -> None:
+    fn = _fn("foo", 70.0)
+    regression = Regression(
+        id=fn.id,
+        kind=RegressionKind.REGRESSED,
+        current_score=70.0,
+        previous_score=50.0,
+        delta=20.0,
+        reason="risk grew",
+        current=fn,
+    )
+    payload = json.loads(render_regressions_sarif([regression]))
+    result = payload["runs"][0]["results"][0]
+    assert result["ruleId"] == "riskratchet.regression"
+    assert result["level"] == "warning"
+    assert "risk grew" in result["message"]["text"]
+    assert result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"] == "m.py"
+    assert result["locations"][0]["physicalLocation"]["region"] == {"startLine": 1, "endLine": 10}
+
+
+def test_sarif_severity_to_level_mapping() -> None:
+    assert _sarif_level_for_severity(Severity.LOW) == "note"
+    assert _sarif_level_for_severity(Severity.MEDIUM) == "warning"
+    assert _sarif_level_for_severity(Severity.HIGH) == "warning"
+    assert _sarif_level_for_severity(Severity.CRITICAL) == "error"
 
 
 def test_render_function_explanation_includes_all_signals() -> None:

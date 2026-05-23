@@ -11,7 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from riskratchet.git import churn_for_file, collect_file_churn
+from riskratchet.git import churn_for_file, churn_for_function, collect_file_churn, collect_function_churn
+from riskratchet.models import FunctionId, FunctionSpan
 
 
 def _init_repo(root: Path) -> None:
@@ -31,10 +32,14 @@ def _commit(root: Path, relative: str, body: str) -> None:
 
 def test_collect_returns_empty_when_disabled(tmp_path: Path) -> None:
     assert collect_file_churn(tmp_path, enabled=False) == {}
+    function_id = FunctionId("a.py", "hot")
+    assert collect_function_churn(tmp_path, [(function_id, FunctionSpan(1, 2))], enabled=False) == {}
 
 
 def test_collect_returns_empty_without_git_dir(tmp_path: Path) -> None:
     assert collect_file_churn(tmp_path) == {}
+    function_id = FunctionId("a.py", "hot")
+    assert collect_function_churn(tmp_path, [(function_id, FunctionSpan(1, 2))]) == {}
 
 
 def test_collect_counts_commits_per_file(tmp_path: Path) -> None:
@@ -62,11 +67,44 @@ def test_churn_for_file_lookups_default_zero() -> None:
     assert churn_for_file({"a.py": 3}, "missing.py").commits == 0
 
 
+def test_churn_for_function_lookups_default_zero() -> None:
+    function_id = FunctionId("a.py", "hot")
+    stats = churn_for_function({function_id: churn_for_file({"a.py": 3}, "a.py")}, function_id)
+    assert stats.commits == 3
+    assert churn_for_function({}, function_id).commits == 0
+
+
 def test_collect_returns_empty_for_freshly_initialized_repo(tmp_path: Path) -> None:
     _init_repo(tmp_path)
     # No commits yet. `git log` returns non-zero on an empty HEAD, so churn
     # collapses to an empty map without raising.
     assert collect_file_churn(tmp_path) == {}
+    function_id = FunctionId("a.py", "hot")
+    assert collect_function_churn(tmp_path, [(function_id, FunctionSpan(1, 2))]) == {}
+
+
+def test_collect_function_churn_attributes_commits_to_current_span(tmp_path: Path) -> None:
+    _init_repo(tmp_path)
+    _commit(
+        tmp_path,
+        "m.py",
+        "def hot():\n    return 1\n\n\ndef cold():\n    return 2\n",
+    )
+    _commit(
+        tmp_path,
+        "m.py",
+        "def hot():\n    value = 2\n    return value\n\n\ndef cold():\n    return 2\n",
+    )
+    hot = FunctionId("m.py", "hot")
+    cold = FunctionId("m.py", "cold")
+    counts = collect_function_churn(
+        tmp_path,
+        [
+            (hot, FunctionSpan(1, 3)),
+            (cold, FunctionSpan(6, 7)),
+        ],
+    )
+    assert churn_for_function(counts, hot).commits == churn_for_function(counts, cold).commits + 1
 
 
 def test_collect_handles_renamed_and_deleted_files(tmp_path: Path) -> None:

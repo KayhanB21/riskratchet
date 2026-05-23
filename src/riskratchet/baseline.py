@@ -88,6 +88,7 @@ def compare(
                             f"new function with score {fn.score:.1f} "
                             f"exceeds new-function threshold {fail_new_above:.1f}"
                         ),
+                        current=fn,
                     )
                 )
             continue
@@ -105,6 +106,7 @@ def compare(
                         f"(from {previous.score:.1f} to {fn.score:.1f}); "
                         f"tolerance is {fail_regression_above:+.1f}"
                     ),
+                    current=fn,
                 )
             )
     out.sort(key=lambda r: (-(r.delta or r.current_score), r.id.as_target()))

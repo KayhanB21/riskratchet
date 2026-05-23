@@ -151,3 +151,4 @@ class Regression:
     previous_score: float | None
     delta: float | None
     reason: str
+    current: FunctionRisk | None = None

@@ -57,6 +57,19 @@ def test_scan_json_output_is_valid(tmp_path: Path) -> None:
     assert "summary" in payload
 
 
+def test_scan_sarif_output_is_valid(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--format", "sarif", "--no-git"])
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["version"] == "2.1.0"
+    run = payload["runs"][0]
+    assert run["tool"]["driver"]["name"] == "riskratchet"
+    assert len(run["results"]) == 2
+    location = run["results"][0]["locations"][0]["physicalLocation"]
+    assert not location["artifactLocation"]["uri"].startswith("/")
+
+
 def test_baseline_writes_file(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
@@ -80,6 +93,19 @@ def test_check_against_clean_baseline_exits_zero(tmp_path: Path) -> None:
         ["check", str(src), "--baseline", str(baseline_path), "--no-git"],
     )
     assert result.exit_code == 0, result.stdout
+
+
+def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    result = runner.invoke(
+        app,
+        ["check", str(src), "--baseline", str(baseline_path), "--format", "sarif", "--no-git"],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["runs"][0]["results"] == []
 
 
 def test_check_flags_new_risky_function(tmp_path: Path) -> None:
@@ -131,6 +157,63 @@ def test_check_flags_new_risky_function(tmp_path: Path) -> None:
         ],
     )
     assert result.exit_code == 1, result.stdout
+
+
+def test_check_sarif_reports_regressions(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+
+    (src / "risky.py").write_text(
+        dedent(
+            """
+            def risky(a, b, c, d, e, f, g, h, i, j):
+                if a:
+                    return 1
+                if b:
+                    return 2
+                if c:
+                    return 3
+                if d:
+                    return 4
+                if e:
+                    return 5
+                if f:
+                    return 6
+                if g:
+                    return 7
+                if h:
+                    return 8
+                if i:
+                    return 9
+                if j:
+                    return 10
+                return 0
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--fail-new-above",
+            "10",
+            "--format",
+            "sarif",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1, result.stdout
+    payload = json.loads(result.stdout)
+    results = payload["runs"][0]["results"]
+    assert len(results) == 1
+    assert results[0]["ruleId"] == "riskratchet.regression"
+    assert "riskratchet.regression" in {rule["id"] for rule in payload["runs"][0]["tool"]["driver"]["rules"]}
 
 
 def test_check_missing_baseline_returns_exit_2(tmp_path: Path) -> None:
@@ -196,3 +279,42 @@ def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert "regressions" in payload
     assert payload["regressions"] == []
+
+
+def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--baseline-format",
+            "riskratchet",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+
+
+def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--baseline-format",
+            "sarif",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 2
+    assert "unsupported baseline format" in result.stderr

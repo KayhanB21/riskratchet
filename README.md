@@ -113,6 +113,7 @@ Gate a CI job on regressions, printing the list when it fails.
 riskratchet check src \
   --coverage coverage.json \
   --baseline .riskratchet.json \
+  --baseline-format riskratchet \
   --json > regressions.json
 status=$?
 if [ "$status" -eq 1 ]; then
@@ -197,8 +198,12 @@ medium, 50-74 high, 75-100 critical.
 riskratchet scan src --coverage coverage.json --format table     # default
 riskratchet scan src --coverage coverage.json --json             # shortcut for --format json
 riskratchet scan src --coverage coverage.json --format markdown  # for PR comments
+riskratchet scan src --coverage coverage.json --format sarif     # for SARIF consumers
 riskratchet scan src --coverage coverage.json --quiet            # drops the trailing summary line
 ```
+
+`riskratchet check` accepts `--baseline-format riskratchet`, which is the
+default and currently the only supported baseline format.
 
 JSON output (truncated):
 
