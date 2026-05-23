@@ -16,10 +16,15 @@ import typer
 from riskratchet import __version__
 from riskratchet.baseline import baseline_from_report, compare, load_baseline, save_baseline
 from riskratchet.engine import analyze
+from riskratchet.models import Regression, RiskReport
 from riskratchet.reporting import (
-    REGRESSION_RENDERERS,
-    REPORT_RENDERERS,
     render_function_explanation,
+    render_regressions_json,
+    render_regressions_markdown,
+    render_regressions_table,
+    render_report_json,
+    render_report_markdown,
+    render_report_table,
 )
 
 if sys.version_info >= (3, 11):
@@ -135,7 +140,7 @@ def check(
             fail_regression_above, cfg.get("fail_regression_above"), default=5.0
         ),
     )
-    rendered = REGRESSION_RENDERERS[format](regressions)
+    rendered = _render_regressions(regressions, format=format)
     _write(rendered, output)
     if regressions:
         raise typer.Exit(code=1)
@@ -165,10 +170,23 @@ def explain(
     typer.echo(render_function_explanation(fn), nl=False)
 
 
-def _emit_report(report: Any, *, format: str, output: Optional[Path], limit: int) -> None:
-    renderer = REPORT_RENDERERS[format]
-    rendered = renderer(report, limit=None if limit == 0 else limit) if format != "json" else renderer(report)
+def _emit_report(report: RiskReport, *, format: str, output: Optional[Path], limit: int) -> None:
+    effective_limit = None if limit == 0 else limit
+    if format == "json":
+        rendered = render_report_json(report)
+    elif format == "markdown":
+        rendered = render_report_markdown(report, limit=effective_limit)
+    else:
+        rendered = render_report_table(report, limit=effective_limit)
     _write(rendered, output)
+
+
+def _render_regressions(regressions: list[Regression], *, format: str) -> str:
+    if format == "json":
+        return render_regressions_json(regressions)
+    if format == "markdown":
+        return render_regressions_markdown(regressions)
+    return render_regressions_table(regressions)
 
 
 def _write(rendered: str, output: Optional[Path]) -> None:

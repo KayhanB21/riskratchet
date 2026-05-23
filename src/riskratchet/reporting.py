@@ -289,17 +289,3 @@ def _fmt_optional(value: float | None, *, signed: bool = False) -> str:
     if signed:
         return f"{value:+.1f}"
     return f"{value:.1f}"
-
-
-# Re-export so callers can pick a renderer by format name without a chain of ifs.
-REPORT_RENDERERS: dict[str, Any] = {
-    "table": render_report_table,
-    "json": render_report_json,
-    "markdown": render_report_markdown,
-}
-
-REGRESSION_RENDERERS: dict[str, Any] = {
-    "table": render_regressions_table,
-    "json": render_regressions_json,
-    "markdown": render_regressions_markdown,
-}
