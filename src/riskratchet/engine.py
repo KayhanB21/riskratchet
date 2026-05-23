@@ -81,6 +81,7 @@ def analyze(
     return RiskReport(
         functions=tuple(function_risks),
         files=tuple(file_stats_list),
+        coverage_status="present" if coverage_path is not None else "missing",
     )
 
 
@@ -117,6 +118,7 @@ def _risks_for_file(
                 components=components,
                 score=total_risk(components),
                 crap=crap_score(complexity, coverage),
+                fingerprint=fn.fingerprint,
             )
         )
     return risks

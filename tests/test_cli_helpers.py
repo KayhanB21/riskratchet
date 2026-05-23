@@ -151,7 +151,10 @@ def test_check_emits_markdown_to_output_when_clean(tmp_path: Path) -> None:
     src.mkdir()
     (src / "m.py").write_text("def f(): return 1\n", encoding="utf-8")
     baseline = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline), "--allow-missing-coverage", "--no-git"],
+    )
     out = tmp_path / "out.md"
     result = runner.invoke(
         app,
@@ -164,6 +167,7 @@ def test_check_emits_markdown_to_output_when_clean(tmp_path: Path) -> None:
             "markdown",
             "--output",
             str(out),
+            "--allow-missing-coverage",
             "--no-git",
         ],
     )

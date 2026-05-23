@@ -39,7 +39,14 @@ def _components(score: float = 50.0) -> RiskComponents:
     )
 
 
-def _fn(path: str, qualname: str, score: float = 50.0) -> FunctionRisk:
+def _fn(
+    path: str,
+    qualname: str,
+    score: float = 50.0,
+    *,
+    component_score: float | None = None,
+    fingerprint: str | None = None,
+) -> FunctionRisk:
     file_stats = FileStats(path=path, total_lines=100, function_count=1)
     return FunctionRisk(
         id=FunctionId(path=path, qualname=qualname),
@@ -49,9 +56,10 @@ def _fn(path: str, qualname: str, score: float = 50.0) -> FunctionRisk:
         coverage=CoverageStats(line_coverage=0.5, branch_coverage=0.5),
         churn=ChurnStats(commits=0),
         file_stats=file_stats,
-        components=_components(score),
+        components=_components(score if component_score is None else component_score),
         score=score,
         crap=10.0,
+        fingerprint=fingerprint or f"{path}:{qualname}",
     )
 
 
@@ -69,6 +77,8 @@ def test_save_and_load_roundtrip(tmp_path: Path) -> None:
         FunctionId("b.py", "bar"),
     }
     assert loaded.entries[FunctionId("a.py", "foo")].score == pytest.approx(42.0)
+    assert loaded.version == "2"
+    assert loaded.entries[FunctionId("a.py", "foo")].fingerprint == "a.py:foo"
 
 
 def test_compare_flags_new_function_above_threshold() -> None:
@@ -151,6 +161,128 @@ def test_compare_matches_by_qualname_even_when_lines_change() -> None:
     assert len(regressions) == 1
     assert regressions[0].kind == RegressionKind.REGRESSED
     assert regressions[0].delta == pytest.approx(10.0)
+
+
+def test_compare_matches_unique_rename_by_fingerprint() -> None:
+    old_id = FunctionId("a.py", "helper")
+    old_entry = BaselineEntry(
+        id=old_id,
+        score=40.0,
+        components=_components(40.0),
+        fingerprint="same-body",
+    )
+    old = Baseline(version="2", entries={old_id: old_entry})
+    report = RiskReport(
+        functions=(_fn("a.py", "compute_thing", 40.0, component_score=40.0, fingerprint="same-body"),),
+        files=(),
+    )
+    assert compare(report, old, fail_new_above=10.0, fail_regression_above=5.0) == []
+
+
+def test_compare_reports_renamed_function_regression() -> None:
+    old_id = FunctionId("a.py", "helper")
+    old_entry = BaselineEntry(
+        id=old_id,
+        score=40.0,
+        components=_components(40.0),
+        fingerprint="same-body",
+    )
+    old = Baseline(version="2", entries={old_id: old_entry})
+    report = RiskReport(
+        functions=(_fn("a.py", "compute_thing", 60.0, component_score=40.0, fingerprint="same-body"),),
+        files=(),
+    )
+    regressions = compare(report, old, fail_new_above=100.0, fail_regression_above=5.0)
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.REGRESSED
+    assert "previous target a.py::helper" in regressions[0].reason
+
+
+def test_compare_avoids_ambiguous_fingerprint_matches() -> None:
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "one"): BaselineEntry(
+                id=FunctionId("a.py", "one"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="duplicate",
+            ),
+            FunctionId("a.py", "two"): BaselineEntry(
+                id=FunctionId("a.py", "two"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="duplicate",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("a.py", "renamed", 60.0, component_score=60.0, fingerprint="duplicate"),),
+        files=(),
+    )
+    regressions = compare(report, old, fail_new_above=50.0, fail_regression_above=5.0)
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.NEW_ABOVE_THRESHOLD
+
+
+def test_compare_flags_existing_debt_when_requested() -> None:
+    fn = _fn("a.py", "foo", 60.0)
+    old_entry = BaselineEntry(id=fn.id, score=60.0, components=fn.components, fingerprint=fn.fingerprint)
+    old = Baseline(version="2", entries={fn.id: old_entry})
+    report = RiskReport(functions=(fn,), files=())
+    regressions = compare(
+        report,
+        old,
+        fail_new_above=100.0,
+        fail_regression_above=5.0,
+        fail_existing_above=50.0,
+    )
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.EXISTING_ABOVE_THRESHOLD
+
+
+def test_compare_flags_component_regression_when_total_is_flat() -> None:
+    fn = _fn("a.py", "foo", 40.0, component_score=40.0)
+    previous = RiskComponents(
+        coverage_gap=0.0,
+        structural_complexity=40.0,
+        branch_gap=40.0,
+        churn=40.0,
+        public_surface=40.0,
+        sprawl=40.0,
+    )
+    old_entry = BaselineEntry(id=fn.id, score=40.0, components=previous, fingerprint=fn.fingerprint)
+    old = Baseline(version="2", entries={fn.id: old_entry})
+    report = RiskReport(functions=(fn,), files=())
+    regressions = compare(report, old, fail_new_above=100.0, fail_regression_above=5.0)
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.COMPONENT_REGRESSED
+    assert "coverage_gap grew" in regressions[0].reason
+
+
+def test_compare_can_disable_component_regression_gate() -> None:
+    fn = _fn("a.py", "foo", 40.0, component_score=40.0)
+    previous = RiskComponents(
+        coverage_gap=0.0,
+        structural_complexity=40.0,
+        branch_gap=40.0,
+        churn=40.0,
+        public_surface=40.0,
+        sprawl=40.0,
+    )
+    old_entry = BaselineEntry(id=fn.id, score=40.0, components=previous, fingerprint=fn.fingerprint)
+    old = Baseline(version="2", entries={fn.id: old_entry})
+    report = RiskReport(functions=(fn,), files=())
+    assert (
+        compare(
+            report,
+            old,
+            fail_new_above=100.0,
+            fail_regression_above=5.0,
+            component_regression_gate=False,
+        )
+        == []
+    )
 
 
 def test_baseline_json_is_sorted_for_stable_diffs(tmp_path: Path) -> None:

@@ -62,6 +62,8 @@ def render_report_table(report: RiskReport, *, limit: int | None = 20, include_s
         console.print(f"... {len(sorted_fns) - limit} more functions hidden (use --limit to show more)")
     if include_summary:
         console.print(_summary_line(report))
+        if report.coverage_status == "missing":
+            console.print("Coverage: missing (all functions are treated as uncovered).")
     return buf.getvalue()
 
 
@@ -81,6 +83,7 @@ def render_report_markdown(report: RiskReport, *, limit: int | None = 20) -> str
         "",
         f"**Functions analyzed:** {len(report.functions)}",
         f"**Files analyzed:** {len(report.files)}",
+        f"**Coverage:** {report.coverage_status}",
         "",
         "| Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |",
@@ -243,6 +246,7 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
     return {
         "total_functions": len(report.functions),
         "total_files": len(report.files),
+        "coverage_status": report.coverage_status,
         "by_severity": counts,
     }
 

@@ -85,7 +85,7 @@ def scan(
     effective_format = _effective_format(format, json_output)
     report = analyze(
         _resolved_paths(paths, cfg),
-        coverage_path=_resolved_optional(coverage, cfg.get("coverage")),
+        coverage_path=_resolved_scan_coverage(coverage, cfg.get("coverage")),
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -102,12 +102,23 @@ def baseline(
     include: Annotated[list[str] | None, typer.Option("--include")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    allow_missing_coverage: Annotated[
+        bool,
+        typer.Option(
+            "--allow-missing-coverage",
+            help="Allow baselining without configured coverage data.",
+        ),
+    ] = False,
 ) -> None:
     """Compute current risk and save it as the new baseline."""
     cfg = _load_config(config)
     report = analyze(
         _resolved_paths(paths, cfg),
-        coverage_path=_resolved_optional(coverage, cfg.get("coverage")),
+        coverage_path=_required_coverage(
+            coverage,
+            cfg.get("coverage"),
+            allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+        ),
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -137,9 +148,28 @@ def check(
     output: Annotated[Path | None, typer.Option("--output")] = None,
     fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
+    fail_existing_above: Annotated[float | None, typer.Option("--fail-existing-above")] = None,
+    fail_component_regression_above: Annotated[
+        float | None,
+        typer.Option("--fail-component-regression-above"),
+    ] = None,
+    no_component_regression_gate: Annotated[
+        bool,
+        typer.Option(
+            "--no-component-regression-gate",
+            help="Disable per-component regression checks.",
+        ),
+    ] = False,
     include: Annotated[list[str] | None, typer.Option("--include")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    allow_missing_coverage: Annotated[
+        bool,
+        typer.Option(
+            "--allow-missing-coverage",
+            help="Allow checking without configured coverage data.",
+        ),
+    ] = False,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg = _load_config(config)
@@ -156,7 +186,11 @@ def check(
     old = load_baseline(baseline_file)
     report = analyze(
         _resolved_paths(paths, cfg),
-        coverage_path=_resolved_optional(coverage, cfg.get("coverage")),
+        coverage_path=_required_coverage(
+            coverage,
+            cfg.get("coverage"),
+            allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+        ),
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         use_git=not no_git,
@@ -167,6 +201,16 @@ def check(
         fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
         fail_regression_above=_resolved_float(
             fail_regression_above, cfg.get("fail_regression_above"), default=5.0
+        ),
+        fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
+        fail_component_regression_above=_resolved_float(
+            fail_component_regression_above,
+            cfg.get("fail_component_regression_above"),
+            default=15.0,
+        ),
+        component_regression_gate=(
+            not no_component_regression_gate
+            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
     )
     rendered = _render_regressions(regressions, format=effective_format)
@@ -296,6 +340,48 @@ def _resolved_optional(value: Path | None, default: Any) -> Path | None:
     return candidate if candidate.exists() else None
 
 
+def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, bool]:
+    if value is not None:
+        return value, True
+    if isinstance(default, str):
+        return Path(default), True
+    if isinstance(default, Path):
+        return default, True
+    return None, False
+
+
+def _resolved_scan_coverage(value: Path | None, default: Any) -> Path | None:
+    candidate, was_configured = _coverage_candidate(value, default)
+    if candidate is None:
+        return None
+    if candidate.exists():
+        return candidate
+    if was_configured and value is not None:
+        typer.secho(
+            f"warning: coverage file not found: {candidate}; scanning without coverage.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    return None
+
+
+def _required_coverage(value: Path | None, default: Any, *, allow_missing: bool) -> Path | None:
+    candidate, was_configured = _coverage_candidate(value, default)
+    if candidate is None or candidate.exists():
+        return candidate
+    if allow_missing:
+        return None
+    if was_configured:
+        typer.secho(
+            f"coverage file not found: {candidate}. "
+            "Generate coverage JSON or pass --allow-missing-coverage.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    return None
+
+
 def _resolved_float(
     cli_value: float | None,
     cfg_value: Any,
@@ -306,6 +392,22 @@ def _resolved_float(
         return float(cli_value)
     if isinstance(cfg_value, (int, float)):
         return float(cfg_value)
+    return default
+
+
+def _resolved_optional_float(cli_value: float | None, cfg_value: Any) -> float | None:
+    if cli_value is not None:
+        return float(cli_value)
+    if isinstance(cfg_value, (int, float)):
+        return float(cfg_value)
+    return None
+
+
+def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:
+    if cli_value != default:
+        return cli_value
+    if isinstance(cfg_value, bool):
+        return cfg_value
     return default
 
 

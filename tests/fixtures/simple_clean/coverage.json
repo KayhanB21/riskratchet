@@ -1,0 +1,10 @@
+{
+  "files": {
+    "src/m.py": {
+      "executed_lines": [4, 5, 8, 9],
+      "missing_lines": [],
+      "executed_branches": [],
+      "missing_branches": []
+    }
+  }
+}

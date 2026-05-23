@@ -59,6 +59,9 @@ def _make_session(
     paths: list[str] | None = None,
     fail_new_above: float = 50.0,
     fail_regression_above: float = 5.0,
+    fail_existing_above: float | None = None,
+    fail_component_regression_above: float = 15.0,
+    no_component_regression_gate: bool = False,
     reporter: _StubReporter | None = None,
 ) -> _StubSession:
     options = {
@@ -68,8 +71,18 @@ def _make_session(
         "--riskratchet-paths": paths,
         "--riskratchet-fail-new-above": fail_new_above,
         "--riskratchet-fail-regression-above": fail_regression_above,
+        "--riskratchet-fail-existing-above": fail_existing_above,
+        "--riskratchet-fail-component-regression-above": fail_component_regression_above,
+        "--riskratchet-no-component-regression-gate": no_component_regression_gate,
     }
     return _StubSession(_StubConfig(rootpath, options, reporter))
+
+
+def _write_coverage(tmp_path: Path, relative: str, *, executed: list[int], missing: list[int]) -> None:
+    (tmp_path / "coverage.json").write_text(
+        json.dumps({"files": {relative: {"executed_lines": executed, "missing_lines": missing}}}),
+        encoding="utf-8",
+    )
 
 
 def test_resolve_absolute_path_stays_absolute(tmp_path: Path) -> None:
@@ -114,9 +127,22 @@ def test_sessionfinish_marks_failure_when_baseline_missing(tmp_path: Path) -> No
     assert any("baseline file not found" in line for line in reporter.lines)
 
 
+def test_sessionfinish_marks_failure_when_coverage_missing(tmp_path: Path) -> None:
+    (tmp_path / ".riskratchet.json").write_text(
+        json.dumps({"version": "1", "entries": []}),
+        encoding="utf-8",
+    )
+    reporter = _StubReporter()
+    session = _make_session(tmp_path, reporter=reporter)
+    pytest_sessionfinish(session, 0)  # type: ignore[arg-type]
+    assert session.exitstatus == 1
+    assert any("coverage file not found" in line for line in reporter.lines)
+
+
 def test_sessionfinish_passes_when_no_regressions(tmp_path: Path) -> None:
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "m.py").write_text("def trivial():\n    return 1\n", encoding="utf-8")
+    _write_coverage(tmp_path, "src/m.py", executed=[1, 2], missing=[])
     (tmp_path / ".riskratchet.json").write_text(
         json.dumps({"version": "1", "entries": []}),
         encoding="utf-8",
@@ -140,6 +166,7 @@ def test_sessionfinish_marks_failure_on_regression(tmp_path: Path) -> None:
         "    return 0\n",
         encoding="utf-8",
     )
+    _write_coverage(tmp_path, "src/risky.py", executed=[], missing=[1, 2, 3, 4, 5, 6, 7])
     (tmp_path / ".riskratchet.json").write_text(
         json.dumps({"version": "1", "entries": []}),
         encoding="utf-8",

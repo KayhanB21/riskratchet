@@ -75,33 +75,112 @@ def test_baseline_writes_file(tmp_path: Path) -> None:
     baseline_path = tmp_path / "baseline.json"
     result = runner.invoke(
         app,
-        ["baseline", str(src), "--output", str(baseline_path), "--no-git"],
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-git",
+        ],
     )
     assert result.exit_code == 0
     payload = json.loads(baseline_path.read_text(encoding="utf-8"))
-    assert payload["version"] == "1"
+    assert payload["version"] == "2"
     assert isinstance(payload["entries"], list)
     assert len(payload["entries"]) >= 1
+
+
+def test_baseline_rejects_missing_configured_coverage(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    config = tmp_path / "pyproject.toml"
+    config.write_text("[tool.riskratchet]\ncoverage = 'missing.json'\n", encoding="utf-8")
+    result = runner.invoke(app, ["baseline", str(src), "--config", str(config), "--no-git"])
+    assert result.exit_code == 2
+    assert "coverage file not found" in result.stderr
+
+
+def test_baseline_allow_missing_coverage_preserves_no_coverage_mode(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    config = tmp_path / "pyproject.toml"
+    config.write_text("[tool.riskratchet]\ncoverage = 'missing.json'\n", encoding="utf-8")
+    baseline_path = tmp_path / "baseline.json"
+    result = runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--config",
+            str(config),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert baseline_path.exists()
 
 
 def test_check_against_clean_baseline_exits_zero(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
     result = runner.invoke(
         app,
-        ["check", str(src), "--baseline", str(baseline_path), "--no-git"],
+        ["check", str(src), "--baseline", str(baseline_path), "--allow-missing-coverage", "--no-git"],
     )
     assert result.exit_code == 0, result.stdout
+
+
+def test_check_fail_existing_above_flags_current_debt(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--fail-existing-above",
+            "10",
+            "--allow-missing-coverage",
+            "--json",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["regressions"][0]["kind"] == "existing_above_threshold"
 
 
 def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
     result = runner.invoke(
         app,
-        ["check", str(src), "--baseline", str(baseline_path), "--format", "sarif", "--no-git"],
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--format",
+            "sarif",
+            "--allow-missing-coverage",
+            "--no-git",
+        ],
     )
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
@@ -111,7 +190,10 @@ def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_pa
 def test_check_flags_new_risky_function(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
 
     risky_file = src / "risky.py"
     risky_file.write_text(
@@ -153,6 +235,7 @@ def test_check_flags_new_risky_function(tmp_path: Path) -> None:
             str(baseline_path),
             "--fail-new-above",
             "10",
+            "--allow-missing-coverage",
             "--no-git",
         ],
     )
@@ -162,7 +245,10 @@ def test_check_flags_new_risky_function(tmp_path: Path) -> None:
 def test_check_sarif_reports_regressions(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
 
     (src / "risky.py").write_text(
         dedent(
@@ -205,6 +291,7 @@ def test_check_sarif_reports_regressions(tmp_path: Path) -> None:
             "10",
             "--format",
             "sarif",
+            "--allow-missing-coverage",
             "--no-git",
         ],
     )
@@ -270,10 +357,21 @@ def test_scan_quiet_suppresses_summary(tmp_path: Path) -> None:
 def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
     result = runner.invoke(
         app,
-        ["check", str(src), "--baseline", str(baseline_path), "--json", "--no-git"],
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--json",
+            "--allow-missing-coverage",
+            "--no-git",
+        ],
     )
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
@@ -284,7 +382,10 @@ def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
 def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
     result = runner.invoke(
         app,
         [
@@ -294,6 +395,7 @@ def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) 
             str(baseline_path),
             "--baseline-format",
             "riskratchet",
+            "--allow-missing-coverage",
             "--no-git",
         ],
     )
@@ -303,7 +405,10 @@ def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) 
 def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
-    runner.invoke(app, ["baseline", str(src), "--output", str(baseline_path), "--no-git"])
+    runner.invoke(
+        app,
+        ["baseline", str(src), "--output", str(baseline_path), "--allow-missing-coverage", "--no-git"],
+    )
     result = runner.invoke(
         app,
         [

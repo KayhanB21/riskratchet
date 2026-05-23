@@ -7,7 +7,7 @@
   "required": ["version", "entries"],
   "additionalProperties": false,
   "properties": {
-    "version": { "type": "string", "const": "1" },
+    "version": { "type": "string", "enum": ["1", "2"] },
     "entries": {
       "type": "array",
       "items": {
@@ -17,6 +17,7 @@
         "properties": {
           "path": { "type": "string" },
           "qualname": { "type": "string" },
+          "fingerprint": { "type": "string" },
           "score": { "type": "number", "minimum": 0, "maximum": 100 },
           "components": {
             "type": "object",

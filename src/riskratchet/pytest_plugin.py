@@ -62,6 +62,26 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         default=5.0,
         help="Score delta above which a regression fails the session. Default 5.",
     )
+    group.addoption(
+        "--riskratchet-fail-existing-above",
+        action="store",
+        type=float,
+        default=None,
+        help="Current score above which existing debt fails the session. Default unset.",
+    )
+    group.addoption(
+        "--riskratchet-fail-component-regression-above",
+        action="store",
+        type=float,
+        default=15.0,
+        help="Component score delta above which a regression fails the session. Default 15.",
+    )
+    group.addoption(
+        "--riskratchet-no-component-regression-gate",
+        action="store_true",
+        default=False,
+        help="Disable per-component regression checks.",
+    )
 
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
@@ -84,11 +104,19 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         )
         session.exitstatus = 1
         return
+    if not coverage_path.exists():
+        _emit(
+            session,
+            f"riskratchet: coverage file not found: {coverage_path}. "
+            "Run pytest with `--cov --cov-report=json:coverage.json`.",
+        )
+        session.exitstatus = 1
+        return
 
     report = analyze(
         paths,
         root=rootdir,
-        coverage_path=coverage_path if coverage_path.exists() else None,
+        coverage_path=coverage_path,
         use_git=True,
     )
     regressions = compare(
@@ -96,6 +124,11 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         load_baseline(baseline_path),
         fail_new_above=float(config.getoption("--riskratchet-fail-new-above")),
         fail_regression_above=float(config.getoption("--riskratchet-fail-regression-above")),
+        fail_existing_above=config.getoption("--riskratchet-fail-existing-above"),
+        fail_component_regression_above=float(
+            config.getoption("--riskratchet-fail-component-regression-above")
+        ),
+        component_regression_gate=not bool(config.getoption("--riskratchet-no-component-regression-gate")),
     )
     if not regressions:
         return

@@ -111,4 +111,7 @@ coverage = "coverage.json"
 baseline = ".riskratchet.json"
 fail_new_above = 50
 fail_regression_above = 5
+allow_missing_coverage = false
+fail_component_regression_above = 15
+component_regression_gate = true
 exclude = ["tests/**", "migrations/**", "*/generated/**"]

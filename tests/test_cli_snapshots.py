@@ -46,7 +46,7 @@ def _project(tmp_path: Path) -> Path:
 
 
 REQUIRED_TOP_LEVEL = {"summary", "functions"}
-REQUIRED_SUMMARY = {"total_functions", "total_files", "by_severity"}
+REQUIRED_SUMMARY = {"total_functions", "total_files", "coverage_status", "by_severity"}
 REQUIRED_FUNCTION = {
     "path",
     "qualname",
@@ -84,6 +84,7 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
     assert REQUIRED_SUMMARY.issubset(summary.keys())
     assert isinstance(summary["total_functions"], int)
     assert isinstance(summary["total_files"], int)
+    assert summary["coverage_status"] in {"present", "missing"}
     assert set(summary["by_severity"].keys()) == ALLOWED_SEVERITIES
     for count in summary["by_severity"].values():
         assert isinstance(count, int)
@@ -126,6 +127,7 @@ def test_scan_markdown_snapshot_is_stable(tmp_path: Path) -> None:
         "\n"
         "**Functions analyzed:** 2\n"
         "**Files analyzed:** 1\n"
+        "**Coverage:** missing\n"
         "\n"
         "| Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |\n"
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |\n"

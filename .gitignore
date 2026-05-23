@@ -46,6 +46,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 coverage.json
+!tests/fixtures/**/coverage.json
 *.cover
 *.py.cover
 .hypothesis/

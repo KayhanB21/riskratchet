@@ -16,7 +16,14 @@
         "properties": {
           "path": { "type": "string" },
           "qualname": { "type": "string" },
-          "kind": { "enum": ["new_above_threshold", "regressed"] },
+          "kind": {
+            "enum": [
+              "new_above_threshold",
+              "regressed",
+              "existing_above_threshold",
+              "component_regressed"
+            ]
+          },
           "current_score": { "type": "number", "minimum": 0, "maximum": 100 },
           "previous_score": {
             "type": ["number", "null"],

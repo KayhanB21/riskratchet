@@ -20,6 +20,8 @@ class Severity(str, Enum):
 class RegressionKind(str, Enum):
     NEW_ABOVE_THRESHOLD = "new_above_threshold"
     REGRESSED = "regressed"
+    EXISTING_ABOVE_THRESHOLD = "existing_above_threshold"
+    COMPONENT_REGRESSED = "component_regressed"
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,12 +109,14 @@ class FunctionRisk:
     components: RiskComponents
     score: float
     crap: float
+    fingerprint: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class RiskReport:
     functions: tuple[FunctionRisk, ...]
     files: tuple[FileStats, ...]
+    coverage_status: str = "missing"
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}
@@ -129,6 +133,7 @@ class BaselineEntry:
     id: FunctionId
     score: float
     components: RiskComponents
+    fingerprint: str | None = None
 
 
 @dataclass

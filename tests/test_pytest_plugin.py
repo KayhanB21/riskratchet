@@ -53,6 +53,8 @@ def test_plugin_passes_when_no_regressions(pytester: pytest.Pytester) -> None:
     baseline.write_text(json.dumps(_baseline_payload([])), encoding="utf-8")
 
     result = pytester.runpytest_subprocess(
+        "--cov=src",
+        "--cov-report=json:coverage.json",
         "--riskratchet",
         "--riskratchet-paths",
         str(src),
@@ -89,6 +91,8 @@ def test_plugin_fails_on_new_risky_function(pytester: pytest.Pytester) -> None:
     baseline.write_text(json.dumps(_baseline_payload([])), encoding="utf-8")
 
     result = pytester.runpytest_subprocess(
+        "--cov=src",
+        "--cov-report=json:coverage.json",
         "--riskratchet",
         "--riskratchet-paths",
         str(src),

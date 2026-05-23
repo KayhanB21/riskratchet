@@ -8,6 +8,8 @@ re-parsing.
 from __future__ import annotations
 
 import ast
+import copy
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -20,6 +22,7 @@ class DiscoveredFunction:
     span: FunctionSpan
     is_public: bool
     is_async: bool
+    fingerprint: str
     node: ast.FunctionDef | ast.AsyncFunctionDef
 
 
@@ -129,6 +132,7 @@ class _FunctionCollector(ast.NodeVisitor):
                 span=span,
                 is_public=is_public_qualname(qualname),
                 is_async=isinstance(node, ast.AsyncFunctionDef),
+                fingerprint=function_fingerprint(node),
                 node=node,
             )
         )
@@ -193,3 +197,15 @@ def _any_match(value: str, patterns: list[str]) -> bool:
     from fnmatch import fnmatch
 
     return any(fnmatch(value, pattern) for pattern in patterns)
+
+
+def function_fingerprint(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
+    """Return a stable body fingerprint that ignores name and source locations."""
+    clone = copy.deepcopy(node)
+    clone.name = ""
+    for child in ast.walk(clone):
+        for attr in ("lineno", "col_offset", "end_lineno", "end_col_offset"):
+            if hasattr(child, attr):
+                setattr(child, attr, None)
+    dumped = ast.dump(clone, annotate_fields=True, include_attributes=False)
+    return hashlib.sha256(dumped.encode("utf-8")).hexdigest()
