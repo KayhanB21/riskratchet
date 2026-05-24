@@ -120,6 +120,7 @@ class FunctionRisk:
     score: float
     crap: float
     fingerprint: str | None = None
+    group: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,6 +148,7 @@ class BaselineEntry:
     score: float
     components: RiskComponents
     fingerprint: str | None = None
+    group: str | None = None
 
 
 @dataclass
@@ -182,6 +184,7 @@ class DiffEntry:
     current: FunctionRisk | None = None
     previous: BaselineEntry | None = None
     previous_id: FunctionId | None = None
+    group: str | None = None
     reason: str = ""
 
 

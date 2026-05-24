@@ -18,7 +18,8 @@
         "new",
         "removed",
         "moved",
-        "unchanged"
+        "unchanged",
+        "groups"
       ],
       "additionalProperties": false,
       "properties": {
@@ -28,7 +29,32 @@
         "new": { "type": "integer", "minimum": 0 },
         "removed": { "type": "integer", "minimum": 0 },
         "moved": { "type": "integer", "minimum": 0 },
-        "unchanged": { "type": "integer", "minimum": 0 }
+        "unchanged": { "type": "integer", "minimum": 0 },
+        "groups": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "regressed",
+              "component_regressed",
+              "improved",
+              "new",
+              "removed",
+              "moved",
+              "unchanged"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "regressed": { "type": "integer", "minimum": 0 },
+              "component_regressed": { "type": "integer", "minimum": 0 },
+              "improved": { "type": "integer", "minimum": 0 },
+              "new": { "type": "integer", "minimum": 0 },
+              "removed": { "type": "integer", "minimum": 0 },
+              "moved": { "type": "integer", "minimum": 0 },
+              "unchanged": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
       }
     },
     "entries": {
@@ -38,6 +64,7 @@
         "required": [
           "path",
           "qualname",
+          "group",
           "status",
           "current_score",
           "previous_score",
@@ -50,6 +77,7 @@
         "properties": {
           "path": { "type": "string" },
           "qualname": { "type": "string" },
+          "group": { "type": ["string", "null"] },
           "status": {
             "enum": [
               "regressed",

@@ -56,6 +56,7 @@ REQUIRED_SUMMARY = {
     "suppressed_functions",
     "skipped_missing_coverage",
     "by_severity",
+    "groups",
 }
 REQUIRED_FUNCTION = {
     "path",
@@ -68,6 +69,7 @@ REQUIRED_FUNCTION = {
     "branch_coverage",
     "churn_commits",
     "is_public",
+    "group",
     "lines",
     "components",
 }
@@ -102,6 +104,7 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
     assert set(summary["by_severity"].keys()) == ALLOWED_SEVERITIES
     for count in summary["by_severity"].values():
         assert isinstance(count, int)
+    assert isinstance(summary["groups"], dict)
 
     functions = payload["functions"]
     assert isinstance(functions, list)
@@ -116,6 +119,7 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
         assert fn["branch_coverage"] is None or 0.0 <= fn["branch_coverage"] <= 1.0
         assert isinstance(fn["churn_commits"], int)
         assert isinstance(fn["is_public"], bool)
+        assert fn["group"] is None or isinstance(fn["group"], str)
         assert set(fn["lines"].keys()) == {"start", "end"}
         assert set(fn["components"].keys()) == REQUIRED_COMPONENTS
 
@@ -152,3 +156,39 @@ def test_scan_markdown_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.Mo
         "| medium | 40.0 | 2.0 | 1 | 0% | n/a | `TMP/src/m.py::trivial` | 1-2 |\n"
     )
     assert normalized == expected
+
+
+def test_scan_pr_comment_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    src = _project(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(src),
+            "--format",
+            "pr-comment",
+            "--repo-url",
+            "https://github.com/acme/project",
+            "--commit-ref",
+            "abc123",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+
+    expected = (
+        "<!-- riskratchet-report -->\n"
+        "# riskratchet\n"
+        "\n"
+        "Summary: 2 functions across 1 files. 0 critical, 0 high, 2 medium, 0 low\n"
+        "\n"
+        "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |\n"
+        "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |\n"
+        "| medium | 42.5 | 12.0 | 3 | 0% | n/a | ungrouped | "
+        "[`src/m.py::branchy`](https://github.com/acme/project/blob/abc123/src/m.py#L4-L9) | 4-9 |\n"
+        "| medium | 40.0 | 2.0 | 1 | 0% | n/a | ungrouped | "
+        "[`src/m.py::trivial`](https://github.com/acme/project/blob/abc123/src/m.py#L1-L2) | 1-2 |\n"
+    )
+    assert result.stdout == expected

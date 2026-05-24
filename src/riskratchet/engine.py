@@ -22,6 +22,7 @@ from riskratchet.coverage import (
     load_coverage,
 )
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
+from riskratchet.groups import group_for_path
 from riskratchet.models import (
     ChurnStats,
     FileStats,
@@ -44,6 +45,7 @@ def analyze(
     churn_days: int = DEFAULT_CHURN_WINDOW_DAYS,
     weights: Mapping[str, float] | None = None,
     missing_coverage_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -107,6 +109,7 @@ def analyze(
             churn_by_function,
             resolved_weights,
             missing_coverage_policy=missing_coverage_policy,
+            groups=groups or {},
         )
         for risk in risks:
             if _is_allowed(risk, allow):
@@ -131,6 +134,7 @@ def _risks_for_file(
     weights: Mapping[str, float],
     *,
     missing_coverage_policy: MissingCoveragePolicy,
+    groups: Mapping[str, Sequence[str]],
 ) -> list[FunctionRisk]:
     complexity_by_line = complexity_for_file(parsed)
     file_coverage = coverage_data.lookup(parsed.relative_path)
@@ -161,6 +165,7 @@ def _risks_for_file(
                 score=total_risk(components, weights=weights),
                 crap=crap_score(complexity, coverage),
                 fingerprint=fn.fingerprint,
+                group=group_for_path(fn.id.path, groups),
             )
         )
     return risks

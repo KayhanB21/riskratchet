@@ -11,6 +11,34 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+### Added
+
+- Normalized `pr-comment` output. `scan --format pr-comment` now emits a
+  sticky review body with summary, current findings, source links, and
+  collapsed lower-priority rows. `check --format pr-comment` now renders the
+  same multi-section diff body as `diff --format pr-comment` while preserving
+  the existing failing-regression exit semantics and regression-only
+  `check --json` contract.
+- `--summary` on `scan`, `check`, and `diff`. Plain output is compact
+  aggregate lines for CI parsers; `--summary --json` emits a schema-backed
+  envelope with `$schema`, `version`, `command`, and `summary` only.
+- Markdown/PR source links on `scan` and `check` via `--repo-url` and
+  `--commit-ref`, with GitHub Actions defaults from `GITHUB_SERVER_URL`,
+  `GITHUB_REPOSITORY`, and `GITHUB_SHA`.
+- `[tool.riskratchet.groups]` package/workspace rollups. Functions and diff
+  entries now include additive optional `group` fields in JSON, and summaries
+  include group-level counts. Ungrouped entries are `null` in JSON and
+  `ungrouped` in text/markdown.
+- `riskratchet config validate` and `riskratchet config show --json`, plus
+  `schemas/config.schema.json` and `schemas/summary.schema.json`.
+- Test coverage for the new review ergonomics: PR-comment snapshots, summary
+  text/JSON behavior, source-link flags and GitHub Actions defaults, group
+  longest-prefix matching, config validation/show paths, and schema
+  validation for report/diff/config/summary outputs.
+- README documentation for SARIF's intentional contract: scan SARIF reports
+  filtered current findings, while check/diff SARIF report failing
+  regressions and clean runs keep a valid empty `results` array.
+
 ### Removed
 
 - `scripts/publish.sh`. Releases now go through `.github/workflows/publish.yml`

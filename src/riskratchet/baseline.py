@@ -9,9 +9,11 @@ functions whose score grew by more than `fail_regression_above`.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from riskratchet.groups import group_for_path
 from riskratchet.models import (
     Baseline,
     BaselineEntry,
@@ -37,6 +39,7 @@ def baseline_from_report(report: RiskReport) -> Baseline:
             score=round(fn.score, 4),
             components=fn.components,
             fingerprint=fn.fingerprint,
+            group=fn.group,
         )
     return Baseline(version=BASELINE_VERSION, entries=entries)
 
@@ -188,6 +191,7 @@ def diff(
     fail_regression_above: float,
     fail_component_regression_above: float = 15.0,
     component_regression_gate: bool = True,
+    groups: Mapping[str, Sequence[str]] | None = None,
 ) -> DiffReport:
     """Return a full baseline comparison, including non-failing statuses."""
     entries: list[DiffEntry] = []
@@ -217,6 +221,7 @@ def diff(
                     previous_score=None,
                     delta=None,
                     current=fn,
+                    group=fn.group,
                     reason=f"new function with score {fn.score:.1f}",
                 )
             )
@@ -243,6 +248,7 @@ def diff(
                 current=fn,
                 previous=previous,
                 previous_id=previous_id,
+                group=fn.group or _group_for_baseline_entry(previous, groups),
                 reason=_diff_reason(
                     fn,
                     previous,
@@ -267,6 +273,7 @@ def diff(
                 previous_score=previous.score,
                 delta=None,
                 previous=previous,
+                group=_group_for_baseline_entry(previous, groups),
                 reason=f"removed function from baseline with score {previous.score:.1f}",
             )
         )
@@ -456,6 +463,8 @@ def _entry_to_dict(entry: BaselineEntry) -> dict[str, Any]:
     }
     if entry.fingerprint is not None:
         payload["fingerprint"] = entry.fingerprint
+    if entry.group is not None:
+        payload["group"] = entry.group
     return payload
 
 
@@ -467,6 +476,7 @@ def _entry_from_dict(raw: Any) -> BaselineEntry | None:
     score = raw.get("score")
     components_raw = raw.get("components")
     fingerprint = raw.get("fingerprint")
+    group = raw.get("group")
     if not (
         isinstance(path, str)
         and isinstance(qualname, str)
@@ -487,7 +497,19 @@ def _entry_from_dict(raw: Any) -> BaselineEntry | None:
         score=float(score),
         components=components,
         fingerprint=fingerprint if isinstance(fingerprint, str) else None,
+        group=group if isinstance(group, str) else None,
     )
+
+
+def _group_for_baseline_entry(
+    entry: BaselineEntry,
+    groups: Mapping[str, Sequence[str]] | None,
+) -> str | None:
+    if entry.group is not None:
+        return entry.group
+    if groups is None:
+        return None
+    return group_for_path(entry.id.path, groups)
 
 
 def _unique_old_entries_by_fingerprint(old: Baseline) -> dict[str, BaselineEntry | None]:

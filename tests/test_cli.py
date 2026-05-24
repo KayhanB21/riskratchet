@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from textwrap import dedent
 
+import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -55,6 +56,24 @@ def test_scan_json_output_is_valid(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert "functions" in payload
     assert "summary" in payload
+
+
+def test_scan_summary_outputs_text_only(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--summary", "--no-auto-cov", "--no-git"])
+    assert result.exit_code == 0
+    assert result.stdout.startswith("scan functions=2 analyzed=2 emitted=2 files=1 coverage=")
+    assert "| Severity |" not in result.stdout
+
+
+def test_scan_summary_json_outputs_summary_envelope(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--summary", "--json", "--no-auto-cov", "--no-git"])
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["command"] == "scan"
+    assert set(payload) == {"$schema", "version", "command", "summary"}
+    assert payload["summary"]["total_functions"] == 2
 
 
 def test_scan_sarif_output_is_valid(tmp_path: Path) -> None:
@@ -221,6 +240,54 @@ def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_pa
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
     assert payload["runs"][0]["results"] == []
+
+
+def test_check_summary_keeps_failure_exit_code(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    (src / "risky.py").write_text(
+        "def risky(a, b, c, d, e, f):\n"
+        "    if a: return 1\n"
+        "    if b: return 2\n"
+        "    if c: return 3\n"
+        "    if d: return 4\n"
+        "    if e: return 5\n"
+        "    if f: return 6\n"
+        "    return 0\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--fail-new-above",
+            "10",
+            "--summary",
+            "--json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1
+    payload = json.loads(result.stdout)
+    assert payload["command"] == "check"
+    assert payload["summary"]["regressions"] == 1
 
 
 def test_check_flags_new_risky_function(tmp_path: Path) -> None:
@@ -637,6 +704,39 @@ def test_diff_json_reports_unchanged_entries(tmp_path: Path) -> None:
     assert {entry["status"] for entry in payload["entries"]} == {"unchanged"}
 
 
+def test_diff_summary_text_reports_status_counts(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--summary",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0
+    assert result.stdout.startswith("diff regressed=0 component_regressed=0 improved=0 new=0")
+    assert "unchanged=2" in result.stdout
+
+
 def test_diff_pr_comment_has_sticky_marker(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
@@ -701,6 +801,55 @@ def test_check_pr_comment_has_sticky_marker(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     assert result.stdout.startswith("<!-- riskratchet-report -->")
+    assert "**Regressions:** 0" in result.stdout
+
+
+def test_check_pr_comment_renders_full_diff_but_keeps_failure_exit_code(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    (src / "risky.py").write_text(
+        "def risky(a, b, c, d, e, f):\n"
+        "    if a: return 1\n"
+        "    if b: return 2\n"
+        "    if c: return 3\n"
+        "    if d: return 4\n"
+        "    if e: return 5\n"
+        "    if f: return 6\n"
+        "    return 0\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--fail-new-above",
+            "10",
+            "--format",
+            "pr-comment",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1
+    assert result.stdout.startswith("<!-- riskratchet-report -->")
+    assert "| new |" in result.stdout
+    assert "<details><summary>Unchanged functions (2)</summary>" in result.stdout
 
 
 def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
@@ -735,6 +884,97 @@ def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert "regressions" in payload
     assert payload["regressions"] == []
+
+
+def test_markdown_source_links_use_github_actions_env_defaults(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    src = _project(tmp_path)
+    monkeypatch.setenv("GITHUB_SERVER_URL", "https://github.example")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "acme/project")
+    monkeypatch.setenv("GITHUB_SHA", "deadbeef")
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--format", "markdown", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0
+    assert "https://github.example/acme/project/blob/deadbeef/" in result.stdout
+
+
+def test_groups_use_longest_prefix_and_emit_rollups(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = tmp_path / "src"
+    core = src / "core"
+    api = core / "api"
+    api.mkdir(parents=True)
+    (core / "m.py").write_text("def core_fn(): return 1\n", encoding="utf-8")
+    (api / "m.py").write_text("def api_fn(): return 1\n", encoding="utf-8")
+    config = tmp_path / "pyproject.toml"
+    config.write_text(
+        dedent(
+            """
+            [tool.riskratchet]
+            paths = ["src"]
+
+            [tool.riskratchet.groups]
+            core = "src/core"
+            api = "src/core/api"
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        ["scan", "src", "--config", str(config), "--json", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    by_qualname = {fn["qualname"]: fn for fn in payload["functions"]}
+    assert by_qualname["core_fn"]["group"] == "core"
+    assert by_qualname["api_fn"]["group"] == "api"
+    assert payload["summary"]["groups"]["core"]["functions"] == 1
+    assert payload["summary"]["groups"]["api"]["functions"] == 1
+
+
+def test_config_validate_success_and_failure_paths(tmp_path: Path) -> None:
+    valid = tmp_path / "pyproject.toml"
+    valid.write_text(
+        dedent(
+            """
+            [tool.riskratchet]
+            churn_window_days = 30
+
+            [tool.riskratchet.groups]
+            core = ["src/core", "lib/core"]
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    ok = runner.invoke(app, ["config", "validate", "--config", str(valid)])
+    assert ok.exit_code == 0
+
+    invalid = tmp_path / "invalid.toml"
+    invalid.write_text("[tool.riskratchet]\nunknown = true\n", encoding="utf-8")
+    bad = runner.invoke(app, ["config", "validate", "--config", str(invalid)])
+    assert bad.exit_code == 2
+    assert "unknown [tool.riskratchet] key" in bad.stderr
+
+
+def test_config_show_json_includes_resolved_defaults(tmp_path: Path) -> None:
+    config = tmp_path / "pyproject.toml"
+    config.write_text("[tool.riskratchet]\npaths = ['src']\n", encoding="utf-8")
+    result = runner.invoke(app, ["config", "show", "--config", str(config), "--json"])
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["config_path"] == str(config)
+    assert payload["config"]["baseline"] == ".riskratchet.json"
+    assert payload["config"]["fail_new_above"] == 50.0
 
 
 def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) -> None:

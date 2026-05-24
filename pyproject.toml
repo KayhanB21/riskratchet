@@ -39,6 +39,8 @@ riskratchet = "riskratchet.pytest_plugin"
 [project.urls]
 Homepage = "https://github.com/KayhanB21/riskratchet"
 Source = "https://github.com/KayhanB21/riskratchet"
+Issues = "https://github.com/KayhanB21/riskratchet/issues"
+Changelog = "https://github.com/KayhanB21/riskratchet/blob/master/CHANGELOG.md"
 PyPI = "https://pypi.org/project/riskratchet/"
 Post = "https://kayhan.dev/posts/014-letting-agents-write-code-without-ratcheting-up-risk/"
 

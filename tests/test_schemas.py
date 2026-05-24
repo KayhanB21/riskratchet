@@ -10,9 +10,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from textwrap import dedent
+from typing import Any, cast
 
 import pytest
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -21,8 +22,8 @@ SCHEMAS_DIR = Path(__file__).resolve().parent.parent / "schemas"
 runner = CliRunner()
 
 
-def _load_schema(name: str) -> dict:
-    return json.loads((SCHEMAS_DIR / name).read_text(encoding="utf-8"))
+def _load_schema(name: str) -> dict[str, Any]:
+    return cast(dict[str, Any], json.loads((SCHEMAS_DIR / name).read_text(encoding="utf-8")))
 
 
 def _project(tmp_path: Path) -> Path:
@@ -50,7 +51,14 @@ def _project(tmp_path: Path) -> Path:
 
 @pytest.mark.parametrize(
     "schema_name",
-    ["report.schema.json", "regressions.schema.json", "baseline.schema.json", "diff.schema.json"],
+    [
+        "report.schema.json",
+        "regressions.schema.json",
+        "baseline.schema.json",
+        "diff.schema.json",
+        "summary.schema.json",
+        "config.schema.json",
+    ],
 )
 def test_schema_is_valid_draft_2020_12(schema_name: str) -> None:
     schema = _load_schema(schema_name)
@@ -129,6 +137,52 @@ def test_diff_json_matches_diff_schema(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     Draft202012Validator(_load_schema("diff.schema.json")).validate(payload)
+
+
+@pytest.mark.parametrize("command", ["scan", "check", "diff"])
+def test_summary_json_matches_summary_schema(tmp_path: Path, command: str) -> None:
+    src = _project(tmp_path)
+    args = [command, str(src), "--summary", "--json", "--no-auto-cov", "--no-git"]
+    if command in {"check", "diff"}:
+        baseline_path = tmp_path / "baseline.json"
+        runner.invoke(
+            app,
+            [
+                "baseline",
+                str(src),
+                "--output",
+                str(baseline_path),
+                "--allow-missing-coverage",
+                "--no-auto-cov",
+                "--no-git",
+            ],
+        )
+        args.extend(["--baseline", str(baseline_path), "--allow-missing-coverage"])
+    result = runner.invoke(app, args)
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("summary.schema.json")).validate(payload)
+
+
+def test_config_show_json_matches_config_schema(tmp_path: Path) -> None:
+    config = tmp_path / "pyproject.toml"
+    config.write_text(
+        dedent(
+            """
+            [tool.riskratchet]
+            paths = ["src"]
+
+            [tool.riskratchet.groups]
+            core = "src/core"
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["config", "show", "--config", str(config), "--json"])
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("config.schema.json")).validate(payload)
 
 
 def test_baseline_file_matches_baseline_schema(tmp_path: Path) -> None:

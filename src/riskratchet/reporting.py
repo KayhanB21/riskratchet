@@ -25,6 +25,7 @@ from riskratchet.models import (
     DiffStatus,
     FunctionRisk,
     Regression,
+    RegressionKind,
     RiskReport,
     Severity,
 )
@@ -33,6 +34,7 @@ from riskratchet.scoring import severity
 REPORT_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json"
 REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json"
 DIFF_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json"
+SUMMARY_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json"
 OUTPUT_VERSION = "0.2"
 PR_COMMENT_MARKER = "<!-- riskratchet-report -->"
 
@@ -105,6 +107,29 @@ def render_report_json(report: RiskReport) -> str:
     return json.dumps(payload, indent=2) + "\n"
 
 
+def render_report_summary_json(report: RiskReport) -> str:
+    return _summary_envelope("scan", _summary_payload(report))
+
+
+def render_report_summary_text(report: RiskReport) -> str:
+    summary = _summary_payload(report)
+    lines = [
+        (
+            "scan "
+            f"functions={summary['total_functions']} "
+            f"analyzed={summary['analyzed_functions']} "
+            f"emitted={summary['emitted_functions']} "
+            f"files={summary['total_files']} "
+            f"coverage={summary['coverage_status']} "
+            f"suppressed={summary['suppressed_functions']} "
+            f"skipped_missing_coverage={summary['skipped_missing_coverage']}"
+        ),
+        _severity_summary_line(summary["by_severity"]),
+    ]
+    lines.extend(_group_summary_lines(summary.get("groups", {})))
+    return "\n".join(lines) + "\n"
+
+
 def render_report_markdown(
     report: RiskReport,
     *,
@@ -128,6 +153,52 @@ def render_report_markdown(
     if limit is not None and len(sorted_fns) > limit:
         lines.append("")
         lines.append(f"_... {len(sorted_fns) - limit} more functions hidden._")
+    return "\n".join(lines) + "\n"
+
+
+def render_report_pr_comment(
+    report: RiskReport,
+    *,
+    limit: int | None = 20,
+    links: SourceLinks | None = None,
+) -> str:
+    sorted_fns = _sorted_by_risk(report.functions)
+    high_priority = [fn for fn in sorted_fns if severity(fn.score) in {Severity.HIGH, Severity.CRITICAL}]
+    if not high_priority:
+        high_priority = sorted_fns[: limit or len(sorted_fns)]
+    lower_priority = [fn for fn in sorted_fns if fn not in high_priority]
+    displayed = high_priority if limit is None else high_priority[:limit]
+    lines = [
+        PR_COMMENT_MARKER,
+        "# riskratchet",
+        "",
+        _summary_line(report),
+        "",
+    ]
+    if displayed:
+        lines.extend(
+            [
+                "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |",
+                "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |",
+            ]
+        )
+        lines.extend(_markdown_row(fn, links=links, include_group=True) for fn in displayed)
+    else:
+        lines.append("_No functions emitted._")
+    hidden_high_priority = high_priority[len(displayed) :]
+    collapsed = hidden_high_priority + lower_priority
+    if collapsed:
+        lines.extend(["", f"<details><summary>Lower-priority findings ({len(collapsed)})</summary>", ""])
+        lines.extend(
+            [
+                "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |",
+                "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |",
+            ]
+        )
+        lines.extend(_markdown_row(fn, links=links, include_group=True) for fn in collapsed[:20])
+        if len(collapsed) > 20:
+            lines.append(f"_... {len(collapsed) - 20} more hidden._")
+        lines.extend(["", "</details>"])
     return "\n".join(lines) + "\n"
 
 
@@ -183,7 +254,7 @@ def render_regressions_json(regressions: list[Regression]) -> str:
     )
 
 
-def render_regressions_markdown(regressions: list[Regression]) -> str:
+def render_regressions_markdown(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
     if not regressions:
         return "_No risk regressions detected._\n"
     lines = [
@@ -193,11 +264,15 @@ def render_regressions_markdown(regressions: list[Regression]) -> str:
         "| --- | --- | ---: | ---: | ---: | --- |",
     ]
     for reg in regressions:
-        lines.append(_regression_markdown_row(reg))
+        lines.append(_regression_markdown_row(reg, links=links))
     return "\n".join(lines) + "\n"
 
 
-def render_regressions_pr_comment(regressions: list[Regression]) -> str:
+def render_regressions_pr_comment(
+    regressions: list[Regression],
+    *,
+    links: SourceLinks | None = None,
+) -> str:
     lines = [
         PR_COMMENT_MARKER,
         "# riskratchet",
@@ -212,7 +287,48 @@ def render_regressions_pr_comment(regressions: list[Regression]) -> str:
             "| --- | --- | ---: | ---: | ---: | --- |",
         ]
     )
-    lines.extend(_regression_markdown_row(reg) for reg in regressions)
+    lines.extend(_regression_markdown_row(reg, links=links) for reg in regressions)
+    return "\n".join(lines) + "\n"
+
+
+def render_regressions_summary_json(
+    regressions: list[Regression],
+    *,
+    diff_report: DiffReport | None = None,
+) -> str:
+    return _summary_envelope("check", _regressions_summary(regressions, diff_report=diff_report))
+
+
+def render_regressions_summary_text(
+    regressions: list[Regression],
+    *,
+    diff_report: DiffReport | None = None,
+) -> str:
+    summary = _regressions_summary(regressions, diff_report=diff_report)
+    by_kind = summary["by_kind"]
+    lines = [
+        (
+            "check "
+            f"regressions={summary['regressions']} "
+            f"new_above_threshold={by_kind['new_above_threshold']} "
+            f"regressed={by_kind['regressed']} "
+            f"existing_above_threshold={by_kind['existing_above_threshold']} "
+            f"component_regressed={by_kind['component_regressed']}"
+        )
+    ]
+    if "diff" in summary:
+        diff_summary = summary["diff"]
+        lines.append(
+            "diff "
+            f"regressed={diff_summary['regressed']} "
+            f"component_regressed={diff_summary['component_regressed']} "
+            f"improved={diff_summary['improved']} "
+            f"new={diff_summary['new']} "
+            f"removed={diff_summary['removed']} "
+            f"moved={diff_summary['moved']} "
+            f"unchanged={diff_summary['unchanged']}"
+        )
+    lines.extend(_group_summary_lines(summary.get("groups", {})))
     return "\n".join(lines) + "\n"
 
 
@@ -266,6 +382,28 @@ def render_diff_json(report: DiffReport) -> str:
         )
         + "\n"
     )
+
+
+def render_diff_summary_json(report: DiffReport) -> str:
+    return _summary_envelope("diff", _diff_summary(report))
+
+
+def render_diff_summary_text(report: DiffReport) -> str:
+    summary = _diff_summary(report)
+    lines = [
+        (
+            "diff "
+            f"regressed={summary['regressed']} "
+            f"component_regressed={summary['component_regressed']} "
+            f"improved={summary['improved']} "
+            f"new={summary['new']} "
+            f"removed={summary['removed']} "
+            f"moved={summary['moved']} "
+            f"unchanged={summary['unchanged']}"
+        )
+    ]
+    lines.extend(_group_summary_lines(summary.get("groups", {})))
+    return "\n".join(lines) + "\n"
 
 
 def render_diff_markdown(report: DiffReport, *, links: SourceLinks | None = None) -> str:
@@ -385,7 +523,12 @@ def _remediation(fn: FunctionRisk) -> str:
     return "  remediation : " + "; ".join(triggers) + ".\n                " + advice
 
 
-def _markdown_row(fn: FunctionRisk, *, links: SourceLinks | None = None) -> str:
+def _markdown_row(
+    fn: FunctionRisk,
+    *,
+    links: SourceLinks | None = None,
+    include_group: bool = False,
+) -> str:
     target = f"`{fn.id.as_target()}`"
     if links is not None:
         target = f"[{target}]({links.link_for(fn)})"
@@ -396,16 +539,20 @@ def _markdown_row(fn: FunctionRisk, *, links: SourceLinks | None = None) -> str:
         str(fn.complexity.cyclomatic),
         f"{round(fn.coverage.line_coverage * 100)}%",
         _branch_markdown(fn),
-        target,
-        f"{fn.span.start_line}-{fn.span.end_line}",
     ]
+    if include_group:
+        cells.append(fn.group or "ungrouped")
+    cells.extend([target, f"{fn.span.start_line}-{fn.span.end_line}"])
     return "| " + " | ".join(cells) + " |"
 
 
-def _regression_markdown_row(reg: Regression) -> str:
+def _regression_markdown_row(reg: Regression, *, links: SourceLinks | None = None) -> str:
+    target = f"`{reg.id.as_target()}`"
+    if links is not None and reg.current is not None:
+        target = f"[{target}]({links.link_for(reg.current)})"
     cells = [
         reg.kind.value,
-        f"`{reg.id.as_target()}`",
+        target,
         _fmt_optional(reg.previous_score),
         f"{reg.current_score:.1f}",
         _fmt_optional(reg.delta, signed=True),
@@ -433,6 +580,7 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
         "suppressed_functions": report.suppressed_functions,
         "skipped_missing_coverage": report.skipped_missing_coverage,
         "by_severity": counts,
+        "groups": _function_group_summary(report.functions),
     }
 
 
@@ -577,6 +725,7 @@ def _function_payload(fn: FunctionRisk) -> dict[str, Any]:
         "branch_coverage": fn.coverage.branch_coverage,
         "churn_commits": fn.churn.commits,
         "is_public": fn.is_public,
+        "group": fn.group,
         "lines": {"start": fn.span.start_line, "end": fn.span.end_line},
         "components": {
             "coverage_gap": fn.components.coverage_gap,
@@ -605,6 +754,7 @@ def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
     return {
         "path": entry.id.path,
         "qualname": entry.id.qualname,
+        "group": entry.group,
         "status": entry.status.value,
         "current_score": entry.current_score,
         "previous_score": entry.previous_score,
@@ -615,8 +765,10 @@ def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
     }
 
 
-def _diff_summary(report: DiffReport) -> dict[str, int]:
-    return {status.value: len(report.by_status(status)) for status in DiffStatus}
+def _diff_summary(report: DiffReport) -> dict[str, Any]:
+    summary: dict[str, Any] = {status.value: len(report.by_status(status)) for status in DiffStatus}
+    summary["groups"] = _diff_group_summary(report.entries)
+    return summary
 
 
 def _diff_summary_line(report: DiffReport) -> str:
@@ -704,3 +856,95 @@ def _fmt_optional(value: float | None, *, signed: bool = False) -> str:
     if signed:
         return f"{value:+.1f}"
     return f"{value:.1f}"
+
+
+def _summary_envelope(command: str, summary: dict[str, Any]) -> str:
+    return (
+        json.dumps(
+            {
+                "$schema": SUMMARY_SCHEMA_URL,
+                "version": OUTPUT_VERSION,
+                "command": command,
+                "summary": summary,
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+def _function_group_summary(functions: Iterable[FunctionRisk]) -> dict[str, dict[str, Any]]:
+    groups: dict[str, dict[str, Any]] = {}
+    for fn in functions:
+        name = fn.group or "ungrouped"
+        bucket = groups.setdefault(
+            name,
+            {
+                "functions": 0,
+                "max_score": None,
+                "by_severity": {sev.value: 0 for sev in Severity},
+            },
+        )
+        bucket["functions"] += 1
+        bucket["max_score"] = fn.score if bucket["max_score"] is None else max(bucket["max_score"], fn.score)
+        bucket["by_severity"][severity(fn.score).value] += 1
+    return groups
+
+
+def _diff_group_summary(entries: Iterable[DiffEntry]) -> dict[str, dict[str, int]]:
+    groups: dict[str, dict[str, int]] = {}
+    for entry in entries:
+        name = entry.group or "ungrouped"
+        bucket = groups.setdefault(name, {status.value: 0 for status in DiffStatus})
+        bucket[entry.status.value] += 1
+    return groups
+
+
+def _regressions_summary(
+    regressions: list[Regression],
+    *,
+    diff_report: DiffReport | None = None,
+) -> dict[str, Any]:
+    by_kind = {kind.value: 0 for kind in RegressionKind}
+    groups: dict[str, dict[str, int]] = {}
+    for reg in regressions:
+        by_kind[reg.kind.value] += 1
+        name = (reg.current.group if reg.current is not None else None) or "ungrouped"
+        bucket = groups.setdefault(name, {kind.value: 0 for kind in RegressionKind})
+        bucket[reg.kind.value] += 1
+    summary: dict[str, Any] = {
+        "regressions": len(regressions),
+        "by_kind": by_kind,
+        "groups": groups,
+    }
+    if diff_report is not None:
+        summary["diff"] = _diff_summary(diff_report)
+        if not groups:
+            summary["groups"] = summary["diff"].get("groups", {})
+    return summary
+
+
+def _severity_summary_line(counts: dict[str, int]) -> str:
+    return (
+        "severity "
+        f"low={counts['low']} "
+        f"medium={counts['medium']} "
+        f"high={counts['high']} "
+        f"critical={counts['critical']}"
+    )
+
+
+def _group_summary_lines(groups: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    for name in sorted(groups):
+        values = groups[name]
+        parts = [f"group name={name}"]
+        for key in sorted(values):
+            value = values[key]
+            if isinstance(value, dict):
+                for nested_key in sorted(value):
+                    parts.append(f"{key}.{nested_key}={value[nested_key]}")
+            else:
+                parts.append(f"{key}={value}")
+        lines.append(" ".join(parts))
+    return lines

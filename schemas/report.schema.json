@@ -19,7 +19,8 @@
         "coverage_status",
         "suppressed_functions",
         "skipped_missing_coverage",
-        "by_severity"
+        "by_severity",
+        "groups"
       ],
       "additionalProperties": false,
       "properties": {
@@ -39,6 +40,29 @@
             "medium": { "type": "integer", "minimum": 0 },
             "high": { "type": "integer", "minimum": 0 },
             "critical": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "groups": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["functions", "max_score", "by_severity"],
+            "additionalProperties": false,
+            "properties": {
+              "functions": { "type": "integer", "minimum": 0 },
+              "max_score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+              "by_severity": {
+                "type": "object",
+                "required": ["low", "medium", "high", "critical"],
+                "additionalProperties": false,
+                "properties": {
+                  "low": { "type": "integer", "minimum": 0 },
+                  "medium": { "type": "integer", "minimum": 0 },
+                  "high": { "type": "integer", "minimum": 0 },
+                  "critical": { "type": "integer", "minimum": 0 }
+                }
+              }
+            }
           }
         }
       }
@@ -62,6 +86,7 @@
         "branch_coverage",
         "churn_commits",
         "is_public",
+        "group",
         "lines",
         "components"
       ],
@@ -81,6 +106,7 @@
         },
         "churn_commits": { "type": "integer", "minimum": 0 },
         "is_public": { "type": "boolean" },
+        "group": { "type": ["string", "null"] },
         "lines": {
           "type": "object",
           "required": ["start", "end"],

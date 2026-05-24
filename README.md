@@ -96,7 +96,11 @@ public_surface = 0.20
 ```
 
 The `pr-comment` format starts with `<!-- riskratchet-report -->`, so
-the bot updates the same comment on each push instead of spamming.
+the bot updates the same comment on each push instead of spamming. `check
+--format pr-comment` uses the richer diff body, so reviewers see failing
+regressions plus collapsed improvements, moves, removals, and unchanged
+functions in one comment while the command still exits `1` only for
+configured failing regressions.
 
 **Why this works for teams:** the ratchet is mechanical and unowned.
 Nobody has to be "the complexity cop" in code review.
@@ -405,6 +409,17 @@ For a sticky PR-bot body, use `--format pr-comment`. The output starts with
 existing comment instead of posting duplicates. For inline workflow warnings,
 use `--format github`.
 
+Markdown and PR-comment output can link each row back to source:
+
+```bash
+riskratchet scan src --format pr-comment \
+  --repo-url https://github.com/acme/project \
+  --commit-ref "$GITHUB_SHA"
+```
+
+In GitHub Actions, riskratchet fills those values from
+`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, and `GITHUB_SHA` when available.
+
 JSON output is validated against the schemas under
 [`schemas/`](schemas/) on every release:
 
@@ -412,6 +427,8 @@ JSON output is validated against the schemas under
 - `schemas/regressions.schema.json` — `check --json`
 - `schemas/diff.schema.json` — `diff --json`
 - `schemas/baseline.schema.json` — `.riskratchet.json` on disk
+- `schemas/summary.schema.json` — `scan|check|diff --summary --json`
+- `schemas/config.schema.json` — `config show --json`
 
 Native JSON output includes `$schema` and `version` fields so consumers can
 pin parsing behavior.
@@ -632,6 +649,8 @@ riskratchet scan src --coverage coverage.json --format markdown  # for PR commen
 riskratchet scan src --coverage coverage.json --format sarif     # for SARIF consumers
 riskratchet scan src --coverage coverage.json --format github    # GitHub Actions annotations
 riskratchet scan src --coverage coverage.json --format pr-comment
+riskratchet scan src --coverage coverage.json --summary          # aggregate lines only
+riskratchet scan src --coverage coverage.json --summary --json   # schema-backed summary envelope
 riskratchet scan src --coverage coverage.json --quiet            # drops the trailing summary line
 riskratchet scan src --coverage coverage.json --min-score 50     # hide lower-risk functions
 riskratchet scan src --coverage coverage.json --top 10           # emit only the top N
@@ -639,6 +658,39 @@ riskratchet scan src --coverage coverage.json --top 10           # emit only the
 
 `riskratchet check` accepts `--baseline-format riskratchet`, which is the
 default and currently the only supported baseline format.
+
+SARIF intentionally has a narrower contract than native JSON: `scan
+--format sarif` emits current findings after the same score filter used for
+annotations, while `check --format sarif` and `diff --format sarif` emit only
+failing regressions. A clean baseline still produces valid SARIF with an empty
+`results` array.
+
+## Config validation and groups
+
+Validate project config before relying on it in CI:
+
+```bash
+riskratchet config validate --config pyproject.toml
+riskratchet config show --config pyproject.toml --json
+```
+
+`config validate` exits `2` for malformed TOML, unknown keys, invalid value
+types, invalid weights, or invalid group definitions. `config show --json`
+prints the resolved config with CLI defaults filled where riskratchet already
+has defaults.
+
+Use `[tool.riskratchet.groups]` to roll function-level results up by package
+or workspace area:
+
+```toml
+[tool.riskratchet.groups]
+core = "src/core"
+api = ["src/api", "src/public_api"]
+```
+
+Each function is assigned to the longest matching repo-relative prefix.
+Ungrouped functions are reported as `null` in JSON fields and `ungrouped` in
+text or markdown summaries.
 
 For early adoption before a baseline exists, `scan` can also fail on an
 absolute gate:

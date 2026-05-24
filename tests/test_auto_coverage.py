@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 from riskratchet.auto_coverage import (
@@ -21,7 +22,7 @@ from riskratchet.auto_coverage import (
 _FAKE_COVERAGE = {"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}}
 
 
-def _writer_runner(path: Path):
+def _writer_runner(path: Path) -> Callable[[str], int]:
     def run(command: str) -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(_FAKE_COVERAGE), encoding="utf-8")
@@ -30,7 +31,7 @@ def _writer_runner(path: Path):
     return run
 
 
-def _failing_runner(returncode: int = 1):
+def _failing_runner(returncode: int = 1) -> Callable[[str], int]:
     def run(command: str) -> int:
         return returncode
 

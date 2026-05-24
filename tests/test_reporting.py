@@ -13,6 +13,9 @@ from riskratchet.models import (
     ChurnStats,
     ComplexityStats,
     CoverageStats,
+    DiffEntry,
+    DiffReport,
+    DiffStatus,
     FileStats,
     FunctionId,
     FunctionRisk,
@@ -24,11 +27,15 @@ from riskratchet.models import (
     Severity,
 )
 from riskratchet.reporting import (
+    SourceLinks,
     _sarif_level_for_severity,
     render_function_explanation,
     render_regressions_json,
     render_regressions_markdown,
+    render_regressions_pr_comment,
     render_regressions_sarif,
+    render_regressions_summary_json,
+    render_regressions_summary_text,
     render_regressions_table,
     render_report_json,
     render_report_markdown,
@@ -52,6 +59,7 @@ def _fn(
     span_lines: int = 10,
     total_lines: int = 100,
     is_public: bool = True,
+    group: str | None = None,
 ) -> FunctionRisk:
     path = "m.py"
     return FunctionRisk(
@@ -65,6 +73,7 @@ def _fn(
         components=_components(score),
         score=score,
         crap=10.0,
+        group=group,
     )
 
 
@@ -165,6 +174,120 @@ def test_render_regressions_markdown_empty_and_populated() -> None:
     assert "# riskratchet regressions" in out
     assert "| Kind |" in out
     assert "foo" in out
+
+
+def test_render_regressions_markdown_links_current_when_available() -> None:
+    fn = _fn("foo", 70.0)
+    linked = Regression(
+        id=fn.id,
+        kind=RegressionKind.REGRESSED,
+        current_score=70.0,
+        previous_score=50.0,
+        delta=20.0,
+        reason="risk grew",
+        current=fn,
+    )
+    unlinked = Regression(
+        id=FunctionId("m.py", "gone"),
+        kind=RegressionKind.NEW_ABOVE_THRESHOLD,
+        current_score=60.0,
+        previous_score=None,
+        delta=None,
+        reason="new risky function",
+    )
+    out = render_regressions_markdown(
+        [linked, unlinked],
+        links=SourceLinks(repo_url="https://github.com/acme/project", commit_ref="abc123"),
+    )
+    assert "[`m.py::foo`](https://github.com/acme/project/blob/abc123/m.py#L1-L10)" in out
+    assert "| new_above_threshold | `m.py::gone` |" in out
+
+
+def test_render_regressions_pr_comment_empty_and_populated_with_links() -> None:
+    assert render_regressions_pr_comment([]) == (
+        "<!-- riskratchet-report -->\n# riskratchet\n\n_No risk regressions detected._\n"
+    )
+    fn = _fn("foo", 70.0)
+    regression = Regression(
+        id=fn.id,
+        kind=RegressionKind.REGRESSED,
+        current_score=70.0,
+        previous_score=50.0,
+        delta=20.0,
+        reason="risk grew",
+        current=fn,
+    )
+    out = render_regressions_pr_comment(
+        [regression],
+        links=SourceLinks(repo_url="https://github.com/acme/project", commit_ref="abc123"),
+    )
+    assert out.startswith("<!-- riskratchet-report -->\n# riskratchet\n")
+    assert "| Kind | Function | Before | After | Delta | Reason |" in out
+    assert "[`m.py::foo`](https://github.com/acme/project/blob/abc123/m.py#L1-L10)" in out
+
+
+def test_render_regressions_summary_text_counts_kinds_groups_and_diff() -> None:
+    fn = _fn("foo", 70.0, group="core")
+    regression = Regression(
+        id=fn.id,
+        kind=RegressionKind.REGRESSED,
+        current_score=70.0,
+        previous_score=50.0,
+        delta=20.0,
+        reason="risk grew",
+        current=fn,
+    )
+    diff_report = DiffReport(
+        entries=(
+            DiffEntry(
+                id=fn.id,
+                status=DiffStatus.REGRESSED,
+                current_score=70.0,
+                previous_score=50.0,
+                delta=20.0,
+                current=fn,
+                group="core",
+                reason="risk grew",
+            ),
+            DiffEntry(
+                id=FunctionId("m.py", "new"),
+                status=DiffStatus.NEW,
+                current_score=30.0,
+                previous_score=None,
+                delta=None,
+                current=_fn("new", 30.0),
+                reason="new function",
+            ),
+        )
+    )
+    out = render_regressions_summary_text([regression], diff_report=diff_report)
+    assert out.startswith(
+        "check regressions=1 new_above_threshold=0 regressed=1 "
+        "existing_above_threshold=0 component_regressed=0\n"
+    )
+    assert "diff regressed=1 component_regressed=0 improved=0 new=1 removed=0 moved=0 unchanged=0" in out
+    assert (
+        "group name=core component_regressed=0 existing_above_threshold=0 new_above_threshold=0 regressed=1"
+        in out
+    )
+
+    clean_out = render_regressions_summary_text([], diff_report=diff_report)
+    assert (
+        "group name=core component_regressed=0 improved=0 moved=0 new=0 regressed=1 removed=0 unchanged=0"
+        in clean_out
+    )
+
+
+def test_render_regressions_summary_json_uses_summary_envelope() -> None:
+    payload = json.loads(render_regressions_summary_json([]))
+    assert payload["command"] == "check"
+    assert payload["summary"]["regressions"] == 0
+    assert payload["summary"]["by_kind"] == {
+        "new_above_threshold": 0,
+        "regressed": 0,
+        "existing_above_threshold": 0,
+        "component_regressed": 0,
+    }
 
 
 def test_render_regressions_sarif_includes_location_and_message() -> None:

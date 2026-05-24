@@ -7,6 +7,7 @@ modules; this file should stay easy to scan.
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Annotated, Any
@@ -32,6 +33,7 @@ from riskratchet.baseline import (
 from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import analyze
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS
+from riskratchet.groups import normalize_groups
 from riskratchet.models import Regression, RegressionKind, RiskReport
 from riskratchet.reporting import (
     SourceLinks,
@@ -39,6 +41,8 @@ from riskratchet.reporting import (
     render_diff_json,
     render_diff_markdown,
     render_diff_pr_comment,
+    render_diff_summary_json,
+    render_diff_summary_text,
     render_diff_table,
     render_function_explanation,
     render_regressions_github,
@@ -46,14 +50,19 @@ from riskratchet.reporting import (
     render_regressions_markdown,
     render_regressions_pr_comment,
     render_regressions_sarif,
+    render_regressions_summary_json,
+    render_regressions_summary_text,
     render_regressions_table,
     render_report_github,
     render_report_json,
     render_report_markdown,
+    render_report_pr_comment,
     render_report_sarif,
+    render_report_summary_json,
+    render_report_summary_text,
     render_report_table,
 )
-from riskratchet.scoring import InvalidWeightsError, resolve_weights, severity
+from riskratchet.scoring import DEFAULT_WEIGHTS, InvalidWeightsError, resolve_weights, severity
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -64,12 +73,36 @@ VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
 VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
 VALID_FAIL_SEVERITIES = ("low", "medium", "high", "critical")
+CONFIG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/config.schema.json"
+CONFIG_ALLOWED_KEYS = {
+    "allow",
+    "allow_missing_coverage",
+    "auto_coverage",
+    "baseline",
+    "churn_window_days",
+    "component_regression_gate",
+    "coverage",
+    "coverage_cache",
+    "exclude",
+    "fail_component_regression_above",
+    "fail_existing_above",
+    "fail_new_above",
+    "fail_regression_above",
+    "groups",
+    "include",
+    "missing_coverage",
+    "paths",
+    "test_command",
+    "weights",
+}
 
 app = typer.Typer(
     help="A maintainability ratchet for AI-assisted Python.",
     no_args_is_help=True,
     add_completion=False,
 )
+config_app = typer.Typer(help="Inspect and validate riskratchet configuration.", no_args_is_help=True)
+app.add_typer(config_app, name="config")
 
 
 @app.callback(invoke_without_command=True)
@@ -83,6 +116,50 @@ def _root(
     if ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
         raise typer.Exit()
+
+
+@config_app.command("validate")
+def config_validate(
+    config: Annotated[Path, typer.Option("--config", help="Path to pyproject.toml.")] = Path(
+        "pyproject.toml"
+    ),
+) -> None:
+    """Validate `[tool.riskratchet]` configuration."""
+    try:
+        _load_config_strict(config)
+    except ValueError as exc:
+        typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    typer.echo(f"valid riskratchet config: {config}")
+
+
+@config_app.command("show")
+def config_show(
+    config: Annotated[Path, typer.Option("--config", help="Path to pyproject.toml.")] = Path(
+        "pyproject.toml"
+    ),
+    json_output: Annotated[bool, typer.Option("--json", help="Emit JSON.")] = False,
+) -> None:
+    """Show resolved riskratchet configuration."""
+    try:
+        cfg = _load_config_strict(config)
+    except ValueError as exc:
+        typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    if not json_output:
+        typer.secho("config show currently supports --json only.", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2)
+    typer.echo(
+        json.dumps(
+            {
+                "$schema": CONFIG_SCHEMA_URL,
+                "version": __version__,
+                "config_path": str(config),
+                "config": _resolved_config_payload(cfg),
+            },
+            indent=2,
+        )
+    )
 
 
 @app.command()
@@ -103,6 +180,7 @@ def scan(
         ),
     ] = False,
     output: Annotated[Path | None, typer.Option("--output", help="Write output to file.")] = None,
+    summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
     include: Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
     allow: Annotated[
@@ -142,6 +220,14 @@ def scan(
             help="Skip auto-generating coverage by running the test command.",
         ),
     ] = False,
+    repo_url: Annotated[
+        str | None,
+        typer.Option("--repo-url", help="Repository URL for markdown links."),
+    ] = None,
+    commit_ref: Annotated[
+        str | None,
+        typer.Option("--commit-ref", help="Commit ref for markdown links."),
+    ] = None,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg = _load_config(config)
@@ -165,9 +251,20 @@ def scan(
         churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+        groups=_resolved_groups(cfg),
     )
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
-    _emit_report(filtered, format=effective_format, output=output, limit=0, quiet=quiet, min_score=min_score)
+    links = _resolve_source_links(repo_url, commit_ref)
+    _emit_report(
+        filtered,
+        format=effective_format,
+        output=output,
+        limit=0,
+        quiet=quiet,
+        min_score=min_score,
+        links=links,
+        summary=summary,
+    )
     _exit_for_scan_gate(filtered, fail_above=fail_above, fail_severity=fail_severity)
 
 
@@ -225,6 +322,7 @@ def baseline(
         churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+        groups=_resolved_groups(cfg),
     )
     target = output or Path(cfg.get("baseline", ".riskratchet.json"))
     save_baseline(baseline_from_report(report), target)
@@ -249,6 +347,7 @@ def check(
         ),
     ] = "riskratchet",
     output: Annotated[Path | None, typer.Option("--output")] = None,
+    summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
     fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
     fail_existing_above: Annotated[float | None, typer.Option("--fail-existing-above")] = None,
@@ -289,6 +388,14 @@ def check(
             help="Skip auto-generating coverage by running the test command.",
         ),
     ] = False,
+    repo_url: Annotated[
+        str | None,
+        typer.Option("--repo-url", help="Repository URL for markdown links."),
+    ] = None,
+    commit_ref: Annotated[
+        str | None,
+        typer.Option("--commit-ref", help="Commit ref for markdown links."),
+    ] = None,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg = _load_config(config)
@@ -322,6 +429,7 @@ def check(
         churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+        groups=_resolved_groups(cfg),
     )
     diff_report = diff_baseline(
         report,
@@ -338,13 +446,24 @@ def check(
             not no_component_regression_gate
             and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
+        groups=_resolved_groups(cfg),
     )
     regressions = regressions_from_diff(
         diff_report,
         fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
         fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
     )
-    rendered = _render_regressions(regressions, format=effective_format)
+    links = _resolve_source_links(repo_url, commit_ref)
+    if summary:
+        rendered = (
+            render_regressions_summary_json(regressions, diff_report=diff_report)
+            if effective_format == "json"
+            else render_regressions_summary_text(regressions, diff_report=diff_report)
+        )
+    elif effective_format == "pr-comment":
+        rendered = render_diff_pr_comment(diff_report, links=links)
+    else:
+        rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)
     if regressions:
         _emit_regression_hint(regressions, baseline_file=baseline_file)
@@ -389,6 +508,7 @@ def explain(
         use_git=not no_git,
         churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
+        groups=_resolved_groups(cfg),
     )
     fn = report.find(target)
     if fn is None:
@@ -408,6 +528,7 @@ def diff(
         bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
     ] = False,
     output: Annotated[Path | None, typer.Option("--output")] = None,
+    summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
     fail_component_regression_above: Annotated[
         float | None,
@@ -477,6 +598,7 @@ def diff(
         churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+        groups=_resolved_groups(cfg),
     )
     diff_report = diff_baseline(
         report,
@@ -493,9 +615,16 @@ def diff(
             not no_component_regression_gate
             and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
+        groups=_resolved_groups(cfg),
     )
     links = _resolve_source_links(repo_url, commit_ref)
-    if effective_format == "json":
+    if summary:
+        rendered = (
+            render_diff_summary_json(diff_report)
+            if effective_format == "json"
+            else render_diff_summary_text(diff_report)
+        )
+    elif effective_format == "json":
         rendered = render_diff_json(diff_report)
     elif effective_format == "markdown":
         rendered = render_diff_markdown(diff_report, links=links)
@@ -524,18 +653,24 @@ def _emit_report(
     limit: int,
     quiet: bool = False,
     min_score: float | None = None,
+    links: SourceLinks | None = None,
+    summary: bool = False,
 ) -> None:
     effective_limit = None if limit == 0 else limit
-    if format == "json":
+    if summary:
+        rendered = (
+            render_report_summary_json(report) if format == "json" else render_report_summary_text(report)
+        )
+    elif format == "json":
         rendered = render_report_json(report)
     elif format == "markdown":
-        rendered = render_report_markdown(report, limit=effective_limit)
+        rendered = render_report_markdown(report, limit=effective_limit, links=links)
     elif format == "sarif":
         rendered = render_report_sarif(report, min_score=min_score if min_score is not None else 25.0)
     elif format == "github":
         rendered = render_report_github(report, min_score=min_score if min_score is not None else 25.0)
     elif format == "pr-comment":
-        rendered = render_report_markdown(report, limit=effective_limit)
+        rendered = render_report_pr_comment(report, limit=effective_limit, links=links)
     else:
         rendered = render_report_table(report, limit=effective_limit, include_summary=not quiet)
     _write(rendered, output)
@@ -577,13 +712,18 @@ def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path)
     )
 
 
-def _render_regressions(regressions: list[Regression], *, format: str) -> str:
+def _render_regressions(
+    regressions: list[Regression],
+    *,
+    format: str,
+    links: SourceLinks | None = None,
+) -> str:
     if format == "json":
         return render_regressions_json(regressions)
     if format == "markdown":
-        return render_regressions_markdown(regressions)
+        return render_regressions_markdown(regressions, links=links)
     if format == "pr-comment":
-        return render_regressions_pr_comment(regressions)
+        return render_regressions_pr_comment(regressions, links=links)
     if format == "github":
         return render_regressions_github(regressions)
     if format == "sarif":
@@ -627,6 +767,103 @@ def _load_config(config_path: Path | None) -> dict[str, Any]:
     return section if isinstance(section, dict) else {}
 
 
+def _load_config_strict(config_path: Path) -> dict[str, Any]:
+    if not config_path.exists():
+        return {}
+    try:
+        raw = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError) as exc:
+        raise ValueError(f"could not read {config_path}: {exc}") from exc
+    tool = raw.get("tool", {})
+    if not isinstance(tool, dict):
+        raise ValueError("[tool] must be a table.")
+    section = tool.get("riskratchet", {})
+    if not isinstance(section, dict):
+        raise ValueError("[tool.riskratchet] must be a table.")
+    _validate_config(section)
+    return section
+
+
+def _validate_config(cfg: dict[str, Any]) -> None:
+    unknown = sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
+    if unknown:
+        raise ValueError(f"unknown [tool.riskratchet] key(s): {', '.join(unknown)}")
+    _validate_string_list(cfg, "paths")
+    _validate_string_list(cfg, "include")
+    _validate_string_list(cfg, "exclude")
+    _validate_string_list(cfg, "allow")
+    for key in ("coverage", "baseline", "coverage_cache", "test_command"):
+        if key in cfg and not isinstance(cfg[key], str):
+            raise ValueError(f"{key} must be a string.")
+    for key in (
+        "fail_new_above",
+        "fail_regression_above",
+        "fail_existing_above",
+        "fail_component_regression_above",
+    ):
+        if key in cfg and not _is_number(cfg[key]):
+            raise ValueError(f"{key} must be a number.")
+    for key in ("allow_missing_coverage", "component_regression_gate", "auto_coverage"):
+        if key in cfg and not isinstance(cfg[key], bool):
+            raise ValueError(f"{key} must be a boolean.")
+    if "churn_window_days" in cfg:
+        value = cfg["churn_window_days"]
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            raise ValueError("churn_window_days must be an integer >= 1.")
+    if "missing_coverage" in cfg:
+        value = cfg["missing_coverage"]
+        if not isinstance(value, str) or value not in VALID_MISSING_COVERAGE:
+            raise ValueError(f"missing_coverage must be one of {', '.join(VALID_MISSING_COVERAGE)}.")
+    if "weights" in cfg:
+        if not isinstance(cfg["weights"], dict):
+            raise ValueError("[tool.riskratchet.weights] must be a table.")
+        try:
+            resolve_weights(cfg["weights"])
+        except InvalidWeightsError as exc:
+            raise ValueError(str(exc)) from exc
+    if "groups" in cfg:
+        normalize_groups(cfg["groups"])
+
+
+def _validate_string_list(cfg: dict[str, Any], key: str) -> None:
+    if key not in cfg:
+        return
+    value = cfg[key]
+    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+        raise ValueError(f"{key} must be a list of strings.")
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _resolved_config_payload(cfg: dict[str, Any]) -> dict[str, Any]:
+    groups = _resolved_groups(cfg)
+    return {
+        "paths": [str(path) for path in _resolved_paths([], cfg)],
+        "coverage": cfg.get("coverage"),
+        "baseline": cfg.get("baseline", ".riskratchet.json"),
+        "fail_new_above": _resolved_float(None, cfg.get("fail_new_above"), default=50.0),
+        "fail_regression_above": _resolved_float(None, cfg.get("fail_regression_above"), default=5.0),
+        "fail_existing_above": _resolved_optional_float(None, cfg.get("fail_existing_above")),
+        "fail_component_regression_above": _resolved_float(
+            None, cfg.get("fail_component_regression_above"), default=15.0
+        ),
+        "component_regression_gate": _resolved_bool(True, cfg.get("component_regression_gate"), default=True),
+        "allow_missing_coverage": _resolved_bool(False, cfg.get("allow_missing_coverage")),
+        "auto_coverage": _resolved_bool(True, cfg.get("auto_coverage"), default=True),
+        "coverage_cache": cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH)),
+        "test_command": cfg.get("test_command", DEFAULT_TEST_COMMAND),
+        "missing_coverage": _resolved_missing_coverage(None, cfg).value,
+        "churn_window_days": _resolved_churn_days(None, cfg),
+        "include": cfg.get("include", []),
+        "exclude": cfg.get("exclude", []),
+        "allow": cfg.get("allow", []),
+        "weights": _resolved_weights(cfg) or DEFAULT_WEIGHTS,
+        "groups": {name: list(prefixes) for name, prefixes in groups.items()},
+    }
+
+
 def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
     """Pull `[tool.riskratchet.weights]` out of config, exiting on invalid input.
 
@@ -648,6 +885,14 @@ def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
     try:
         return resolve_weights(raw)
     except InvalidWeightsError as exc:
+        typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+
+
+def _resolved_groups(cfg: dict[str, Any]) -> dict[str, tuple[str, ...]]:
+    try:
+        return normalize_groups(cfg.get("groups"))
+    except ValueError as exc:
         typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
 
