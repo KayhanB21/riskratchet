@@ -11,6 +11,8 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-05-24
+
 ### Added
 
 - Normalized `pr-comment` output. `scan --format pr-comment` now emits a
