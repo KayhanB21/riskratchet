@@ -45,8 +45,15 @@ def _project(tmp_path: Path) -> Path:
     return tmp_path / "src"
 
 
-REQUIRED_TOP_LEVEL = {"summary", "functions"}
-REQUIRED_SUMMARY = {"total_functions", "total_files", "coverage_status", "by_severity"}
+REQUIRED_TOP_LEVEL = {"$schema", "version", "summary", "functions"}
+REQUIRED_SUMMARY = {
+    "total_functions",
+    "total_files",
+    "coverage_status",
+    "suppressed_functions",
+    "skipped_missing_coverage",
+    "by_severity",
+}
 REQUIRED_FUNCTION = {
     "path",
     "qualname",
@@ -85,6 +92,8 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
     assert isinstance(summary["total_functions"], int)
     assert isinstance(summary["total_files"], int)
     assert summary["coverage_status"] in {"present", "missing"}
+    assert isinstance(summary["suppressed_functions"], int)
+    assert isinstance(summary["skipped_missing_coverage"], int)
     assert set(summary["by_severity"].keys()) == ALLOWED_SEVERITIES
     for count in summary["by_severity"].values():
         assert isinstance(count, int)

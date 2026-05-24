@@ -50,7 +50,7 @@ def _project(tmp_path: Path) -> Path:
 
 @pytest.mark.parametrize(
     "schema_name",
-    ["report.schema.json", "regressions.schema.json", "baseline.schema.json"],
+    ["report.schema.json", "regressions.schema.json", "baseline.schema.json", "diff.schema.json"],
 )
 def test_schema_is_valid_draft_2020_12(schema_name: str) -> None:
     schema = _load_schema(schema_name)
@@ -96,6 +96,39 @@ def test_check_json_matches_regressions_schema(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     Draft202012Validator(_load_schema("regressions.schema.json")).validate(payload)
+
+
+def test_diff_json_matches_diff_schema(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("diff.schema.json")).validate(payload)
 
 
 def test_baseline_file_matches_baseline_schema(tmp_path: Path) -> None:

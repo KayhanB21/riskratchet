@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json",
+  "title": "riskratchet baseline diff",
+  "description": "Output of `riskratchet diff --json`.",
+  "type": "object",
+  "required": ["$schema", "version", "summary", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "required": [
+        "regressed",
+        "component_regressed",
+        "improved",
+        "new",
+        "removed",
+        "moved",
+        "unchanged"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "regressed": { "type": "integer", "minimum": 0 },
+        "component_regressed": { "type": "integer", "minimum": 0 },
+        "improved": { "type": "integer", "minimum": 0 },
+        "new": { "type": "integer", "minimum": 0 },
+        "removed": { "type": "integer", "minimum": 0 },
+        "moved": { "type": "integer", "minimum": 0 },
+        "unchanged": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "qualname",
+          "status",
+          "current_score",
+          "previous_score",
+          "delta",
+          "previous_path",
+          "previous_qualname",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "qualname": { "type": "string" },
+          "status": {
+            "enum": [
+              "regressed",
+              "component_regressed",
+              "improved",
+              "new",
+              "removed",
+              "moved",
+              "unchanged"
+            ]
+          },
+          "current_score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+          "previous_score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+          "delta": { "type": ["number", "null"] },
+          "previous_path": { "type": ["string", "null"] },
+          "previous_qualname": { "type": ["string", "null"] },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

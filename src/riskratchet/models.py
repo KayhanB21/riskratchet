@@ -24,6 +24,16 @@ class RegressionKind(str, Enum):
     COMPONENT_REGRESSED = "component_regressed"
 
 
+class DiffStatus(str, Enum):
+    REGRESSED = "regressed"
+    COMPONENT_REGRESSED = "component_regressed"
+    IMPROVED = "improved"
+    NEW = "new"
+    REMOVED = "removed"
+    MOVED = "moved"
+    UNCHANGED = "unchanged"
+
+
 @dataclass(frozen=True, slots=True)
 class FunctionId:
     """Stable identifier for a function across runs.
@@ -117,6 +127,8 @@ class RiskReport:
     functions: tuple[FunctionRisk, ...]
     files: tuple[FileStats, ...]
     coverage_status: str = "missing"
+    suppressed_functions: int = 0
+    skipped_missing_coverage: int = 0
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}
@@ -157,3 +169,53 @@ class Regression:
     delta: float | None
     reason: str
     current: FunctionRisk | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class DiffEntry:
+    id: FunctionId
+    status: DiffStatus
+    current_score: float | None
+    previous_score: float | None
+    delta: float | None
+    current: FunctionRisk | None = None
+    previous: BaselineEntry | None = None
+    previous_id: FunctionId | None = None
+    reason: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class DiffReport:
+    entries: tuple[DiffEntry, ...]
+
+    def by_status(self, status: DiffStatus) -> tuple[DiffEntry, ...]:
+        return tuple(entry for entry in self.entries if entry.status is status)
+
+    def regressions(self) -> list[Regression]:
+        out: list[Regression] = []
+        for entry in self.entries:
+            if entry.status is DiffStatus.REGRESSED:
+                out.append(
+                    Regression(
+                        id=entry.id,
+                        kind=RegressionKind.REGRESSED,
+                        current_score=entry.current_score or 0.0,
+                        previous_score=entry.previous_score,
+                        delta=entry.delta,
+                        reason=entry.reason,
+                        current=entry.current,
+                    )
+                )
+            elif entry.status is DiffStatus.COMPONENT_REGRESSED:
+                out.append(
+                    Regression(
+                        id=entry.id,
+                        kind=RegressionKind.COMPONENT_REGRESSED,
+                        current_score=entry.current_score or 0.0,
+                        previous_score=entry.previous_score,
+                        delta=entry.delta,
+                        reason=entry.reason,
+                        current=entry.current,
+                    )
+                )
+        return out

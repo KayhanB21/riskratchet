@@ -15,6 +15,9 @@ from typing import Any
 from riskratchet.models import (
     Baseline,
     BaselineEntry,
+    DiffEntry,
+    DiffReport,
+    DiffStatus,
     FunctionId,
     FunctionRisk,
     Regression,
@@ -178,6 +181,173 @@ def compare(
     return out
 
 
+def diff(
+    new: RiskReport,
+    old: Baseline,
+    *,
+    fail_regression_above: float,
+    fail_component_regression_above: float = 15.0,
+    component_regression_gate: bool = True,
+) -> DiffReport:
+    """Return a full baseline comparison, including non-failing statuses."""
+    entries: list[DiffEntry] = []
+    old_by_fingerprint = _unique_old_entries_by_fingerprint(old)
+    current_fingerprint_counts = _current_fingerprint_counts(new)
+    used_old_ids: set[FunctionId] = {fn.id for fn in new.functions if fn.id in old.entries}
+
+    for fn in new.functions:
+        previous = old.entries.get(fn.id)
+        previous_id: FunctionId | None = None
+        if previous is None:
+            previous = _match_by_fingerprint(
+                fn,
+                old_by_fingerprint,
+                current_fingerprint_counts,
+                used_old_ids,
+            )
+            if previous is not None:
+                previous_id = previous.id
+
+        if previous is None:
+            entries.append(
+                DiffEntry(
+                    id=fn.id,
+                    status=DiffStatus.NEW,
+                    current_score=fn.score,
+                    previous_score=None,
+                    delta=None,
+                    current=fn,
+                    reason=f"new function with score {fn.score:.1f}",
+                )
+            )
+            continue
+
+        used_old_ids.add(previous.id)
+        delta = fn.score - previous.score
+        status = _diff_status_for_existing(
+            fn,
+            previous,
+            delta=delta,
+            fail_regression_above=fail_regression_above,
+            fail_component_regression_above=fail_component_regression_above,
+            component_regression_gate=component_regression_gate,
+            moved=previous_id is not None,
+        )
+        entries.append(
+            DiffEntry(
+                id=fn.id,
+                status=status,
+                current_score=fn.score,
+                previous_score=previous.score,
+                delta=delta,
+                current=fn,
+                previous=previous,
+                previous_id=previous_id,
+                reason=_diff_reason(
+                    fn,
+                    previous,
+                    status=status,
+                    delta=delta,
+                    previous_id=previous_id,
+                    fail_regression_above=fail_regression_above,
+                    fail_component_regression_above=fail_component_regression_above,
+                ),
+            )
+        )
+
+    current_ids = {fn.id for fn in new.functions}
+    for previous in old.entries.values():
+        if previous.id in used_old_ids or previous.id in current_ids:
+            continue
+        entries.append(
+            DiffEntry(
+                id=previous.id,
+                status=DiffStatus.REMOVED,
+                current_score=None,
+                previous_score=previous.score,
+                delta=None,
+                previous=previous,
+                reason=f"removed function from baseline with score {previous.score:.1f}",
+            )
+        )
+
+    entries.sort(key=_diff_sort_key)
+    return DiffReport(entries=tuple(entries))
+
+
+def regressions_from_diff(
+    report: DiffReport,
+    *,
+    fail_new_above: float,
+    fail_existing_above: float | None = None,
+) -> list[Regression]:
+    out: list[Regression] = []
+    for entry in report.entries:
+        if entry.status is DiffStatus.NEW:
+            current_score = entry.current_score or 0.0
+            if current_score > fail_new_above:
+                out.append(
+                    Regression(
+                        id=entry.id,
+                        kind=RegressionKind.NEW_ABOVE_THRESHOLD,
+                        current_score=current_score,
+                        previous_score=None,
+                        delta=None,
+                        reason=(
+                            f"new function with score {current_score:.1f} "
+                            f"exceeds new-function threshold {fail_new_above:.1f}"
+                        ),
+                        current=entry.current,
+                    )
+                )
+        elif entry.status is DiffStatus.REGRESSED:
+            out.append(
+                Regression(
+                    id=entry.id,
+                    kind=RegressionKind.REGRESSED,
+                    current_score=entry.current_score or 0.0,
+                    previous_score=entry.previous_score,
+                    delta=entry.delta,
+                    reason=entry.reason,
+                    current=entry.current,
+                )
+            )
+        elif entry.status is DiffStatus.COMPONENT_REGRESSED:
+            out.append(
+                Regression(
+                    id=entry.id,
+                    kind=RegressionKind.COMPONENT_REGRESSED,
+                    current_score=entry.current_score or 0.0,
+                    previous_score=entry.previous_score,
+                    delta=entry.delta,
+                    reason=entry.reason,
+                    current=entry.current,
+                )
+            )
+        elif (
+            fail_existing_above is not None
+            and entry.current_score is not None
+            and entry.status not in {DiffStatus.REMOVED, DiffStatus.NEW}
+            and entry.current_score > fail_existing_above
+        ):
+            out.append(
+                Regression(
+                    id=entry.id,
+                    kind=RegressionKind.EXISTING_ABOVE_THRESHOLD,
+                    current_score=entry.current_score,
+                    previous_score=entry.previous_score,
+                    delta=entry.delta,
+                    reason=(
+                        f"existing function score {entry.current_score:.1f} "
+                        f"exceeds existing-risk threshold {fail_existing_above:.1f}"
+                    ),
+                    current=entry.current,
+                )
+            )
+    out.sort(key=lambda r: (-(r.delta or r.current_score), r.id.as_target()))
+    return out
+
+
 def _dumps(baseline: Baseline) -> str:
     payload: dict[str, Any] = {
         "version": baseline.version,
@@ -190,6 +360,83 @@ def _dumps(baseline: Baseline) -> str:
         ],
     }
     return json.dumps(payload, indent=2, sort_keys=False) + "\n"
+
+
+def _diff_status_for_existing(
+    fn: FunctionRisk,
+    previous: BaselineEntry,
+    *,
+    delta: float,
+    fail_regression_above: float,
+    fail_component_regression_above: float,
+    component_regression_gate: bool,
+    moved: bool,
+) -> DiffStatus:
+    if delta > fail_regression_above:
+        return DiffStatus.REGRESSED
+    if delta < -fail_regression_above:
+        return DiffStatus.IMPROVED
+    if component_regression_gate and _component_regression(
+        fn.components,
+        previous.components,
+        tolerance=fail_component_regression_above,
+    ):
+        return DiffStatus.COMPONENT_REGRESSED
+    if moved:
+        return DiffStatus.MOVED
+    return DiffStatus.UNCHANGED
+
+
+def _diff_reason(
+    fn: FunctionRisk,
+    previous: BaselineEntry,
+    *,
+    status: DiffStatus,
+    delta: float,
+    previous_id: FunctionId | None,
+    fail_regression_above: float,
+    fail_component_regression_above: float,
+) -> str:
+    previous_note = f" after matching previous target {previous_id.as_target()}" if previous_id else ""
+    if status is DiffStatus.REGRESSED:
+        return (
+            f"risk grew by {delta:+.1f}{previous_note} "
+            f"(from {previous.score:.1f} to {fn.score:.1f}); "
+            f"tolerance is {fail_regression_above:+.1f}"
+        )
+    if status is DiffStatus.IMPROVED:
+        return f"risk improved by {delta:+.1f} (from {previous.score:.1f} to {fn.score:.1f})"
+    if status is DiffStatus.COMPONENT_REGRESSED:
+        component_regression = _component_regression(
+            fn.components,
+            previous.components,
+            tolerance=fail_component_regression_above,
+        )
+        if component_regression is None:
+            return "component regression"
+        name, previous_value, current_value, component_delta = component_regression
+        return (
+            f"{name} grew by {component_delta:+.1f} "
+            f"(from {previous_value:.1f} to {current_value:.1f}); "
+            f"component tolerance is {fail_component_regression_above:+.1f}"
+        )
+    if status is DiffStatus.MOVED and previous_id is not None:
+        return f"moved from {previous_id.as_target()} with no score regression"
+    return f"risk unchanged at {fn.score:.1f}"
+
+
+def _diff_sort_key(entry: DiffEntry) -> tuple[int, float, str]:
+    order = {
+        DiffStatus.REGRESSED: 0,
+        DiffStatus.COMPONENT_REGRESSED: 1,
+        DiffStatus.NEW: 2,
+        DiffStatus.IMPROVED: 3,
+        DiffStatus.MOVED: 4,
+        DiffStatus.REMOVED: 5,
+        DiffStatus.UNCHANGED: 6,
+    }
+    magnitude = abs(entry.delta or entry.current_score or entry.previous_score or 0.0)
+    return (order[entry.status], -magnitude, entry.id.as_target())
 
 
 def _entry_to_dict(entry: BaselineEntry) -> dict[str, Any]:

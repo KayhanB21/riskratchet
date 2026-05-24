@@ -10,10 +10,17 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
 from riskratchet.models import CoverageStats, FunctionSpan
+
+
+class MissingCoveragePolicy(str, Enum):
+    PESSIMISTIC = "pessimistic"
+    OPTIMISTIC = "optimistic"
+    SKIP = "skip"
 
 
 @dataclass(frozen=True)
@@ -75,6 +82,8 @@ def empty_coverage() -> CoverageData:
 def coverage_for_span(
     file_coverage: dict[str, Any] | None,
     span: FunctionSpan,
+    *,
+    missing_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
 ) -> CoverageStats:
     """Compute line/branch coverage for the lines inside `span`.
 
@@ -84,6 +93,8 @@ def coverage_for_span(
     there is nothing for tests to exercise.
     """
     if file_coverage is None:
+        if missing_policy is MissingCoveragePolicy.OPTIMISTIC:
+            return CoverageStats(line_coverage=1.0, branch_coverage=None)
         return CoverageStats.uncovered()
 
     span_lines = set(range(span.start_line, span.end_line + 1))

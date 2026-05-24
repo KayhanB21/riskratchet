@@ -150,6 +150,13 @@ riskratchet scan src --coverage coverage.json --json \
   | jq '.functions[:3] | .[] | {qualname, score, severity}'
 ```
 
+Show the full baseline diff, including improvements and removed functions.
+
+```bash
+riskratchet diff src --coverage coverage.json \
+  --baseline .riskratchet.json --json
+```
+
 Gate a CI job on regressions, printing the list when it fails.
 
 ```bash
@@ -174,12 +181,21 @@ riskratchet check src --coverage coverage.json \
   | gh pr comment --body-file -
 ```
 
+For a sticky PR-bot body, use `--format pr-comment`. The output starts with
+`<!-- riskratchet-report -->` so a GitHub Actions script can update an
+existing comment instead of posting duplicates. For inline workflow warnings,
+use `--format github`.
+
 JSON output is validated against the schemas under
 [`schemas/`](schemas/) on every release:
 
 - `schemas/report.schema.json` — `scan --json`
 - `schemas/regressions.schema.json` — `check --json`
+- `schemas/diff.schema.json` — `diff --json`
 - `schemas/baseline.schema.json` — `.riskratchet.json` on disk
+
+Native JSON output includes `$schema` and `version` fields so consumers can
+pin parsing behavior.
 
 ### Common mistakes
 
@@ -200,6 +216,33 @@ JSON output is validated against the schemas under
   stdout is a single JSON object; status messages go to stderr.
 - Bumping the baseline to silence a regression. The baseline is the bar; if
   it has to move up, do it in a dedicated PR with a written justification.
+
+### Suppressions and partial coverage
+
+Use `--exclude` to skip files at discovery time. Use `--allow` to analyze a
+file but suppress matching functions from reporting and gating:
+
+```bash
+riskratchet check src --baseline .riskratchet.json \
+  --allow "GeneratedModel.*" \
+  --allow "src/generated/**"
+```
+
+Function patterns match dotted qualified names. Patterns containing `/` or
+`**` match repo-relative POSIX paths.
+
+When a coverage file is present but a scanned source file has no matching
+coverage entry, riskratchet warns on stderr. The default missing-coverage
+policy is pessimistic: treat those functions as uncovered. For partial local
+runs you can choose:
+
+```bash
+riskratchet scan src --coverage coverage.json --missing-coverage optimistic
+riskratchet scan src --coverage coverage.json --missing-coverage skip
+```
+
+`optimistic` treats missing file coverage as fully covered. `skip` drops
+functions from unmapped files and reports the skipped count in JSON summary.
 
 ## Pytest plugin
 
@@ -262,11 +305,25 @@ riskratchet scan src --coverage coverage.json --format table     # default
 riskratchet scan src --coverage coverage.json --json             # shortcut for --format json
 riskratchet scan src --coverage coverage.json --format markdown  # for PR comments
 riskratchet scan src --coverage coverage.json --format sarif     # for SARIF consumers
+riskratchet scan src --coverage coverage.json --format github    # GitHub Actions annotations
+riskratchet scan src --coverage coverage.json --format pr-comment
 riskratchet scan src --coverage coverage.json --quiet            # drops the trailing summary line
+riskratchet scan src --coverage coverage.json --min-score 50     # hide lower-risk functions
+riskratchet scan src --coverage coverage.json --top 10           # emit only the top N
 ```
 
 `riskratchet check` accepts `--baseline-format riskratchet`, which is the
 default and currently the only supported baseline format.
+
+For early adoption before a baseline exists, `scan` can also fail on an
+absolute gate:
+
+```bash
+riskratchet scan src --coverage coverage.json --fail-above 75
+riskratchet scan src --coverage coverage.json --fail-severity high
+```
+
+Baseline gating is still the recommended mode for mature codebases.
 
 JSON output (truncated):
 

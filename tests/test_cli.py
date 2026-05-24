@@ -410,6 +410,162 @@ def test_scan_quiet_suppresses_summary(tmp_path: Path) -> None:
     assert "Summary" not in quiet.stdout
 
 
+def test_scan_fail_above_exits_one(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--fail-above", "10", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 1
+
+
+def test_scan_min_score_filters_json(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--json", "--min-score", "42.1", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert [fn["qualname"] for fn in payload["functions"]] == ["branchy"]
+
+
+def test_scan_allow_suppresses_matching_function(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--json", "--allow", "branchy", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert [fn["qualname"] for fn in payload["functions"]] == ["trivial"]
+    assert payload["summary"]["suppressed_functions"] == 1
+
+
+def test_scan_missing_coverage_skip_drops_unmapped_file(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    coverage_path = tmp_path / "coverage.json"
+    coverage_path.write_text('{"files": {}}', encoding="utf-8")
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(src),
+            "--coverage",
+            str(coverage_path),
+            "--missing-coverage",
+            "skip",
+            "--json",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["functions"] == []
+    assert payload["summary"]["skipped_missing_coverage"] == 2
+
+
+def test_diff_json_reports_unchanged_entries(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["summary"]["unchanged"] == 2
+    assert {entry["status"] for entry in payload["entries"]} == {"unchanged"}
+
+
+def test_diff_pr_comment_has_sticky_marker(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--format",
+            "pr-comment",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0
+    assert result.stdout.startswith("<!-- riskratchet-report -->")
+
+
+def test_check_pr_comment_has_sticky_marker(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--format",
+            "pr-comment",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0
+    assert result.stdout.startswith("<!-- riskratchet-report -->")
+
+
 def test_check_json_flag_produces_regressions_payload(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"

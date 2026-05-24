@@ -12,14 +12,42 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Iterable
+from dataclasses import dataclass
 from io import StringIO
 from typing import Any
 
 from rich.console import Console
 from rich.table import Table
 
-from riskratchet.models import FunctionRisk, Regression, RiskReport, Severity
+from riskratchet.models import (
+    DiffEntry,
+    DiffReport,
+    DiffStatus,
+    FunctionRisk,
+    Regression,
+    RiskReport,
+    Severity,
+)
 from riskratchet.scoring import severity
+
+REPORT_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json"
+REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json"
+DIFF_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json"
+OUTPUT_VERSION = "0.2"
+PR_COMMENT_MARKER = "<!-- riskratchet-report -->"
+
+
+@dataclass(frozen=True, slots=True)
+class SourceLinks:
+    repo_url: str
+    commit_ref: str
+
+    def link_for(self, fn: FunctionRisk) -> str:
+        return (
+            f"{self.repo_url.rstrip('/')}/blob/{self.commit_ref}/"
+            f"{fn.id.path}#L{fn.span.start_line}-L{fn.span.end_line}"
+        )
+
 
 _SEVERITY_STYLE: dict[Severity, str] = {
     Severity.LOW: "green",
@@ -69,13 +97,20 @@ def render_report_table(report: RiskReport, *, limit: int | None = 20, include_s
 
 def render_report_json(report: RiskReport) -> str:
     payload: dict[str, Any] = {
+        "$schema": REPORT_SCHEMA_URL,
+        "version": OUTPUT_VERSION,
         "summary": _summary_payload(report),
         "functions": [_function_payload(fn) for fn in _sorted_by_risk(report.functions)],
     }
     return json.dumps(payload, indent=2) + "\n"
 
 
-def render_report_markdown(report: RiskReport, *, limit: int | None = 20) -> str:
+def render_report_markdown(
+    report: RiskReport,
+    *,
+    limit: int | None = 20,
+    links: SourceLinks | None = None,
+) -> str:
     sorted_fns = _sorted_by_risk(report.functions)
     displayed = sorted_fns if limit is None else sorted_fns[:limit]
     lines = [
@@ -89,16 +124,23 @@ def render_report_markdown(report: RiskReport, *, limit: int | None = 20) -> str
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |",
     ]
     for fn in displayed:
-        lines.append(_markdown_row(fn))
+        lines.append(_markdown_row(fn, links=links))
     if limit is not None and len(sorted_fns) > limit:
         lines.append("")
         lines.append(f"_... {len(sorted_fns) - limit} more functions hidden._")
     return "\n".join(lines) + "\n"
 
 
-def render_report_sarif(report: RiskReport) -> str:
-    results = [_function_sarif_result(fn) for fn in _sorted_by_risk(report.functions)]
+def render_report_sarif(report: RiskReport, *, min_score: float = 25.0) -> str:
+    results = [
+        _function_sarif_result(fn) for fn in _sorted_by_risk(report.functions) if fn.score >= min_score
+    ]
     return json.dumps(_sarif_log(results), indent=2) + "\n"
+
+
+def render_report_github(report: RiskReport, *, min_score: float = 25.0) -> str:
+    lines = [_github_annotation(fn) for fn in _sorted_by_risk(report.functions) if fn.score >= min_score]
+    return "\n".join(lines) + ("\n" if lines else "")
 
 
 def render_regressions_table(regressions: list[Regression]) -> str:
@@ -128,19 +170,17 @@ def render_regressions_table(regressions: list[Regression]) -> str:
 
 
 def render_regressions_json(regressions: list[Regression]) -> str:
-    payload = [
-        {
-            "path": reg.id.path,
-            "qualname": reg.id.qualname,
-            "kind": reg.kind.value,
-            "current_score": reg.current_score,
-            "previous_score": reg.previous_score,
-            "delta": reg.delta,
-            "reason": reg.reason,
-        }
-        for reg in regressions
-    ]
-    return json.dumps({"regressions": payload}, indent=2) + "\n"
+    return (
+        json.dumps(
+            {
+                "$schema": REGRESSIONS_SCHEMA_URL,
+                "version": OUTPUT_VERSION,
+                "regressions": [_regression_payload(reg) for reg in regressions],
+            },
+            indent=2,
+        )
+        + "\n"
+    )
 
 
 def render_regressions_markdown(regressions: list[Regression]) -> str:
@@ -157,8 +197,144 @@ def render_regressions_markdown(regressions: list[Regression]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_regressions_pr_comment(regressions: list[Regression]) -> str:
+    lines = [
+        PR_COMMENT_MARKER,
+        "# riskratchet",
+        "",
+    ]
+    if not regressions:
+        lines.append("_No risk regressions detected._")
+        return "\n".join(lines) + "\n"
+    lines.extend(
+        [
+            "| Kind | Function | Before | After | Delta | Reason |",
+            "| --- | --- | ---: | ---: | ---: | --- |",
+        ]
+    )
+    lines.extend(_regression_markdown_row(reg) for reg in regressions)
+    return "\n".join(lines) + "\n"
+
+
 def render_regressions_sarif(regressions: list[Regression]) -> str:
     return json.dumps(_sarif_log([_regression_sarif_result(reg) for reg in regressions]), indent=2) + "\n"
+
+
+def render_regressions_github(regressions: list[Regression]) -> str:
+    lines = []
+    for reg in regressions:
+        if reg.current is not None:
+            lines.append(_github_annotation(reg.current, message=reg.reason))
+        else:
+            lines.append(f"::warning file={reg.id.path}::{_escape_github(reg.reason)}")
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
+def render_diff_table(report: DiffReport) -> str:
+    buf = StringIO()
+    console = Console(file=buf, force_terminal=False, color_system=None, width=120)
+    table = Table(title="riskratchet diff", show_header=True, header_style="bold")
+    table.add_column("Status")
+    table.add_column("Function")
+    table.add_column("Before", justify="right")
+    table.add_column("After", justify="right")
+    table.add_column("Delta", justify="right")
+    table.add_column("Reason")
+    for entry in report.entries:
+        table.add_row(
+            entry.status.value,
+            entry.id.as_target(),
+            _fmt_optional(entry.previous_score),
+            _fmt_optional(entry.current_score),
+            _fmt_optional(entry.delta, signed=True),
+            entry.reason,
+        )
+    console.print(table)
+    return buf.getvalue()
+
+
+def render_diff_json(report: DiffReport) -> str:
+    return (
+        json.dumps(
+            {
+                "$schema": DIFF_SCHEMA_URL,
+                "version": OUTPUT_VERSION,
+                "summary": _diff_summary(report),
+                "entries": [_diff_entry_payload(entry) for entry in report.entries],
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+def render_diff_markdown(report: DiffReport, *, links: SourceLinks | None = None) -> str:
+    lines = [
+        "# riskratchet diff",
+        "",
+        _diff_summary_line(report),
+        "",
+        "| Status | Function | Before | After | Delta | Reason |",
+        "| --- | --- | ---: | ---: | ---: | --- |",
+    ]
+    for entry in report.entries:
+        lines.append(_diff_markdown_row(entry, links=links))
+    return "\n".join(lines) + "\n"
+
+
+def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = None) -> str:
+    visible = [
+        entry
+        for entry in report.entries
+        if entry.status in {DiffStatus.REGRESSED, DiffStatus.COMPONENT_REGRESSED, DiffStatus.NEW}
+    ]
+    lines = [
+        PR_COMMENT_MARKER,
+        "# riskratchet",
+        "",
+        _diff_summary_line(report),
+        "",
+    ]
+    if visible:
+        lines.extend(
+            [
+                "| Status | Function | Before | After | Delta | Reason |",
+                "| --- | --- | ---: | ---: | ---: | --- |",
+            ]
+        )
+        lines.extend(_diff_markdown_row(entry, links=links) for entry in visible)
+    else:
+        lines.append("_No risk regressions detected._")
+    for status, title in (
+        (DiffStatus.IMPROVED, "Improvements"),
+        (DiffStatus.MOVED, "Moved functions"),
+        (DiffStatus.REMOVED, "Removed functions"),
+        (DiffStatus.UNCHANGED, "Unchanged functions"),
+    ):
+        entries = [entry for entry in report.entries if entry.status is status]
+        if entries:
+            lines.extend(["", f"<details><summary>{title} ({len(entries)})</summary>", ""])
+            lines.extend(
+                [
+                    "| Status | Function | Before | After | Delta | Reason |",
+                    "| --- | --- | ---: | ---: | ---: | --- |",
+                ]
+            )
+            lines.extend(_diff_markdown_row(entry, links=links) for entry in entries[:20])
+            if len(entries) > 20:
+                lines.append(f"_... {len(entries) - 20} more hidden._")
+            lines.extend(["", "</details>"])
+    return "\n".join(lines) + "\n"
+
+
+def render_diff_github(report: DiffReport) -> str:
+    lines = []
+    for entry in report.entries:
+        if entry.status not in {DiffStatus.REGRESSED, DiffStatus.COMPONENT_REGRESSED, DiffStatus.NEW}:
+            continue
+        if entry.current is not None:
+            lines.append(_github_annotation(entry.current, message=entry.reason))
+    return "\n".join(lines) + ("\n" if lines else "")
 
 
 def render_function_explanation(fn: FunctionRisk) -> str:
@@ -209,7 +385,10 @@ def _remediation(fn: FunctionRisk) -> str:
     return "  remediation : " + "; ".join(triggers) + ".\n                " + advice
 
 
-def _markdown_row(fn: FunctionRisk) -> str:
+def _markdown_row(fn: FunctionRisk, *, links: SourceLinks | None = None) -> str:
+    target = f"`{fn.id.as_target()}`"
+    if links is not None:
+        target = f"[{target}]({links.link_for(fn)})"
     cells = [
         severity(fn.score).value,
         f"{fn.score:.1f}",
@@ -217,7 +396,7 @@ def _markdown_row(fn: FunctionRisk) -> str:
         str(fn.complexity.cyclomatic),
         f"{round(fn.coverage.line_coverage * 100)}%",
         _branch_markdown(fn),
-        f"`{fn.id.as_target()}`",
+        target,
         f"{fn.span.start_line}-{fn.span.end_line}",
     ]
     return "| " + " | ".join(cells) + " |"
@@ -247,6 +426,8 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
         "total_functions": len(report.functions),
         "total_files": len(report.files),
         "coverage_status": report.coverage_status,
+        "suppressed_functions": report.suppressed_functions,
+        "skipped_missing_coverage": report.skipped_missing_coverage,
         "by_severity": counts,
     }
 
@@ -404,6 +585,62 @@ def _function_payload(fn: FunctionRisk) -> dict[str, Any]:
     }
 
 
+def _regression_payload(reg: Regression) -> dict[str, Any]:
+    return {
+        "path": reg.id.path,
+        "qualname": reg.id.qualname,
+        "kind": reg.kind.value,
+        "current_score": reg.current_score,
+        "previous_score": reg.previous_score,
+        "delta": reg.delta,
+        "reason": reg.reason,
+    }
+
+
+def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
+    return {
+        "path": entry.id.path,
+        "qualname": entry.id.qualname,
+        "status": entry.status.value,
+        "current_score": entry.current_score,
+        "previous_score": entry.previous_score,
+        "delta": entry.delta,
+        "previous_path": entry.previous_id.path if entry.previous_id else None,
+        "previous_qualname": entry.previous_id.qualname if entry.previous_id else None,
+        "reason": entry.reason,
+    }
+
+
+def _diff_summary(report: DiffReport) -> dict[str, int]:
+    return {status.value: len(report.by_status(status)) for status in DiffStatus}
+
+
+def _diff_summary_line(report: DiffReport) -> str:
+    summary = _diff_summary(report)
+    return (
+        f"**Regressions:** {summary['regressed'] + summary['component_regressed']} · "
+        f"**New:** {summary['new']} · "
+        f"**Improved:** {summary['improved']} · "
+        f"**Moved:** {summary['moved']} · "
+        f"**Removed:** {summary['removed']}"
+    )
+
+
+def _diff_markdown_row(entry: DiffEntry, *, links: SourceLinks | None = None) -> str:
+    target = f"`{entry.id.as_target()}`"
+    if links is not None and entry.current is not None:
+        target = f"[{target}]({links.link_for(entry.current)})"
+    cells = [
+        entry.status.value,
+        target,
+        _fmt_optional(entry.previous_score),
+        _fmt_optional(entry.current_score),
+        _fmt_optional(entry.delta, signed=True),
+        entry.reason,
+    ]
+    return "| " + " | ".join(cells) + " |"
+
+
 def _summary_line(report: RiskReport) -> str:
     counts: dict[Severity, int] = {sev: 0 for sev in Severity}
     for fn in report.functions:
@@ -414,7 +651,29 @@ def _summary_line(report: RiskReport) -> str:
         f"{counts[Severity.MEDIUM]} medium",
         f"{counts[Severity.LOW]} low",
     ]
-    return f"Summary: {len(report.functions)} functions across {len(report.files)} files. " + ", ".join(parts)
+    extra = []
+    if report.suppressed_functions:
+        extra.append(f"{report.suppressed_functions} suppressed")
+    if report.skipped_missing_coverage:
+        extra.append(f"{report.skipped_missing_coverage} skipped missing coverage")
+    suffix = ("; " + ", ".join(extra)) if extra else ""
+    summary = f"Summary: {len(report.functions)} functions across {len(report.files)} files. "
+    return summary + ", ".join(parts) + suffix
+
+
+def _github_annotation(fn: FunctionRisk, *, message: str | None = None) -> str:
+    text = message or (
+        f"{fn.id.as_target()} has {severity(fn.score).value} risk: "
+        f"score {fn.score:.1f}, CRAP {fn.crap:.1f}, complexity {fn.complexity.cyclomatic}"
+    )
+    return (
+        f"::warning file={fn.id.path},line={fn.span.start_line},endLine={fn.span.end_line}"
+        f"::{_escape_github(text)}"
+    )
+
+
+def _escape_github(value: str) -> str:
+    return value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A").replace(":", "%3A")
 
 
 def _branch_cell(fn: FunctionRisk) -> str:

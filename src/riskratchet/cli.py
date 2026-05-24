@@ -20,29 +20,50 @@ from riskratchet.auto_coverage import (
     AutoCoverageResult,
     ensure_coverage,
 )
-from riskratchet.baseline import baseline_from_report, compare, load_baseline, save_baseline
+from riskratchet.baseline import (
+    baseline_from_report,
+    compare,
+    load_baseline,
+    regressions_from_diff,
+    save_baseline,
+)
+from riskratchet.baseline import (
+    diff as diff_baseline,
+)
+from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import analyze
 from riskratchet.models import Regression, RiskReport
 from riskratchet.reporting import (
+    SourceLinks,
+    render_diff_github,
+    render_diff_json,
+    render_diff_markdown,
+    render_diff_pr_comment,
+    render_diff_table,
     render_function_explanation,
+    render_regressions_github,
     render_regressions_json,
     render_regressions_markdown,
+    render_regressions_pr_comment,
     render_regressions_sarif,
     render_regressions_table,
+    render_report_github,
     render_report_json,
     render_report_markdown,
     render_report_sarif,
     render_report_table,
 )
-from riskratchet.scoring import InvalidWeightsError, resolve_weights
+from riskratchet.scoring import InvalidWeightsError, resolve_weights, severity
 
 if sys.version_info >= (3, 11):
     import tomllib
 else:
     import tomli as tomllib  # type: ignore[import-not-found]
 
-VALID_FORMATS = ("table", "json", "markdown", "sarif")
+VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
+VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
+VALID_FAIL_SEVERITIES = ("low", "medium", "high", "critical")
 
 app = typer.Typer(
     help="A maintainability ratchet for AI-assisted Python.",
@@ -84,8 +105,32 @@ def scan(
     output: Annotated[Path | None, typer.Option("--output", help="Write output to file.")] = None,
     include: Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
+    allow: Annotated[
+        list[str] | None,
+        typer.Option("--allow", help="Suppress matching functions or path globs from reporting/gating."),
+    ] = None,
     no_git: Annotated[bool, typer.Option("--no-git", help="Disable churn collection.")] = False,
     limit: Annotated[int, typer.Option("--limit", help="Max table rows; 0 for all.")] = 20,
+    top: Annotated[
+        int | None,
+        typer.Option("--top", help="Max rows/functions to emit; alias for --limit."),
+    ] = None,
+    min_score: Annotated[
+        float | None,
+        typer.Option("--min-score", help="Hide functions below this score."),
+    ] = None,
+    fail_above: Annotated[
+        float | None,
+        typer.Option("--fail-above", help="Exit 1 if any emitted function score is greater than this value."),
+    ] = None,
+    fail_severity: Annotated[
+        str | None,
+        typer.Option("--fail-severity", help="Exit 1 if any emitted function is at least this severity."),
+    ] = None,
+    missing_coverage: Annotated[
+        str | None,
+        typer.Option("--missing-coverage", help="How to handle missing file coverage."),
+    ] = None,
     no_auto_cov: Annotated[
         bool,
         typer.Option(
@@ -111,10 +156,14 @@ def scan(
         coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
+        allow=allow or cfg.get("allow", []),
         use_git=not no_git,
         weights=_resolved_weights(cfg),
+        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
-    _emit_report(report, format=effective_format, output=output, limit=limit, quiet=quiet)
+    filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
+    _emit_report(filtered, format=effective_format, output=output, limit=0, quiet=quiet, min_score=min_score)
+    _exit_for_scan_gate(filtered, fail_above=fail_above, fail_severity=fail_severity)
 
 
 @app.command()
@@ -125,7 +174,12 @@ def baseline(
     output: Annotated[Path | None, typer.Option("--output", help="Where to write the baseline JSON.")] = None,
     include: Annotated[list[str] | None, typer.Option("--include")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
+    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    missing_coverage: Annotated[
+        str | None,
+        typer.Option("--missing-coverage", help="How to handle missing file coverage."),
+    ] = None,
     allow_missing_coverage: Annotated[
         bool,
         typer.Option(
@@ -157,8 +211,10 @@ def baseline(
         coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
+        allow=allow or cfg.get("allow", []),
         use_git=not no_git,
         weights=_resolved_weights(cfg),
+        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
     target = output or Path(cfg.get("baseline", ".riskratchet.json"))
     save_baseline(baseline_from_report(report), target)
@@ -199,7 +255,12 @@ def check(
     ] = False,
     include: Annotated[list[str] | None, typer.Option("--include")] = None,
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
+    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    missing_coverage: Annotated[
+        str | None,
+        typer.Option("--missing-coverage", help="How to handle missing file coverage."),
+    ] = None,
     allow_missing_coverage: Annotated[
         bool,
         typer.Option(
@@ -242,8 +303,10 @@ def check(
         coverage_path=coverage_path,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
+        allow=allow or cfg.get("allow", []),
         use_git=not no_git,
         weights=_resolved_weights(cfg),
+        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
     regressions = compare(
         report,
@@ -310,8 +373,128 @@ def explain(
     typer.echo(render_function_explanation(fn), nl=False)
 
 
+@app.command()
+def diff(
+    paths: Annotated[list[Path], typer.Argument(help="Files or directories to diff against baseline.")],
+    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
+    config: Annotated[Path | None, typer.Option("--config")] = None,
+    format: Annotated[str, typer.Option("--format")] = "table",
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
+    ] = False,
+    output: Annotated[Path | None, typer.Option("--output")] = None,
+    fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
+    fail_component_regression_above: Annotated[
+        float | None,
+        typer.Option("--fail-component-regression-above"),
+    ] = None,
+    no_component_regression_gate: Annotated[
+        bool,
+        typer.Option("--no-component-regression-gate"),
+    ] = False,
+    include: Annotated[list[str] | None, typer.Option("--include")] = None,
+    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
+    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
+    no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    allow_missing_coverage: Annotated[
+        bool,
+        typer.Option("--allow-missing-coverage", help="Allow diffing without configured coverage data."),
+    ] = False,
+    missing_coverage: Annotated[
+        str | None,
+        typer.Option("--missing-coverage", help="How to handle missing file coverage."),
+    ] = None,
+    no_auto_cov: Annotated[
+        bool,
+        typer.Option("--no-auto-cov", help="Skip auto-generating coverage by running the test command."),
+    ] = False,
+    repo_url: Annotated[
+        str | None,
+        typer.Option("--repo-url", help="Repository URL for markdown links."),
+    ] = None,
+    commit_ref: Annotated[
+        str | None,
+        typer.Option("--commit-ref", help="Commit ref for markdown links."),
+    ] = None,
+) -> None:
+    """Show full baseline diff; does not fail."""
+    cfg = _load_config(config)
+    effective_format = _effective_format(format, json_output)
+    baseline_file = baseline_path or Path(cfg.get("baseline", ".riskratchet.json"))
+    if not baseline_file.exists():
+        typer.secho(
+            f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    old = load_baseline(baseline_file)
+    resolved_paths = _resolved_paths(paths, cfg)
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    )
+    report = analyze(
+        resolved_paths,
+        coverage_path=coverage_path,
+        include=include or [],
+        exclude=exclude or cfg.get("exclude", []),
+        allow=allow or cfg.get("allow", []),
+        use_git=not no_git,
+        weights=_resolved_weights(cfg),
+        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+    )
+    diff_report = diff_baseline(
+        report,
+        old,
+        fail_regression_above=_resolved_float(
+            fail_regression_above, cfg.get("fail_regression_above"), default=5.0
+        ),
+        fail_component_regression_above=_resolved_float(
+            fail_component_regression_above,
+            cfg.get("fail_component_regression_above"),
+            default=15.0,
+        ),
+        component_regression_gate=(
+            not no_component_regression_gate
+            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+        ),
+    )
+    links = _resolve_source_links(repo_url, commit_ref)
+    if effective_format == "json":
+        rendered = render_diff_json(diff_report)
+    elif effective_format == "markdown":
+        rendered = render_diff_markdown(diff_report, links=links)
+    elif effective_format == "pr-comment":
+        rendered = render_diff_pr_comment(diff_report, links=links)
+    elif effective_format == "github":
+        rendered = render_diff_github(diff_report)
+    elif effective_format == "sarif":
+        rendered = render_regressions_sarif(
+            regressions_from_diff(
+                diff_report,
+                fail_new_above=_resolved_float(None, cfg.get("fail_new_above"), default=50.0),
+                fail_existing_above=_resolved_optional_float(None, cfg.get("fail_existing_above")),
+            )
+        )
+    else:
+        rendered = render_diff_table(diff_report)
+    _write(rendered, output)
+
+
 def _emit_report(
-    report: RiskReport, *, format: str, output: Path | None, limit: int, quiet: bool = False
+    report: RiskReport,
+    *,
+    format: str,
+    output: Path | None,
+    limit: int,
+    quiet: bool = False,
+    min_score: float | None = None,
 ) -> None:
     effective_limit = None if limit == 0 else limit
     if format == "json":
@@ -319,7 +502,11 @@ def _emit_report(
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit)
     elif format == "sarif":
-        rendered = render_report_sarif(report)
+        rendered = render_report_sarif(report, min_score=min_score if min_score is not None else 25.0)
+    elif format == "github":
+        rendered = render_report_github(report, min_score=min_score if min_score is not None else 25.0)
+    elif format == "pr-comment":
+        rendered = render_report_markdown(report, limit=effective_limit)
     else:
         rendered = render_report_table(report, limit=effective_limit, include_summary=not quiet)
     _write(rendered, output)
@@ -337,6 +524,10 @@ def _render_regressions(regressions: list[Regression], *, format: str) -> str:
         return render_regressions_json(regressions)
     if format == "markdown":
         return render_regressions_markdown(regressions)
+    if format == "pr-comment":
+        return render_regressions_pr_comment(regressions)
+    if format == "github":
+        return render_regressions_github(regressions)
     if format == "sarif":
         return render_regressions_sarif(regressions)
     return render_regressions_table(regressions)
@@ -403,6 +594,18 @@ def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
         raise typer.Exit(code=2) from exc
 
 
+def _resolved_missing_coverage(value: str | None, cfg: dict[str, Any]) -> MissingCoveragePolicy:
+    raw = value if value is not None else cfg.get("missing_coverage", MissingCoveragePolicy.PESSIMISTIC.value)
+    if not isinstance(raw, str) or raw not in VALID_MISSING_COVERAGE:
+        typer.secho(
+            f"config error: missing coverage policy must be one of {', '.join(VALID_MISSING_COVERAGE)}.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    return MissingCoveragePolicy(raw)
+
+
 def _resolved_paths(paths: list[Path], cfg: dict[str, Any]) -> list[Path]:
     if paths:
         return paths
@@ -410,6 +613,63 @@ def _resolved_paths(paths: list[Path], cfg: dict[str, Any]) -> list[Path]:
     if isinstance(configured, list) and configured:
         return [Path(p) for p in configured]
     return [Path(".")]
+
+
+def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | None) -> RiskReport:
+    functions = sorted(report.functions, key=lambda fn: (-fn.score, fn.id.as_target()))
+    if min_score is not None:
+        functions = [fn for fn in functions if fn.score >= min_score]
+    if top is not None:
+        functions = functions[:top]
+    return RiskReport(
+        functions=tuple(functions),
+        files=report.files,
+        coverage_status=report.coverage_status,
+        suppressed_functions=report.suppressed_functions,
+        skipped_missing_coverage=report.skipped_missing_coverage,
+    )
+
+
+def _exit_for_scan_gate(
+    report: RiskReport,
+    *,
+    fail_above: float | None,
+    fail_severity: str | None,
+) -> None:
+    if fail_severity is not None and fail_severity not in VALID_FAIL_SEVERITIES:
+        typer.secho(
+            f"fail severity must be one of {', '.join(VALID_FAIL_SEVERITIES)}.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if fail_above is not None and any(fn.score > fail_above for fn in report.functions):
+        raise typer.Exit(code=1)
+    if fail_severity is not None:
+        order = {name: idx for idx, name in enumerate(VALID_FAIL_SEVERITIES)}
+        threshold = order[fail_severity]
+        if any(order[severity(fn.score).value] >= threshold for fn in report.functions):
+            raise typer.Exit(code=1)
+
+
+def _resolve_source_links(repo_url: str | None, commit_ref: str | None) -> SourceLinks | None:
+    resolved_repo = repo_url
+    if resolved_repo is None:
+        server = _env("GITHUB_SERVER_URL")
+        repo = _env("GITHUB_REPOSITORY")
+        if server is not None and repo is not None:
+            resolved_repo = f"{server.rstrip('/')}/{repo.lstrip('/')}"
+    resolved_ref = commit_ref or _env("GITHUB_SHA")
+    if resolved_repo is None or resolved_ref is None:
+        return None
+    return SourceLinks(repo_url=resolved_repo, commit_ref=resolved_ref)
+
+
+def _env(name: str) -> str | None:
+    import os
+
+    value = os.environ.get(name)
+    return value or None
 
 
 def _resolved_optional(value: Path | None, default: Any) -> Path | None:

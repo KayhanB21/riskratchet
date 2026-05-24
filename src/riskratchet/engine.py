@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Mapping, Sequence
+from fnmatch import fnmatch
 from pathlib import Path
 
 from riskratchet.analysis import ParsedFile, ParseError, iter_python_files, parse_file
 from riskratchet.complexity import complexity_for_file
 from riskratchet.coverage import (
     CoverageData,
+    MissingCoveragePolicy,
     coverage_for_span,
     empty_coverage,
     load_coverage,
@@ -37,8 +39,10 @@ def analyze(
     coverage_path: Path | None = None,
     include: Sequence[str] = (),
     exclude: Sequence[str] = (),
+    allow: Sequence[str] = (),
     use_git: bool = True,
     weights: Mapping[str, float] | None = None,
+    missing_coverage_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -59,6 +63,8 @@ def analyze(
     parsed_files: list[ParsedFile] = []
     function_risks: list[FunctionRisk] = []
     file_stats_list: list[FileStats] = []
+    suppressed_functions = 0
+    skipped_missing_coverage = 0
 
     for py_path in py_files:
         parsed = parse_file(py_path, root=root_path)
@@ -78,12 +84,40 @@ def analyze(
     )
 
     for parsed in parsed_files:
-        function_risks.extend(_risks_for_file(parsed, coverage_data, churn_by_function, resolved_weights))
+        file_coverage = coverage_data.lookup(parsed.relative_path)
+        if (
+            coverage_path is not None
+            and file_coverage is None
+            and missing_coverage_policy is MissingCoveragePolicy.SKIP
+        ):
+            function_risks_skipped = len(parsed.functions)
+            function_risks.extend([])
+            skipped_missing_coverage += function_risks_skipped
+            continue
+        if coverage_path is not None and file_coverage is None:
+            print(
+                f"warning: {parsed.relative_path} has no matching entry in coverage data",
+                file=sys.stderr,
+            )
+        risks = _risks_for_file(
+            parsed,
+            coverage_data,
+            churn_by_function,
+            resolved_weights,
+            missing_coverage_policy=missing_coverage_policy,
+        )
+        for risk in risks:
+            if _is_allowed(risk, allow):
+                suppressed_functions += 1
+            else:
+                function_risks.append(risk)
 
     return RiskReport(
         functions=tuple(function_risks),
         files=tuple(file_stats_list),
         coverage_status="present" if coverage_path is not None else "missing",
+        suppressed_functions=suppressed_functions,
+        skipped_missing_coverage=skipped_missing_coverage,
     )
 
 
@@ -92,6 +126,8 @@ def _risks_for_file(
     coverage_data: CoverageData,
     churn_by_function: dict[FunctionId, ChurnStats],
     weights: Mapping[str, float],
+    *,
+    missing_coverage_policy: MissingCoveragePolicy,
 ) -> list[FunctionRisk]:
     complexity_by_line = complexity_for_file(parsed)
     file_coverage = coverage_data.lookup(parsed.relative_path)
@@ -99,7 +135,7 @@ def _risks_for_file(
     risks: list[FunctionRisk] = []
     for fn in parsed.functions:
         complexity = complexity_by_line[fn.span.start_line]
-        coverage = coverage_for_span(file_coverage, fn.span)
+        coverage = coverage_for_span(file_coverage, fn.span, missing_policy=missing_coverage_policy)
         function_churn = churn_for_function(churn_by_function, fn.id)
         components = compute_components(
             is_public=fn.is_public,
@@ -125,3 +161,14 @@ def _risks_for_file(
             )
         )
     return risks
+
+
+def _is_allowed(fn: FunctionRisk, patterns: Sequence[str]) -> bool:
+    for pattern in patterns:
+        if "/" in pattern or "**" in pattern:
+            if fnmatch(fn.id.path, pattern):
+                return True
+            continue
+        if fnmatch(fn.id.qualname, pattern):
+            return True
+    return False

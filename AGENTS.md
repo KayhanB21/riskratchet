@@ -19,10 +19,18 @@ riskratchet --version
 riskratchet scan src --coverage coverage.json --json
 riskratchet baseline src --coverage coverage.json --output .riskratchet.json
 riskratchet check src --coverage coverage.json --baseline .riskratchet.json --json
+riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --json
 ```
 
 - Append `--json` to any reporting subcommand for machine-readable stdout.
 - Append `--quiet` to `scan` to drop the trailing summary line (pipe-friendly).
+- Use `diff` when you need the full baseline comparison: regressions,
+  improvements, new functions, removed functions, moved functions, and
+  unchanged functions.
+- Use `--format github` for GitHub Actions warning annotations and
+  `--format pr-comment` for a sticky PR comment body.
+- Use `--allow` to suppress known generated/framework functions without
+  excluding the whole source file from analysis.
 - All error and progress messages go to stderr; stdout is reserved for the
   payload.
 - If `--coverage` is omitted (or the file is missing), riskratchet runs the
@@ -65,6 +73,8 @@ success and `2` on usage errors.
   overridden; missing keys keep their default, and the whole vector is
   renormalized so the total still maps to `[0, 100]`. Invalid keys or
   negative values exit `2`. See the README for the default values.
+- Native JSON output includes `$schema` and `version` fields. `diff --json`
+  is validated by `schemas/diff.schema.json`.
 
 ## CI is the source of truth
 
@@ -80,6 +90,7 @@ uv run ruff check .
 uv run mypy src tests
 uv run pytest --cov
 uv run riskratchet scan src --coverage coverage.json --json
+uv run riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --json
 ```
 
 Conventions:

@@ -4,9 +4,11 @@
   "title": "riskratchet check regressions",
   "description": "Output of `riskratchet check --json`. The CLI exits 1 when `regressions` is non-empty, 2 on usage error, 0 otherwise.",
   "type": "object",
-  "required": ["regressions"],
+  "required": ["$schema", "version", "regressions"],
   "additionalProperties": false,
   "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
     "regressions": {
       "type": "array",
       "items": {

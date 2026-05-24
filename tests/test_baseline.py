@@ -9,7 +9,9 @@ import pytest
 from riskratchet.baseline import (
     baseline_from_report,
     compare,
+    diff,
     load_baseline,
+    regressions_from_diff,
     save_baseline,
 )
 from riskratchet.models import (
@@ -18,6 +20,7 @@ from riskratchet.models import (
     ChurnStats,
     ComplexityStats,
     CoverageStats,
+    DiffStatus,
     FileStats,
     FunctionId,
     FunctionRisk,
@@ -283,6 +286,66 @@ def test_compare_can_disable_component_regression_gate() -> None:
         )
         == []
     )
+
+
+def test_diff_reports_all_statuses() -> None:
+    old_regressed = FunctionId("a.py", "regressed")
+    old_improved = FunctionId("a.py", "improved")
+    old_removed = FunctionId("a.py", "removed")
+    old_moved = FunctionId("old.py", "moved")
+    old = Baseline(
+        version="2",
+        entries={
+            old_regressed: BaselineEntry(
+                id=old_regressed,
+                score=40.0,
+                components=_components(40.0),
+                fingerprint="regressed",
+            ),
+            old_improved: BaselineEntry(
+                id=old_improved,
+                score=80.0,
+                components=_components(80.0),
+                fingerprint="improved",
+            ),
+            old_removed: BaselineEntry(
+                id=old_removed,
+                score=30.0,
+                components=_components(30.0),
+                fingerprint="removed",
+            ),
+            old_moved: BaselineEntry(
+                id=old_moved,
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="moved",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(
+            _fn("a.py", "regressed", 60.0, component_score=60.0, fingerprint="regressed"),
+            _fn("a.py", "improved", 40.0, component_score=40.0, fingerprint="improved"),
+            _fn("a.py", "new", 30.0, component_score=30.0, fingerprint="new"),
+            _fn("new.py", "moved", 20.0, component_score=20.0, fingerprint="moved"),
+        ),
+        files=(),
+    )
+    diff_report = diff(report, old, fail_regression_above=5.0)
+    statuses = {entry.id.as_target(): entry.status for entry in diff_report.entries}
+    assert statuses["a.py::regressed"] == DiffStatus.REGRESSED
+    assert statuses["a.py::improved"] == DiffStatus.IMPROVED
+    assert statuses["a.py::new"] == DiffStatus.NEW
+    assert statuses["new.py::moved"] == DiffStatus.MOVED
+    assert statuses["a.py::removed"] == DiffStatus.REMOVED
+
+
+def test_regressions_from_diff_applies_new_threshold() -> None:
+    report = RiskReport(functions=(_fn("a.py", "new", 60.0),), files=())
+    diff_report = diff(report, Baseline(version="2"), fail_regression_above=5.0)
+    regressions = regressions_from_diff(diff_report, fail_new_above=50.0)
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.NEW_ABOVE_THRESHOLD
 
 
 def test_baseline_json_is_sorted_for_stable_diffs(tmp_path: Path) -> None:

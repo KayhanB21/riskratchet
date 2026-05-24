@@ -109,7 +109,7 @@ def test_render_report_markdown_handles_missing_branch_coverage() -> None:
     assert "n/a" in out
 
 
-def test_render_report_sarif_includes_all_functions() -> None:
+def test_render_report_sarif_filters_low_risk_functions_by_default() -> None:
     payload = json.loads(render_report_sarif(_report(_fn("a", 80.0), _fn("b", 10.0))))
     assert payload["version"] == "2.1.0"
     assert payload["$schema"] == "https://json.schemastore.org/sarif-2.1.0.json"
@@ -117,9 +117,9 @@ def test_render_report_sarif_includes_all_functions() -> None:
     assert run["tool"]["driver"]["name"] == "riskratchet"
     assert len(run["tool"]["driver"]["rules"]) >= 1
     results = run["results"]
-    assert len(results) == 2
+    assert len(results) == 1
     assert {result["ruleId"] for result in results} == {"riskratchet.function-risk"}
-    assert {result["properties"]["qualname"] for result in results} == {"a", "b"}
+    assert {result["properties"]["qualname"] for result in results} == {"a"}
     assert results[0]["locations"][0]["physicalLocation"]["region"] == {"startLine": 1, "endLine": 10}
 
 
