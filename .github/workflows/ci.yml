@@ -21,7 +21,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: ${{ github.event_name != 'pull_request' }}
       - name: Set up Python 3.12
         run: uv python install 3.12
       - name: Verify uv.lock is in sync
@@ -52,7 +52,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: ${{ github.event_name != 'pull_request' }}
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
       - name: Sync dependencies
@@ -74,7 +74,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
         with:
-          enable-cache: true
+          enable-cache: ${{ github.event_name != 'pull_request' }}
       - name: Set up Python 3.12
         run: uv python install 3.12
       - name: Sync dependencies
