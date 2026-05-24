@@ -769,6 +769,46 @@ def test_check_baseline_format_riskratchet_behaves_like_default(tmp_path: Path) 
     assert result.exit_code == 0, result.stdout
 
 
+def test_check_emits_regression_hint_on_stderr(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    # Mutate `branchy` to dramatically higher complexity, forcing a regression
+    # past the default +5 score tolerance.
+    branches = "\n".join(f"    if x == {n}: return {n}" for n in range(20))
+    (src / "m.py").write_text(
+        "def trivial():\n    return 1\n\ndef branchy(x):\n" + branches + "\n    return 0\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1
+    # Hint goes to stderr so --json stdout consumers stay clean.
+    assert "regressions detected" in result.stderr
+    assert "riskratchet baseline" in result.stderr
+
+
 def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"

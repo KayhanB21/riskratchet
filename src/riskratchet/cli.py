@@ -32,7 +32,7 @@ from riskratchet.baseline import (
 from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import analyze
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS
-from riskratchet.models import Regression, RiskReport
+from riskratchet.models import Regression, RegressionKind, RiskReport
 from riskratchet.reporting import (
     SourceLinks,
     render_diff_github,
@@ -347,6 +347,7 @@ def check(
     rendered = _render_regressions(regressions, format=effective_format)
     _write(rendered, output)
     if regressions:
+        _emit_regression_hint(regressions, baseline_file=baseline_file)
         raise typer.Exit(code=1)
 
 
@@ -545,6 +546,35 @@ def _effective_format(format: str, json_output: bool) -> str:
         return "json"
     _validate_format(format)
     return format
+
+
+def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path) -> None:
+    """Print escape-hatch hints to stderr when `check` exits with regressions.
+
+    Stays on stderr so `--json` consumers still see a clean stdout payload.
+    """
+    typer.secho("", err=True)
+    typer.secho("riskratchet: regressions detected. Options:", fg=typer.colors.YELLOW, err=True)
+    typer.secho(
+        f"  1. Accept the new state as the baseline (if the change is intentional):\n"
+        f"       riskratchet baseline <paths> --coverage <coverage.json> --output {baseline_file}",
+        err=True,
+    )
+    has_component = any(r.kind is RegressionKind.COMPONENT_REGRESSED for r in regressions)
+    if has_component:
+        typer.secho(
+            "  2. Loosen or disable the per-component gate (this run only):\n"
+            "       riskratchet check ... --no-component-regression-gate\n"
+            "       riskratchet check ... --fail-component-regression-above 25\n"
+            "     Or persist via [tool.riskratchet] component_regression_gate / "
+            "fail_component_regression_above in pyproject.toml.",
+            err=True,
+        )
+    typer.secho(
+        "  Tip: option 1 keeps the ratchet honest; option 2 is for one-off triage.",
+        fg=typer.colors.CYAN,
+        err=True,
+    )
 
 
 def _render_regressions(regressions: list[Regression], *, format: str) -> str:
