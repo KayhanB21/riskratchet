@@ -1,0 +1,54 @@
+name: release-check
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: release-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-check:
+    name: build + install smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+      - name: Sync dependencies
+        run: uv sync --all-extras --dev
+      - name: Quality gate
+        run: |
+          uv run ruff check .
+          uv run mypy src
+          uv run pytest -q
+      - name: Build distributions
+        run: |
+          rm -rf dist
+          uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+      - name: Wheel smoke test (isolated venv)
+        run: |
+          python -m venv /tmp/wheel-env
+          /tmp/wheel-env/bin/pip install --upgrade pip
+          /tmp/wheel-env/bin/pip install dist/*.whl
+          /tmp/wheel-env/bin/riskratchet --version
+
+      - name: 'pip install . smoke test (isolated venv)'
+        run: |
+          python -m venv /tmp/src-env
+          /tmp/src-env/bin/pip install --upgrade pip
+          /tmp/src-env/bin/pip install .
+          /tmp/src-env/bin/riskratchet --version
