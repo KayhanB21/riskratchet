@@ -742,13 +742,18 @@ Typing `tests/` is on the roadmap but not yet enforced; CI only runs
 
 ## Release
 
-CI validates every push and pull request. Publishing is still manual.
+Releases are published to PyPI via GitHub Actions [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC, no API tokens). To cut a release:
 
 ```bash
-./scripts/publish.sh
+# 1. Bump `version` in pyproject.toml and move CHANGELOG entries from
+#    "Unreleased" into a new dated section. Commit on master.
+# 2. Tag and push:
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
-The script runs the same gates CI does, then `uv build` and `twine
-upload`. The GitHub Actions workflow under `.github/workflows/` is the
-source of truth for what "green" means; if a check fails there, do not
-ship.
+The `publish.yml` workflow runs the same quality gates as CI (ruff, mypy,
+pytest), builds the distribution, and publishes via OIDC with PEP 740
+attestations. The `pypi` GitHub environment gates the upload step with a
+required-reviewer rule. If CI is red on master, do not tag — the
+workflow's quality gate will fail anyway.

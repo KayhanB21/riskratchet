@@ -6,14 +6,11 @@ on:
       - "v*"
 
 # Trusted Publishing to PyPI via OIDC.
-# Configure on PyPI: Project -> Publishing -> Add a pending publisher with
+# Publisher configured on PyPI with:
 #   Owner: KayhanB21
 #   Repository: riskratchet
 #   Workflow: publish.yml
 #   Environment: pypi
-#
-# This workflow is dormant until the maintainer flips it on; scripts/publish.sh
-# remains the active release path in the meantime.
 
 permissions:
   contents: read

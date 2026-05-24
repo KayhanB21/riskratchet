@@ -11,6 +11,12 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+### Removed
+
+- `scripts/publish.sh`. Releases now go through `.github/workflows/publish.yml`
+  (PyPI Trusted Publishing via OIDC) — tag `vX.Y.Z`, push, done. The README
+  "Release" section has been updated to match.
+
 ## [0.2.1] - 2026-05-23
 
 ### Added

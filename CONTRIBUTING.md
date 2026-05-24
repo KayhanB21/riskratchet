@@ -45,7 +45,7 @@ Adding a new **dev** dependency is fine — open the PR.
 
 ## Workflow and release files
 
-Changes to `.github/workflows/`, `pyproject.toml`'s build configuration, `scripts/`, or anything that affects the published artifact require maintainer review (enforced via `CODEOWNERS`). First-time contributors' workflow runs may require manual approval — this is a GitHub policy, not personal.
+Changes to `.github/workflows/`, `pyproject.toml`'s build configuration, or anything that affects the published artifact require maintainer review (enforced via `CODEOWNERS`). First-time contributors' workflow runs may require manual approval — this is a GitHub policy, not personal.
 
 When pinning a new GitHub Action, use the full commit SHA with the semver tag as a trailing comment:
 
