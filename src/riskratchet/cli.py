@@ -31,6 +31,7 @@ from riskratchet.baseline import (
 )
 from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import analyze
+from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS
 from riskratchet.models import Regression, RiskReport
 from riskratchet.reporting import (
     SourceLinks,
@@ -109,6 +110,10 @@ def scan(
         typer.Option("--allow", help="Suppress matching functions or path globs from reporting/gating."),
     ] = None,
     no_git: Annotated[bool, typer.Option("--no-git", help="Disable churn collection.")] = False,
+    churn_days: Annotated[
+        int | None,
+        typer.Option("--churn-days", help="Churn window in days. Default 90."),
+    ] = None,
     limit: Annotated[int, typer.Option("--limit", help="Max table rows; 0 for all.")] = 20,
     top: Annotated[
         int | None,
@@ -157,6 +162,7 @@ def scan(
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
         use_git=not no_git,
+        churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
@@ -175,6 +181,10 @@ def baseline(
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    churn_days: Annotated[
+        int | None,
+        typer.Option("--churn-days", help="Churn window in days. Default 90."),
+    ] = None,
     missing_coverage: Annotated[
         str | None,
         typer.Option("--missing-coverage", help="How to handle missing file coverage."),
@@ -212,6 +222,7 @@ def baseline(
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
         use_git=not no_git,
+        churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
@@ -256,6 +267,10 @@ def check(
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    churn_days: Annotated[
+        int | None,
+        typer.Option("--churn-days", help="Churn window in days. Default 90."),
+    ] = None,
     missing_coverage: Annotated[
         str | None,
         typer.Option("--missing-coverage", help="How to handle missing file coverage."),
@@ -304,6 +319,7 @@ def check(
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
         use_git=not no_git,
+        churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
@@ -340,6 +356,10 @@ def explain(
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    churn_days: Annotated[
+        int | None,
+        typer.Option("--churn-days", help="Churn window in days. Default 90."),
+    ] = None,
     no_auto_cov: Annotated[
         bool,
         typer.Option(
@@ -366,6 +386,7 @@ def explain(
         [file_path],
         coverage_path=coverage_path,
         use_git=not no_git,
+        churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
     )
     fn = report.find(target)
@@ -399,6 +420,10 @@ def diff(
     exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
     allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    churn_days: Annotated[
+        int | None,
+        typer.Option("--churn-days", help="Churn window in days. Default 90."),
+    ] = None,
     allow_missing_coverage: Annotated[
         bool,
         typer.Option("--allow-missing-coverage", help="Allow diffing without configured coverage data."),
@@ -448,6 +473,7 @@ def diff(
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
         use_git=not no_git,
+        churn_days=_resolved_churn_days(churn_days, cfg),
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
@@ -781,6 +807,19 @@ def _resolved_optional_float(cli_value: float | None, cfg_value: Any) -> float |
     if isinstance(cfg_value, (int, float)):
         return float(cfg_value)
     return None
+
+
+def _resolved_churn_days(cli_value: int | None, cfg: dict[str, Any]) -> int:
+    if cli_value is not None:
+        if cli_value < 1:
+            raise typer.BadParameter("--churn-days must be >= 1")
+        return cli_value
+    cfg_value = cfg.get("churn_window_days")
+    if isinstance(cfg_value, int) and not isinstance(cfg_value, bool):
+        if cfg_value < 1:
+            raise typer.BadParameter("[tool.riskratchet] churn_window_days must be >= 1")
+        return cfg_value
+    return DEFAULT_CHURN_WINDOW_DAYS
 
 
 def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:

@@ -21,7 +21,7 @@ from riskratchet.coverage import (
     empty_coverage,
     load_coverage,
 )
-from riskratchet.git import churn_for_function, collect_function_churn
+from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
 from riskratchet.models import (
     ChurnStats,
     FileStats,
@@ -41,6 +41,7 @@ def analyze(
     exclude: Sequence[str] = (),
     allow: Sequence[str] = (),
     use_git: bool = True,
+    churn_days: int = DEFAULT_CHURN_WINDOW_DAYS,
     weights: Mapping[str, float] | None = None,
     missing_coverage_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
 ) -> RiskReport:
@@ -80,6 +81,7 @@ def analyze(
     churn_by_function = collect_function_churn(
         root_path,
         [(fn.id, fn.span) for parsed in parsed_files for fn in parsed.functions],
+        days=churn_days,
         enabled=use_git,
     )
 

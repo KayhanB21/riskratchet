@@ -6,9 +6,8 @@ which both editors can consume today with off-the-shelf viewers. This
 gets you inline findings in the Problems panel with file:line jump-to,
 no extension code required.
 
-If you want live, on-save diagnostics with no manual step, see
-[`docs/ide-integration-plan.md`](./ide-integration-plan.md) for the LSP
-roadmap.
+Live, on-save diagnostics via a native LSP server are on the roadmap but
+not yet implemented.
 
 ## VS Code
 
@@ -66,8 +65,9 @@ JetBrains SARIF support is uneven across editions. Two paths:
 
 ### PyCharm/IntelliJ Ultimate 2024.2+
 
-These bundle a generic LSP client. The clean integration story will be
-the `riskratchet lsp` server (see the plan doc), not SARIF. For now:
+These bundle a generic LSP client. A native `riskratchet lsp` server is
+on the roadmap and will be the cleanest integration path once it lands.
+Until then:
 
 1. Run `riskratchet scan src --format sarif -o .riskratchet/report.sarif`
    from the terminal panel.
@@ -86,10 +86,10 @@ workflow is:
 
 ## Neovim / Helix / Zed / Sublime
 
-These editors all speak LSP and will integrate cleanly once the LSP
-server lands (Phase 3 of the integration plan). Until then, the
-`--format github` and `--format pr-comment` outputs are the recommended
-surface — they were designed for terminal and code review, not editors.
+These editors all speak LSP and will integrate cleanly once a native
+`riskratchet lsp` server lands. Until then, the `--format github` and
+`--format pr-comment` outputs are the recommended surface — they were
+designed for terminal and code review, not editors.
 
 ## Other LSP-capable editors
 

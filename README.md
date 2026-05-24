@@ -373,8 +373,7 @@ comment`.
 
 See [`docs/ide-integration.md`](docs/ide-integration.md) for how to view
 findings inline in VS Code (via the SARIF Viewer extension) and JetBrains
-IDEs. A native LSP server with on-save diagnostics is on the roadmap;
-see [`docs/ide-integration-plan.md`](docs/ide-integration-plan.md).
+IDEs.
 
 ## Sample output on real libraries
 
