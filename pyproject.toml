@@ -98,6 +98,7 @@ addopts = ["--strict-markers", "-ra"]
 [tool.coverage.run]
 source = ["src/riskratchet"]
 branch = true
+omit = ["*/_demo_bad_function.py"]
 
 [tool.coverage.report]
 fail_under = 74
