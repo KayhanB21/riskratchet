@@ -13,6 +13,14 @@ cyclomatic complexity, churn, public surface, and sprawl signals. Snapshot
 the current state as a baseline, then fail CI or block the commit whenever
 risk grows. The bar can only move down, never up.
 
+The review workflow is directly inspired by
+[`cargo-crap`](https://github.com/minikin/cargo-crap), a Rust tool that made
+the CRAP metric practical in CI with threshold gates, baseline deltas,
+GitHub annotations, sticky PR comments, suppressions, missing-coverage
+policies, and schema-backed JSON. riskratchet is not a Python port of
+cargo-crap: it keeps CRAP as a reported metric, then adds Python-specific
+signals such as branch gaps, churn, public surface, and file/function sprawl.
+
 ## Use cases
 
 Four real scenarios for how riskratchet earns its keep.
@@ -179,6 +187,10 @@ just as often:
 riskratchet keeps CRAP as a reported metric (it's still useful as a
 single-number signal) and computes its own composite score from six
 weighted components so those other risks show up too.
+
+The practical inspiration here is cargo-crap's treatment of CRAP as a CI and
+review signal instead of a static dashboard number. riskratchet borrows that
+operational shape for Python while widening the risk model beyond CRAP alone.
 
 ## Why AI-assisted workflows need a ratchet
 
