@@ -56,3 +56,61 @@ jobs:
         run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
       - name: Run tests
         run: uv run --python ${{ matrix.python-version }} pytest -q
+
+  riskratchet:
+    name: riskratchet (PR regression gate)
+    # Skip on master pushes; the baseline lives on master, so a self-check
+    # against master is always trivially green and adds nothing.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+      - name: Sync dependencies
+        run: uv sync --all-extras --dev
+      - name: Generate coverage.json
+        run: uv run pytest --cov=src/riskratchet --cov-branch --cov-report=json:coverage.json -q
+      - name: Run riskratchet check (produces PR comment body)
+        id: ratchet
+        run: |
+          set +e
+          uv run riskratchet check src \
+            --coverage coverage.json \
+            --baseline .riskratchet.json \
+            --format pr-comment > regressions.md
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upsert PR comment with regression report
+        if: steps.ratchet.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # `pr-comment` format begins with <!-- riskratchet-report --> so we
+          # can find and edit the existing comment instead of spamming a new
+          # one on every push.
+          existing=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+            --jq '.[] | select(.body | startswith("<!-- riskratchet-report -->")) | .id' \
+            | head -n1)
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${REPO}/issues/comments/${existing}" \
+              --field body=@regressions.md > /dev/null
+          else
+            gh pr comment "${PR_NUMBER}" --body-file regressions.md
+          fi
+      - name: Fail the job on regressions
+        if: steps.ratchet.outputs.status != '0'
+        run: |
+          echo "::error::riskratchet detected regressions. See PR comment for details."
+          exit 1
