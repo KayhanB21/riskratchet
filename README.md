@@ -285,6 +285,39 @@ repos:
 riskratchet uses the freshly produced `coverage.json` directly, no auto-cov
 needed. The `pytest-cov` hook also catches test failures early.
 
+#### Variant: uv / poetry projects (all `language: system`)
+
+If your project uses `uv` (or `poetry`) and you'd rather not have pre-commit
+manage a parallel venv at all, declare both hooks as `language: system` so
+they run inside your project's environment. This is also what riskratchet
+itself runs against its own source tree (see this repo's
+`.pre-commit-config.yaml`):
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: pytest-cov
+        name: pytest --cov (produces coverage.json for riskratchet)
+        entry: uv run pytest --cov --cov-branch --cov-report=json:coverage.json -q
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: riskratchet
+        name: riskratchet check (gate on baseline regressions)
+        entry: uv run riskratchet check src --coverage coverage.json --baseline .riskratchet.json --no-auto-cov
+        language: system
+        pass_filenames: false
+        always_run: true
+```
+
+Two upsides over the published-hook form: a single environment for both
+hooks (no isolated-venv surprises), and `uv run` resolves the same Python
+and deps `uv sync` set up. The downside is that contributors must have
+`uv` installed locally; for repos with non-uv contributors, the published
+form above is more portable.
+
 ### Pattern B: let riskratchet run pytest itself
 
 To escape the isolated venv, override the hook to `language: system` so
@@ -388,6 +421,11 @@ pin parsing behavior.
   explicit and slightly faster.
 - Parsing stdout as both prose and JSON. Pick a format. With `--json`,
   stdout is a single JSON object; status messages go to stderr.
+- When `check` exits `1`, it prints a short hint to **stderr** with the
+  two ways out: regenerate the baseline (`riskratchet baseline ...`) or
+  loosen the per-component gate (`--no-component-regression-gate`,
+  `--fail-component-regression-above`). Stdout stays clean so `--json`
+  consumers are unaffected.
 - Bumping the baseline to silence a regression. The baseline is the bar; if
   it has to move up, do it in a dedicated PR with a written justification.
 
@@ -505,13 +543,28 @@ with bugs.
 
 **`public_surface` — "if this breaks, do callers we can't see break too?"**
 A multiplier on coverage gap: when a function is part of your public
-API (no leading underscore, importable from a package's `__init__`),
-its missing coverage is penalized harder than the same gap on a private
-helper. A private helper with 40% coverage is a problem you can fix
-locally; a public function with 40% coverage is a contract problem.
+API, its missing coverage is penalized harder than the same gap on a
+private helper. A private helper with 40% coverage is a problem you can
+fix locally; a public function with 40% coverage is a contract problem.
+
+How "public" is determined:
+
+- **No `__all__` in the module:** by qualname. `foo` is public; `_foo`
+  is private; `Foo.__init__` is public (dunder exception).
+- **Module declares `__all__`:** additive promotion. A leading-underscore
+  top-level name (e.g. `_LegacyExposed`) is treated as public if it
+  appears in `__all__`. Omission never demotes — a public-by-name function
+  not in `__all__` stays public, because `__all__` only controls
+  `import *`, not reachability. Nested segments still follow the naming
+  rule: `_LegacyExposed.bar` is public, but `_LegacyExposed._helper` is
+  not.
+- **Dynamic `__all__`** (`__all__ += [...]`, concatenation, conditional)
+  falls back to the naming rule.
 
 > *Example:* `_normalize_path` with 50% coverage → `public_surface = 25`.
 > Public `format_currency` with 50% coverage → `public_surface = 50`.
+> `_LegacyExposed` in `__all__` with 50% coverage → `public_surface = 50`
+> (promoted to public despite the underscore).
 
 **`sprawl` — "is this function (or its file) just too big?"**
 A blend of function length and the surrounding file's length. Long
