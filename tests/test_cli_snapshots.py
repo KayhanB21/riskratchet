@@ -16,6 +16,7 @@ import re
 from pathlib import Path
 from textwrap import dedent
 
+import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -121,13 +122,16 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
 
 def _normalize_markdown(text: str) -> str:
     """Strip path noise and round floats so the snapshot is stable."""
-    # Replace any tmp_path prefix with a placeholder.
-    text = re.sub(r"`[^`]*?/src/m\.py", "`TMP/src/m.py", text)
+    # Replace any prefix (including no prefix) with a placeholder.
+    text = re.sub(r"`(?:[^`]*?/)?src/m\.py", "`TMP/src/m.py", text)
     return text
 
 
-def test_scan_markdown_snapshot_is_stable(tmp_path: Path) -> None:
+def test_scan_markdown_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     src = _project(tmp_path)
+    # chdir into tmp_path so the snapshot is hermetic: avoids picking up a
+    # coverage.json or pyproject.toml from the repo root.
+    monkeypatch.chdir(tmp_path)
     result = runner.invoke(
         app,
         ["scan", str(src), "--format", "markdown", "--no-auto-cov", "--no-git"],

@@ -54,7 +54,6 @@ coverage.json
 cover/
 
 # riskratchet artifacts
-.riskratchet.json
 .riskratchet/
 
 # Local-only operational scripts (not for the package)
