@@ -11,6 +11,8 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-23
+
 ### Added
 
 - `--churn-days N` flag on `scan`, `baseline`, `check`, `explain`, and
