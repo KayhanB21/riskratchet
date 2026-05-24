@@ -134,8 +134,13 @@ def _normalize_markdown(text: str) -> str:
 def test_scan_markdown_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     src = _project(tmp_path)
     # chdir into tmp_path so the snapshot is hermetic: avoids picking up a
-    # coverage.json or pyproject.toml from the repo root.
+    # coverage.json or pyproject.toml from the repo root. Clear GitHub Actions
+    # env vars so default source-linking does not change this plain markdown
+    # snapshot in CI.
     monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("GITHUB_SERVER_URL", raising=False)
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
     result = runner.invoke(
         app,
         ["scan", str(src), "--format", "markdown", "--no-auto-cov", "--no-git"],
