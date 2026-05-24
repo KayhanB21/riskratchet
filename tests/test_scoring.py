@@ -168,3 +168,84 @@ def test_increasing_coverage_never_increases_coverage_gap() -> None:
         current = coverage_gap_score(cov)
         assert current <= previous + 1e-9
         previous = current
+
+
+# ----- Per-component boundary tests -----
+
+
+def test_coverage_gap_clamps_out_of_range_inputs() -> None:
+    # Defensive bounds: pathological values from upstream coverage tools
+    # shouldn't push the component outside [0, 100].
+    assert coverage_gap_score(CoverageStats(line_coverage=-0.5, branch_coverage=None)) == 100.0
+    assert coverage_gap_score(CoverageStats(line_coverage=1.5, branch_coverage=None)) == 0.0
+
+
+def test_coverage_gap_near_boundaries() -> None:
+    eps = 1e-9
+    assert coverage_gap_score(CoverageStats(line_coverage=eps, branch_coverage=None)) == pytest.approx(
+        100.0, abs=1e-6
+    )
+    assert coverage_gap_score(CoverageStats(line_coverage=1.0 - eps, branch_coverage=None)) == pytest.approx(
+        0.0, abs=1e-6
+    )
+
+
+def test_structural_complexity_at_saturation_boundary() -> None:
+    # CC=1 is the floor (no branches); CC=21 is the first fully-saturated
+    # value because _saturate is called with saturation=CC+1=21.
+    assert structural_complexity_score(ComplexityStats(cyclomatic=1)) == 0.0
+    assert structural_complexity_score(ComplexityStats(cyclomatic=20)) == pytest.approx(95.0)
+    assert structural_complexity_score(ComplexityStats(cyclomatic=21)) == 100.0
+    assert structural_complexity_score(ComplexityStats(cyclomatic=100)) == 100.0
+
+
+def test_branch_gap_none_is_zero_regardless_of_line_coverage() -> None:
+    for line_cov in (0.0, 0.5, 1.0):
+        cov = CoverageStats(line_coverage=line_cov, branch_coverage=None)
+        assert branch_gap_score(cov) == 0.0
+
+
+def test_branch_gap_endpoints_and_mid() -> None:
+    assert branch_gap_score(CoverageStats(line_coverage=0.0, branch_coverage=0.0)) == 100.0
+    assert branch_gap_score(CoverageStats(line_coverage=0.0, branch_coverage=1.0)) == 0.0
+    assert branch_gap_score(CoverageStats(line_coverage=0.0, branch_coverage=0.5)) == 50.0
+
+
+def test_churn_at_saturation_boundary() -> None:
+    assert churn_score(ChurnStats(commits=0)) == 0.0
+    assert churn_score(ChurnStats(commits=1)) == pytest.approx(10.0)
+    assert churn_score(ChurnStats(commits=9)) == pytest.approx(90.0)
+    assert churn_score(ChurnStats(commits=10)) == 100.0
+    assert churn_score(ChurnStats(commits=11)) == 100.0
+    assert churn_score(ChurnStats(commits=1000)) == 100.0
+
+
+def test_public_surface_at_coverage_boundaries() -> None:
+    private_uncovered = CoverageStats(line_coverage=0.0, branch_coverage=None)
+    public_half = CoverageStats(line_coverage=0.5, branch_coverage=None)
+    public_full = CoverageStats(line_coverage=1.0, branch_coverage=None)
+    assert public_surface_score(is_public=False, coverage=private_uncovered) == 0.0
+    assert public_surface_score(is_public=True, coverage=private_uncovered) == 100.0
+    assert public_surface_score(is_public=True, coverage=public_half) == 50.0
+    assert public_surface_score(is_public=True, coverage=public_full) == 0.0
+
+
+def test_sprawl_at_blending_boundaries() -> None:
+    # Below free thresholds: both halves zero -> 0.
+    assert sprawl_score(_span(80), _file(500)) == 0.0
+    # At/above saturation: both halves 100 -> 100.
+    assert sprawl_score(_span(160), _file(1000)) == 100.0
+    # Big function in small file: function half saturates, file half is 0.
+    assert sprawl_score(_span(160), _file(500)) == pytest.approx(50.0)
+    # Small function in big file: symmetric.
+    assert sprawl_score(_span(80), _file(1000)) == pytest.approx(50.0)
+
+
+def test_severity_bands_at_exact_boundaries() -> None:
+    # Lower bound is inclusive at the higher band.
+    assert severity(24.999) == Severity.LOW
+    assert severity(25.0) == Severity.MEDIUM
+    assert severity(49.999) == Severity.MEDIUM
+    assert severity(50.0) == Severity.HIGH
+    assert severity(74.999) == Severity.HIGH
+    assert severity(75.0) == Severity.CRITICAL

@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 from textwrap import dedent
 
 from riskratchet.analysis import (
     ParseError,
+    _extract_dunder_all,
     is_public_qualname,
     iter_python_files,
     parse_file,
@@ -220,3 +222,123 @@ def test_parse_error_returned_for_non_utf8_file(tmp_path: Path) -> None:
     result = parse_file(path, root=tmp_path)
     assert isinstance(result, ParseError)
     assert "cannot read file" in result.message or "syntax error" in result.message
+
+
+def test_extract_dunder_all_recognises_static_list() -> None:
+    tree = ast.parse('__all__ = ["foo", "_bar"]\n')
+    assert _extract_dunder_all(tree) == frozenset({"foo", "_bar"})
+
+
+def test_extract_dunder_all_recognises_static_tuple() -> None:
+    tree = ast.parse('__all__ = ("foo", "bar")\n')
+    assert _extract_dunder_all(tree) == frozenset({"foo", "bar"})
+
+
+def test_extract_dunder_all_returns_none_when_absent() -> None:
+    tree = ast.parse("x = 1\n")
+    assert _extract_dunder_all(tree) is None
+
+
+def test_extract_dunder_all_returns_none_for_dynamic_assignment() -> None:
+    # Concatenation, augmented assignment, and non-literal elements all
+    # defeat static parsing — we fall back to the naming rule.
+    for source in (
+        "base = ['a']\n__all__ = base + ['b']\n",
+        "__all__ = ['a']\n__all__ += ['b']\n",
+        "x = 'foo'\n__all__ = [x]\n",
+    ):
+        assert _extract_dunder_all(ast.parse(source)) is None
+
+
+def test_is_public_promotes_underscore_function_listed_in_all(tmp_path: Path) -> None:
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
+        __all__ = ["_internal_but_listed"]
+
+        def _internal_but_listed():
+            return 1
+
+        def _truly_private():
+            return 2
+    """,
+    )
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    by_name = {fn.id.qualname: fn for fn in parsed.functions}
+    assert by_name["_internal_but_listed"].is_public is True
+    assert by_name["_truly_private"].is_public is False
+
+
+def test_is_public_keeps_naming_rule_when_module_has_no_all(tmp_path: Path) -> None:
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
+        def public_one():
+            return 1
+
+        def _private_one():
+            return 2
+    """,
+    )
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    by_name = {fn.id.qualname: fn for fn in parsed.functions}
+    assert by_name["public_one"].is_public is True
+    assert by_name["_private_one"].is_public is False
+
+
+def test_is_public_for_method_uses_class_top_segment(tmp_path: Path) -> None:
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
+        __all__ = ["_LegacyExposed"]
+
+        class _LegacyExposed:
+            def method(self):
+                return 1
+
+            def _helper(self):
+                return 2
+
+        class _NotListed:
+            def method(self):
+                return 3
+    """,
+    )
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    by_name = {fn.id.qualname: fn for fn in parsed.functions}
+    # Class is in __all__: top-segment match promotes any non-underscore
+    # method, but a leading-underscore method stays private (segment rule).
+    assert by_name["_LegacyExposed.method"].is_public is True
+    # Class promoted, but a leading-underscore method is still private.
+    assert by_name["_LegacyExposed._helper"].is_public is False
+    # Class not in __all__: falls back to naming rule, which sees _NotListed.
+    assert by_name["_NotListed.method"].is_public is False
+
+
+def test_is_public_additive_does_not_demote_unlisted_public(tmp_path: Path) -> None:
+    # A function that *would* be public by naming rule must stay public
+    # even when omitted from __all__ — __all__ promotes, never demotes.
+    path = _write(
+        tmp_path,
+        "m.py",
+        """
+        __all__ = ["only_this"]
+
+        def only_this():
+            return 1
+
+        def also_public():
+            return 2
+    """,
+    )
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    by_name = {fn.id.qualname: fn for fn in parsed.functions}
+    assert by_name["only_this"].is_public is True
+    assert by_name["also_public"].is_public is True

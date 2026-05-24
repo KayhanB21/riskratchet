@@ -100,3 +100,24 @@ def test_agent_generated_spaghetti_lands_high() -> None:
     assert fn.components.coverage_gap > 0.0
     assert fn.components.structural_complexity > 0.0
     assert severity_of(fn.score).value in {"high", "critical"}
+
+
+def test_all_exports_focused_promotes_listed_underscore_name() -> None:
+    """End-to-end: `__all__` promotes `_legacy_exposed` and `naturally_public`
+    to public (firing `public_surface` with no coverage), while
+    `_truly_private` stays private (`public_surface == 0`)."""
+    report = _analyze_fixture("all_exports_focused")
+    by_qualname = {fn.id.qualname: fn for fn in report.functions}
+    assert set(by_qualname) == {"_legacy_exposed", "naturally_public", "_truly_private"}
+
+    legacy = by_qualname["_legacy_exposed"]
+    assert legacy.is_public is True
+    assert legacy.components.public_surface == pytest.approx(100.0)
+
+    natural = by_qualname["naturally_public"]
+    assert natural.is_public is True
+    assert natural.components.public_surface == pytest.approx(100.0)
+
+    private = by_qualname["_truly_private"]
+    assert private.is_public is False
+    assert private.components.public_surface == 0.0

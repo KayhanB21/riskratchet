@@ -101,10 +101,67 @@ def is_public_qualname(qualname: str) -> bool:
     return not any(_is_private_segment(seg) for seg in qualname.split("."))
 
 
+def _extract_dunder_all(tree: ast.Module) -> frozenset[str] | None:
+    """Return module-level `__all__` as a frozenset, or None if absent/dynamic.
+
+    Only a single static `__all__ = [...]` (or tuple) of string literals is
+    recognised. Augmented assignment, multiple assignments, concatenation,
+    conditional assignment, or any non-literal element all yield None —
+    callers must then fall back to the qualname-based naming rule.
+    """
+    found: frozenset[str] | None = None
+    for node in tree.body:
+        if isinstance(node, ast.AugAssign) and _is_dunder_all_target(node.target):
+            return None
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(_is_dunder_all_target(t) for t in node.targets):
+            continue
+        if found is not None:
+            return None  # multiple assignments: treat as dynamic
+        if len(node.targets) != 1:
+            return None
+        value = node.value
+        if not isinstance(value, (ast.List, ast.Tuple)):
+            return None
+        names: list[str] = []
+        for element in value.elts:
+            if isinstance(element, ast.Constant) and isinstance(element.value, str):
+                names.append(element.value)
+            else:
+                return None
+        found = frozenset(names)
+    return found
+
+
+def _is_dunder_all_target(node: ast.expr) -> bool:
+    return isinstance(node, ast.Name) and node.id == "__all__"
+
+
+def _compute_is_public(qualname: str, dunder_all: frozenset[str] | None) -> bool:
+    """Additive `__all__` semantics: listing promotes the top-level segment.
+
+    `__all__` can promote a leading-underscore top-level name (e.g. a
+    `_LegacyExposed` class kept in `__all__` for backwards compatibility)
+    to public, but it does not affect nested segments: a `_helper` method
+    on a promoted class is still private. Omission from `__all__` never
+    demotes a name — `__all__` only controls `import *`, not reachability.
+    """
+    segments = qualname.split(".")
+    if dunder_all is not None and segments[0] in dunder_all:
+        top_public = True
+    else:
+        top_public = not _is_private_segment(segments[0])
+    if not top_public:
+        return False
+    return not any(_is_private_segment(seg) for seg in segments[1:])
+
+
 class _FunctionCollector(ast.NodeVisitor):
-    def __init__(self, relative_path: str) -> None:
+    def __init__(self, relative_path: str, dunder_all: frozenset[str] | None) -> None:
         self._stack: list[str] = []
         self._relative_path = relative_path
+        self._dunder_all = dunder_all
         self.functions: list[DiscoveredFunction] = []
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
@@ -130,7 +187,7 @@ class _FunctionCollector(ast.NodeVisitor):
             DiscoveredFunction(
                 id=FunctionId(path=self._relative_path, qualname=qualname),
                 span=span,
-                is_public=is_public_qualname(qualname),
+                is_public=_compute_is_public(qualname, self._dunder_all),
                 is_async=isinstance(node, ast.AsyncFunctionDef),
                 fingerprint=function_fingerprint(node),
                 node=node,
@@ -144,7 +201,8 @@ class _FunctionCollector(ast.NodeVisitor):
 
 
 def _discover_functions(tree: ast.Module, relative_path: str) -> tuple[DiscoveredFunction, ...]:
-    collector = _FunctionCollector(relative_path)
+    dunder_all = _extract_dunder_all(tree)
+    collector = _FunctionCollector(relative_path, dunder_all)
     collector.visit(tree)
     return tuple(collector.functions)
 

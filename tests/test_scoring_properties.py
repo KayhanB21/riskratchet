@@ -29,7 +29,10 @@ from riskratchet.models import (
 )
 from riskratchet.scoring import (
     branch_gap_score,
+    churn_score,
     coverage_gap_score,
+    public_surface_score,
+    sprawl_score,
     structural_complexity_score,
     total_risk,
 )
@@ -79,6 +82,78 @@ def test_higher_complexity_never_lowers_structural_score(a: int, b: int) -> None
     score_lo = structural_complexity_score(ComplexityStats(cyclomatic=lo))
     score_hi = structural_complexity_score(ComplexityStats(cyclomatic=hi))
     assert score_hi >= score_lo - 1e-9
+
+
+# ----- Per-component invariants (one bucket per scoring component) -----
+
+
+@given(st.floats(min_value=-2.0, max_value=2.0, allow_nan=False))
+def test_coverage_gap_is_bounded(line_coverage: float) -> None:
+    score = coverage_gap_score(CoverageStats(line_coverage=line_coverage, branch_coverage=None))
+    assert 0.0 <= score <= 100.0
+
+
+@given(st.integers(min_value=21, max_value=10_000))
+def test_structural_complexity_saturates_above_threshold(cc: int) -> None:
+    assert structural_complexity_score(ComplexityStats(cyclomatic=cc)) == 100.0
+
+
+@given(st.floats(min_value=0.0, max_value=1.0))
+def test_branch_gap_is_zero_when_branch_coverage_is_none(line_coverage: float) -> None:
+    cov = CoverageStats(line_coverage=line_coverage, branch_coverage=None)
+    assert branch_gap_score(cov) == 0.0
+
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=0, max_value=100))
+def test_more_commits_never_lowers_churn_score(a: int, b: int) -> None:
+    lo, hi = sorted((a, b))
+    assert churn_score(ChurnStats(commits=hi)) >= churn_score(ChurnStats(commits=lo)) - 1e-9
+
+
+@given(st.integers(min_value=10, max_value=10_000))
+def test_churn_saturates_at_or_above_ten_commits(commits: int) -> None:
+    assert churn_score(ChurnStats(commits=commits)) == 100.0
+
+
+@given(st.floats(min_value=0.0, max_value=1.0))
+def test_private_function_always_scores_zero_for_public_surface(line_coverage: float) -> None:
+    cov = CoverageStats(line_coverage=line_coverage, branch_coverage=None)
+    assert public_surface_score(is_public=False, coverage=cov) == 0.0
+
+
+@given(st.floats(min_value=0.0, max_value=1.0))
+def test_public_surface_for_public_equals_coverage_gap(line_coverage: float) -> None:
+    # The current contract: for a public function, public_surface is
+    # exactly the coverage gap. Locking it here so a future scoring tweak
+    # that breaks the equivalence has to opt in by updating this test.
+    cov = CoverageStats(line_coverage=line_coverage, branch_coverage=None)
+    assert public_surface_score(is_public=True, coverage=cov) == coverage_gap_score(cov)
+
+
+@given(
+    st.integers(min_value=1, max_value=500),
+    st.integers(min_value=1, max_value=500),
+    st.integers(min_value=10, max_value=2_000),
+)
+def test_sprawl_monotonic_in_function_length(a: int, b: int, file_lines: int) -> None:
+    lo, hi = sorted((a, b))
+    span_lo = FunctionSpan(start_line=1, end_line=lo)
+    span_hi = FunctionSpan(start_line=1, end_line=hi)
+    file_stats = FileStats(path="x.py", total_lines=file_lines, function_count=1)
+    assert sprawl_score(span_hi, file_stats) >= sprawl_score(span_lo, file_stats) - 1e-9
+
+
+@given(
+    st.integers(min_value=1, max_value=2_000),
+    st.integers(min_value=1, max_value=2_000),
+    st.integers(min_value=10, max_value=500),
+)
+def test_sprawl_monotonic_in_file_length(a: int, b: int, function_lines: int) -> None:
+    lo, hi = sorted((a, b))
+    span = FunctionSpan(start_line=1, end_line=function_lines)
+    file_lo = FileStats(path="x.py", total_lines=lo, function_count=1)
+    file_hi = FileStats(path="x.py", total_lines=hi, function_count=1)
+    assert sprawl_score(span, file_hi) >= sprawl_score(span, file_lo) - 1e-9
 
 
 def _zero_components() -> RiskComponents:
