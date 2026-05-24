@@ -18,7 +18,7 @@ Before opening a PR, all of these must pass locally:
 
 ```bash
 uv run ruff check .
-uv run mypy src
+uv run mypy src tests
 uv run pytest -q
 ```
 

@@ -13,13 +13,18 @@ cyclomatic complexity, churn, public surface, and sprawl signals. Snapshot
 the current state as a baseline, then fail CI or block the commit whenever
 risk grows. The bar can only move down, never up.
 
-The review workflow is directly inspired by
+The review workflow is directly inspired by two practical review surfaces:
 [`cargo-crap`](https://github.com/minikin/cargo-crap), a Rust tool that made
 the CRAP metric practical in CI with threshold gates, baseline deltas,
 GitHub annotations, sticky PR comments, suppressions, missing-coverage
-policies, and schema-backed JSON. riskratchet is not a Python port of
-cargo-crap: it keeps CRAP as a reported metric, then adds Python-specific
-signals such as branch gaps, churn, public surface, and file/function sprawl.
+policies, and schema-backed JSON; and Cursor's
+[`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+agent prompt, especially its emphasis on maintainability, structure,
+unjustified file sprawl, ad-hoc branching growth, explicit boundaries, and
+reviewing only what the diff shows. riskratchet is not a Python port of
+cargo-crap or an agent prompt: it keeps CRAP as a reported metric, then adds
+Python-specific signals such as branch gaps, churn, public surface, and
+file/function sprawl.
 
 ## Use cases
 
@@ -796,13 +801,12 @@ The same commands run in GitHub Actions. Run them locally before pushing.
 uv sync --locked
 uv run ruff check .
 uv run ruff format --check .
-uv run mypy src
+uv run mypy src tests
 uv run pytest --cov=src/riskratchet --cov-branch --cov-report=term-missing
 uv build --clear
 ```
 
-Typing `tests/` is on the roadmap but not yet enforced; CI only runs
-`mypy src`.
+Strict typing covers both `src/` and `tests/`.
 
 ## Release
 

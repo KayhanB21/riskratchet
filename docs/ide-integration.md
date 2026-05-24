@@ -69,7 +69,7 @@ These bundle a generic LSP client. A native `riskratchet lsp` server is
 on the roadmap and will be the cleanest integration path once it lands.
 Until then:
 
-1. Run `riskratchet scan src --format sarif -o .riskratchet/report.sarif`
+1. Run `riskratchet scan src --format sarif --output .riskratchet/report.sarif`
    from the terminal panel.
 2. Use the [Qodana plugin](https://plugins.jetbrains.com/plugin/20631-qodana)
    or [SARIF Viewer](https://plugins.jetbrains.com/plugin/22850-sarif-viewer)
