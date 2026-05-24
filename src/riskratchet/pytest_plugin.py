@@ -14,10 +14,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from riskratchet.baseline import compare, load_baseline
-from riskratchet.engine import analyze
-from riskratchet.reporting import render_regressions_table
-
 if TYPE_CHECKING:
     import pytest
 
@@ -90,6 +86,13 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         return
     if exitstatus not in (0, 1):
         return
+
+    # Imported lazily so that enabling the plugin entry point does not pull the
+    # whole package in before pytest-cov has a chance to start coverage. Without
+    # this, all module-level lines in riskratchet/* show as "missing".
+    from riskratchet.baseline import compare, load_baseline
+    from riskratchet.engine import analyze
+    from riskratchet.reporting import render_regressions_table
 
     rootdir = Path(str(config.rootpath))
     baseline_path = _resolve(rootdir, config.getoption("--riskratchet-baseline"))

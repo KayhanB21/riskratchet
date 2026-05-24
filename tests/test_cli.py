@@ -419,6 +419,57 @@ def test_scan_fail_above_exits_one(tmp_path: Path) -> None:
     assert result.exit_code == 1
 
 
+def test_scan_fail_severity_exits_one(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    (src / "risky.py").write_text(
+        dedent(
+            """
+            def risky(a, b, c, d, e, f, g, h, i, j):
+                if a:
+                    return 1
+                if b:
+                    return 2
+                if c:
+                    return 3
+                if d:
+                    return 4
+                if e:
+                    return 5
+                if f:
+                    return 6
+                if g:
+                    return 7
+                if h:
+                    return 8
+                if i:
+                    return 9
+                if j:
+                    return 10
+                return 0
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--fail-severity", "high", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 1
+
+
+def test_scan_top_filters_json(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--json", "--top", "1", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert len(payload["functions"]) == 1
+    assert payload["summary"]["emitted_functions"] == 1
+
+
 def test_scan_min_score_filters_json(tmp_path: Path) -> None:
     src = _project(tmp_path)
     result = runner.invoke(
@@ -440,6 +491,92 @@ def test_scan_allow_suppresses_matching_function(tmp_path: Path) -> None:
     payload = json.loads(result.stdout)
     assert [fn["qualname"] for fn in payload["functions"]] == ["trivial"]
     assert payload["summary"]["suppressed_functions"] == 1
+
+
+def test_scan_allow_suppresses_path_pattern(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--json", "--allow", "**/m.py", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["functions"] == []
+    assert payload["summary"]["suppressed_functions"] == 2
+
+
+def test_check_allow_suppresses_new_risky_function(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    (src / "risky.py").write_text(
+        dedent(
+            """
+            def risky(a, b, c, d, e, f, g, h, i, j):
+                if a:
+                    return 1
+                if b:
+                    return 2
+                if c:
+                    return 3
+                if d:
+                    return 4
+                if e:
+                    return 5
+                if f:
+                    return 6
+                if g:
+                    return 7
+                if h:
+                    return 8
+                if i:
+                    return 9
+                if j:
+                    return 10
+                return 0
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--fail-new-above",
+            "10",
+            "--allow",
+            "risky",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+
+
+def test_scan_rejects_invalid_missing_coverage_policy(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--missing-coverage", "unknown", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 2
+    assert "missing coverage policy must be one of" in result.stderr
 
 
 def test_scan_missing_coverage_skip_drops_unmapped_file(tmp_path: Path) -> None:

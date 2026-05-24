@@ -48,6 +48,8 @@ def _project(tmp_path: Path) -> Path:
 REQUIRED_TOP_LEVEL = {"$schema", "version", "summary", "functions"}
 REQUIRED_SUMMARY = {
     "total_functions",
+    "analyzed_functions",
+    "emitted_functions",
     "total_files",
     "coverage_status",
     "suppressed_functions",
@@ -90,6 +92,8 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
     summary = payload["summary"]
     assert REQUIRED_SUMMARY.issubset(summary.keys())
     assert isinstance(summary["total_functions"], int)
+    assert isinstance(summary["analyzed_functions"], int)
+    assert isinstance(summary["emitted_functions"], int)
     assert isinstance(summary["total_files"], int)
     assert summary["coverage_status"] in {"present", "missing"}
     assert isinstance(summary["suppressed_functions"], int)

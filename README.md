@@ -329,10 +329,22 @@ JSON output (truncated):
 
 ```json
 {
+  "$schema": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
+  "version": "0.2",
   "summary": {
-    "function_count": 42,
-    "high_or_critical": 3,
-    "average_score": 18.4
+    "total_functions": 10,
+    "analyzed_functions": 42,
+    "emitted_functions": 10,
+    "total_files": 6,
+    "coverage_status": "present",
+    "suppressed_functions": 1,
+    "skipped_missing_coverage": 0,
+    "by_severity": {
+      "low": 1,
+      "medium": 6,
+      "high": 3,
+      "critical": 0
+    }
   },
   "functions": [
     {
@@ -356,6 +368,13 @@ JSON output (truncated):
 
 Markdown output is suitable for posting as a PR comment via `gh pr
 comment`.
+
+## Editor integration
+
+See [`docs/ide-integration.md`](docs/ide-integration.md) for how to view
+findings inline in VS Code (via the SARIF Viewer extension) and JetBrains
+IDEs. A native LSP server with on-save diagnostics is on the roadmap;
+see [`docs/ide-integration-plan.md`](docs/ide-integration-plan.md).
 
 ## Sample output on real libraries
 

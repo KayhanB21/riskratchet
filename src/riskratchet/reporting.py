@@ -422,8 +422,12 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
     counts: dict[str, int] = {sev.value: 0 for sev in Severity}
     for fn in report.functions:
         counts[severity(fn.score).value] += 1
+    analyzed = report.analyzed_functions if report.analyzed_functions is not None else len(report.functions)
+    emitted = len(report.functions)
     return {
-        "total_functions": len(report.functions),
+        "total_functions": emitted,
+        "analyzed_functions": analyzed,
+        "emitted_functions": emitted,
         "total_files": len(report.files),
         "coverage_status": report.coverage_status,
         "suppressed_functions": report.suppressed_functions,

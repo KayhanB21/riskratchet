@@ -129,6 +129,7 @@ class RiskReport:
     coverage_status: str = "missing"
     suppressed_functions: int = 0
     skipped_missing_coverage: int = 0
+    analyzed_functions: int | None = None
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}

@@ -52,3 +52,12 @@ jobs:
           /tmp/src-env/bin/pip install --upgrade pip
           /tmp/src-env/bin/pip install .
           /tmp/src-env/bin/riskratchet --version
+
+      - name: SARIF output validates against schema
+        run: |
+          /tmp/wheel-env/bin/pip install check-jsonschema
+          /tmp/wheel-env/bin/riskratchet scan src --format sarif \
+            --output /tmp/report.sarif
+          /tmp/wheel-env/bin/check-jsonschema \
+            --schemafile https://json.schemastore.org/sarif-2.1.0.json \
+            /tmp/report.sarif

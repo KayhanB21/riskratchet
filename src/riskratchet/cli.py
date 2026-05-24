@@ -22,7 +22,6 @@ from riskratchet.auto_coverage import (
 )
 from riskratchet.baseline import (
     baseline_from_report,
-    compare,
     load_baseline,
     regressions_from_diff,
     save_baseline,
@@ -308,14 +307,12 @@ def check(
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
     )
-    regressions = compare(
+    diff_report = diff_baseline(
         report,
         old,
-        fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
         fail_regression_above=_resolved_float(
             fail_regression_above, cfg.get("fail_regression_above"), default=5.0
         ),
-        fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
         fail_component_regression_above=_resolved_float(
             fail_component_regression_above,
             cfg.get("fail_component_regression_above"),
@@ -325,6 +322,11 @@ def check(
             not no_component_regression_gate
             and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
+    )
+    regressions = regressions_from_diff(
+        diff_report,
+        fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
+        fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
     )
     rendered = _render_regressions(regressions, format=effective_format)
     _write(rendered, output)
@@ -627,6 +629,7 @@ def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | 
         coverage_status=report.coverage_status,
         suppressed_functions=report.suppressed_functions,
         skipped_missing_coverage=report.skipped_missing_coverage,
+        analyzed_functions=report.analyzed_functions or len(report.functions),
     )
 
 

@@ -118,6 +118,7 @@ def analyze(
         coverage_status="present" if coverage_path is not None else "missing",
         suppressed_functions=suppressed_functions,
         skipped_missing_coverage=skipped_missing_coverage,
+        analyzed_functions=len(function_risks) + suppressed_functions,
     )
 
 
