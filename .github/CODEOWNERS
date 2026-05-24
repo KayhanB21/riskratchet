@@ -1,0 +1,10 @@
+# Default ownership.
+*                  @KayhanB21
+
+# Sensitive paths — kept explicit so they remain owned even if the
+# catch-all above is ever relaxed.
+/.github/          @KayhanB21
+/pyproject.toml    @KayhanB21
+/uv.lock           @KayhanB21
+/scripts/          @KayhanB21
+/src/riskratchet/  @KayhanB21
