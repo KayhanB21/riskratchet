@@ -13,6 +13,43 @@ release; renames or removals are called out below under **Breaking**.
 
 ### Added
 
+- `--churn-days N` flag on `scan`, `baseline`, `check`, `explain`, and
+  `diff` (default `90`). Also configurable as `[tool.riskratchet]
+  churn_window_days`. CLI value wins over config.
+- `__all__`-aware `public_surface` classification. Module-level
+  `__all__ = [...]` (static list/tuple of string literals) additively
+  promotes top-level names to public — a leading-underscore class or
+  function listed in `__all__` is now treated as part of the public
+  surface. Omission never demotes. Dynamic `__all__` falls back to the
+  qualname-based naming rule. See README "Components, in plain English"
+  for the full semantics.
+- `check` now prints a short hint to **stderr** when it exits with
+  regressions, naming the two escape hatches: regenerate the baseline,
+  or loosen `--no-component-regression-gate` /
+  `--fail-component-regression-above`. The hint is conditional —
+  option 2 only appears when at least one regression has `kind ==
+  "component_regressed"`. Stdout stays clean for `--json` consumers.
+- README "Use cases" section with four detailed scenarios (solo dev +
+  AI agent, team gating PRs in CI, pre-commit hook for solo repo,
+  investigating one function with `explain` + `diff`).
+- README "Components, in plain English" subsection — one paragraph per
+  component with a concrete numeric example, plus a worked total-score
+  example.
+- README pre-commit integration: new "uv / poetry projects" variant
+  under Pattern A showing the all-`language: system` style this repo
+  uses on itself, plus a "How pre-commit and riskratchet fit together"
+  preamble explaining the stashing/venv interaction.
+- GitHub Actions: new `riskratchet` job in `.github/workflows/ci.yml`
+  that runs on every pull request, regenerates `coverage.json`, runs
+  `check --format pr-comment`, and upserts a single sticky PR comment
+  via the `<!-- riskratchet-report -->` marker. Job fails when
+  regressions are detected.
+- Strengthened scoring test suite: per-component boundary tests at
+  saturation thresholds and severity-band edges, plus nine new
+  hypothesis-driven property tests covering each of the six components
+  (boundedness, saturation, monotonicity, private/public contracts).
+- New `tests/fixtures/all_exports_focused/` end-to-end fixture
+  exercising the `__all__` promotion path through `analyze()`.
 - Configurable risk weights via `[tool.riskratchet.weights]` in
   `pyproject.toml`. Any subset of the six component keys may be
   overridden; remaining keys keep their default and the whole vector is

@@ -41,6 +41,30 @@ riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --jso
   CI pipelines that produce coverage themselves) and
   `--allow-missing-coverage` to tolerate the resulting absence on `baseline`
   and `check`.
+- `--churn-days N` (default `90`) sets the lookback window used for the
+  `churn` component. Also configurable as `[tool.riskratchet]
+  churn_window_days = N`. The CLI value wins over config.
+- When `check` exits `1`, a short hint is written to **stderr** with two
+  escape hatches: regenerate the baseline (option 1) or loosen the
+  per-component regression gate (option 2, only shown when at least one
+  regression has `kind == "component_regressed"`). The hint is on stderr
+  so `--json` stdout consumers are unaffected.
+
+## `is_public` classification
+
+Used by the `public_surface` component and emitted on every function in
+`scan --json` / `diff --json`. Determined statically from the AST:
+
+- No `__all__` in module → by qualname. Leading-underscore segments are
+  private; dunders (`__init__`, `__call__`, …) are public.
+- Module has `__all__` as a static list/tuple of string literals →
+  additive promotion. A top-level name in `__all__` is public even with a
+  leading underscore. Omission does **not** demote a name that is
+  otherwise public by naming rule. Nested segments still follow the
+  naming rule, so `_Cls.public_method` is public when `_Cls` is in
+  `__all__`, but `_Cls._helper` is not.
+- Dynamic `__all__` (augmented assignment, concatenation, multiple
+  assignments) falls back to the naming rule.
 
 ## Exit codes
 
