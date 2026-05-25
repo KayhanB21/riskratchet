@@ -29,6 +29,8 @@ uv run pytest --cov --cov-branch --cov-report=term-missing -q
 ```
 
 The project's own `riskratchet check` gate runs on every PR. If your change regresses risk on existing functions, the PR comment will say so — address it or argue against it in the PR description.
+If `.riskratchet.json` changes, include a short rationale explaining why the
+new baseline is intentionally accepted.
 
 ## PR expectations
 
@@ -36,6 +38,8 @@ The project's own `riskratchet check` gate runs on every PR. If your change regr
 - Tests for new behavior. Bug fixes should include a regression test that fails without the fix.
 - Update `CHANGELOG.md` under the "Unreleased" section.
 - Keep the diff focused: no drive-by reformatting, no unrelated dependency bumps.
+- Treat baseline bumps like lockfile changes: review them deliberately, and do
+  not use them as a way to hide an accidental regression.
 
 ## Dependencies
 

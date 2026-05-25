@@ -39,6 +39,7 @@ from riskratchet.reporting import (
     render_regressions_table,
     render_report_json,
     render_report_markdown,
+    render_report_pr_comment,
     render_report_sarif,
     render_report_table,
 )
@@ -116,6 +117,17 @@ def test_render_report_markdown_emits_table_and_overflow_note() -> None:
 def test_render_report_markdown_handles_missing_branch_coverage() -> None:
     out = render_report_markdown(_report(_fn(branch_coverage=None)))
     assert "n/a" in out
+
+
+def test_render_report_pr_comment_prioritizes_high_risk_and_collapses_lower_priority() -> None:
+    out = render_report_pr_comment(_report(_fn("high", 80.0), _fn("medium", 45.0), _fn("low", 5.0)), limit=1)
+
+    assert out.startswith("<!-- riskratchet-report -->\n# riskratchet\n")
+    assert "| critical | 80.0 |" in out
+    assert "`m.py::high`" in out
+    assert "<details><summary>Lower-priority findings (2)</summary>" in out
+    assert "`m.py::medium`" in out
+    assert "`m.py::low`" in out
 
 
 def test_render_report_sarif_filters_low_risk_functions_by_default() -> None:
@@ -308,6 +320,8 @@ def test_render_regressions_sarif_includes_location_and_message() -> None:
     assert "risk grew" in result["message"]["text"]
     assert result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"] == "m.py"
     assert result["locations"][0]["physicalLocation"]["region"] == {"startLine": 1, "endLine": 10}
+    assert result["properties"]["components"]["coverage_gap"] == 70.0
+    assert result["properties"]["is_public"] is True
 
 
 def test_sarif_severity_to_level_mapping() -> None:

@@ -9,6 +9,7 @@ from textwrap import dedent
 import pytest
 from typer.testing import CliRunner
 
+from riskratchet import __version__
 from riskratchet.cli import app
 
 runner = CliRunner()
@@ -39,7 +40,7 @@ def _project(tmp_path: Path) -> Path:
 def test_version_flag() -> None:
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert result.stdout.strip()
+    assert result.stdout.strip() == __version__
 
 
 def test_scan_succeeds_and_prints_summary(tmp_path: Path) -> None:

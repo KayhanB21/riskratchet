@@ -11,6 +11,28 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-05-24
+
+### Fixed
+
+- Fixed runtime version drift by deriving `riskratchet --version` and package
+  `__version__` from installed package metadata, with a source-tree fallback
+  for unusual uninstalled execution.
+- Fixed the README logo URL so PyPI can render the project logo from the
+  package long description.
+- Hardened release checks so the package metadata version, CLI `--version`,
+  built wheel metadata, and wheel README metadata are verified before release.
+
+### Added
+
+- Focused regression tests for diff-to-regression conversion, diff renderers,
+  PR-comment rendering, and SARIF regression output before broader output-path
+  refactors.
+- Baseline governance guidance for PRs and documentation, plus a threat model
+  for coverage, baseline, supply-chain, and information-leakage limits.
+- Security automation with CodeQL scanning and a pinned dependency audit
+  workflow.
+
 ## [0.2.2] - 2026-05-24
 
 ### Added

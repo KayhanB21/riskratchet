@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="riskratchet logo" width="180">
+  <img src="https://raw.githubusercontent.com/KayhanB21/riskratchet/master/assets/logo.png" alt="riskratchet logo" width="180">
 </p>
 
 # riskratchet
@@ -127,7 +127,7 @@ repos:
         pass_filenames: false
         always_run: true
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.0
+    rev: v0.2.3
     hooks:
       - id: riskratchet
         args: ["pipelines", "--coverage", "coverage.json", "--baseline", ".riskratchet.json"]
@@ -292,7 +292,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.0
+    rev: v0.2.3
     hooks:
       - id: riskratchet
         args:
@@ -462,6 +462,9 @@ pin parsing behavior.
   consumers are unaffected.
 - Bumping the baseline to silence a regression. The baseline is the bar; if
   it has to move up, do it in a dedicated PR with a written justification.
+
+For the broader trust boundaries and non-goals, see
+[`docs/threat-model.md`](docs/threat-model.md).
 
 ### Suppressions and partial coverage
 

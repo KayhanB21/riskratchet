@@ -1,5 +1,6 @@
 """riskratchet: A maintainability ratchet for AI-assisted Python."""
 
+from riskratchet._version import __version__
 from riskratchet.baseline import (
     baseline_from_report,
     compare,
@@ -25,7 +26,6 @@ from riskratchet.models import (
 )
 from riskratchet.scoring import severity
 
-__version__ = "0.2.0"
 __all__ = [
     "Baseline",
     "BaselineEntry",
@@ -41,6 +41,7 @@ __all__ = [
     "RiskComponents",
     "RiskReport",
     "Severity",
+    "__version__",
     "analyze",
     "baseline_from_report",
     "compare",

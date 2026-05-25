@@ -1,0 +1,49 @@
+name: security
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    - cron: "20 9 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-audit:
+    name: dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        with:
+          enable-cache: true
+      - name: Audit Python dependencies
+        run: |
+          uv export --format requirements-txt --all-extras --dev --no-hashes > /tmp/requirements.txt
+          uvx pip-audit -r /tmp/requirements.txt \
+            --no-deps \
+            --skip-editable \
+            --disable-pip \
+            --progress-spinner off
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa  # v4.36.0
+        with:
+          languages: python
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa  # v4.36.0

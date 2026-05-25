@@ -20,7 +20,12 @@ from riskratchet.models import (
     RiskComponents,
     RiskReport,
 )
-from riskratchet.reporting import render_diff_pr_comment
+from riskratchet.reporting import (
+    render_diff_github,
+    render_diff_markdown,
+    render_diff_pr_comment,
+    render_diff_table,
+)
 
 
 def _components(score: float = 50.0) -> RiskComponents:
@@ -160,6 +165,138 @@ def test_regressions_from_diff_applies_existing_threshold() -> None:
     regressions = regressions_from_diff(diff_report, fail_new_above=100.0, fail_existing_above=50.0)
     assert len(regressions) == 1
     assert regressions[0].kind == RegressionKind.EXISTING_ABOVE_THRESHOLD
+
+
+def test_diff_report_regressions_preserves_only_score_and_component_regressions() -> None:
+    regressed = _fn("a.py", "score_regressed", 70.0)
+    component = _fn("a.py", "component_regressed", 45.0)
+    improved = _fn("a.py", "improved", 20.0)
+    new = _fn("a.py", "new", 80.0)
+    removed_id = FunctionId("a.py", "removed")
+
+    diff_report = diff(
+        RiskReport(functions=(regressed, component, improved, new), files=()),
+        Baseline(
+            version="2",
+            entries={
+                regressed.id: BaselineEntry(
+                    id=regressed.id,
+                    score=50.0,
+                    components=_components(50.0),
+                    fingerprint=regressed.fingerprint,
+                ),
+                component.id: BaselineEntry(
+                    id=component.id,
+                    score=45.0,
+                    components=RiskComponents(
+                        coverage_gap=0.0,
+                        structural_complexity=45.0,
+                        branch_gap=45.0,
+                        churn=45.0,
+                        public_surface=45.0,
+                        sprawl=45.0,
+                    ),
+                    fingerprint=component.fingerprint,
+                ),
+                improved.id: BaselineEntry(
+                    id=improved.id,
+                    score=60.0,
+                    components=_components(60.0),
+                    fingerprint=improved.fingerprint,
+                ),
+                removed_id: BaselineEntry(
+                    id=removed_id,
+                    score=90.0,
+                    components=_components(90.0),
+                    fingerprint="removed",
+                ),
+            },
+        ),
+        fail_regression_above=5.0,
+    )
+
+    regressions = diff_report.regressions()
+
+    assert [reg.kind for reg in regressions] == [
+        RegressionKind.REGRESSED,
+        RegressionKind.COMPONENT_REGRESSED,
+    ]
+    assert [reg.id.qualname for reg in regressions] == ["score_regressed", "component_regressed"]
+    assert regressions[0].current is regressed
+    assert regressions[0].previous_score == 50.0
+    assert regressions[0].delta == 20.0
+    assert regressions[1].current is component
+    assert regressions[1].previous_score == 45.0
+    assert regressions[1].delta == 0.0
+    assert "coverage_gap grew by +45.0" in regressions[1].reason
+
+
+def test_diff_renderers_cover_failing_statuses_and_non_regression_statuses() -> None:
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "regressed"): BaselineEntry(
+                id=FunctionId("a.py", "regressed"),
+                score=40.0,
+                components=_components(40.0),
+                fingerprint="regressed",
+            ),
+            FunctionId("a.py", "component_regressed"): BaselineEntry(
+                id=FunctionId("a.py", "component_regressed"),
+                score=40.0,
+                components=RiskComponents(
+                    coverage_gap=0.0,
+                    structural_complexity=40.0,
+                    branch_gap=40.0,
+                    churn=40.0,
+                    public_surface=40.0,
+                    sprawl=40.0,
+                ),
+                fingerprint="component",
+            ),
+            FunctionId("a.py", "improved"): BaselineEntry(
+                id=FunctionId("a.py", "improved"),
+                score=80.0,
+                components=_components(80.0),
+                fingerprint="improved",
+            ),
+            FunctionId("a.py", "unchanged"): BaselineEntry(
+                id=FunctionId("a.py", "unchanged"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="unchanged",
+            ),
+        },
+    )
+    diff_report = diff(
+        RiskReport(
+            functions=(
+                _fn("a.py", "regressed", 60.0, component_score=60.0, fingerprint="regressed"),
+                _fn("a.py", "component_regressed", 40.0, component_score=40.0, fingerprint="component"),
+                _fn("a.py", "improved", 40.0, component_score=40.0, fingerprint="improved"),
+                _fn("a.py", "new", 90.0, component_score=90.0, fingerprint="new"),
+                _fn("a.py", "unchanged", 20.0, component_score=20.0, fingerprint="unchanged"),
+            ),
+            files=(),
+        ),
+        old,
+        fail_regression_above=5.0,
+    )
+
+    table = render_diff_table(diff_report)
+    markdown = render_diff_markdown(diff_report)
+    pr_comment = render_diff_pr_comment(diff_report)
+    github = render_diff_github(diff_report)
+
+    assert "riskratchet diff" in table
+    assert "component_regressed" in table
+    assert "| component_regressed | `a.py::component_regressed` |" in markdown
+    assert "<details><summary>Improvements (1)</summary>" in pr_comment
+    assert "<details><summary>Unchanged functions (1)</summary>" in pr_comment
+    assert "risk grew by +20.0" in github
+    assert "coverage_gap grew by +40.0" in github
+    assert "new function with score 90.0" in github
+    assert "a.py::improved" not in github
 
 
 def test_render_diff_pr_comment_multi_section_snapshot() -> None:
