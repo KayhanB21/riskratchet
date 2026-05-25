@@ -11,6 +11,8 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-05-25
+
 ### Changed
 
 - Folded release artifact metadata, install smoke, and SARIF validation checks
@@ -21,6 +23,16 @@ release; renames or removals are called out below under **Breaking**.
   the release validation path.
 - Cleaned up dependency-audit input generation so the exported requirements omit
   the editable local project entry.
+- Improved regression table ergonomics so long function targets are not
+  truncated in terminal output.
+- Clarified new-function findings: "new" now explicitly means absent from the
+  baseline, not necessarily changed in the current commit.
+
+### Fixed
+
+- Added direct tests around source-tree version fallback behavior and simplified
+  the fallback path so the repo's own ratchet gate stays green without
+  accepting avoidable risk into the baseline.
 
 ## [0.2.3] - 2026-05-24
 

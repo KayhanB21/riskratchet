@@ -690,6 +690,11 @@ def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path)
     """
     typer.secho("", err=True)
     typer.secho("riskratchet: regressions detected. Options:", fg=typer.colors.YELLOW, err=True)
+    if any(r.kind is RegressionKind.NEW_ABOVE_THRESHOLD for r in regressions):
+        typer.secho(
+            "  Note: 'new' means absent from the baseline, not necessarily changed in this commit.",
+            err=True,
+        )
     typer.secho(
         f"  1. Accept the new state as the baseline (if the change is intentional):\n"
         f"       riskratchet baseline <paths> --coverage <coverage.json> --output {baseline_file}",

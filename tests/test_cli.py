@@ -1050,6 +1050,47 @@ def test_check_emits_regression_hint_on_stderr(tmp_path: Path) -> None:
     assert "riskratchet baseline" in result.stderr
 
 
+def test_check_emits_new_function_baseline_semantics_hint(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    branches = "\n".join(f"    if x == {n}: return {n}" for n in range(20))
+    (src / "m.py").write_text(
+        (src / "m.py").read_text(encoding="utf-8")
+        + "\n\ndef new_branchy(x):\n"
+        + branches
+        + "\n    return 0\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "'new' means absent from the baseline" in result.stderr
+
+
 def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"

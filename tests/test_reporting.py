@@ -167,7 +167,7 @@ def test_render_regressions_table_does_not_truncate_function_target() -> None:
         current_score=51.0,
         previous_score=None,
         delta=None,
-        reason="new function with score 51.0 exceeds new-function threshold 50.0",
+        reason="function is absent from baseline with score 51.0; exceeds new-function threshold 50.0",
     )
 
     out = render_regressions_table([regression])

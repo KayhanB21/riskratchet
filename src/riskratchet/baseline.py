@@ -111,7 +111,7 @@ def compare(
                         previous_score=None,
                         delta=None,
                         reason=(
-                            f"new function with score {fn.score:.1f} "
+                            f"function is absent from baseline with score {fn.score:.1f}; "
                             f"exceeds new-function threshold {fail_new_above:.1f}"
                         ),
                         current=fn,
@@ -222,7 +222,7 @@ def diff(
                     delta=None,
                     current=fn,
                     group=fn.group,
-                    reason=f"new function with score {fn.score:.1f}",
+                    reason=f"function is absent from baseline with score {fn.score:.1f}",
                 )
             )
             continue
@@ -301,7 +301,7 @@ def regressions_from_diff(
                         previous_score=None,
                         delta=None,
                         reason=(
-                            f"new function with score {current_score:.1f} "
+                            f"function is absent from baseline with score {current_score:.1f}; "
                             f"exceeds new-function threshold {fail_new_above:.1f}"
                         ),
                         current=entry.current,

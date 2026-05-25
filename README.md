@@ -127,7 +127,7 @@ repos:
         pass_filenames: false
         always_run: true
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.3
+    rev: v0.2.4
     hooks:
       - id: riskratchet
         args: ["pipelines", "--coverage", "coverage.json", "--baseline", ".riskratchet.json"]
@@ -292,7 +292,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.3
+    rev: v0.2.4
     hooks:
       - id: riskratchet
         args:
@@ -462,6 +462,10 @@ pin parsing behavior.
   consumers are unaffected.
 - Bumping the baseline to silence a regression. The baseline is the bar; if
   it has to move up, do it in a dedicated PR with a written justification.
+- Treating a "new" finding as necessarily part of the current commit. In
+  `check` output, new means absent from the baseline. A function added in an
+  earlier commit can still appear as new until the baseline intentionally
+  accepts it.
 
 For the broader trust boundaries and non-goals, see
 [`docs/threat-model.md`](docs/threat-model.md).

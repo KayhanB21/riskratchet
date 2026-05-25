@@ -146,6 +146,7 @@ def test_regressions_from_diff_applies_new_threshold() -> None:
     regressions = regressions_from_diff(diff_report, fail_new_above=50.0)
     assert len(regressions) == 1
     assert regressions[0].kind == RegressionKind.NEW_ABOVE_THRESHOLD
+    assert "absent from baseline" in regressions[0].reason
 
 
 def test_regressions_from_diff_applies_existing_threshold() -> None:
@@ -295,7 +296,7 @@ def test_diff_renderers_cover_failing_statuses_and_non_regression_statuses() -> 
     assert "<details><summary>Unchanged functions (1)</summary>" in pr_comment
     assert "risk grew by +20.0" in github
     assert "coverage_gap grew by +40.0" in github
-    assert "new function with score 90.0" in github
+    assert "absent from baseline with score 90.0" in github
     assert "a.py::improved" not in github
 
 
@@ -356,7 +357,7 @@ def test_render_diff_pr_comment_multi_section_snapshot() -> None:
         | Status | Function | Before | After | Delta | Reason |
         | --- | --- | ---: | ---: | ---: | --- |
         | regressed | `a.py::regressed` | 40.0 | 60.0 | +20.0 | risk grew by +20.0 (from 40.0 to 60.0); tolerance is +5.0 |
-        | new | `a.py::new` | n/a | 30.0 | n/a | new function with score 30.0 |
+        | new | `a.py::new` | n/a | 30.0 | n/a | function is absent from baseline with score 30.0 |
 
         <details><summary>Improvements (1)</summary>
 

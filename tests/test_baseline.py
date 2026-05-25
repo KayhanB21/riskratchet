@@ -87,6 +87,7 @@ def test_compare_flags_new_function_above_threshold() -> None:
     regressions = compare(report, old, fail_new_above=50.0, fail_regression_above=5.0)
     assert len(regressions) == 1
     assert regressions[0].kind == RegressionKind.NEW_ABOVE_THRESHOLD
+    assert "absent from baseline" in regressions[0].reason
 
 
 def test_compare_ignores_new_function_below_threshold() -> None:
