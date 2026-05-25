@@ -159,6 +159,23 @@ def test_render_regressions_table_empty_and_populated() -> None:
     assert "foo" in out
 
 
+def test_render_regressions_table_does_not_truncate_function_target() -> None:
+    target = "src/riskratchet/_version.py::_local_pyproject_version"
+    regression = Regression(
+        id=FunctionId("src/riskratchet/_version.py", "_local_pyproject_version"),
+        kind=RegressionKind.NEW_ABOVE_THRESHOLD,
+        current_score=51.0,
+        previous_score=None,
+        delta=None,
+        reason="new function with score 51.0 exceeds new-function threshold 50.0",
+    )
+
+    out = render_regressions_table([regression])
+
+    assert target in out
+    assert "::_lo…" not in out
+
+
 def test_render_regressions_json_emits_payload() -> None:
     regression = Regression(
         id=FunctionId("m.py", "foo"),

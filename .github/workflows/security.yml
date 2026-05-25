@@ -26,10 +26,9 @@ jobs:
           enable-cache: true
       - name: Audit Python dependencies
         run: |
-          uv export --format requirements-txt --all-extras --dev --no-hashes > /tmp/requirements.txt
+          uv export --format requirements-txt --all-extras --dev --no-emit-project > /tmp/requirements.txt
           uvx pip-audit -r /tmp/requirements.txt \
-            --no-deps \
-            --skip-editable \
+            --require-hashes \
             --disable-pip \
             --progress-spinner off
 

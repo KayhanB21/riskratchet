@@ -32,12 +32,64 @@ jobs:
       - name: Quality gate
         run: |
           uv run ruff check .
+          uv run ruff format --check .
           uv run mypy src tests
           uv run pytest -q
       - name: Build
         run: |
           rm -rf dist
           uv build
+      - name: Verify built metadata
+        run: |
+          python - <<'PY'
+          import glob
+          import zipfile
+          from pathlib import Path
+
+          try:
+              import tomllib
+          except ModuleNotFoundError:
+              import tomli as tomllib
+
+          project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]
+          expected = project["version"]
+          wheels = glob.glob("dist/riskratchet-*.whl")
+          if len(wheels) != 1:
+              raise SystemExit(f"expected exactly one wheel, found {wheels!r}")
+
+          with zipfile.ZipFile(wheels[0]) as wheel:
+              metadata_name = next(name for name in wheel.namelist() if name.endswith(".dist-info/METADATA"))
+              metadata = wheel.read(metadata_name).decode("utf-8")
+
+          if f"Version: {expected}\n" not in metadata:
+              raise SystemExit(f"wheel metadata does not contain Version: {expected}")
+          logo_url = "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/assets/logo.png"
+          if logo_url not in metadata:
+              raise SystemExit("wheel README metadata does not contain the absolute logo URL")
+          PY
+      - name: Wheel smoke test (isolated venv)
+        run: |
+          expected=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
+          python -m venv /tmp/wheel-env
+          /tmp/wheel-env/bin/pip install --upgrade pip
+          /tmp/wheel-env/bin/pip install dist/*.whl
+          test "$(/tmp/wheel-env/bin/riskratchet --version)" = "$expected"
+          test "$(/tmp/wheel-env/bin/python -c 'import importlib.metadata; print(importlib.metadata.version("riskratchet"))')" = "$expected"
+      - name: 'pip install . smoke test (isolated venv)'
+        run: |
+          expected=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
+          python -m venv /tmp/src-env
+          /tmp/src-env/bin/pip install --upgrade pip
+          /tmp/src-env/bin/pip install .
+          test "$(/tmp/src-env/bin/riskratchet --version)" = "$expected"
+      - name: SARIF output validates against schema
+        run: |
+          /tmp/wheel-env/bin/pip install check-jsonschema
+          /tmp/wheel-env/bin/riskratchet scan src --format sarif \
+            --output /tmp/report.sarif
+          /tmp/wheel-env/bin/check-jsonschema \
+            --schemafile https://json.schemastore.org/sarif-2.1.0.json \
+            /tmp/report.sarif
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: dist

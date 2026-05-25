@@ -13,15 +13,15 @@ else:  # pragma: no cover - exercised on the 3.10 CI job.
 
 
 def _local_pyproject_version() -> str:
-    for parent in Path(__file__).resolve().parents:
-        pyproject = parent / "pyproject.toml"
-        if pyproject.exists():
-            data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
-            project = data.get("project", {})
-            value = project.get("version")
-            if isinstance(value, str) and value:
-                return value
-            break
+    pyproject = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    if not pyproject.exists():
+        return "0+unknown"
+
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    project = data.get("project", {})
+    value = project.get("version")
+    if isinstance(value, str) and value:
+        return value
     return "0+unknown"
 
 

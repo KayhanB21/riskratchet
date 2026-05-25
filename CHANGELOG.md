@@ -11,6 +11,17 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+### Changed
+
+- Folded release artifact metadata, install smoke, and SARIF validation checks
+  into `publish.yml` so tag publishes validate the built distributions before
+  uploading to PyPI.
+- Added `ruff format --check .` to CI and publish quality gates.
+- Removed the separate manual `release-check.yml` workflow now that publish owns
+  the release validation path.
+- Cleaned up dependency-audit input generation so the exported requirements omit
+  the editable local project entry.
+
 ## [0.2.3] - 2026-05-24
 
 ### Fixed

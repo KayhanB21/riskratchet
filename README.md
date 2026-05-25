@@ -823,8 +823,9 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-The `publish.yml` workflow runs the same quality gates as CI (ruff, mypy,
-pytest), builds the distribution, and publishes via OIDC with PEP 740
-attestations. The `pypi` GitHub environment gates the upload step with a
-required-reviewer rule. If CI is red on master, do not tag — the
-workflow's quality gate will fail anyway.
+The `publish.yml` workflow runs the same quality gates as CI (ruff, format
+check, mypy, pytest), builds the distribution, verifies wheel metadata and
+README metadata, runs isolated wheel/source install smoke tests, validates SARIF
+output, and publishes via OIDC with PEP 740 attestations. The `pypi` GitHub
+environment gates the upload step with a required-reviewer rule. If CI is red on
+master, do not tag — the workflow's quality gate will fail anyway.
