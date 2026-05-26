@@ -9,6 +9,22 @@ The matcher is intentionally conservative — when more than one old entry
 scores near the top, the result is flagged as ambiguous so the
 new-above-threshold gate still fires. A confident-enough single match wins
 silently and the function is reported as MOVED.
+
+## Known limits
+
+The similarity weights below (BODY_WEIGHT=0.55, SIGNATURE_WEIGHT=0.20,
+PATH_WEIGHT=0.10, QUALNAME_TAIL_WEIGHT=0.05, COMPONENT_PROXIMITY_WEIGHT=0.05,
+SCORE_PROXIMITY_WEIGHT=0.05) and the MATCH_THRESHOLD=0.65 are **provisional**.
+They were chosen so that body+any-extra-signal wins (0.55 + 0.05 >= 0.65)
+but signature+path+tail+score-proximity (0.40 total) does not. The values
+have not been calibrated against a corpus of real renames; empirical
+calibration is roadmap item 0.2.10+ (see `docs/riskratchet-0.2x-roadmap.md`).
+
+The matcher deliberately rejects signature-only matches: a candidate whose
+body fingerprint *changed* and which lacks corroborating path / qualname
+signals will not clear the threshold. This is by design — silently
+classifying a body-changed renamed function as MOVED would hide risk
+growth. Body fingerprint match + any one other signal is the minimum bar.
 """
 
 from __future__ import annotations

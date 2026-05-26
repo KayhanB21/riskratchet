@@ -166,7 +166,12 @@ def config_show(
 
 @app.command()
 def scan(
-    paths: Annotated[list[Path] | None, typer.Argument(help="Files or directories to scan.")] = None,
+    paths: Annotated[
+        list[Path] | None,
+        typer.Argument(
+            help="Files or directories to scan. Falls back to [tool.riskratchet] paths if omitted."
+        ),
+    ] = None,
     coverage: Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")] = None,
     coverage_map: Annotated[
         list[str] | None,
@@ -292,7 +297,12 @@ def scan(
 
 @app.command()
 def baseline(
-    paths: Annotated[list[Path], typer.Argument(help="Files or directories to baseline.")],
+    paths: Annotated[
+        list[Path] | None,
+        typer.Argument(
+            help="Files or directories to baseline. Falls back to [tool.riskratchet] paths if omitted."
+        ),
+    ] = None,
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     coverage_map: Annotated[
         list[str] | None,
@@ -371,7 +381,12 @@ def baseline(
 
 @app.command()
 def check(
-    paths: Annotated[list[Path], typer.Argument(help="Files or directories to check.")],
+    paths: Annotated[
+        list[Path] | None,
+        typer.Argument(
+            help="Files or directories to check. Falls back to [tool.riskratchet] paths if omitted."
+        ),
+    ] = None,
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     coverage_map: Annotated[
         list[str] | None,
@@ -577,7 +592,15 @@ def explain(
 
 @app.command()
 def diff(
-    paths: Annotated[list[Path], typer.Argument(help="Files or directories to diff against baseline.")],
+    paths: Annotated[
+        list[Path] | None,
+        typer.Argument(
+            help=(
+                "Files or directories to diff against baseline. "
+                "Falls back to [tool.riskratchet] paths if omitted."
+            )
+        ),
+    ] = None,
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     coverage_map: Annotated[
         list[str] | None,

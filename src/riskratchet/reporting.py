@@ -794,16 +794,11 @@ def _diff_summary_line(report: DiffReport) -> str:
     parts = [
         f"**Regressions:** {summary['regressed'] + summary['component_regressed']}",
         f"**New:** {summary['new']}",
+        f"**Ambiguous renames:** {summary['ambiguous_rename']}",
+        f"**Improved:** {summary['improved']}",
+        f"**Moved:** {summary['moved']}",
+        f"**Removed:** {summary['removed']}",
     ]
-    if summary["ambiguous_rename"]:
-        parts.append(f"**Ambiguous renames:** {summary['ambiguous_rename']}")
-    parts.extend(
-        [
-            f"**Improved:** {summary['improved']}",
-            f"**Moved:** {summary['moved']}",
-            f"**Removed:** {summary['removed']}",
-        ]
-    )
     return " · ".join(parts)
 
 

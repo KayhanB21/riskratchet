@@ -1286,6 +1286,108 @@ def test_check_with_coverage_map_uses_per_prefix_coverage(
     assert check_result.exit_code == 0, check_result.stdout + check_result.stderr
 
 
+def test_monorepo_coverage_shards_do_not_bleed_across_packages(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Per-package coverage shards must be isolated by prefix. If
+    coverage-alpha.json contains a spurious entry for a beta path, the
+    scanner must still use coverage-beta.json for beta functions (the
+    shard with the matching prefix), not let the alpha shard's claim
+    leak across. The longest-prefix lookup is the guard."""
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    # Poison alpha's coverage shard with a wrong claim about a beta file
+    # (marking beta's `classify` as fully missing). The shard lookup must
+    # ignore this and consult coverage-beta.json for beta paths.
+    alpha_cov_path = root / "coverage-alpha.json"
+    alpha_cov = json.loads(alpha_cov_path.read_text(encoding="utf-8"))
+    alpha_cov["files"]["packages/beta/core.py"] = {
+        "executed_lines": [],
+        "missing_lines": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        "executed_branches": [],
+        "missing_branches": [],
+    }
+    alpha_cov_path.write_text(json.dumps(alpha_cov), encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            "--format",
+            "json",
+            "--no-git",
+            "--top",
+            "100",
+            "--min-score",
+            "0",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["summary"]["coverage_status"] == "present"
+    # beta's `classify` must report coverage from the beta shard
+    # (line_coverage > 0), not the poisoned alpha shard (which claimed 0).
+    classify_fns = [
+        fn
+        for fn in payload["functions"]
+        if fn["qualname"] == "classify" and fn["path"].startswith("packages/beta/")
+    ]
+    assert classify_fns, "beta::classify must appear in the scan output"
+    assert classify_fns[0]["line_coverage"] is not None
+    assert classify_fns[0]["line_coverage"] > 0.0, (
+        "longest-prefix lookup must use the beta shard for beta paths, not the poisoned alpha shard"
+    )
+
+
+def test_baseline_with_config_driven_paths_runs_without_positional_args(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """baseline reads paths from [tool.riskratchet] when none are given."""
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    baseline_path = root / "baseline.json"
+    result = runner.invoke(
+        app,
+        ["baseline", "--output", str(baseline_path), "--no-git"],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(baseline_path.read_text(encoding="utf-8"))
+    paths = {entry["path"] for entry in payload["entries"]}
+    assert any(p.startswith("packages/alpha/") for p in paths)
+    assert any(p.startswith("packages/beta/") for p in paths)
+
+
+def test_check_with_config_driven_paths_runs_without_positional_args(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """check reads paths from [tool.riskratchet] when none are given."""
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    baseline_path = root / "baseline.json"
+    baseline_result = runner.invoke(app, ["baseline", "--output", str(baseline_path), "--no-git"])
+    assert baseline_result.exit_code == 0, baseline_result.stdout + baseline_result.stderr
+    check_result = runner.invoke(app, ["check", "--baseline", str(baseline_path), "--no-git"])
+    assert check_result.exit_code == 0, check_result.stdout + check_result.stderr
+
+
+def test_diff_with_config_driven_paths_runs_without_positional_args(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """diff reads paths from [tool.riskratchet] when none are given."""
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    baseline_path = root / "baseline.json"
+    baseline_result = runner.invoke(app, ["baseline", "--output", str(baseline_path), "--no-git"])
+    assert baseline_result.exit_code == 0
+    diff_result = runner.invoke(
+        app,
+        ["diff", "--baseline", str(baseline_path), "--format", "json", "--no-git"],
+    )
+    assert diff_result.exit_code == 0, diff_result.stdout + diff_result.stderr
+    payload = json.loads(diff_result.stdout)
+    assert "entries" in payload
+
+
 def test_config_show_emits_coverage_map(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root = _copy_monorepo(tmp_path)
     monkeypatch.chdir(root)

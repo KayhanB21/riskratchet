@@ -53,18 +53,32 @@ release; renames or removals are called out below under **Breaking**.
   count in the summary. Schema (`schemas/diff.schema.json`) updated.
 - Diff PR-comment block now lists ambiguous renames in the visible
   (gating) section alongside regressions and new functions.
-- Existing baseline summary text includes `ambiguous_rename=N`.
+- `_diff_summary_line` always renders `**Ambiguous renames:** N` even
+  when zero, matching the unconditional formatting of regressed / new /
+  improved counts.
+- `parse_rationale` in `bin/check_baseline_rationale.py` returns the
+  full rationale body, not just the first line. The displayed gate
+  message still abbreviates to 80 characters for readability.
 
 ### Internal
 
 - New module `src/riskratchet/matching.py` houses `match_rename`,
   `signature_fingerprint`, and the documented similarity weights /
   threshold (kept separate from `baseline.py` to ease the 0.2.7 baseline
-  split).
+  split). Weights are provisional pending empirical calibration
+  (roadmap P13).
+- New private helper `_classify_against_baseline` in `baseline.py`
+  encapsulates the exact-id → unique-fingerprint → weighted-rename
+  matching ladder, consumed by both `compare` and `diff`. Brought both
+  functions back near their pre-0.2.5 risk scores.
 - `engine.analyze` accepts a `coverage_map` argument; `coverage_path` and
   `coverage_map` are mutually exclusive.
 - `MultiCoverageData` in `coverage.py` shards `CoverageData` by repo-
   relative prefix with longest-prefix dispatch.
+- New `tests/test_workflows_yaml.py` validates the new workflows
+  structurally (shape, artifact upload, pin-to-SHA security posture).
+- New monorepo end-to-end test verifies that per-package coverage shards
+  do not bleed across packages (longest-prefix lookup is enforced).
 
 ## [0.2.4] - 2026-05-25
 

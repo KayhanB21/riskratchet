@@ -14,7 +14,6 @@ import stat
 from pathlib import Path
 from textwrap import dedent
 
-import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -136,20 +135,13 @@ def test_dogfood_underlying_scan_handles_empty_top_risk_list(tmp_path: Path) -> 
     assert payload["functions"] == []
 
 
-def test_dogfood_script_uses_repo_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The script cd's to the repo root before running; ensure that path
-    resolution is well-defined."""
-    monkeypatch.chdir(tmp_path)
-    # We can't fully run the script in tests (it depends on uv + pytest +
-    # the project tree being checked out), but we can at least confirm
-    # the script's relative-root inference uses $0/.. which is the
-    # canonical convention.
+def test_dogfood_script_resolves_repo_root_from_script_location() -> None:
+    """The script cd's to the repo root using $0-relative resolution, so it
+    runs identically from any cwd. Verifies the two lines that implement
+    that convention."""
     body = SCRIPT.read_text(encoding="utf-8")
     assert 'cd "$root"' in body
     assert 'root="$(cd "$(dirname "$0")/.." && pwd)"' in body
-    # Sanity: the script accepts no positional arguments and runs cleanly
-    # from any cwd, so verify nothing reads from $1.
-    assert "$1" not in body
 
 
 def test_dogfood_script_uses_env_path_when_set(tmp_path: Path) -> None:

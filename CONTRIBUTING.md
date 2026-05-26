@@ -70,6 +70,21 @@ When pinning a new GitHub Action, use the full commit SHA with the semver tag as
 uses: owner/repo@<40-char-sha>  # v1.2.3
 ```
 
+### Post-PR workflow smoke check
+
+When a PR touches `.github/workflows/baseline-gate.yml`, the new `top-risk`
+job in `ci.yml`, or any other workflow file, the structural YAML tests in
+`tests/test_workflows_yaml.py` will catch syntactic issues — but only
+opening the PR exercises the workflow against the real GitHub Actions
+runner. Before flipping the PR out of draft:
+
+1. Open it as a draft against `master`.
+2. Confirm that the `baseline-rationale` and `top-risk` jobs both report
+   green (the latter is informational; it must succeed for the artifact
+   upload to land).
+3. If either fails for environment reasons (missing dependency, runner
+   version, etc.), file an issue and resolve before tagging the release.
+
 ## Releasing (maintainers)
 
 1. Bump `version` in `pyproject.toml`.

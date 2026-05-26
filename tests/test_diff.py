@@ -534,7 +534,7 @@ def test_render_diff_pr_comment_multi_section_snapshot() -> None:
         <!-- riskratchet-report -->
         # riskratchet
 
-        **Regressions:** 1 · **New:** 1 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
+        **Regressions:** 1 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
 
         | Status | Function | Before | After | Delta | Reason |
         | --- | --- | ---: | ---: | ---: | --- |

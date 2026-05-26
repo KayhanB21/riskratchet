@@ -115,6 +115,22 @@ isn't silently masked. New diff JSON fields: `previous_targets` (array),
 optional `signature` field continue to load; new baselines start writing
 it on the next `riskratchet baseline` run.
 
+### Rename matcher: known limits
+
+The weights (0.55 body / 0.20 signature / 0.10 path / 0.05 qualname-tail /
+0.05 component-vector / 0.05 score) and 0.65 threshold are **provisional**.
+They were chosen so body+any-other-signal clears the threshold and
+signature-alone+path+tail+score-proximity doesn't. Empirical calibration
+against a corpus of real-world renamed PRs is a 0.2.10+ roadmap item
+(`docs/riskratchet-0.2x-roadmap.md`). Until then, expect occasional
+ambiguity that requires reading the PR diff to resolve.
+
+Signature-only matches are deliberately rejected. A candidate whose body
+fingerprint *changed* will not be silently reported as MOVED based on a
+matching signature alone — that would let a body rewrite hide behind a
+rename. Body fingerprint match + any one other signal is the minimum bar
+for an unambiguous match.
+
 ## Monorepo / multi-package layouts (since 0.2.5)
 
 When a single coverage.json isn't possible, declare a per-prefix coverage

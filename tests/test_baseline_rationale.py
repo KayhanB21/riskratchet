@@ -159,7 +159,52 @@ def test_parse_rationale_accepts_multiline_body() -> None:
         Line 2 of explanation provides additional context.
         """
     )
-    assert cb.parse_rationale(body) is not None  # type: ignore[attr-defined]
+    rationale = cb.parse_rationale(body)  # type: ignore[attr-defined]
+    assert rationale is not None
+    assert "Line 1 of explanation." in rationale
+    assert "Line 2 of explanation provides additional context." in rationale
+
+
+def test_parse_rationale_returns_full_text_not_first_line() -> None:
+    """Regression: heading-match path must return the entire rationale body,
+    not just `splitlines()[0]`. The displayed gate message truncates for
+    readability; the parsed text is the full content."""
+    body = textwrap.dedent(
+        """
+        ## Baseline bump rationale
+
+        First line of context.
+        Second line with crucial detail that should not be silently dropped.
+        Third line referencing a tracking ticket.
+        """
+    )
+    rationale = cb.parse_rationale(body)  # type: ignore[attr-defined]
+    assert rationale is not None
+    assert rationale.count("\n") >= 2, "multi-line rationale must keep its line breaks"
+    assert "Second line" in rationale
+    assert "Third line" in rationale
+
+
+def test_evaluate_message_truncates_long_rationale_for_display() -> None:
+    """The gate's success message abbreviates to 80 chars even when the
+    stored rationale is longer; tests pin the display contract."""
+    long_body = textwrap.dedent(
+        """
+        ## Baseline bump rationale
+
+        """
+    ) + ("x" * 200)
+    decision = cb.evaluate(  # type: ignore[attr-defined]
+        body=long_body,
+        labels="",
+        base_sha="abc",
+        head_sha="def",
+        baseline_path=".riskratchet.json",
+        changed_fn=_changed,
+    )
+    assert decision.exit_code == 0
+    assert "rationale accepted" in decision.message
+    assert len(decision.message) < 200, "message should abbreviate long rationales"
 
 
 def test_parse_rationale_returns_none_for_unrelated_body() -> None:
@@ -189,14 +234,7 @@ def test_end_to_end_against_tmp_git_repo(tmp_path: Path) -> None:
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True, env={**env_base})
     (repo / ".riskratchet.json").write_text('{"version":"2","entries":[]}\n', encoding="utf-8")
     subprocess.run(["git", "add", "."], cwd=repo, check=True, env={**env_base})
-    subprocess.run(
-        ["git", "commit", "-q", "-m", "initial"],
-        cwd=repo,
-        check=True,
-        env={**env_base, "PATH": ""},  # ignore PATH; use absolute git already
-    ) if False else subprocess.run(
-        ["git", "commit", "-q", "-m", "initial"], cwd=repo, check=True, env={**env_base}
-    )
+    subprocess.run(["git", "commit", "-q", "-m", "initial"], cwd=repo, check=True, env={**env_base})
     base = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
     ).stdout.strip()

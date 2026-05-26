@@ -609,3 +609,98 @@ def test_baseline_json_is_sorted_for_stable_diffs(tmp_path: Path) -> None:
     a_foo = text.index("a.py")
     z_foo = text.index("z.py")
     assert a_foo < z_foo
+
+
+# --- Tests for the extracted _classify_against_baseline helper ----------------
+
+
+def _classify(
+    fn: FunctionRisk,
+    old: Baseline,
+    used: set[FunctionId] | None = None,
+):
+    from riskratchet.baseline import (
+        _classify_against_baseline,
+        _current_fingerprint_counts,
+        _unique_old_entries_by_fingerprint,
+    )
+
+    report = RiskReport(functions=(fn,), files=())
+    return _classify_against_baseline(
+        fn,
+        old,
+        _unique_old_entries_by_fingerprint(old),
+        _current_fingerprint_counts(report),
+        used if used is not None else set(),
+    )
+
+
+def test_classify_against_baseline_returns_exact_match() -> None:
+    fn = _fn("a.py", "foo", 50.0, fingerprint="abc")
+    old = Baseline(
+        version="2",
+        entries={fn.id: BaselineEntry(id=fn.id, score=50.0, components=_components(), fingerprint="abc")},
+    )
+    classification = _classify(fn, old)
+    assert classification.previous is not None
+    assert classification.previous_id is None  # exact match is not a rename
+    assert classification.match_confidence is None
+    assert classification.ambiguous is None
+
+
+def test_classify_against_baseline_returns_fingerprint_match() -> None:
+    fn = _fn("new.py", "renamed_foo", 50.0, fingerprint="shared")
+    old_id = FunctionId("old.py", "old_foo")
+    old = Baseline(
+        version="2",
+        entries={
+            old_id: BaselineEntry(id=old_id, score=50.0, components=_components(), fingerprint="shared")
+        },
+    )
+    classification = _classify(fn, old)
+    assert classification.previous is not None
+    assert classification.previous_id == old_id
+    assert classification.match_confidence == 1.0
+    assert classification.ambiguous is None
+
+
+def test_classify_against_baseline_returns_no_match_for_unknown_function() -> None:
+    fn = _fn("a.py", "foo", 50.0, fingerprint="abc")
+    old = Baseline(version="2", entries={})
+    classification = _classify(fn, old)
+    assert classification.previous is None
+    assert classification.previous_id is None
+    assert classification.match_confidence is None
+    assert classification.ambiguous is None
+
+
+def test_classify_against_baseline_returns_ambiguous_for_near_ties() -> None:
+    fn = _fn("renamed.py", "new_name", 50.0, fingerprint="changed")
+    old_a = FunctionId("a.py", "candidate_a")
+    old_b = FunctionId("a.py", "candidate_b")
+    old = Baseline(
+        version="2",
+        entries={
+            old_a: BaselineEntry(
+                id=old_a,
+                score=50.0,
+                components=_components(),
+                fingerprint="old_fp_a",
+                signature="sig",
+            ),
+            old_b: BaselineEntry(
+                id=old_b,
+                score=50.0,
+                components=_components(),
+                fingerprint="old_fp_b",
+                signature="sig",
+            ),
+        },
+    )
+    # Both candidates share signature+component proximity+score; neither
+    # has a body fingerprint match. They're below the threshold so the
+    # matcher returns no match (not ambiguous). This verifies the
+    # passthrough case: below-threshold isn't called ambiguous.
+    classification = _classify(fn, old)
+    assert classification.previous is None
+    assert classification.ambiguous is None

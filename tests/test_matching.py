@@ -290,7 +290,18 @@ def test_match_rename_returns_ambiguous_when_both_share_path_and_body() -> None:
 
 
 def test_match_rename_signature_alone_is_below_threshold() -> None:
-    """Defensive: weights must keep signature-only matches below threshold."""
+    """Pinned contract: a signature-only match never clears MATCH_THRESHOLD.
+
+    This is by design: signature fingerprint is a *corroborating* signal
+    (0.20 weight), not a load-bearing one. A body-changed function whose
+    signature happens to match an old entry must be reported as NEW (or
+    AMBIGUOUS_RENAME if multiple candidates tie), not silently classified
+    as MOVED. Allowing signature-only matches would let a body rewrite
+    hide behind a stable signature.
+
+    See `src/riskratchet/matching.py` module docstring + AGENTS.md
+    "Rename matcher: known limits".
+    """
     fn = _fn(
         "x.py",
         "fn",
@@ -303,8 +314,10 @@ def test_match_rename_signature_alone_is_below_threshold() -> None:
         _entry("y.py", "other", score=10.0, fingerprint="old-body", signature="shared-sig"),
     ]
     result = match_rename(fn, candidates)
-    assert result.previous is None
-    assert result.confidence < MATCH_THRESHOLD
+    assert result.previous is None, "signature-only matches must not become a confident rename"
+    assert result.confidence < MATCH_THRESHOLD, (
+        f"signature-only confidence must be below threshold; got {result.confidence}"
+    )
 
 
 def test_match_rename_score_proximity_alone_is_below_threshold() -> None:
