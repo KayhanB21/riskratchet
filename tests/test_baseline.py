@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -618,7 +619,7 @@ def _classify(
     fn: FunctionRisk,
     old: Baseline,
     used: set[FunctionId] | None = None,
-):
+) -> Any:
     from riskratchet.baseline import (
         _classify_against_baseline,
         _current_fingerprint_counts,

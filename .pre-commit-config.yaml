@@ -46,6 +46,14 @@ repos:
         pass_filenames: false
         require_serial: true
 
+      - id: mypy-tests
+        name: mypy (src + tests, mirrors CI)
+        entry: uv run mypy src tests
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
+
       - id: pytest-cov
         name: pytest --cov (produces coverage.json for riskratchet)
         entry: uv run pytest --cov=src/riskratchet --cov-branch --cov-report=json:coverage.json -q

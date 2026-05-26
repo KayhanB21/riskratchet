@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 WORKFLOWS_DIR = Path(__file__).resolve().parent.parent / ".github" / "workflows"
 BASELINE_GATE = WORKFLOWS_DIR / "baseline-gate.yml"
@@ -23,7 +23,24 @@ CI = WORKFLOWS_DIR / "ci.yml"
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    payload: Any = yaml.safe_load(path.read_text(encoding="utf-8"))
+    assert isinstance(payload, dict), f"workflow root must be a mapping, got {type(payload).__name__}"
+    return payload
+
+
+def _trigger_block(payload: dict[str, Any]) -> Any:
+    """Return the workflow `on:` trigger block.
+
+    PyYAML coerces the unquoted YAML key `on` to Python `True` (since `on` is
+    a YAML 1.1 boolean). This helper reads from whichever key the parser
+    produced so the test stays robust to that quirk.
+    """
+    if "on" in payload:
+        return payload["on"]
+    # `on` becomes the Python bool True; dict.get rejects bool keys at the
+    # type level even though Python accepts them at runtime.
+    raw: dict[Any, Any] = payload
+    return raw.get(True)
 
 
 def test_baseline_gate_yaml_loads_and_has_required_shape() -> None:
@@ -32,7 +49,8 @@ def test_baseline_gate_yaml_loads_and_has_required_shape() -> None:
     jobs = payload["jobs"]
     assert "baseline-rationale" in jobs
     assert "steps" in jobs["baseline-rationale"]
-    assert payload.get("on") == {"pull_request": None} or "pull_request" in str(payload.get(True, ""))
+    trigger = _trigger_block(payload)
+    assert trigger == {"pull_request": None} or "pull_request" in str(trigger)
     # permissions must restrict to read (we never write to the repo)
     assert payload.get("permissions") == {"contents": "read"}
 
