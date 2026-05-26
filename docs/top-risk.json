@@ -1,0 +1,383 @@
+{
+  "$schema": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
+  "version": "0.2",
+  "summary": {
+    "total_functions": 14,
+    "analyzed_functions": 208,
+    "emitted_functions": 14,
+    "total_files": 16,
+    "coverage_status": "present",
+    "suppressed_functions": 0,
+    "skipped_missing_coverage": 0,
+    "by_severity": {
+      "low": 0,
+      "medium": 14,
+      "high": 0,
+      "critical": 0
+    },
+    "groups": {
+      "ungrouped": {
+        "functions": 14,
+        "max_score": 49.446969696969695,
+        "by_severity": {
+          "low": 0,
+          "medium": 14,
+          "high": 0,
+          "critical": 0
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "diff",
+      "severity": "medium",
+      "score": 49.446969696969695,
+      "crap": 19.647271614213764,
+      "complexity": 16,
+      "line_coverage": 0.7575757575757576,
+      "branch_coverage": 0.5625,
+      "churn_commits": 5,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 594,
+        "end": 744
+      },
+      "components": {
+        "coverage_gap": 24.242424242424242,
+        "structural_complexity": 75.0,
+        "branch_gap": 43.75,
+        "churn": 50.0,
+        "public_surface": 24.242424242424242,
+        "sprawl": 94.375
+      }
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "_validate_config",
+      "severity": "medium",
+      "score": 47.833333333333336,
+      "crap": 47.91025805898492,
+      "complexity": 23,
+      "line_coverage": 0.6388888888888888,
+      "branch_coverage": 0.6666666666666666,
+      "churn_commits": 2,
+      "is_public": false,
+      "group": null,
+      "lines": {
+        "start": 891,
+        "end": 931
+      },
+      "components": {
+        "coverage_gap": 36.111111111111114,
+        "structural_complexity": 100.0,
+        "branch_gap": 33.333333333333336,
+        "churn": 20.0,
+        "public_surface": 0.0,
+        "sprawl": 50.0
+      }
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "config_show",
+      "severity": "medium",
+      "score": 45.0,
+      "crap": 4.125,
+      "complexity": 3,
+      "line_coverage": 0.5,
+      "branch_coverage": 0.5,
+      "churn_commits": 10,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 139,
+        "end": 164
+      },
+      "components": {
+        "coverage_gap": 50.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 50.0,
+        "churn": 100.0,
+        "public_surface": 50.0,
+        "sprawl": 50.0
+      }
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "_ensure_coverage_map_exists",
+      "severity": "medium",
+      "score": 44.625,
+      "crap": 17.583999999999996,
+      "complexity": 7,
+      "line_coverage": 0.4,
+      "branch_coverage": 0.125,
+      "churn_commits": 1,
+      "is_public": false,
+      "group": null,
+      "lines": {
+        "start": 1260,
+        "end": 1286
+      },
+      "components": {
+        "coverage_gap": 60.0,
+        "structural_complexity": 30.0,
+        "branch_gap": 87.5,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 50.0
+      }
+    },
+    {
+      "path": "src/riskratchet/pytest_plugin.py",
+      "qualname": "pytest_addoption",
+      "severity": "medium",
+      "score": 43.0,
+      "crap": 2.0,
+      "complexity": 1,
+      "line_coverage": 0.0,
+      "branch_coverage": null,
+      "churn_commits": 3,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 21,
+        "end": 80
+      },
+      "components": {
+        "coverage_gap": 100.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 30.0,
+        "public_surface": 100.0,
+        "sprawl": 0.0
+      }
+    },
+    {
+      "path": "src/riskratchet/models.py",
+      "qualname": "RiskReport.by_id",
+      "severity": "medium",
+      "score": 42.25,
+      "crap": 6.0,
+      "complexity": 2,
+      "line_coverage": 0.0,
+      "branch_coverage": null,
+      "churn_commits": 1,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 137,
+        "end": 138
+      },
+      "components": {
+        "coverage_gap": 100.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 100.0,
+        "sprawl": 0.0
+      }
+    },
+    {
+      "path": "src/riskratchet/complexity.py",
+      "qualname": "complexity_for_function",
+      "severity": "medium",
+      "score": 41.0,
+      "crap": 2.0,
+      "complexity": 1,
+      "line_coverage": 0.0,
+      "branch_coverage": null,
+      "churn_commits": 1,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 35,
+        "end": 37
+      },
+      "components": {
+        "coverage_gap": 100.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 100.0,
+        "sprawl": 0.0
+      }
+    },
+    {
+      "path": "src/riskratchet/models.py",
+      "qualname": "DiffReport.ambiguous_renames",
+      "severity": "medium",
+      "score": 41.0,
+      "crap": 2.0,
+      "complexity": 1,
+      "line_coverage": 0.0,
+      "branch_coverage": null,
+      "churn_commits": 1,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 232,
+        "end": 233
+      },
+      "components": {
+        "coverage_gap": 100.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 100.0,
+        "sprawl": 0.0
+      }
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "_resolved_churn_days",
+      "severity": "medium",
+      "score": 38.86363636363636,
+      "crap": 11.842223891810667,
+      "complexity": 6,
+      "line_coverage": 0.45454545454545453,
+      "branch_coverage": 0.25,
+      "churn_commits": 0,
+      "is_public": false,
+      "group": null,
+      "lines": {
+        "start": 1247,
+        "end": 1257
+      },
+      "components": {
+        "coverage_gap": 54.54545454545454,
+        "structural_complexity": 25.0,
+        "branch_gap": 75.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 50.0
+      }
+    },
+    {
+      "path": "src/riskratchet/reporting.py",
+      "qualname": "render_report_github",
+      "severity": "medium",
+      "score": 38.116666666666674,
+      "crap": 8.740740740740742,
+      "complexity": 4,
+      "line_coverage": 0.3333333333333333,
+      "branch_coverage": null,
+      "churn_commits": 3,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 212,
+        "end": 214
+      },
+      "components": {
+        "coverage_gap": 66.66666666666667,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 30.0,
+        "public_surface": 66.66666666666667,
+        "sprawl": 47.0
+      }
+    },
+    {
+      "path": "src/riskratchet/engine.py",
+      "qualname": "analyze",
+      "severity": "medium",
+      "score": 37.702380952380956,
+      "crap": 21.00595238095238,
+      "complexity": 21,
+      "line_coverage": 0.9761904761904762,
+      "branch_coverage": 1.0,
+      "churn_commits": 10,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 38,
+        "end": 145
+      },
+      "components": {
+        "coverage_gap": 2.3809523809523836,
+        "structural_complexity": 100.0,
+        "branch_gap": 0.0,
+        "churn": 100.0,
+        "public_surface": 2.3809523809523836,
+        "sprawl": 17.5
+      }
+    },
+    {
+      "path": "src/riskratchet/baseline.py",
+      "qualname": "regressions_from_diff",
+      "severity": "medium",
+      "score": 33.96980158730159,
+      "crap": 17.396433470507546,
+      "complexity": 17,
+      "line_coverage": 0.8888888888888888,
+      "branch_coverage": 0.8571428571428571,
+      "churn_commits": 5,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 259,
+        "end": 343
+      },
+      "components": {
+        "coverage_gap": 11.111111111111116,
+        "structural_complexity": 80.0,
+        "branch_gap": 14.28571428571429,
+        "churn": 50.0,
+        "public_surface": 11.111111111111116,
+        "sprawl": 23.825
+      }
+    },
+    {
+      "path": "src/riskratchet/reporting.py",
+      "qualname": "render_report_pr_comment",
+      "severity": "medium",
+      "score": 33.086363636363636,
+      "crap": 13.126972201352366,
+      "complexity": 13,
+      "line_coverage": 0.9090909090909091,
+      "branch_coverage": 0.75,
+      "churn_commits": 6,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 159,
+        "end": 202
+      },
+      "components": {
+        "coverage_gap": 9.090909090909093,
+        "structural_complexity": 60.0,
+        "branch_gap": 25.0,
+        "churn": 60.0,
+        "public_surface": 9.090909090909093,
+        "sprawl": 47.0
+      }
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "check",
+      "severity": "medium",
+      "score": 32.0,
+      "crap": 13.0,
+      "complexity": 13,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0,
+      "churn_commits": 7,
+      "is_public": true,
+      "group": null,
+      "lines": {
+        "start": 383,
+        "end": 543
+      },
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 60.0,
+        "branch_gap": 0.0,
+        "churn": 70.0,
+        "public_surface": 0.0,
+        "sprawl": 100.0
+      }
+    }
+  ]
+}
