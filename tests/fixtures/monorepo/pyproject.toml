@@ -1,0 +1,10 @@
+[tool.riskratchet]
+paths = ["packages/alpha", "packages/beta"]
+
+[tool.riskratchet.coverage_map]
+"packages/alpha" = "coverage-alpha.json"
+"packages/beta" = "coverage-beta.json"
+
+[tool.riskratchet.groups]
+alpha = "packages/alpha"
+beta = "packages/beta"

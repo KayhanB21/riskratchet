@@ -100,6 +100,55 @@ success and `2` on usage errors.
 - Native JSON output includes `$schema` and `version` fields. `diff --json`
   is validated by `schemas/diff.schema.json`.
 
+## Rename-aware matching (since 0.2.5)
+
+`compare`, `diff`, and `check` recognize renamed/moved functions before
+classifying them as new. The matcher uses six signals: body fingerprint,
+signature fingerprint (parameters + decorators + return annotation), path
+equality, qualname tail (last segment), component-vector cosine
+similarity, and score proximity. An unambiguous match becomes
+`DiffStatus.MOVED`; a multi-candidate cluster becomes the new
+`DiffStatus.AMBIGUOUS_RENAME`, which surfaces in the gating block of the
+PR comment and always shows up in `regressions_from_diff` so risk growth
+isn't silently masked. New diff JSON fields: `previous_targets` (array),
+`match_confidence` (number/null). Existing baselines without the new
+optional `signature` field continue to load; new baselines start writing
+it on the next `riskratchet baseline` run.
+
+## Monorepo / multi-package layouts (since 0.2.5)
+
+When a single coverage.json isn't possible, declare a per-prefix coverage
+map:
+
+```toml
+[tool.riskratchet]
+paths = ["packages/alpha", "packages/beta"]
+
+[tool.riskratchet.coverage_map]
+"packages/alpha" = "packages/alpha/coverage.json"
+"packages/beta" = "packages/beta/coverage.json"
+```
+
+Or pass the same map on the CLI:
+
+```bash
+riskratchet scan packages/alpha packages/beta \
+  --coverage-map packages/alpha=packages/alpha/coverage.json \
+  --coverage-map packages/beta=packages/beta/coverage.json
+```
+
+Longest matching prefix wins. The map is mutually exclusive with the
+single `--coverage` flag. Every command now prints a diagnostic banner
+to stderr summarizing the resolved root, scan paths, and coverage source
+(`coverage=single=<path>`, `coverage=map=<prefix:path,...>`, or
+`coverage=none`).
+
+Per-package baseline vs repo-level baseline is a documentation choice,
+not a code one: run `riskratchet baseline` once per package directory
+(each with its own `pyproject.toml` and `.riskratchet.json`) for fully
+independent ratchets, or use one repo-level baseline + `[tool.
+riskratchet.groups]` for partitioned reporting from a single config.
+
 ## CI is the source of truth
 
 GitHub Actions runs the canonical check set. If you are unsure whether a

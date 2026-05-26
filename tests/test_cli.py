@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from textwrap import dedent
 
@@ -1121,3 +1122,197 @@ def test_check_rejects_unsupported_baseline_format(tmp_path: Path) -> None:
     )
     assert result.exit_code == 2
     assert "unsupported baseline format" in result.stderr
+
+
+MONOREPO_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "monorepo"
+
+
+def _copy_monorepo(tmp_path: Path) -> Path:
+    """Copy the canonical monorepo fixture into tmp_path."""
+    dest = tmp_path / "monorepo"
+    shutil.copytree(MONOREPO_FIXTURE, dest)
+    return dest
+
+
+def test_scan_with_coverage_map_flag_uses_per_prefix_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            "packages/alpha",
+            "packages/beta",
+            "--coverage-map",
+            "packages/alpha=coverage-alpha.json",
+            "--coverage-map",
+            "packages/beta=coverage-beta.json",
+            "--format",
+            "json",
+            "--no-git",
+        ],
+        catch_exceptions=False,
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    paths = {fn["path"] for fn in payload["functions"]}
+    assert any(p.startswith("packages/alpha/") for p in paths)
+    assert any(p.startswith("packages/beta/") for p in paths)
+    assert payload["summary"]["coverage_status"] == "present"
+
+
+def test_scan_with_coverage_map_via_config_runs_end_to_end(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    result = runner.invoke(
+        app,
+        ["scan", "--format", "json", "--no-git"],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["summary"]["coverage_status"] == "present"
+    # both packages must contribute
+    paths = {fn["path"] for fn in payload["functions"]}
+    assert any(p.startswith("packages/alpha/") for p in paths)
+    assert any(p.startswith("packages/beta/") for p in paths)
+
+
+def test_scan_with_coverage_map_diagnostics_banner_shows_map(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            "packages/alpha",
+            "packages/beta",
+            "--coverage-map",
+            "packages/alpha=coverage-alpha.json",
+            "--coverage-map",
+            "packages/beta=coverage-beta.json",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout + result.stderr
+    banner = next(
+        (line for line in result.stderr.splitlines() if line.startswith("riskratchet:")),
+        "",
+    )
+    assert "coverage=map=" in banner
+    assert "packages/alpha:" in banner
+    assert "packages/beta:" in banner
+
+
+def test_scan_with_invalid_coverage_map_flag_fails(tmp_path: Path) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(tmp_path),
+            "--coverage-map",
+            "no-equals-sign",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code != 0
+
+
+def test_scan_with_duplicate_coverage_map_prefix_fails(tmp_path: Path) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(tmp_path),
+            "--coverage-map",
+            "pkg=a.json",
+            "--coverage-map",
+            "pkg=b.json",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code != 0
+
+
+def test_scan_emits_diagnostics_banner_to_stderr(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git"])
+    assert result.exit_code == 0
+    assert any(line.startswith("riskratchet: command=scan") for line in result.stderr.splitlines())
+
+
+def test_check_with_coverage_map_uses_per_prefix_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    baseline_path = root / "baseline.json"
+    baseline_result = runner.invoke(
+        app,
+        [
+            "baseline",
+            "packages/alpha",
+            "packages/beta",
+            "--coverage-map",
+            "packages/alpha=coverage-alpha.json",
+            "--coverage-map",
+            "packages/beta=coverage-beta.json",
+            "--output",
+            str(baseline_path),
+            "--no-git",
+        ],
+    )
+    assert baseline_result.exit_code == 0, baseline_result.stdout + baseline_result.stderr
+    check_result = runner.invoke(
+        app,
+        [
+            "check",
+            "packages/alpha",
+            "packages/beta",
+            "--coverage-map",
+            "packages/alpha=coverage-alpha.json",
+            "--coverage-map",
+            "packages/beta=coverage-beta.json",
+            "--baseline",
+            str(baseline_path),
+            "--no-git",
+        ],
+    )
+    assert check_result.exit_code == 0, check_result.stdout + check_result.stderr
+
+
+def test_config_show_emits_coverage_map(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    result = runner.invoke(app, ["config", "show", "--config", "pyproject.toml", "--json"])
+    assert result.exit_code == 0, result.stdout + result.stderr
+    payload = json.loads(result.stdout)
+    assert payload["config"]["coverage_map"] == {
+        "packages/alpha": "coverage-alpha.json",
+        "packages/beta": "coverage-beta.json",
+    }
+
+
+def test_config_validate_rejects_invalid_coverage_map(tmp_path: Path) -> None:
+    config = tmp_path / "pyproject.toml"
+    config.write_text(
+        dedent(
+            """
+            [tool.riskratchet]
+            paths = ["src"]
+
+            [tool.riskratchet.coverage_map]
+            "" = "cov.json"
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["config", "validate", "--config", str(config)])
+    assert result.exit_code == 2
+    assert "coverage_map" in result.stderr

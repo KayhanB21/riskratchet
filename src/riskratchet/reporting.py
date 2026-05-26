@@ -324,6 +324,7 @@ def render_regressions_summary_text(
             f"component_regressed={diff_summary['component_regressed']} "
             f"improved={diff_summary['improved']} "
             f"new={diff_summary['new']} "
+            f"ambiguous_rename={diff_summary['ambiguous_rename']} "
             f"removed={diff_summary['removed']} "
             f"moved={diff_summary['moved']} "
             f"unchanged={diff_summary['unchanged']}"
@@ -397,6 +398,7 @@ def render_diff_summary_text(report: DiffReport) -> str:
             f"component_regressed={summary['component_regressed']} "
             f"improved={summary['improved']} "
             f"new={summary['new']} "
+            f"ambiguous_rename={summary['ambiguous_rename']} "
             f"removed={summary['removed']} "
             f"moved={summary['moved']} "
             f"unchanged={summary['unchanged']}"
@@ -424,7 +426,13 @@ def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = No
     visible = [
         entry
         for entry in report.entries
-        if entry.status in {DiffStatus.REGRESSED, DiffStatus.COMPONENT_REGRESSED, DiffStatus.NEW}
+        if entry.status
+        in {
+            DiffStatus.REGRESSED,
+            DiffStatus.COMPONENT_REGRESSED,
+            DiffStatus.AMBIGUOUS_RENAME,
+            DiffStatus.NEW,
+        }
     ]
     lines = [
         PR_COMMENT_MARKER,
@@ -468,7 +476,12 @@ def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = No
 def render_diff_github(report: DiffReport) -> str:
     lines = []
     for entry in report.entries:
-        if entry.status not in {DiffStatus.REGRESSED, DiffStatus.COMPONENT_REGRESSED, DiffStatus.NEW}:
+        if entry.status not in {
+            DiffStatus.REGRESSED,
+            DiffStatus.COMPONENT_REGRESSED,
+            DiffStatus.AMBIGUOUS_RENAME,
+            DiffStatus.NEW,
+        }:
             continue
         if entry.current is not None:
             lines.append(_github_annotation(entry.current, message=entry.reason))
@@ -751,7 +764,7 @@ def _regression_payload(reg: Regression) -> dict[str, Any]:
 
 
 def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
-    return {
+    payload: dict[str, Any] = {
         "path": entry.id.path,
         "qualname": entry.id.qualname,
         "group": entry.group,
@@ -762,7 +775,12 @@ def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
         "previous_path": entry.previous_id.path if entry.previous_id else None,
         "previous_qualname": entry.previous_id.qualname if entry.previous_id else None,
         "reason": entry.reason,
+        "previous_targets": [{"path": fid.path, "qualname": fid.qualname} for fid in entry.previous_targets],
+        "match_confidence": (
+            round(entry.match_confidence, 4) if entry.match_confidence is not None else None
+        ),
     }
+    return payload
 
 
 def _diff_summary(report: DiffReport) -> dict[str, Any]:
@@ -773,13 +791,20 @@ def _diff_summary(report: DiffReport) -> dict[str, Any]:
 
 def _diff_summary_line(report: DiffReport) -> str:
     summary = _diff_summary(report)
-    return (
-        f"**Regressions:** {summary['regressed'] + summary['component_regressed']} · "
-        f"**New:** {summary['new']} · "
-        f"**Improved:** {summary['improved']} · "
-        f"**Moved:** {summary['moved']} · "
-        f"**Removed:** {summary['removed']}"
+    parts = [
+        f"**Regressions:** {summary['regressed'] + summary['component_regressed']}",
+        f"**New:** {summary['new']}",
+    ]
+    if summary["ambiguous_rename"]:
+        parts.append(f"**Ambiguous renames:** {summary['ambiguous_rename']}")
+    parts.extend(
+        [
+            f"**Improved:** {summary['improved']}",
+            f"**Moved:** {summary['moved']}",
+            f"**Removed:** {summary['removed']}",
+        ]
     )
+    return " · ".join(parts)
 
 
 def _diff_markdown_row(entry: DiffEntry, *, links: SourceLinks | None = None) -> str:

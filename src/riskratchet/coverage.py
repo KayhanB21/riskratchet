@@ -4,12 +4,18 @@
 per-file line/branch data with a function's line range. Files absent from the
 coverage payload are treated as fully uncovered (0%) so they ratchet risk up
 rather than passing silently.
+
+For monorepo layouts, `MultiCoverageData` wraps multiple `CoverageData`
+shards keyed by repo-relative path prefix and dispatches each file lookup
+to the shard whose prefix is the longest match. Use `load_coverage_map`
+when the project provides one coverage file per package.
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -77,6 +83,47 @@ def load_coverage(path: Path) -> CoverageData:
 
 def empty_coverage() -> CoverageData:
     return CoverageData(_files={}, _by_suffix={})
+
+
+@dataclass(frozen=True)
+class MultiCoverageData:
+    """Coverage data sharded by repo-relative path prefix.
+
+    Looks identical to `CoverageData` from the engine's perspective — it
+    only exposes `lookup`. Internally, the prefix list is sorted by
+    descending length so the longest-match wins (e.g. `packages/alpha`
+    beats `packages`).
+    """
+
+    _shards: tuple[tuple[str, CoverageData], ...] = field(default_factory=tuple)
+
+    @classmethod
+    def from_map(cls, coverage_map: Mapping[str, CoverageData]) -> MultiCoverageData:
+        ordered = sorted(coverage_map.items(), key=lambda item: (-len(item[0]), item[0]))
+        return cls(_shards=tuple((_normalize_prefix(p), data) for p, data in ordered))
+
+    def lookup(self, relative_posix_path: str) -> dict[str, Any] | None:
+        normalized = relative_posix_path.replace("\\", "/")
+        for prefix, data in self._shards:
+            if prefix == "" or normalized == prefix or normalized.startswith(prefix + "/"):
+                hit = data.lookup(relative_posix_path)
+                if hit is not None:
+                    return hit
+        return None
+
+    @property
+    def prefixes(self) -> tuple[str, ...]:
+        return tuple(prefix for prefix, _ in self._shards)
+
+
+def load_coverage_map(coverage_map: Mapping[str, Path]) -> MultiCoverageData:
+    """Load one CoverageData per prefix and wrap them in a MultiCoverageData."""
+    shards = {prefix: load_coverage(path) for prefix, path in coverage_map.items()}
+    return MultiCoverageData.from_map(shards)
+
+
+def _normalize_prefix(raw: str) -> str:
+    return raw.replace("\\", "/").strip().lstrip("./").rstrip("/")
 
 
 def coverage_for_span(

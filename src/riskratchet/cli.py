@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -83,6 +84,7 @@ CONFIG_ALLOWED_KEYS = {
     "component_regression_gate",
     "coverage",
     "coverage_cache",
+    "coverage_map",
     "exclude",
     "fail_component_regression_above",
     "fail_existing_above",
@@ -164,8 +166,15 @@ def config_show(
 
 @app.command()
 def scan(
-    paths: Annotated[list[Path], typer.Argument(help="Files or directories to scan.")],
+    paths: Annotated[list[Path] | None, typer.Argument(help="Files or directories to scan.")] = None,
     coverage: Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")] = None,
+    coverage_map: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--coverage-map",
+            help="Per-prefix coverage path, repeatable: --coverage-map packages/a=cov-a.json.",
+        ),
+    ] = None,
     config: Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")] = None,
     format: Annotated[str, typer.Option("--format", help="Output format.")] = "table",
     json_output: Annotated[
@@ -233,17 +242,30 @@ def scan(
     cfg = _load_config(config)
     effective_format = _effective_format(format, json_output)
     resolved_paths = _resolved_paths(paths, cfg)
-    coverage_path = _resolve_coverage(
-        coverage,
-        cfg,
-        sources=resolved_paths,
-        no_auto_cov=no_auto_cov,
-        required=False,
-        allow_missing=True,
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    coverage_path: Path | None
+    if resolved_coverage_map:
+        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=True)
+        coverage_path = None
+    else:
+        coverage_path = _resolve_coverage(
+            coverage,
+            cfg,
+            sources=resolved_paths,
+            no_auto_cov=no_auto_cov,
+            required=False,
+            allow_missing=True,
+        )
+    _emit_diagnostics_banner(
+        command="scan",
+        scan_roots=resolved_paths,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
         coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
@@ -272,6 +294,10 @@ def scan(
 def baseline(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to baseline.")],
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage_map: Annotated[
+        list[str] | None,
+        typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
+    ] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     output: Annotated[Path | None, typer.Option("--output", help="Where to write the baseline JSON.")] = None,
     include: Annotated[list[str] | None, typer.Option("--include")] = None,
@@ -304,17 +330,31 @@ def baseline(
     """Compute current risk and save it as the new baseline."""
     cfg = _load_config(config)
     resolved_paths = _resolved_paths(paths, cfg)
-    coverage_path = _resolve_coverage(
-        coverage,
-        cfg,
-        sources=resolved_paths,
-        no_auto_cov=no_auto_cov,
-        required=True,
-        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    coverage_path: Path | None
+    if resolved_coverage_map:
+        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
+        coverage_path = None
+    else:
+        coverage_path = _resolve_coverage(
+            coverage,
+            cfg,
+            sources=resolved_paths,
+            no_auto_cov=no_auto_cov,
+            required=True,
+            allow_missing=allow_missing,
+        )
+    _emit_diagnostics_banner(
+        command="baseline",
+        scan_roots=resolved_paths,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
         coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
@@ -333,6 +373,10 @@ def baseline(
 def check(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to check.")],
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage_map: Annotated[
+        list[str] | None,
+        typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
+    ] = None,
     baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     format: Annotated[str, typer.Option("--format")] = "table",
@@ -411,17 +455,31 @@ def check(
         raise typer.Exit(code=2)
     old = load_baseline(baseline_file)
     resolved_paths = _resolved_paths(paths, cfg)
-    coverage_path = _resolve_coverage(
-        coverage,
-        cfg,
-        sources=resolved_paths,
-        no_auto_cov=no_auto_cov,
-        required=True,
-        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    coverage_path: Path | None
+    if resolved_coverage_map:
+        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
+        coverage_path = None
+    else:
+        coverage_path = _resolve_coverage(
+            coverage,
+            cfg,
+            sources=resolved_paths,
+            no_auto_cov=no_auto_cov,
+            required=True,
+            allow_missing=allow_missing,
+        )
+    _emit_diagnostics_banner(
+        command="check",
+        scan_roots=resolved_paths,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
         coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
@@ -521,6 +579,10 @@ def explain(
 def diff(
     paths: Annotated[list[Path], typer.Argument(help="Files or directories to diff against baseline.")],
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage_map: Annotated[
+        list[str] | None,
+        typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
+    ] = None,
     baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
     format: Annotated[str, typer.Option("--format")] = "table",
@@ -580,17 +642,31 @@ def diff(
         raise typer.Exit(code=2)
     old = load_baseline(baseline_file)
     resolved_paths = _resolved_paths(paths, cfg)
-    coverage_path = _resolve_coverage(
-        coverage,
-        cfg,
-        sources=resolved_paths,
-        no_auto_cov=no_auto_cov,
-        required=True,
-        allow_missing=_resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage")),
+    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    coverage_path: Path | None
+    if resolved_coverage_map:
+        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
+        coverage_path = None
+    else:
+        coverage_path = _resolve_coverage(
+            coverage,
+            cfg,
+            sources=resolved_paths,
+            no_auto_cov=no_auto_cov,
+            required=True,
+            allow_missing=allow_missing,
+        )
+    _emit_diagnostics_banner(
+        command="diff",
+        scan_roots=resolved_paths,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
         coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
         include=include or [],
         exclude=exclude or cfg.get("exclude", []),
         allow=allow or cfg.get("allow", []),
@@ -828,6 +904,18 @@ def _validate_config(cfg: dict[str, Any]) -> None:
             raise ValueError(str(exc)) from exc
     if "groups" in cfg:
         normalize_groups(cfg["groups"])
+    if "coverage_map" in cfg:
+        _validate_coverage_map(cfg["coverage_map"])
+
+
+def _validate_coverage_map(raw: Any) -> None:
+    if not isinstance(raw, dict):
+        raise ValueError("[tool.riskratchet.coverage_map] must be a table mapping prefix -> path.")
+    for key, value in raw.items():
+        if not isinstance(key, str) or not key.strip():
+            raise ValueError("coverage_map keys must be non-empty strings (repo-relative prefixes).")
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"coverage_map[{key!r}] must be a non-empty path string.")
 
 
 def _validate_string_list(cfg: dict[str, Any], key: str) -> None:
@@ -844,9 +932,14 @@ def _is_number(value: Any) -> bool:
 
 def _resolved_config_payload(cfg: dict[str, Any]) -> dict[str, Any]:
     groups = _resolved_groups(cfg)
+    raw_map = cfg.get("coverage_map")
+    coverage_map_payload: dict[str, str] = {}
+    if isinstance(raw_map, dict):
+        coverage_map_payload = {str(prefix): str(path) for prefix, path in raw_map.items()}
     return {
         "paths": [str(path) for path in _resolved_paths([], cfg)],
         "coverage": cfg.get("coverage"),
+        "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
         "fail_new_above": _resolved_float(None, cfg.get("fail_new_above"), default=50.0),
         "fail_regression_above": _resolved_float(None, cfg.get("fail_regression_above"), default=5.0),
@@ -914,7 +1007,46 @@ def _resolved_missing_coverage(value: str | None, cfg: dict[str, Any]) -> Missin
     return MissingCoveragePolicy(raw)
 
 
-def _resolved_paths(paths: list[Path], cfg: dict[str, Any]) -> list[Path]:
+def _parse_coverage_map_flag(values: list[str]) -> dict[str, Path]:
+    """Parse repeatable `--coverage-map prefix=path` entries.
+
+    Empty input returns `{}`. Duplicate prefixes raise — they are almost
+    certainly a typo, and silently letting the later value win would be a
+    surprising loss.
+    """
+    out: dict[str, Path] = {}
+    for raw in values:
+        if "=" not in raw:
+            raise typer.BadParameter(f"--coverage-map expects prefix=path, got {raw!r}")
+        prefix, _, path_str = raw.partition("=")
+        prefix = prefix.strip()
+        path_str = path_str.strip()
+        if not prefix or not path_str:
+            raise typer.BadParameter(f"--coverage-map expects prefix=path, got {raw!r}")
+        if prefix in out:
+            raise typer.BadParameter(f"--coverage-map prefix {prefix!r} given more than once")
+        out[prefix] = Path(path_str)
+    return out
+
+
+def _resolved_coverage_map(
+    cli_value: list[str] | None,
+    cfg: dict[str, Any],
+) -> dict[str, Path]:
+    if cli_value:
+        return _parse_coverage_map_flag(cli_value)
+    raw = cfg.get("coverage_map")
+    if not isinstance(raw, dict) or not raw:
+        return {}
+    try:
+        _validate_coverage_map(raw)
+    except ValueError as exc:
+        typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    return {str(prefix): Path(str(path)) for prefix, path in raw.items()}
+
+
+def _resolved_paths(paths: list[Path] | None, cfg: dict[str, Any]) -> list[Path]:
     if paths:
         return paths
     configured = cfg.get("paths")
@@ -1100,6 +1232,60 @@ def _resolved_churn_days(cli_value: int | None, cfg: dict[str, Any]) -> int:
             raise typer.BadParameter("[tool.riskratchet] churn_window_days must be >= 1")
         return cfg_value
     return DEFAULT_CHURN_WINDOW_DAYS
+
+
+def _ensure_coverage_map_exists(
+    coverage_map: Mapping[str, Path],
+    *,
+    allow_missing: bool,
+) -> None:
+    """Verify every coverage-map path exists; warn or fail depending on policy."""
+    missing = [(prefix, path) for prefix, path in coverage_map.items() if not path.exists()]
+    if not missing:
+        return
+    for prefix, path in missing:
+        if allow_missing:
+            typer.secho(
+                f"warning: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
+                fg=typer.colors.YELLOW,
+                err=True,
+            )
+        else:
+            typer.secho(
+                (
+                    f"coverage-map[{prefix}] file not found: {path}. "
+                    "Generate it or pass --allow-missing-coverage."
+                ),
+                fg=typer.colors.RED,
+                err=True,
+            )
+    if not allow_missing:
+        raise typer.Exit(code=2)
+
+
+def _emit_diagnostics_banner(
+    *,
+    command: str,
+    scan_roots: list[Path],
+    coverage_path: Path | None,
+    coverage_map: Mapping[str, Path] | None = None,
+) -> None:
+    """Print a single 'resolved root + coverage source' line to stderr.
+
+    Always-on so monorepo users can see which package is being scanned with
+    which coverage file. Stdout stays payload-only.
+    """
+    roots = ",".join(str(p) for p in scan_roots) or "."
+    if coverage_map:
+        cov = "map=" + ",".join(f"{prefix}:{path}" for prefix, path in coverage_map.items())
+    elif coverage_path is not None:
+        cov = f"single={coverage_path}"
+    else:
+        cov = "none"
+    typer.secho(
+        f"riskratchet: command={command} root={Path.cwd()} scan_roots=[{roots}] coverage={cov}",
+        err=True,
+    )
 
 
 def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:

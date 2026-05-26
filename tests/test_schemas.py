@@ -203,3 +203,100 @@ def test_baseline_file_matches_baseline_schema(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(baseline_path.read_text(encoding="utf-8"))
     Draft202012Validator(_load_schema("baseline.schema.json")).validate(payload)
+
+
+def test_baseline_includes_signature_field(tmp_path: Path) -> None:
+    """Schema allows signature; the produced baseline emits it for every entry."""
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    payload = json.loads(baseline_path.read_text(encoding="utf-8"))
+    assert payload["entries"], "fixture project should have at least one function"
+    for entry in payload["entries"]:
+        assert "signature" in entry
+        assert isinstance(entry["signature"], str)
+
+
+def test_diff_schema_allows_ambiguous_rename_status() -> None:
+    """The diff schema enum includes ambiguous_rename and accepts the new fields."""
+    schema = _load_schema("diff.schema.json")
+    status_enum = schema["properties"]["entries"]["items"]["properties"]["status"]["enum"]
+    assert "ambiguous_rename" in status_enum
+    summary_required = schema["properties"]["summary"]["required"]
+    assert "ambiguous_rename" in summary_required
+    entry_props = schema["properties"]["entries"]["items"]["properties"]
+    assert "previous_targets" in entry_props
+    assert "match_confidence" in entry_props
+
+
+def test_diff_json_with_ambiguous_rename_matches_schema(tmp_path: Path) -> None:
+    """End-to-end: a project with an ambiguous rename produces schema-valid JSON."""
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "m.py").write_text(
+        dedent(
+            """
+            def one():
+                return 42
+
+            def two():
+                return 42
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    # Replace both functions with one new function whose body matches both
+    # baseline entries; this is the canonical ambiguous-rename trigger.
+    (src / "m.py").write_text(
+        dedent(
+            """
+            def merged():
+                return 42
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("diff.schema.json")).validate(payload)
+    statuses = {e["status"] for e in payload["entries"]}
+    assert "ambiguous_rename" in statuses

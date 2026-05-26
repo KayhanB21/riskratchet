@@ -31,6 +31,7 @@ class DiffStatus(str, Enum):
     NEW = "new"
     REMOVED = "removed"
     MOVED = "moved"
+    AMBIGUOUS_RENAME = "ambiguous_rename"
     UNCHANGED = "unchanged"
 
 
@@ -120,6 +121,7 @@ class FunctionRisk:
     score: float
     crap: float
     fingerprint: str | None = None
+    signature: str | None = None
     group: str | None = None
 
 
@@ -148,6 +150,7 @@ class BaselineEntry:
     score: float
     components: RiskComponents
     fingerprint: str | None = None
+    signature: str | None = None
     group: str | None = None
 
 
@@ -186,6 +189,8 @@ class DiffEntry:
     previous_id: FunctionId | None = None
     group: str | None = None
     reason: str = ""
+    previous_targets: tuple[FunctionId, ...] = ()
+    match_confidence: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -223,3 +228,6 @@ class DiffReport:
                     )
                 )
         return out
+
+    def ambiguous_renames(self) -> tuple[DiffEntry, ...]:
+        return self.by_status(DiffStatus.AMBIGUOUS_RENAME)

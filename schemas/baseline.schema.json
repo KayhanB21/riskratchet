@@ -18,6 +18,7 @@
           "path": { "type": "string" },
           "qualname": { "type": "string" },
           "fingerprint": { "type": "string" },
+          "signature": { "type": "string" },
           "group": { "type": "string" },
           "score": { "type": "number", "minimum": 0, "maximum": 100 },
           "components": {

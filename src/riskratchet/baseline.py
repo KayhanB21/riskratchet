@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from riskratchet.groups import group_for_path
+from riskratchet.matching import MatchResult, match_rename
 from riskratchet.models import (
     Baseline,
     BaselineEntry,
@@ -39,6 +40,7 @@ def baseline_from_report(report: RiskReport) -> Baseline:
             score=round(fn.score, 4),
             components=fn.components,
             fingerprint=fn.fingerprint,
+            signature=fn.signature,
             group=fn.group,
         )
     return Baseline(version=BASELINE_VERSION, entries=entries)
@@ -81,7 +83,9 @@ def compare(
     Existing functions are flagged only when `new.score - old.score >
     fail_regression_above`; the strict comparison preserves the "tolerance is
     the noise floor" semantics from the plan. New functions are flagged only
-    when their score is above `fail_new_above`.
+    when their score is above `fail_new_above`. Ambiguous rename matches are
+    treated the same as new functions for gating, with a richer reason so
+    the user can decide between the candidates.
     """
     out: list[Regression] = []
     old_by_fingerprint = _unique_old_entries_by_fingerprint(old)
@@ -91,6 +95,7 @@ def compare(
     for fn in new.functions:
         previous = old.entries.get(fn.id)
         previous_target: str | None = None
+        ambiguous: MatchResult | None = None
         if previous is None:
             previous = _match_by_fingerprint(
                 fn,
@@ -100,8 +105,33 @@ def compare(
             )
             if previous is not None:
                 previous_target = previous.id.as_target()
+        if previous is None:
+            result = match_rename(fn, _unmatched_old_entries(old, used_old_ids))
+            if result.is_ambiguous:
+                ambiguous = result
+            elif result.previous is not None:
+                previous = result.previous
+                previous_target = previous.id.as_target()
 
         if previous is None:
+            if ambiguous is not None:
+                targets = ", ".join(c.id.as_target() for c in ambiguous.candidates)
+                out.append(
+                    Regression(
+                        id=fn.id,
+                        kind=RegressionKind.NEW_ABOVE_THRESHOLD,
+                        current_score=fn.score,
+                        previous_score=None,
+                        delta=None,
+                        reason=(
+                            f"ambiguous rename candidate (confidence {ambiguous.confidence:.2f}); "
+                            f"current score {fn.score:.1f} could match: {targets}. "
+                            "Resolve by accepting the new baseline or renaming back."
+                        ),
+                        current=fn,
+                    )
+                )
+                continue
             if fn.score > fail_new_above:
                 out.append(
                     Regression(
@@ -202,6 +232,8 @@ def diff(
     for fn in new.functions:
         previous = old.entries.get(fn.id)
         previous_id: FunctionId | None = None
+        ambiguous: MatchResult | None = None
+        match_confidence: float | None = None
         if previous is None:
             previous = _match_by_fingerprint(
                 fn,
@@ -211,6 +243,36 @@ def diff(
             )
             if previous is not None:
                 previous_id = previous.id
+                match_confidence = 1.0  # exact body fingerprint, unique on both sides
+        if previous is None:
+            result = match_rename(fn, _unmatched_old_entries(old, used_old_ids))
+            if result.is_ambiguous:
+                ambiguous = result
+            elif result.previous is not None:
+                previous = result.previous
+                previous_id = previous.id
+                match_confidence = result.confidence
+
+        if previous is None and ambiguous is not None:
+            targets = ", ".join(c.id.as_target() for c in ambiguous.candidates)
+            entries.append(
+                DiffEntry(
+                    id=fn.id,
+                    status=DiffStatus.AMBIGUOUS_RENAME,
+                    current_score=fn.score,
+                    previous_score=None,
+                    delta=None,
+                    current=fn,
+                    group=fn.group,
+                    reason=(
+                        f"ambiguous rename candidate (confidence {ambiguous.confidence:.2f}); "
+                        f"current score {fn.score:.1f} could match: {targets}"
+                    ),
+                    previous_targets=tuple(c.id for c in ambiguous.candidates),
+                    match_confidence=ambiguous.confidence,
+                )
+            )
+            continue
 
         if previous is None:
             entries.append(
@@ -258,6 +320,7 @@ def diff(
                     fail_regression_above=fail_regression_above,
                     fail_component_regression_above=fail_component_regression_above,
                 ),
+                match_confidence=match_confidence,
             )
         )
 
@@ -290,7 +353,21 @@ def regressions_from_diff(
 ) -> list[Regression]:
     out: list[Regression] = []
     for entry in report.entries:
-        if entry.status is DiffStatus.NEW:
+        if entry.status is DiffStatus.AMBIGUOUS_RENAME:
+            current_score = entry.current_score or 0.0
+            out.append(
+                Regression(
+                    id=entry.id,
+                    kind=RegressionKind.NEW_ABOVE_THRESHOLD,
+                    current_score=current_score,
+                    previous_score=None,
+                    delta=None,
+                    reason=entry.reason
+                    or (f"ambiguous rename at score {current_score:.1f}; resolve before accepting baseline."),
+                    current=entry.current,
+                )
+            )
+        elif entry.status is DiffStatus.NEW:
             current_score = entry.current_score or 0.0
             if current_score > fail_new_above:
                 out.append(
@@ -334,7 +411,7 @@ def regressions_from_diff(
         elif (
             fail_existing_above is not None
             and entry.current_score is not None
-            and entry.status not in {DiffStatus.REMOVED, DiffStatus.NEW}
+            and entry.status not in {DiffStatus.REMOVED, DiffStatus.NEW, DiffStatus.AMBIGUOUS_RENAME}
             and entry.current_score > fail_existing_above
         ):
             out.append(
@@ -436,11 +513,12 @@ def _diff_sort_key(entry: DiffEntry) -> tuple[int, float, str]:
     order = {
         DiffStatus.REGRESSED: 0,
         DiffStatus.COMPONENT_REGRESSED: 1,
-        DiffStatus.NEW: 2,
-        DiffStatus.IMPROVED: 3,
-        DiffStatus.MOVED: 4,
-        DiffStatus.REMOVED: 5,
-        DiffStatus.UNCHANGED: 6,
+        DiffStatus.AMBIGUOUS_RENAME: 2,
+        DiffStatus.NEW: 3,
+        DiffStatus.IMPROVED: 4,
+        DiffStatus.MOVED: 5,
+        DiffStatus.REMOVED: 6,
+        DiffStatus.UNCHANGED: 7,
     }
     magnitude = abs(entry.delta or entry.current_score or entry.previous_score or 0.0)
     return (order[entry.status], -magnitude, entry.id.as_target())
@@ -463,6 +541,8 @@ def _entry_to_dict(entry: BaselineEntry) -> dict[str, Any]:
     }
     if entry.fingerprint is not None:
         payload["fingerprint"] = entry.fingerprint
+    if entry.signature is not None:
+        payload["signature"] = entry.signature
     if entry.group is not None:
         payload["group"] = entry.group
     return payload
@@ -476,6 +556,7 @@ def _entry_from_dict(raw: Any) -> BaselineEntry | None:
     score = raw.get("score")
     components_raw = raw.get("components")
     fingerprint = raw.get("fingerprint")
+    signature = raw.get("signature")
     group = raw.get("group")
     if not (
         isinstance(path, str)
@@ -497,6 +578,7 @@ def _entry_from_dict(raw: Any) -> BaselineEntry | None:
         score=float(score),
         components=components,
         fingerprint=fingerprint if isinstance(fingerprint, str) else None,
+        signature=signature if isinstance(signature, str) else None,
         group=group if isinstance(group, str) else None,
     )
 
@@ -544,6 +626,13 @@ def _match_by_fingerprint(
     if entry is None or entry.id in used_old_ids:
         return None
     return entry
+
+
+def _unmatched_old_entries(
+    old: Baseline,
+    used_old_ids: set[FunctionId],
+) -> list[BaselineEntry]:
+    return [entry for fid, entry in old.entries.items() if fid not in used_old_ids]
 
 
 def _component_regression(

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "packages/beta/core.py": {
+      "executed_lines": [4, 5, 6],
+      "missing_lines": [7, 8, 9, 10, 11, 12, 13],
+      "executed_branches": [],
+      "missing_branches": []
+    }
+  }
+}

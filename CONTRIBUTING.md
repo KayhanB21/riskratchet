@@ -29,8 +29,21 @@ uv run pytest --cov --cov-branch --cov-report=term-missing -q
 ```
 
 The project's own `riskratchet check` gate runs on every PR. If your change regresses risk on existing functions, the PR comment will say so — address it or argue against it in the PR description.
-If `.riskratchet.json` changes, include a short rationale explaining why the
-new baseline is intentionally accepted.
+
+If `.riskratchet.json` changes, the **Baseline gate** workflow
+(`.github/workflows/baseline-gate.yml`) fails the PR unless you provide a
+rationale. Use one of:
+
+- a `## Baseline bump rationale` heading in the PR body followed by at least
+  twenty characters of explanation,
+- an inline `riskratchet-baseline-rationale: <text>` line in the PR body,
+- the `baseline-approved` label (maintainer override), or
+- a `[riskratchet-baseline-bypass]` token in any commit message between the
+  base and head SHAs (use this when the bump is a side effect of an obvious
+  refactor and the rationale lives in the commit message itself).
+
+The gate intentionally has multiple escape hatches; the goal is "every
+baseline bump has an audit trail," not "every PR needs a label."
 
 ## PR expectations
 
