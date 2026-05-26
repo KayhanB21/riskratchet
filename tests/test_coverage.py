@@ -8,7 +8,13 @@ from typing import Any
 
 import pytest
 
-from riskratchet.coverage import coverage_for_span, empty_coverage, load_coverage
+from riskratchet.coverage import (
+    MultiCoverageData,
+    coverage_for_span,
+    empty_coverage,
+    load_coverage,
+    load_coverage_map,
+)
 from riskratchet.models import FunctionSpan
 
 
@@ -96,3 +102,68 @@ def test_empty_coverage_returns_no_lookups() -> None:
     data = empty_coverage()
     assert data.lookup("anything") is None
     assert data.file_paths == ()
+
+
+def test_multi_coverage_data_picks_longest_prefix(tmp_path: Path) -> None:
+    alpha = _write(
+        tmp_path,
+        {"files": {"packages/alpha/core.py": {"executed_lines": [1, 2], "missing_lines": []}}},
+    )
+    alpha = alpha.rename(tmp_path / "cov-a.json")
+    beta = _write(
+        tmp_path,
+        {"files": {"packages/beta/core.py": {"executed_lines": [], "missing_lines": [1]}}},
+    )
+    beta = beta.rename(tmp_path / "cov-b.json")
+    multi = load_coverage_map({"packages/alpha": alpha, "packages/beta": beta})
+    assert multi.lookup("packages/alpha/core.py") == {
+        "executed_lines": [1, 2],
+        "missing_lines": [],
+    }
+    assert multi.lookup("packages/beta/core.py") == {
+        "executed_lines": [],
+        "missing_lines": [1],
+    }
+    assert multi.lookup("packages/gamma/core.py") is None
+
+
+def test_multi_coverage_data_longest_prefix_wins(tmp_path: Path) -> None:
+    """When two prefixes both match, the longer one wins."""
+    broad = _write(
+        tmp_path,
+        {"files": {"packages/alpha/legacy.py": {"executed_lines": [1], "missing_lines": []}}},
+    )
+    broad = broad.rename(tmp_path / "broad.json")
+    narrow = _write(
+        tmp_path,
+        {"files": {"packages/alpha/core.py": {"executed_lines": [], "missing_lines": [1]}}},
+    )
+    narrow = narrow.rename(tmp_path / "narrow.json")
+    multi = load_coverage_map({"packages": broad, "packages/alpha": narrow})
+    # core.py only exists in the narrow shard
+    assert multi.lookup("packages/alpha/core.py") == {
+        "executed_lines": [],
+        "missing_lines": [1],
+    }
+    # legacy.py is only in the broad shard but the narrow prefix matches
+    # the path too; narrow has no entry for it so we keep walking to broad.
+    assert multi.lookup("packages/alpha/legacy.py") == {
+        "executed_lines": [1],
+        "missing_lines": [],
+    }
+
+
+def test_multi_coverage_data_empty_returns_none() -> None:
+    multi = MultiCoverageData.from_map({})
+    assert multi.lookup("anything.py") is None
+    assert multi.prefixes == ()
+
+
+def test_multi_coverage_data_normalizes_prefix(tmp_path: Path) -> None:
+    cov = _write(
+        tmp_path,
+        {"files": {"pkg/foo.py": {"executed_lines": [1], "missing_lines": []}}},
+    )
+    multi = load_coverage_map({"./pkg/": cov})
+    # Lookup uses normalized prefix matching
+    assert multi.lookup("pkg/foo.py") is not None

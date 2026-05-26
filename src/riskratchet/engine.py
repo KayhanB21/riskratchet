@@ -17,9 +17,11 @@ from riskratchet.complexity import complexity_for_file
 from riskratchet.coverage import (
     CoverageData,
     MissingCoveragePolicy,
+    MultiCoverageData,
     coverage_for_span,
     empty_coverage,
     load_coverage,
+    load_coverage_map,
 )
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
 from riskratchet.groups import group_for_path
@@ -38,6 +40,7 @@ def analyze(
     *,
     root: Path | None = None,
     coverage_path: Path | None = None,
+    coverage_map: Mapping[str, Path] | None = None,
     include: Sequence[str] = (),
     exclude: Sequence[str] = (),
     allow: Sequence[str] = (),
@@ -52,7 +55,13 @@ def analyze(
     `paths` is interpreted relative to `root` (default: cwd) for both file
     discovery and coverage matching. Glob patterns in `include`/`exclude` are
     matched against root-relative POSIX paths.
+
+    Pass either `coverage_path` (single coverage file) or `coverage_map` (one
+    coverage file per repo-relative prefix). Passing both raises `ValueError`.
     """
+    if coverage_path is not None and coverage_map:
+        raise ValueError("coverage_path and coverage_map are mutually exclusive")
+
     root_path = (root or Path.cwd()).resolve()
     py_files = iter_python_files(
         [Path(p) for p in paths],
@@ -62,7 +71,16 @@ def analyze(
     )
 
     resolved_weights = resolve_weights(weights)
-    coverage_data = load_coverage(Path(coverage_path)) if coverage_path is not None else empty_coverage()
+    coverage_data: CoverageData | MultiCoverageData
+    if coverage_map:
+        coverage_data = load_coverage_map(coverage_map)
+        coverage_present = True
+    elif coverage_path is not None:
+        coverage_data = load_coverage(Path(coverage_path))
+        coverage_present = True
+    else:
+        coverage_data = empty_coverage()
+        coverage_present = False
     parsed_files: list[ParsedFile] = []
     function_risks: list[FunctionRisk] = []
     file_stats_list: list[FileStats] = []
@@ -90,7 +108,7 @@ def analyze(
     for parsed in parsed_files:
         file_coverage = coverage_data.lookup(parsed.relative_path)
         if (
-            coverage_path is not None
+            coverage_present
             and file_coverage is None
             and missing_coverage_policy is MissingCoveragePolicy.SKIP
         ):
@@ -98,7 +116,7 @@ def analyze(
             function_risks.extend([])
             skipped_missing_coverage += function_risks_skipped
             continue
-        if coverage_path is not None and file_coverage is None:
+        if coverage_present and file_coverage is None:
             print(
                 f"warning: {parsed.relative_path} has no matching entry in coverage data",
                 file=sys.stderr,
@@ -120,7 +138,7 @@ def analyze(
     return RiskReport(
         functions=tuple(function_risks),
         files=tuple(file_stats_list),
-        coverage_status="present" if coverage_path is not None else "missing",
+        coverage_status="present" if coverage_present else "missing",
         suppressed_functions=suppressed_functions,
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(function_risks) + suppressed_functions,
@@ -129,7 +147,7 @@ def analyze(
 
 def _risks_for_file(
     parsed: ParsedFile,
-    coverage_data: CoverageData,
+    coverage_data: CoverageData | MultiCoverageData,
     churn_by_function: dict[FunctionId, ChurnStats],
     weights: Mapping[str, float],
     *,
@@ -165,6 +183,7 @@ def _risks_for_file(
                 score=total_risk(components, weights=weights),
                 crap=crap_score(complexity, coverage),
                 fingerprint=fn.fingerprint,
+                signature=fn.signature,
                 group=group_for_path(fn.id.path, groups),
             )
         )

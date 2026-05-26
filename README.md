@@ -704,6 +704,55 @@ Each function is assigned to the longest matching repo-relative prefix.
 Ungrouped functions are reported as `null` in JSON fields and `ungrouped` in
 text or markdown summaries.
 
+### Monorepos and per-package coverage
+
+For `packages/*` / `services/*` layouts where a single `coverage.json` is
+not practical, declare one coverage file per repo-relative prefix:
+
+```toml
+[tool.riskratchet]
+paths = ["packages/alpha", "packages/beta"]
+
+[tool.riskratchet.coverage_map]
+"packages/alpha" = "packages/alpha/coverage.json"
+"packages/beta" = "packages/beta/coverage.json"
+
+[tool.riskratchet.groups]
+alpha = "packages/alpha"
+beta = "packages/beta"
+```
+
+Or pass the map on the CLI (repeatable; longest matching prefix wins):
+
+```bash
+riskratchet scan packages/alpha packages/beta \
+  --coverage-map packages/alpha=packages/alpha/coverage.json \
+  --coverage-map packages/beta=packages/beta/coverage.json
+```
+
+Two workflows are supported:
+
+- **One repo-level baseline** (recommended for tight coupling): a single
+  `.riskratchet.json` covers every package; groups partition the
+  reporting but the ratchet is global.
+- **One baseline per package**: each package has its own `pyproject.toml`
+  and `.riskratchet.json`, and you invoke `riskratchet` once per package
+  directory. Useful when packages release independently.
+
+Every command prints a diagnostic banner to stderr summarizing the
+resolved root, scan paths, and coverage source (`coverage=map=...`,
+`coverage=single=...`, or `coverage=none`). Stdout stays payload-only.
+
+### Rename-aware matching
+
+Since 0.2.5, the comparison logic recognizes function renames and moves
+before classifying them as new. A unique body-fingerprint or signature
+match becomes `MOVED`; a tie between multiple plausible candidates
+becomes `AMBIGUOUS_RENAME` and stays in the gating block of the PR
+comment so risk growth isn't silently masked. See
+[`AGENTS.md`](AGENTS.md#rename-aware-matching-since-025) for the
+full signal weighting.
+
 For early adoption before a baseline exists, `scan` can also fail on an
 absolute gate:
 

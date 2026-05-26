@@ -11,6 +11,75 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-05-25
+
+### Added
+
+- Rename-aware baseline matching: `compare` and `diff` now recognize
+  renamed/moved functions via a weighted multi-signal matcher (body
+  fingerprint, signature fingerprint, path equality, qualname tail,
+  component-vector proximity, score proximity). Unambiguous matches stay
+  `MOVED`; multi-candidate matches surface as a new `AMBIGUOUS_RENAME`
+  status that always gates so risk growth can't be silently masked.
+- New `BaselineEntry.signature` (and per-function `FunctionRisk.signature`):
+  a name- and location-stripped hash of arguments, decorators, and return
+  annotation. Stored optionally in baseline JSON; old baselines without
+  the field continue to load.
+- Monorepo coverage support: `[tool.riskratchet.coverage_map]` table and
+  repeatable `--coverage-map prefix=path` CLI flag on `scan`, `baseline`,
+  `check`, and `diff`. Longest matching prefix wins. Mutually exclusive
+  with the single `--coverage` path.
+- Diagnostics banner: every command now emits one stderr line that names
+  the resolved root, scan paths, and coverage source (single file or per-
+  prefix map). Stdout stays payload-only.
+- Top-risk dogfood report: `bin/dogfood-top-risk.sh` regenerates
+  `docs/top-risk.md` and `docs/top-risk.json`. A new informational CI job
+  uploads the markdown as a per-PR artifact.
+- Baseline governance gate: `bin/check_baseline_rationale.py` plus the
+  `.github/workflows/baseline-gate.yml` workflow fail a PR that mutates
+  `.riskratchet.json` without a rationale heading, an inline
+  `riskratchet-baseline-rationale:` line, the `baseline-approved` label,
+  or a `[riskratchet-baseline-bypass]` commit-message token.
+- `tests/fixtures/monorepo/` end-to-end fixture for the monorepo path.
+
+### Changed
+
+- `riskratchet scan`, `baseline`, `check`, and `diff` now treat the
+  positional `paths` argument as optional; when omitted, paths are taken
+  from `[tool.riskratchet] paths` (or default to `.`). Backwards
+  compatible — existing invocations are unaffected.
+- Diff JSON output gained additive per-entry fields `previous_targets`
+  (array) and `match_confidence` (number/null), plus an `ambiguous_rename`
+  count in the summary. Schema (`schemas/diff.schema.json`) updated.
+- Diff PR-comment block now lists ambiguous renames in the visible
+  (gating) section alongside regressions and new functions.
+- `_diff_summary_line` always renders `**Ambiguous renames:** N` even
+  when zero, matching the unconditional formatting of regressed / new /
+  improved counts.
+- `parse_rationale` in `bin/check_baseline_rationale.py` returns the
+  full rationale body, not just the first line. The displayed gate
+  message still abbreviates to 80 characters for readability.
+
+### Internal
+
+- New module `src/riskratchet/matching.py` houses `match_rename`,
+  `signature_fingerprint`, and the documented similarity weights /
+  threshold (kept separate from `baseline.py` to ease the 0.2.7 baseline
+  split). Weights are provisional pending empirical calibration
+  (roadmap P13).
+- New private helper `_classify_against_baseline` in `baseline.py`
+  encapsulates the exact-id → unique-fingerprint → weighted-rename
+  matching ladder, consumed by both `compare` and `diff`. Brought both
+  functions back near their pre-0.2.5 risk scores.
+- `engine.analyze` accepts a `coverage_map` argument; `coverage_path` and
+  `coverage_map` are mutually exclusive.
+- `MultiCoverageData` in `coverage.py` shards `CoverageData` by repo-
+  relative prefix with longest-prefix dispatch.
+- New `tests/test_workflows_yaml.py` validates the new workflows
+  structurally (shape, artifact upload, pin-to-SHA security posture).
+- New monorepo end-to-end test verifies that per-package coverage shards
+  do not bleed across packages (longest-prefix lookup is enforced).
+
 ## [0.2.4] - 2026-05-25
 
 ### Changed

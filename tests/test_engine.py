@@ -102,3 +102,70 @@ def test_analyze_respects_exclude(tmp_path: Path) -> None:
         exclude=["tests/**"],
     )
     assert {fn.id.qualname for fn in report.functions} == {"keep"}
+
+
+def test_analyze_emits_signature_fingerprint(tmp_path: Path) -> None:
+    """Every analyzed function carries a non-empty signature fingerprint."""
+    _write(tmp_path, "m.py", "def helper(x: int) -> int:\n    return x\n")
+    report = analyze([tmp_path], root=tmp_path, use_git=False)
+    [fn] = report.functions
+    assert fn.signature is not None
+    assert len(fn.signature) == 64  # sha256 hex
+
+
+def test_analyze_with_coverage_map_uses_per_prefix_coverage(tmp_path: Path) -> None:
+    """coverage_map dispatches each file to its declared shard."""
+    (tmp_path / "packages" / "a").mkdir(parents=True)
+    (tmp_path / "packages" / "b").mkdir(parents=True)
+    _write(tmp_path / "packages" / "a", "core.py", "def fa(x): return x\n")
+    _write(tmp_path / "packages" / "b", "core.py", "def fb(x): return x\n")
+    cov_a = tmp_path / "cov-a.json"
+    cov_b = tmp_path / "cov-b.json"
+    cov_a.write_text(
+        json.dumps({"files": {"packages/a/core.py": {"executed_lines": [1], "missing_lines": []}}}),
+        encoding="utf-8",
+    )
+    cov_b.write_text(
+        json.dumps({"files": {"packages/b/core.py": {"executed_lines": [], "missing_lines": [1]}}}),
+        encoding="utf-8",
+    )
+    report = analyze(
+        [tmp_path / "packages" / "a", tmp_path / "packages" / "b"],
+        root=tmp_path,
+        coverage_map={"packages/a": cov_a, "packages/b": cov_b},
+        use_git=False,
+    )
+    by_name = {fn.id.qualname: fn for fn in report.functions}
+    assert by_name["fa"].coverage.line_coverage == 1.0
+    assert by_name["fb"].coverage.line_coverage == 0.0
+    assert report.coverage_status == "present"
+
+
+def test_analyze_rejects_both_coverage_path_and_coverage_map(tmp_path: Path) -> None:
+    """Passing both is a programming error and must raise."""
+    _write(tmp_path, "m.py", "def f(): return 1\n")
+    cov = tmp_path / "c.json"
+    cov.write_text('{"files": {"m.py": {"executed_lines": []}}}', encoding="utf-8")
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        analyze(
+            [tmp_path],
+            root=tmp_path,
+            coverage_path=cov,
+            coverage_map={"m.py": cov},
+            use_git=False,
+        )
+
+
+def test_analyze_multi_root_paths_stay_repo_relative(tmp_path: Path) -> None:
+    """Scanning multiple package roots keeps repo-relative POSIX paths."""
+    (tmp_path / "packages" / "a").mkdir(parents=True)
+    (tmp_path / "packages" / "b").mkdir(parents=True)
+    _write(tmp_path / "packages" / "a", "core.py", "def fa(): return 1\n")
+    _write(tmp_path / "packages" / "b", "core.py", "def fb(): return 1\n")
+    report = analyze(
+        [tmp_path / "packages" / "a", tmp_path / "packages" / "b"],
+        root=tmp_path,
+        use_git=False,
+    )
+    paths = {fn.id.path for fn in report.functions}
+    assert paths == {"packages/a/core.py", "packages/b/core.py"}

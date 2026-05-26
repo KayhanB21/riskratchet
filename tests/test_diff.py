@@ -11,6 +11,7 @@ from riskratchet.models import (
     ChurnStats,
     ComplexityStats,
     CoverageStats,
+    DiffReport,
     DiffStatus,
     FileStats,
     FunctionId,
@@ -300,6 +301,187 @@ def test_diff_renderers_cover_failing_statuses_and_non_regression_statuses() -> 
     assert "a.py::improved" not in github
 
 
+def _ambiguous_diff_report() -> tuple[Baseline, RiskReport, DiffReport]:
+    from riskratchet.baseline import diff as diff_baseline
+
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "one"): BaselineEntry(
+                id=FunctionId("a.py", "one"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+            FunctionId("a.py", "two"): BaselineEntry(
+                id=FunctionId("a.py", "two"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("a.py", "renamed", 60.0, component_score=60.0, fingerprint="dup"),),
+        files=(),
+    )
+    diff_report: DiffReport = diff_baseline(report, old, fail_regression_above=5.0)
+    return old, report, diff_report
+
+
+def test_render_diff_table_includes_ambiguous_rename_row() -> None:
+    _, _, diff_report = _ambiguous_diff_report()
+    table = render_diff_table(diff_report)
+    assert "ambiguous_rename" in table
+    assert "a.py::renamed" in table
+
+
+def test_render_diff_markdown_includes_ambiguous_rename_row() -> None:
+    _, _, diff_report = _ambiguous_diff_report()
+    markdown = render_diff_markdown(diff_report)
+    assert "| ambiguous_rename | `a.py::renamed` |" in markdown
+
+
+def test_render_diff_pr_comment_keeps_ambiguous_rename_visible() -> None:
+    _, _, diff_report = _ambiguous_diff_report()
+    pr_comment = render_diff_pr_comment(diff_report)
+    # Ambiguous renames must be in the gating block, not collapsed
+    visible_block, _, _collapsed = pr_comment.partition("<details>")
+    assert "ambiguous_rename" in visible_block
+    assert "a.py::renamed" in visible_block
+
+
+def test_render_diff_github_emits_ambiguous_rename_warning() -> None:
+    _, _, diff_report = _ambiguous_diff_report()
+    github = render_diff_github(diff_report)
+    assert "ambiguous rename" in github.lower()
+    assert "a.py" in github
+
+
+def test_render_diff_json_includes_ambiguous_rename_payload() -> None:
+    import json as _json
+
+    from riskratchet.reporting import render_diff_json
+
+    _, _, diff_report = _ambiguous_diff_report()
+    payload = _json.loads(render_diff_json(diff_report))
+    [entry] = [e for e in payload["entries"] if e["status"] == "ambiguous_rename"]
+    targets = {(t["path"], t["qualname"]) for t in entry["previous_targets"]}
+    assert targets == {("a.py", "one"), ("a.py", "two")}
+    assert entry["match_confidence"] is not None
+    assert payload["summary"]["ambiguous_rename"] == 1
+
+
+def test_diff_emits_ambiguous_rename_status() -> None:
+    """Two baseline entries plausibly map to the same new function → AMBIGUOUS_RENAME."""
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "one"): BaselineEntry(
+                id=FunctionId("a.py", "one"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+            FunctionId("a.py", "two"): BaselineEntry(
+                id=FunctionId("a.py", "two"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("a.py", "renamed", 60.0, component_score=60.0, fingerprint="dup"),),
+        files=(),
+    )
+    diff_report = diff(report, old, fail_regression_above=5.0)
+    statuses = {e.id.as_target(): e.status for e in diff_report.entries}
+    assert statuses["a.py::renamed"] is DiffStatus.AMBIGUOUS_RENAME
+
+
+def test_diff_ambiguous_rename_lists_candidates_in_entry() -> None:
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "one"): BaselineEntry(
+                id=FunctionId("a.py", "one"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+            FunctionId("a.py", "two"): BaselineEntry(
+                id=FunctionId("a.py", "two"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("a.py", "renamed", 60.0, component_score=60.0, fingerprint="dup"),),
+        files=(),
+    )
+    diff_report = diff(report, old, fail_regression_above=5.0)
+    [entry] = [e for e in diff_report.entries if e.status is DiffStatus.AMBIGUOUS_RENAME]
+    assert {fid.qualname for fid in entry.previous_targets} == {"one", "two"}
+    assert entry.match_confidence is not None
+    assert entry.match_confidence >= 0.6
+
+
+def test_regressions_from_diff_treats_ambiguous_rename_like_new() -> None:
+    """An ambiguous rename is always surfaced — score doesn't matter."""
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("a.py", "one"): BaselineEntry(
+                id=FunctionId("a.py", "one"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+            FunctionId("a.py", "two"): BaselineEntry(
+                id=FunctionId("a.py", "two"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="dup",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("a.py", "renamed", 35.0, component_score=35.0, fingerprint="dup"),),
+        files=(),
+    )
+    diff_report = diff(report, old, fail_regression_above=5.0)
+    regressions = regressions_from_diff(diff_report, fail_new_above=50.0)
+    # Even though score 35.0 < fail_new_above 50.0, ambiguity always surfaces.
+    assert len(regressions) == 1
+    assert regressions[0].kind == RegressionKind.NEW_ABOVE_THRESHOLD
+    assert "ambiguous" in regressions[0].reason.lower()
+
+
+def test_diff_moved_status_unchanged_for_unique_match() -> None:
+    """The unique-body-fingerprint path still produces MOVED, not AMBIGUOUS_RENAME."""
+    old = Baseline(
+        version="2",
+        entries={
+            FunctionId("old.py", "fn"): BaselineEntry(
+                id=FunctionId("old.py", "fn"),
+                score=20.0,
+                components=_components(20.0),
+                fingerprint="unique-body",
+            ),
+        },
+    )
+    report = RiskReport(
+        functions=(_fn("new.py", "fn", 20.0, component_score=20.0, fingerprint="unique-body"),),
+        files=(),
+    )
+    diff_report = diff(report, old, fail_regression_above=5.0)
+    [entry] = diff_report.entries
+    assert entry.status is DiffStatus.MOVED
+
+
 def test_render_diff_pr_comment_multi_section_snapshot() -> None:
     old = Baseline(
         version="2",
@@ -352,7 +534,7 @@ def test_render_diff_pr_comment_multi_section_snapshot() -> None:
         <!-- riskratchet-report -->
         # riskratchet
 
-        **Regressions:** 1 · **New:** 1 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
+        **Regressions:** 1 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
 
         | Status | Function | Before | After | Delta | Reason |
         | --- | --- | ---: | ---: | ---: | --- |

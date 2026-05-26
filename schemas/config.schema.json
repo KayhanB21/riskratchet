@@ -15,6 +15,7 @@
       "required": [
         "paths",
         "coverage",
+        "coverage_map",
         "baseline",
         "fail_new_above",
         "fail_regression_above",
@@ -37,6 +38,10 @@
       "properties": {
         "paths": { "type": "array", "items": { "type": "string" } },
         "coverage": { "type": ["string", "null"] },
+        "coverage_map": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
         "baseline": { "type": "string" },
         "fail_new_above": { "type": "number" },
         "fail_regression_above": { "type": "number" },

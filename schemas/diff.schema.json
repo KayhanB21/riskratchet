@@ -18,6 +18,7 @@
         "new",
         "removed",
         "moved",
+        "ambiguous_rename",
         "unchanged",
         "groups"
       ],
@@ -29,6 +30,7 @@
         "new": { "type": "integer", "minimum": 0 },
         "removed": { "type": "integer", "minimum": 0 },
         "moved": { "type": "integer", "minimum": 0 },
+        "ambiguous_rename": { "type": "integer", "minimum": 0 },
         "unchanged": { "type": "integer", "minimum": 0 },
         "groups": {
           "type": "object",
@@ -41,6 +43,7 @@
               "new",
               "removed",
               "moved",
+              "ambiguous_rename",
               "unchanged"
             ],
             "additionalProperties": false,
@@ -51,6 +54,7 @@
               "new": { "type": "integer", "minimum": 0 },
               "removed": { "type": "integer", "minimum": 0 },
               "moved": { "type": "integer", "minimum": 0 },
+              "ambiguous_rename": { "type": "integer", "minimum": 0 },
               "unchanged": { "type": "integer", "minimum": 0 }
             }
           }
@@ -71,7 +75,9 @@
           "delta",
           "previous_path",
           "previous_qualname",
-          "reason"
+          "reason",
+          "previous_targets",
+          "match_confidence"
         ],
         "additionalProperties": false,
         "properties": {
@@ -86,6 +92,7 @@
               "new",
               "removed",
               "moved",
+              "ambiguous_rename",
               "unchanged"
             ]
           },
@@ -94,7 +101,20 @@
           "delta": { "type": ["number", "null"] },
           "previous_path": { "type": ["string", "null"] },
           "previous_qualname": { "type": ["string", "null"] },
-          "reason": { "type": "string" }
+          "reason": { "type": "string" },
+          "previous_targets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["path", "qualname"],
+              "additionalProperties": false,
+              "properties": {
+                "path": { "type": "string" },
+                "qualname": { "type": "string" }
+              }
+            }
+          },
+          "match_confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
         }
       }
     }

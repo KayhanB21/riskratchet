@@ -29,8 +29,21 @@ uv run pytest --cov --cov-branch --cov-report=term-missing -q
 ```
 
 The project's own `riskratchet check` gate runs on every PR. If your change regresses risk on existing functions, the PR comment will say so — address it or argue against it in the PR description.
-If `.riskratchet.json` changes, include a short rationale explaining why the
-new baseline is intentionally accepted.
+
+If `.riskratchet.json` changes, the **Baseline gate** workflow
+(`.github/workflows/baseline-gate.yml`) fails the PR unless you provide a
+rationale. Use one of:
+
+- a `## Baseline bump rationale` heading in the PR body followed by at least
+  twenty characters of explanation,
+- an inline `riskratchet-baseline-rationale: <text>` line in the PR body,
+- the `baseline-approved` label (maintainer override), or
+- a `[riskratchet-baseline-bypass]` token in any commit message between the
+  base and head SHAs (use this when the bump is a side effect of an obvious
+  refactor and the rationale lives in the commit message itself).
+
+The gate intentionally has multiple escape hatches; the goal is "every
+baseline bump has an audit trail," not "every PR needs a label."
 
 ## PR expectations
 
@@ -56,6 +69,21 @@ When pinning a new GitHub Action, use the full commit SHA with the semver tag as
 ```yaml
 uses: owner/repo@<40-char-sha>  # v1.2.3
 ```
+
+### Post-PR workflow smoke check
+
+When a PR touches `.github/workflows/baseline-gate.yml`, the new `top-risk`
+job in `ci.yml`, or any other workflow file, the structural YAML tests in
+`tests/test_workflows_yaml.py` will catch syntactic issues — but only
+opening the PR exercises the workflow against the real GitHub Actions
+runner. Before flipping the PR out of draft:
+
+1. Open it as a draft against `master`.
+2. Confirm that the `baseline-rationale` and `top-risk` jobs both report
+   green (the latter is informational; it must succeed for the artifact
+   upload to land).
+3. If either fails for environment reasons (missing dependency, runner
+   version, etc.), file an issue and resolve before tagging the release.
 
 ## Releasing (maintainers)
 

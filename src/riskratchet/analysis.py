@@ -13,6 +13,7 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
+from riskratchet.matching import signature_fingerprint
 from riskratchet.models import FileStats, FunctionId, FunctionSpan
 
 
@@ -23,6 +24,7 @@ class DiscoveredFunction:
     is_public: bool
     is_async: bool
     fingerprint: str
+    signature: str
     node: ast.FunctionDef | ast.AsyncFunctionDef
 
 
@@ -190,6 +192,7 @@ class _FunctionCollector(ast.NodeVisitor):
                 is_public=_compute_is_public(qualname, self._dunder_all),
                 is_async=isinstance(node, ast.AsyncFunctionDef),
                 fingerprint=function_fingerprint(node),
+                signature=signature_fingerprint(node),
                 node=node,
             )
         )
