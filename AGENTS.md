@@ -79,9 +79,12 @@ success and `2` on usage errors.
 
 ## Output contract and stability
 
-- JSON schemas live in [`schemas/`](schemas/): `report.schema.json`,
-  `regressions.schema.json`, `baseline.schema.json`. Each is exercised
-  against real CLI output in `tests/test_schemas.py`.
+- JSON schemas live in [`schemas/`](schemas/): `report.schema.json`
+  (scan), `regressions.schema.json` (check), `diff.schema.json` (diff),
+  `baseline.schema.json` (on-disk baseline), `summary.schema.json`
+  (`--summary --json` envelope), and `config.schema.json`
+  (`config show --json`). Each is exercised against real CLI output in
+  `tests/test_schemas.py`.
 - `--format sarif` emits a SARIF 2.1.0 log. The output references
   `https://json.schemastore.org/sarif-2.1.0.json` in its `$schema` field;
   the upstream OASIS definition is the [SARIF 2.1.0 spec](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
