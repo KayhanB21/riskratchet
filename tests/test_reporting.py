@@ -9,21 +9,14 @@ from __future__ import annotations
 
 import json
 
+from reporting_fixtures import _fn, _report
 from riskratchet.models import (
-    ChurnStats,
-    ComplexityStats,
-    CoverageStats,
     DiffEntry,
     DiffReport,
     DiffStatus,
-    FileStats,
     FunctionId,
-    FunctionRisk,
-    FunctionSpan,
     Regression,
     RegressionKind,
-    RiskComponents,
-    RiskReport,
     Severity,
 )
 from riskratchet.reporting import (
@@ -43,46 +36,6 @@ from riskratchet.reporting import (
     render_report_sarif,
     render_report_table,
 )
-
-
-def _components(score: float = 50.0) -> RiskComponents:
-    return RiskComponents(score, score, score, score, score, score)
-
-
-def _fn(
-    qualname: str = "foo",
-    score: float = 50.0,
-    *,
-    cyclomatic: int = 5,
-    line_coverage: float = 0.5,
-    branch_coverage: float | None = 0.5,
-    commits: int = 0,
-    span_lines: int = 10,
-    total_lines: int = 100,
-    is_public: bool = True,
-    group: str | None = None,
-) -> FunctionRisk:
-    path = "m.py"
-    return FunctionRisk(
-        id=FunctionId(path=path, qualname=qualname),
-        span=FunctionSpan(start_line=1, end_line=span_lines),
-        is_public=is_public,
-        complexity=ComplexityStats(cyclomatic=cyclomatic),
-        coverage=CoverageStats(line_coverage=line_coverage, branch_coverage=branch_coverage),
-        churn=ChurnStats(commits=commits),
-        file_stats=FileStats(path=path, total_lines=total_lines, function_count=1),
-        components=_components(score),
-        score=score,
-        crap=10.0,
-        group=group,
-    )
-
-
-def _report(*fns: FunctionRisk) -> RiskReport:
-    return RiskReport(
-        functions=fns,
-        files=(FileStats(path="m.py", total_lines=100, function_count=len(fns)),),
-    )
 
 
 def test_render_report_table_renders_rows_and_summary() -> None:
@@ -374,7 +327,7 @@ def test_remediation_lists_triggers_for_high_risk() -> None:
             line_coverage=0.0,
             branch_coverage=0.0,
             commits=20,
-            span_lines=200,
+            end_line=200,
             total_lines=2000,
         )
     )

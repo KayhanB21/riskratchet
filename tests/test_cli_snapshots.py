@@ -17,6 +17,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
+from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -131,7 +132,11 @@ def _normalize_markdown(text: str) -> str:
     return text
 
 
-def test_scan_markdown_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_scan_markdown_snapshot_is_stable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    snapshot: SnapshotAssertion,
+) -> None:
     src = _project(tmp_path)
     # chdir into tmp_path so the snapshot is hermetic: avoids picking up a
     # coverage.json or pyproject.toml from the repo root. Clear GitHub Actions
@@ -146,24 +151,14 @@ def test_scan_markdown_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.Mo
         ["scan", str(src), "--format", "markdown", "--no-auto-cov", "--no-git"],
     )
     assert result.exit_code == 0, result.stdout
-
-    normalized = _normalize_markdown(result.stdout)
-    expected = (
-        "# riskratchet report\n"
-        "\n"
-        "**Functions analyzed:** 2\n"
-        "**Files analyzed:** 1\n"
-        "**Coverage:** missing\n"
-        "\n"
-        "| Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |\n"
-        "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |\n"
-        "| medium | 42.5 | 12.0 | 3 | 0% | n/a | `TMP/src/m.py::branchy` | 4-9 |\n"
-        "| medium | 40.0 | 2.0 | 1 | 0% | n/a | `TMP/src/m.py::trivial` | 1-2 |\n"
-    )
-    assert normalized == expected
+    assert _normalize_markdown(result.stdout) == snapshot
 
 
-def test_scan_pr_comment_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_scan_pr_comment_snapshot_is_stable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    snapshot: SnapshotAssertion,
+) -> None:
     src = _project(tmp_path)
     monkeypatch.chdir(tmp_path)
     result = runner.invoke(
@@ -182,18 +177,4 @@ def test_scan_pr_comment_snapshot_is_stable(tmp_path: Path, monkeypatch: pytest.
         ],
     )
     assert result.exit_code == 0, result.stdout
-
-    expected = (
-        "<!-- riskratchet-report -->\n"
-        "# riskratchet\n"
-        "\n"
-        "Summary: 2 functions across 1 files. 0 critical, 0 high, 2 medium, 0 low\n"
-        "\n"
-        "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |\n"
-        "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |\n"
-        "| medium | 42.5 | 12.0 | 3 | 0% | n/a | ungrouped | "
-        "[`src/m.py::branchy`](https://github.com/acme/project/blob/abc123/src/m.py#L4-L9) | 4-9 |\n"
-        "| medium | 40.0 | 2.0 | 1 | 0% | n/a | ungrouped | "
-        "[`src/m.py::trivial`](https://github.com/acme/project/blob/abc123/src/m.py#L1-L2) | 1-2 |\n"
-    )
-    assert result.stdout == expected
+    assert result.stdout == snapshot
