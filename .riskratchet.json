@@ -379,14 +379,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_ambiguous_diff_entry",
-      "score": 14.59,
+      "score": 15.57,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "071020ca95356f14d9b0888fb5c5a2219b33de13dc91e1f7a1fa8918fe540544",
       "signature": "2bf497da075eb13b986331e713b72ea9b15582b07e687feb1bbc33a8dc57c9bb"
@@ -394,14 +394,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_ambiguous_regression",
-      "score": 14.34,
+      "score": 14.32,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
         "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "49fa525e362fd6546dcc8e43e8ba8d7c5a22553762e663c9a926c8aa8b59f2ad",
       "signature": "58350217d38ca98a58a6218e7af837bc2be3c265da864996eb805cba2fdcca19"
@@ -409,14 +409,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_classify_against_baseline",
-      "score": 10.3977,
+      "score": 10.3777,
       "components": {
         "coverage_gap": 7.6923,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
         "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "e2b78370fb80a51437dd01e08b4d4a4fe4cc040e4f51cf3cd927308c73a04022",
       "signature": "4b9e6c311f7826bff7ae093b785fafac9573594cbe3c2cc6718fc5b5e7cb6551"
@@ -424,14 +424,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_component_regression",
-      "score": 8.5673,
+      "score": 8.5473,
       "components": {
         "coverage_gap": 9.0909,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
         "churn": 0.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "9ea32eead9ea9e70e0cf384a62f2e54f847e421411c23705daeaf6813cd06431",
       "signature": "b2920e492fdf7bc72cbc710f00cb96c6ed34c92b239e144c3df860c7753c9fa2"
@@ -439,14 +439,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_current_fingerprint_counts",
-      "score": 9.59,
+      "score": 9.57,
       "components": {
         "coverage_gap": 16.6667,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
         "churn": 0.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "56962374d2705b2aa15401becdf4c2e6b1489f59aca0656f3f44d2a636c6035b",
       "signature": "91e025861124a3910735784ef9c552199389685bf456625f1dac687da6957e39"
@@ -454,14 +454,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_diff_reason",
-      "score": 18.34,
+      "score": 17.32,
       "components": {
         "coverage_gap": 13.3333,
         "structural_complexity": 35.0,
         "branch_gap": 10.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "ff8dbde4a1e0f1b1fede174af65de16f869bfb7f404cf6d221ae6c74cd5f2c3b",
       "signature": "16af9afa5ccf32f138dfc66e0f53b22f7c7a44ab5a6004f03f2a39b61c94496d"
@@ -469,14 +469,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_diff_sort_key",
-      "score": 14.34,
+      "score": 15.32,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "872bf026a5377a5e6ccc958869cfd3645300a589f2fc87d65dd64f40edbccdfe",
       "signature": "71720dc40cea960d2f9eaf6ccf417215815287f3227add255c204efcfb109e31"
@@ -484,14 +484,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_diff_status_for_existing",
-      "score": 13.34,
+      "score": 12.32,
       "components": {
         "coverage_gap": 10.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "bb9dfd2f8b6c6e5d40b6c4226bd7592d040649887e8c53a8e53731aa074b7411",
       "signature": "3504cdc47775837a513ed95df8c3aa425cd440713eee3e1666a841c8de2c8552"
@@ -499,14 +499,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_dumps",
-      "score": 15.34,
+      "score": 14.32,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "cdda8da2a17e6d38b61341076c558c33301b02d4db774cbb842d62355ef464d1",
       "signature": "f7940dfe1fe5963b618a4df60499d32e3902e725cca033c6b4e268fbedde2616"
@@ -514,14 +514,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_entry_from_dict",
-      "score": 27.0186,
+      "score": 27.9986,
       "components": {
         "coverage_gap": 21.4286,
         "structural_complexity": 40.0,
         "branch_gap": 50.0,
-        "churn": 10.0,
+        "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "ccbaea48ffb4e6e1294eaa25fac3e4d1417be01dfdd12bbede5a390e4c11f19b",
       "signature": "741141f3e7a05733d3ece1e9451617a8bd122c7edf59c47b568c4cafd1cea46e"
@@ -529,14 +529,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_entry_to_dict",
-      "score": 12.34,
+      "score": 13.32,
       "components": {
         "coverage_gap": 10.0,
         "structural_complexity": 15.0,
         "branch_gap": 16.6667,
-        "churn": 10.0,
+        "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "ceec10e97d1a58fe7edb9bc635acfc71ac605a830a2656a76c45353e00d857bc",
       "signature": "e69a06d7d63d15b434966ddb8ef5e99a91a7eed3355e615e50580bbf824e6e31"
@@ -544,14 +544,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_group_for_baseline_entry",
-      "score": 19.34,
+      "score": 19.32,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 10.0,
         "branch_gap": 25.0,
         "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "e1baa19f751431fa8c750ae4628d7e01d15b1560a59c2713dc90c6b81a32832a",
       "signature": "fa4720d0e20cce908ed2cfcd795c35f6d1bdf2e8a9bbebde3798d01a73ffffd6"
@@ -559,14 +559,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_match_by_fingerprint",
-      "score": 11.3757,
+      "score": 11.3557,
       "components": {
         "coverage_gap": 14.2857,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
         "churn": 0.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "09e38adde675e3b69d8227b9a58d307abe4003cd742014f70c620870b55f75a5",
       "signature": "5355740e35e54d838e23e57365b0ebdb4ffd1c7d614b2d43ae2087cdd8a15a3a"
@@ -574,14 +574,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_new_above_threshold_regression",
-      "score": 17.09,
+      "score": 18.07,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "cdb7d23eb492d981caa3678b5f1da14d3ca3b2b8f81b94184ae6575f7b5b7245",
       "signature": "acd0114b61d61e0304fd02cb9089b9657a648a1a03d7a7de243aeb14f93c3e80"
@@ -589,14 +589,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_new_diff_entry",
-      "score": 17.09,
+      "score": 18.07,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "92866484394b5dd53391468c7fba401ab22375c513f8731869c059a907d4a021",
       "signature": "7c214577f8238e04bd505133b0a89cc42e7789ca30c8611059e2daf87c9de6c3"
@@ -604,14 +604,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_unique_old_entries_by_fingerprint",
-      "score": 11.1733,
+      "score": 10.1533,
       "components": {
         "coverage_gap": 11.1111,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "cd26058ed336eefe6152d007a07385b8464a8d0f93d07ac77a139a7e76298771",
       "signature": "5efde9a266e04d40276e77d4c554f226189e82b0733ac7c69e14717b762e9422"
@@ -619,14 +619,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "_unmatched_old_entries",
-      "score": 20.59,
+      "score": 20.57,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
         "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "05ba9a9f6b2ba83ac1fae0270284114a82afbce8b368c2467bf50b24556e50ec",
       "signature": "a41587d4502a8e16900da57851c386e3b00d3d4d4a81d352249d2d0d03aa4688"
@@ -634,14 +634,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "baseline_from_report",
-      "score": 15.34,
+      "score": 15.32,
       "components": {
         "coverage_gap": 20.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
         "churn": 40.0,
         "public_surface": 20.0,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "2e6cb01d77476b3e8e93ebbd232bdb9fd3aae9f8d1d08d1fd3f24991758e0b91",
       "signature": "27382c17d8bf7e72048d93dc9c3b7e2c7a4145c9bf469d18b64bcf741a516c2f"
@@ -649,14 +649,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "compare",
-      "score": 27.2775,
+      "score": 27.1325,
       "components": {
         "coverage_gap": 3.125,
         "structural_complexity": 70.0,
         "branch_gap": 0.0,
         "churn": 50.0,
         "public_surface": 3.125,
-        "sprawl": 35.275
+        "sprawl": 33.825
       },
       "fingerprint": "c28f027847877d682302921c8cf090f1b95c5ae4630323ce87d85615e7f64761",
       "signature": "6fe9f6d6cb25d101e5841a58d935f44551ee1d3dbb7308e047d4986ff9d6b378"
@@ -664,14 +664,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "diff",
-      "score": 21.315,
+      "score": 21.295,
       "components": {
         "coverage_gap": 4.0,
         "structural_complexity": 50.0,
         "branch_gap": 0.0,
         "churn": 50.0,
         "public_surface": 4.0,
-        "sprawl": 22.15
+        "sprawl": 21.95
       },
       "fingerprint": "cc2cf8b92a91539dc7292073cd8df1036ba206c71cee3d5c405285056bbe243c",
       "signature": "53ced393e789ae6eac879720b04f1d3a5afa6de516c18beec2690bfdab238021"
@@ -679,14 +679,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "load_baseline",
-      "score": 27.1257,
+      "score": 27.1057,
       "components": {
         "coverage_gap": 35.7143,
         "structural_complexity": 20.0,
         "branch_gap": 25.0,
         "churn": 20.0,
         "public_surface": 35.7143,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "52a72d7e47cd266a55990657bce20584ba8e85105463b575e7a4c74cd7d500ba",
       "signature": "5d56f90cf561b96d3372c6efb7cc436177a274c12120a35d1f19ffc9de4cbad5"
@@ -694,14 +694,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "regressions_from_diff",
-      "score": 33.9898,
+      "score": 32.8984,
       "components": {
         "coverage_gap": 11.1111,
         "structural_complexity": 80.0,
-        "branch_gap": 14.2857,
+        "branch_gap": 7.1429,
         "churn": 50.0,
         "public_surface": 11.1111,
-        "sprawl": 24.025
+        "sprawl": 23.825
       },
       "fingerprint": "d55dcc86fac385e0a540e306d88c04bf71e5bf0af61787949ccbbdb673866994",
       "signature": "2d3fab3baf8c4a6f1cd7ec8cc767b5501aaeedfd7cd82d9260d140ba971d4b9b"
@@ -709,14 +709,14 @@
     {
       "path": "src/riskratchet/baseline.py",
       "qualname": "save_baseline",
-      "score": 16.4233,
+      "score": 16.4033,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
         "churn": 10.0,
         "public_surface": 33.3333,
-        "sprawl": 20.9
+        "sprawl": 20.7
       },
       "fingerprint": "47c86339a881d0646d3b00fed3751bf655b8e2e8e88687ceca5538676dea3afd",
       "signature": "fc3f90e2b88a68f1accee775cda1e9cc64f8e5dca08a625e8d56edc65d063357"
@@ -784,11 +784,11 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_report",
-      "score": 21.625,
+      "score": 18.5,
       "components": {
-        "coverage_gap": 6.25,
+        "coverage_gap": 0.0,
         "structural_complexity": 50.0,
-        "branch_gap": 8.3333,
+        "branch_gap": 0.0,
         "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 50.0
@@ -979,12 +979,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_churn_days",
-      "score": 39.8636,
+      "score": 38.8636,
       "components": {
         "coverage_gap": 54.5455,
         "structural_complexity": 25.0,
         "branch_gap": 75.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -994,12 +994,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_config_payload",
-      "score": 11.25,
+      "score": 12.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1009,12 +1009,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_coverage_map",
-      "score": 18.75,
+      "score": 19.75,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1039,12 +1039,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_groups",
-      "score": 22.25,
+      "score": 21.25,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1054,12 +1054,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_missing_coverage",
-      "score": 9.75,
+      "score": 8.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1084,12 +1084,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_optional_float",
-      "score": 17.25,
+      "score": 16.25,
       "components": {
         "coverage_gap": 16.6667,
         "structural_complexity": 10.0,
         "branch_gap": 25.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1099,12 +1099,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolved_paths",
-      "score": 10.0,
+      "score": 11.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1204,12 +1204,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_validate_string_list",
-      "score": 19.75,
+      "score": 18.75,
       "components": {
         "coverage_gap": 16.6667,
         "structural_complexity": 20.0,
         "branch_gap": 25.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1294,14 +1294,14 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "diff",
-      "score": 49.2595,
+      "score": 36.5492,
       "components": {
-        "coverage_gap": 24.2424,
+        "coverage_gap": 6.0606,
         "structural_complexity": 75.0,
-        "branch_gap": 43.75,
+        "branch_gap": 6.25,
         "churn": 50.0,
-        "public_surface": 24.2424,
-        "sprawl": 92.5
+        "public_surface": 6.0606,
+        "sprawl": 94.375
       },
       "fingerprint": "3689cc5c169cced44f805ceb939a83a5a9ef068e47d235546d2d5e5f1feca336",
       "signature": "81817986699aea0c78d375b57e08bae6739c42c8b88f315966d2425cea59423f"
@@ -1309,12 +1309,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "explain",
-      "score": 9.5,
+      "score": 8.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 50.0
       },
@@ -1849,12 +1849,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "_component_vector",
-      "score": 15.0,
+      "score": 16.0,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2102,843 +2102,858 @@
       "signature": "e74d14acf6ddc5da3f72b9eb8e26b4e8bf11400c47f5e1b70b135c8fcab2772a"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "SourceLinks.link_for",
-      "score": 6.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "f2742ca0273928d1b7e1a1cfd9d808462a26cb47e717f02704c062f0133992ef",
-      "signature": "de281112e8a86739dad7b2ab52d2ee9445d6675edfb13722a9bcbe5e804f9c8f"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_branch_cell",
-      "score": 5.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "3df5fa9d5bbf24329e5a5d3da099311f81c818398c911aa944352576df04e716",
-      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_branch_markdown",
-      "score": 6.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "da8994efe54e9a2b6ae3cdf81a7b28fdb591bcc9ee4c3db4d1edc1cc31e57334",
-      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_branch_pct",
-      "score": 6.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "51ab57875ae81f05705d6e7bc4d137313ff0c75b3205b008f12737617fe2e2f7",
-      "signature": "039eea67137afcea5204024b0b0d6cf001a2698988a32b65b3d6357e3a60840d"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_diff_entry_payload",
-      "score": 11.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "07467ed67d366037a0d6f4bf7df1fb7dd6722128fbf9b1877e0c0a32280ec7ba",
-      "signature": "2442e788223adf02fe7db610840de91918b8b995ba2fe8646fca9f3c34cdaccf"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_diff_group_summary",
-      "score": 9.45,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 15.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "f9d1d48c41dbd7ee8b5334e263456c0c337a3cd640dafef3b45bf9b154024fb0",
-      "signature": "6f587be90704d3de3fe9e6e94b8ad4893d3264b4ee84f216698bd8587a8fdd52"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_diff_markdown_row",
-      "score": 20.7,
-      "components": {
-        "coverage_gap": 16.6667,
-        "structural_complexity": 10.0,
-        "branch_gap": 50.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "6d015a04d5d84bfcfd2a9f36a995f270dd0e1073cda55b88b8e6f6c787ccc3f5",
-      "signature": "ae7f7f3847fda7cd0a2372d6d5f982ea7f968822306c5e5e3f90a0e9aed4db4f"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_diff_summary",
-      "score": 5.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "1fe1f8d1ac618e278e882367a573b0e4bb8f87eb7d022091fd15be9e55c7b6f0",
-      "signature": "6324f1656d31734e21d82c9fc0972479b20109081c8e74daa58a65aef0e6346d"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_diff_summary_line",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "2b99358ff3d000d059611ff685f746c5cb93823dc15f429947efbd960c91ab7b",
-      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "_escape_github",
-      "score": 4.7,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "dbb088ecd5d649cb364a7b00948dacba3c8e55ce80200af86699bbbaf8a5e2cf",
       "signature": "4d2ce4ccca504cdb889bb5ab0fc95a36b93564d69c76810efceaa841e0941d05"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_fmt_optional",
-      "score": 8.2,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "d17cb8491a438a265cf5011529c97aad0ff9537b8170331737a1f0704a53733b",
-      "signature": "0fe8fed274800f05f7b5fca9e05b35fc5db3dc2d837ae6cd37c7f091e5fc4ae5"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_function_group_summary",
-      "score": 10.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "78ba270b15301824b4c8ea6a729df490078c7aefe0082851532a1e24d8b972ca",
-      "signature": "732a7495334aa67444b6dd3bdada8f5e87405d962eca3f20be643f64ade5a123"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_function_payload",
-      "score": 4.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "d2bf648080d7c177523bdd43cdef2fad8196d8d937345f3c4c49e4a02620e22f",
-      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_function_sarif_result",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "cea2d55b7f7f462eacf2593207e6ad9ee6fd6f7e1de7b42eb0da2922de264a11",
-      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "_github_annotation",
-      "score": 5.95,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "60a541af53c06127add4e7b6648ec525d8c46b04b5bd62149445410d3ee05ad9",
       "signature": "829a9bfecc849b408cbfbfea140880fb7a7a7f82e15ed6055748f4e964293044"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_group_summary_lines",
-      "score": 9.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "697dc4860870046562890c7aea9a7f90bba7fccb77f8d6b432f695f6c8c2abe3",
-      "signature": "6ceb7085b592bc9989f5739af5b02d76f879235485f77e4b51162042d2d08aaf"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_markdown_row",
-      "score": 9.45,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 15.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "e3b2c3db35bab5ad7e635ed6a78a503d6aa411179a8ae465cfdd002cae159933",
-      "signature": "b1d83ffc3ccbc43aa549901fe23bb221221de3901adac86057a7efadc308652b"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_regression_markdown_row",
-      "score": 7.2,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "422e1d3e71bf3fe20df24fef2b95d917cf72273906427b5bb59d0ef0f476c9f8",
-      "signature": "47675906fa035897015e385f3eb439dc3330d28f3cfc06785b63a857fd981dc8"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_regression_payload",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "c6b4a661331a0200be4c087ac78846f35772d2519770060095f2fc7996a688b3",
-      "signature": "fe0663f3edc2b9d9c7276552f4a5eb8144ad41cb851cc56d59bcccbf07225376"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_regression_sarif_result",
-      "score": 15.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 50.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "db351958dd112f55f935cddba458612e33b71cdf6affc493816871de727ece45",
-      "signature": "fe0663f3edc2b9d9c7276552f4a5eb8144ad41cb851cc56d59bcccbf07225376"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_regressions_summary",
-      "score": 14.45,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 35.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "ef573e9b62ecf0791af82190d378c7785768480a953eb25375134e7ba5296cd2",
-      "signature": "062019d03396fcbca49d21db0e99c5df55b3ca21bb58837778e877c8ed0af7ac"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_remediation",
-      "score": 14.45,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 35.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "a492a4e4b520c2d2de84d0a15d106d552e17cc0f3cee18b9ca344d5c017aa710",
-      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sarif_function_properties",
-      "score": 4.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "097c40ac308c8fb541322e98d8161d134b9bc346114116d54b9956b699335918",
-      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sarif_level_for_severity",
-      "score": 7.2,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "05a3d8d6c2e5ef877dc0d37ed4757be66dab0b618b50b8e856b889fe631c28e8",
-      "signature": "5071d734084acbdc2222b48597d01b3bd60c2ac51774d2b3561dee361c9b4bbf"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sarif_location",
-      "score": 4.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "9bd6fb6c1520fba933c0cc7ad0c460b2a262d131d48cb05914a89dde1b04243c",
-      "signature": "5e457b189749f3684e371b29dc5f8ec9576428a2d143fada714f7f4965457683"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sarif_log",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "1dd1fec2047dc297df849a9d6b282325aea051d6ba726c4e7ae04cdbb93b71fc",
-      "signature": "b849ba33bc898713283fed29374ffd8cc434ae17ea45fc240d5dc18b859b72bf"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sarif_uri",
-      "score": 5.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "7f213e14ffe0d59b4ea0aea375e823855283be4b250b5722eea7d44ef2685b45",
-      "signature": "d556b6a63f7246d390fac131f379c30c86888e319a20107b5f4b791ef1ccbc54"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_severity_summary_line",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "bf32d45982b8e97b0694c87e62e5210bd1acdc92cb81e57fd28b555e79bc1425",
-      "signature": "a6c6a5065012db26df0dfa6bb77ceaabdffa0e9c9c968ac98af18b4f63133673"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_sorted_by_risk",
-      "score": 4.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "e5961bf79b79607033d3caa758fdcd0ac6991a557c53d177f926f36acd4ea9a9",
-      "signature": "6e7f66b42dafe7f3fa7b0983a23b3685cda3812575abc1f911a50730a17f4452"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_summary_envelope",
-      "score": 5.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "d9464bee7c8c3b1d93c753d57c23e5cb829c82caa5909e0a1325076e10c1d764",
-      "signature": "8a26fc5a62a5ff9e920ff9593f65f4f635516b2fa62130d814f205848b2def6e"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_summary_line",
-      "score": 20.5654,
-      "components": {
-        "coverage_gap": 15.3846,
-        "structural_complexity": 25.0,
-        "branch_gap": 33.3333,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "5921f1f8a755c72450f293f46678fe7c893d3292d94bc1a2937c83d34c30081f",
-      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "_summary_payload",
-      "score": 10.45,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 15.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "35cc6e5d54ebdd82e1fc1e03d9bbdf5021d2a90671e40a6adb28560b055c38bf",
-      "signature": "95210d9e4a2a3238cb5941c2206533f54c581458d8b5f969adbc410d5f4da24f"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "render_diff_github",
-      "score": 13.2,
+      "score": 8.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 16.6667,
         "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "fa418fa58bde1e79b8b7586e461c9adef010b0887bafa805709fc72820410889",
       "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_json",
-      "score": 6.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "a7402e6d6641a2ddcaa5429bbbf4e516a11610d1e7c02fd8d59f99e263f5babf",
-      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_markdown",
-      "score": 5.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "254b1e96de2a92f4793badf7e07f286de3faa6996b08c723b026325afdd87232",
-      "signature": "e2d486636a335df10c56ef7fa4ddc264f4b2cbe6610f1ab7db59b1d6d43e365a"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_pr_comment",
-      "score": 24.4279,
-      "components": {
-        "coverage_gap": 5.8824,
-        "structural_complexity": 50.0,
-        "branch_gap": 12.5,
-        "churn": 30.0,
-        "public_surface": 5.8824,
-        "sprawl": 47.0
-      },
-      "fingerprint": "4934fe4fc77932e3a3b1e45e2b13f8d9dbb86b798ee0478527bc229a92a6149d",
-      "signature": "e2d486636a335df10c56ef7fa4ddc264f4b2cbe6610f1ab7db59b1d6d43e365a"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_summary_json",
-      "score": 6.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "63be82d11c6642eea31829e0017d9aab1710a13e9cd1139a6392e9ca7a562e61",
-      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_summary_text",
-      "score": 7.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "75a4a97c2d1deaeaac1436e369f7682c97db55305c26b3e7fa7538d30ef0c708",
-      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_diff_table",
-      "score": 7.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "ac7c00dce2e2e7fca6e35718e7b3dba7442ec14cfc885a5ae789ade3af948df1",
-      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_function_explanation",
-      "score": 4.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 0.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "2b77a2bc70d2e16c807f3a8d87f9e0475252883794e300ce053dfcf78622b2af",
-      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "render_regressions_github",
-      "score": 18.9143,
+      "score": 14.2143,
       "components": {
         "coverage_gap": 14.2857,
         "structural_complexity": 15.0,
         "branch_gap": 25.0,
         "churn": 10.0,
         "public_surface": 14.2857,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "191051be931f53a07743a1ae0bfe59f75e3e435398097e848187926db9d71ffd",
       "signature": "d97888f9f92cf652e4b5357b0e627198b5a5c625afc4583b3a52b2696675576e"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_regressions_json",
-      "score": 9.95,
+      "path": "src/riskratchet/reporting/annotations.py",
+      "qualname": "render_report_github",
+      "score": 4.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "1225e03d1c13ee644f14e0c781b1fa58d70e79fe524d0f61a7b096b2e5cea49b",
+      "signature": "792a6a4a67cd32e7152071e685589aea12b6ddc44847e46ff413f155d1dc6235"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "_diff_entry_payload",
+      "score": 6.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "07467ed67d366037a0d6f4bf7df1fb7dd6722128fbf9b1877e0c0a32280ec7ba",
+      "signature": "2442e788223adf02fe7db610840de91918b8b995ba2fe8646fca9f3c34cdaccf"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "_function_payload",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "d2bf648080d7c177523bdd43cdef2fad8196d8d937345f3c4c49e4a02620e22f",
+      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "_regression_payload",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "c6b4a661331a0200be4c087ac78846f35772d2519770060095f2fc7996a688b3",
+      "signature": "fe0663f3edc2b9d9c7276552f4a5eb8144ad41cb851cc56d59bcccbf07225376"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "_summary_envelope",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "d9464bee7c8c3b1d93c753d57c23e5cb829c82caa5909e0a1325076e10c1d764",
+      "signature": "8a26fc5a62a5ff9e920ff9593f65f4f635516b2fa62130d814f205848b2def6e"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_diff_json",
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
+      },
+      "fingerprint": "a7402e6d6641a2ddcaa5429bbbf4e516a11610d1e7c02fd8d59f99e263f5babf",
+      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_diff_summary_json",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "63be82d11c6642eea31829e0017d9aab1710a13e9cd1139a6392e9ca7a562e61",
+      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_regressions_json",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
       },
       "fingerprint": "efbf8150bf4b286b07faf23e1620fb3a56e7e72012908659f5d6ea32103f7582",
       "signature": "d97888f9f92cf652e4b5357b0e627198b5a5c625afc4583b3a52b2696675576e"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_regressions_markdown",
-      "score": 12.2,
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_regressions_summary_json",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "196d5263a385835817b410fd0085faee0839803f42d69daaf5d3613f27a38ed3",
+      "signature": "0b9a209dbbc4a7bf7736a6b8b5d817f7b316271ca7d0a9466960f6736a197e9f"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_report_json",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "2d465ec1559a490a1d46e193bec41794b0ff9efec434a6cd49c4e3f49d95a43e",
+      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
+    },
+    {
+      "path": "src/riskratchet/reporting/json_payload.py",
+      "qualname": "render_report_summary_json",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "332046fa9d719bd3ce9102f53353361e2dbcf17d9847d2725c11e5b0c3937c5c",
+      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "SourceLinks.link_for",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "f2742ca0273928d1b7e1a1cfd9d808462a26cb47e717f02704c062f0133992ef",
+      "signature": "de281112e8a86739dad7b2ab52d2ee9445d6675edfb13722a9bcbe5e804f9c8f"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "_diff_markdown_row",
+      "score": 3.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 50.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
+      },
+      "fingerprint": "6d015a04d5d84bfcfd2a9f36a995f270dd0e1073cda55b88b8e6f6c787ccc3f5",
+      "signature": "ae7f7f3847fda7cd0a2372d6d5f982ea7f968822306c5e5e3f90a0e9aed4db4f"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "_markdown_row",
+      "score": 4.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "e3b2c3db35bab5ad7e635ed6a78a503d6aa411179a8ae465cfdd002cae159933",
+      "signature": "b1d83ffc3ccbc43aa549901fe23bb221221de3901adac86057a7efadc308652b"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "_regression_markdown_row",
+      "score": 3.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "422e1d3e71bf3fe20df24fef2b95d917cf72273906427b5bb59d0ef0f476c9f8",
+      "signature": "47675906fa035897015e385f3eb439dc3330d28f3cfc06785b63a857fd981dc8"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "render_diff_markdown",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "254b1e96de2a92f4793badf7e07f286de3faa6996b08c723b026325afdd87232",
+      "signature": "e2d486636a335df10c56ef7fa4ddc264f4b2cbe6610f1ab7db59b1d6d43e365a"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "render_diff_pr_comment",
+      "score": 17.7279,
+      "components": {
+        "coverage_gap": 5.8824,
+        "structural_complexity": 50.0,
+        "branch_gap": 12.5,
+        "churn": 10.0,
+        "public_surface": 5.8824,
+        "sprawl": 0.0
+      },
+      "fingerprint": "4934fe4fc77932e3a3b1e45e2b13f8d9dbb86b798ee0478527bc229a92a6149d",
+      "signature": "e2d486636a335df10c56ef7fa4ddc264f4b2cbe6610f1ab7db59b1d6d43e365a"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "render_regressions_markdown",
+      "score": 3.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
       },
       "fingerprint": "a315028b8a064e6d571e6936c3e137dd416da1919abbe778b84e5bbd181842bf",
       "signature": "5b3c65bdbc4b144caadf4cc3ffef98701739ec28f73d56e0ea44bfa4cd5a794c"
     },
     {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_regressions_pr_comment",
-      "score": 13.2,
+      "score": 3.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 60.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "3adc9a5e1ad613a2efcbc17396d534aeb81a8a3198c14dfcd040222de076009d",
       "signature": "5b3c65bdbc4b144caadf4cc3ffef98701739ec28f73d56e0ea44bfa4cd5a794c"
     },
     {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "render_report_markdown",
+      "score": 6.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "ccf17a15c543f9a0380b243a7adf93b6f6090891e1e6d4d3a06650537f3d9341",
+      "signature": "fdd5d8e7b382c85cb0b5e8bb2fab1a129358433849371835056b7c665d7d87cd"
+    },
+    {
+      "path": "src/riskratchet/reporting/markdown.py",
+      "qualname": "render_report_pr_comment",
+      "score": 23.3864,
+      "components": {
+        "coverage_gap": 9.0909,
+        "structural_complexity": 60.0,
+        "branch_gap": 25.0,
+        "churn": 10.0,
+        "public_surface": 9.0909,
+        "sprawl": 0.0
+      },
+      "fingerprint": "b8f9d35f45ed91fd695c2f22fc7a818f99393b59782919931db99e7812552c88",
+      "signature": "fdd5d8e7b382c85cb0b5e8bb2fab1a129358433849371835056b7c665d7d87cd"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_function_sarif_result",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "cea2d55b7f7f462eacf2593207e6ad9ee6fd6f7e1de7b42eb0da2922de264a11",
+      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_regression_sarif_result",
+      "score": 11.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 50.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "db351958dd112f55f935cddba458612e33b71cdf6affc493816871de727ece45",
+      "signature": "fe0663f3edc2b9d9c7276552f4a5eb8144ad41cb851cc56d59bcccbf07225376"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_sarif_function_properties",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "097c40ac308c8fb541322e98d8161d134b9bc346114116d54b9956b699335918",
+      "signature": "fcafa1ca6ca46ff4e75fef03f1348894f90b67bcc482be71998a27ee06df30ed"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_sarif_level_for_severity",
+      "score": 3.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "05a3d8d6c2e5ef877dc0d37ed4757be66dab0b618b50b8e856b889fe631c28e8",
+      "signature": "5071d734084acbdc2222b48597d01b3bd60c2ac51774d2b3561dee361c9b4bbf"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_sarif_location",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "9bd6fb6c1520fba933c0cc7ad0c460b2a262d131d48cb05914a89dde1b04243c",
+      "signature": "5e457b189749f3684e371b29dc5f8ec9576428a2d143fada714f7f4965457683"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_sarif_log",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "1dd1fec2047dc297df849a9d6b282325aea051d6ba726c4e7ae04cdbb93b71fc",
+      "signature": "b849ba33bc898713283fed29374ffd8cc434ae17ea45fc240d5dc18b859b72bf"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "_sarif_uri",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "7f213e14ffe0d59b4ea0aea375e823855283be4b250b5722eea7d44ef2685b45",
+      "signature": "d556b6a63f7246d390fac131f379c30c86888e319a20107b5f4b791ef1ccbc54"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "render_regressions_sarif",
-      "score": 7.95,
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "b115a8ad2477a5d3cf535f10f88411d7aab48f867bfb251649f17880c452613c",
+      "signature": "d97888f9f92cf652e4b5357b0e627198b5a5c625afc4583b3a52b2696675576e"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "render_report_sarif",
+      "score": 3.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "76dd7130ca8e5cdd17a5506ebdbb25acec66f698f826c24fa59a7f9ff9435b7a",
+      "signature": "792a6a4a67cd32e7152071e685589aea12b6ddc44847e46ff413f155d1dc6235"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_cell",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "3df5fa9d5bbf24329e5a5d3da099311f81c818398c911aa944352576df04e716",
+      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_markdown",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "da8994efe54e9a2b6ae3cdf81a7b28fdb591bcc9ee4c3db4d1edc1cc31e57334",
+      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_pct",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "51ab57875ae81f05705d6e7bc4d137313ff0c75b3205b008f12737617fe2e2f7",
+      "signature": "039eea67137afcea5204024b0b0d6cf001a2698988a32b65b3d6357e3a60840d"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_group_summary",
+      "score": 4.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "f9d1d48c41dbd7ee8b5334e263456c0c337a3cd640dafef3b45bf9b154024fb0",
+      "signature": "6f587be90704d3de3fe9e6e94b8ad4893d3264b4ee84f216698bd8587a8fdd52"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_summary",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "1fe1f8d1ac618e278e882367a573b0e4bb8f87eb7d022091fd15be9e55c7b6f0",
+      "signature": "6324f1656d31734e21d82c9fc0972479b20109081c8e74daa58a65aef0e6346d"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_summary_line",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "2b99358ff3d000d059611ff685f746c5cb93823dc15f429947efbd960c91ab7b",
+      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_fmt_optional",
+      "score": 3.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "d17cb8491a438a265cf5011529c97aad0ff9537b8170331737a1f0704a53733b",
+      "signature": "0fe8fed274800f05f7b5fca9e05b35fc5db3dc2d837ae6cd37c7f091e5fc4ae5"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_function_group_summary",
+      "score": 6.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "78ba270b15301824b4c8ea6a729df490078c7aefe0082851532a1e24d8b972ca",
+      "signature": "732a7495334aa67444b6dd3bdada8f5e87405d962eca3f20be643f64ade5a123"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_group_summary_lines",
+      "score": 6.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "697dc4860870046562890c7aea9a7f90bba7fccb77f8d6b432f695f6c8c2abe3",
+      "signature": "6ceb7085b592bc9989f5739af5b02d76f879235485f77e4b51162042d2d08aaf"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_regressions_summary",
+      "score": 9.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 35.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "ef573e9b62ecf0791af82190d378c7785768480a953eb25375134e7ba5296cd2",
+      "signature": "062019d03396fcbca49d21db0e99c5df55b3ca21bb58837778e877c8ed0af7ac"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_remediation",
+      "score": 9.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 35.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "a492a4e4b520c2d2de84d0a15d106d552e17cc0f3cee18b9ca344d5c017aa710",
+      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_severity_summary_line",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "bf32d45982b8e97b0694c87e62e5210bd1acdc92cb81e57fd28b555e79bc1425",
+      "signature": "a6c6a5065012db26df0dfa6bb77ceaabdffa0e9c9c968ac98af18b4f63133673"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_sorted_by_risk",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "e5961bf79b79607033d3caa758fdcd0ac6991a557c53d177f926f36acd4ea9a9",
+      "signature": "6e7f66b42dafe7f3fa7b0983a23b3685cda3812575abc1f911a50730a17f4452"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_summary_line",
+      "score": 16.8654,
+      "components": {
+        "coverage_gap": 15.3846,
+        "structural_complexity": 25.0,
+        "branch_gap": 33.3333,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "5921f1f8a755c72450f293f46678fe7c893d3292d94bc1a2937c83d34c30081f",
+      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_summary_payload",
+      "score": 4.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "35cc6e5d54ebdd82e1fc1e03d9bbdf5021d2a90671e40a6adb28560b055c38bf",
+      "signature": "95210d9e4a2a3238cb5941c2206533f54c581458d8b5f969adbc410d5f4da24f"
+    },
+    {
+      "path": "src/riskratchet/reporting/text.py",
+      "qualname": "_make_buffered_console",
+      "score": 2.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 20.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "7a686d88e0fde9f5555e3a4cf12cb8ecf72e682866cc9fa1adbde35124b7f235",
+      "signature": "03293ab2cc573c74db5fc1e44c8fbc1de3018c57f7ca85fdf2bda63f06450e60"
+    },
+    {
+      "path": "src/riskratchet/reporting/text.py",
+      "qualname": "render_diff_summary_text",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "75a4a97c2d1deaeaac1436e369f7682c97db55305c26b3e7fa7538d30ef0c708",
+      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
+    },
+    {
+      "path": "src/riskratchet/reporting/text.py",
+      "qualname": "render_diff_table",
+      "score": 3.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
         "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
-      "fingerprint": "b115a8ad2477a5d3cf535f10f88411d7aab48f867bfb251649f17880c452613c",
-      "signature": "d97888f9f92cf652e4b5357b0e627198b5a5c625afc4583b3a52b2696675576e"
+      "fingerprint": "037f75e48fc197ab6fe057bb69d9bcf852ead52cd8fa7e45a7b2b8519d908f40",
+      "signature": "407aa343a96a6b87ccb233bc4e047f574f9c9e40813be47129bdaadc9e156233"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_regressions_summary_json",
-      "score": 8.7,
+      "path": "src/riskratchet/reporting/text.py",
+      "qualname": "render_function_explanation",
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
-      "fingerprint": "196d5263a385835817b410fd0085faee0839803f42d69daaf5d3613f27a38ed3",
-      "signature": "0b9a209dbbc4a7bf7736a6b8b5d817f7b316271ca7d0a9466960f6736a197e9f"
+      "fingerprint": "2b77a2bc70d2e16c807f3a8d87f9e0475252883794e300ce053dfcf78622b2af",
+      "signature": "dae4383a9c5f8a48b6ed4d080074c0c3f053d0218ffc71c37da23da57515045b"
     },
     {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_regressions_summary_text",
-      "score": 18.45,
+      "score": 9.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 50.0,
-        "churn": 50.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "3a72c22acb2ba032657fcce3b7b66483772bb8b86ba89f2464090a201047c93a",
       "signature": "0b9a209dbbc4a7bf7736a6b8b5d817f7b316271ca7d0a9466960f6736a197e9f"
     },
     {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_regressions_table",
-      "score": 11.2,
+      "score": 4.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
-      "fingerprint": "7c57bdee2e6f3d9b8afaa0e5f11b67ccb04e9c03d45161cb93b849623e472315",
+      "fingerprint": "dcd278d64ca40714960e8a498ec7c9de4db14da1d909f173672ad7bf902abf79",
       "signature": "d97888f9f92cf652e4b5357b0e627198b5a5c625afc4583b3a52b2696675576e"
     },
     {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_github",
-      "score": 38.1167,
-      "components": {
-        "coverage_gap": 66.6667,
-        "structural_complexity": 15.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 66.6667,
-        "sprawl": 47.0
-      },
-      "fingerprint": "1225e03d1c13ee644f14e0c781b1fa58d70e79fe524d0f61a7b096b2e5cea49b",
-      "signature": "792a6a4a67cd32e7152071e685589aea12b6ddc44847e46ff413f155d1dc6235"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_json",
-      "score": 8.95,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "2d465ec1559a490a1d46e193bec41794b0ff9efec434a6cd49c4e3f49d95a43e",
-      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_markdown",
-      "score": 12.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "ccf17a15c543f9a0380b243a7adf93b6f6090891e1e6d4d3a06650537f3d9341",
-      "signature": "fdd5d8e7b382c85cb0b5e8bb2fab1a129358433849371835056b7c665d7d87cd"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_pr_comment",
-      "score": 33.0864,
-      "components": {
-        "coverage_gap": 9.0909,
-        "structural_complexity": 60.0,
-        "branch_gap": 25.0,
-        "churn": 60.0,
-        "public_surface": 9.0909,
-        "sprawl": 47.0
-      },
-      "fingerprint": "b8f9d35f45ed91fd695c2f22fc7a818f99393b59782919931db99e7812552c88",
-      "signature": "fdd5d8e7b382c85cb0b5e8bb2fab1a129358433849371835056b7c665d7d87cd"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_sarif",
-      "score": 10.2,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "76dd7130ca8e5cdd17a5506ebdbb25acec66f698f826c24fa59a7f9ff9435b7a",
-      "signature": "792a6a4a67cd32e7152071e685589aea12b6ddc44847e46ff413f155d1dc6235"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
-      "qualname": "render_report_summary_json",
-      "score": 7.7,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 47.0
-      },
-      "fingerprint": "332046fa9d719bd3ce9102f53353361e2dbcf17d9847d2725c11e5b0c3937c5c",
-      "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
-    },
-    {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_report_summary_text",
-      "score": 7.7,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 10.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
       "fingerprint": "dfaff152d033ee62b81c7fcc6bc5aefa354a28341b3bef4db2aed65b19e252c7",
       "signature": "a44f0797c5cbb26deaa26d856701e35b6e9ab9d1efb7d8d12df1f293c9aadd5d"
     },
     {
-      "path": "src/riskratchet/reporting.py",
+      "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_report_table",
-      "score": 17.2,
+      "score": 9.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 50.0,
+        "churn": 20.0,
         "public_surface": 0.0,
-        "sprawl": 47.0
+        "sprawl": 0.0
       },
-      "fingerprint": "b77c0f3ee126180a557b52d42a3a8675e69ab8bbe5012824d168246e3b99415f",
+      "fingerprint": "56654cefe264f1128bf2c3de1b207f129d27ab3207cb9393c484fa25506c9d75",
       "signature": "d9faa0c50596d874e1f630ec94f2a3113637c8245babdc58fbf383c9762c9729"
     },
     {

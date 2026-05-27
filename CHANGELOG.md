@@ -11,6 +11,46 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-05-26
+
+### Changed
+
+- Internal: `riskratchet.reporting` is now a package
+  (`src/riskratchet/reporting/__init__.py`) re-exporting submodules
+  `text`, `markdown`, `json_payload`, `sarif`, `annotations`, and
+  `summary`. All previous `from riskratchet.reporting import …`
+  imports continue to work; the family layout is an implementation
+  detail. No user-visible behavior change — outputs in every
+  `--format` are byte-for-byte identical to `0.2.5`.
+- `.riskratchet.json` regenerated to reflect the new file paths.
+  56 function definitions moved from `reporting.py` to the new
+  submodules; bodies are unchanged. Score components also dropped
+  for the moved functions because the file sprawl signal is
+  per-file and the new submodules are roughly one-sixth the size
+  of the old monolithic file.
+- `reporting/text.py` deduplicates Rich Console construction via a
+  shared `_make_buffered_console()` helper (replaces three
+  copy-pasted call sites).
+
+### Added
+
+- `syrupy` adopted for snapshot testing (`>=4`, dev dependency).
+  New `tests/test_reporting_snapshots.py` pins every
+  `(command × format)` combination by invoking the real CLI through
+  Typer's `CliRunner`, so the dispatch glue is covered alongside the
+  renderers. Existing snapshot tests in `tests/test_cli_snapshots.py`
+  and `tests/test_diff.py` migrated to syrupy (inline goldens
+  replaced with `.ambr` snapshots under `tests/__snapshots__/`).
+- `tests/test_reporting_layering.py` parses each submodule's AST
+  and asserts the family-isolation rule: only `summary.py` is shared
+  across `text`, `markdown`, `json_payload`, `sarif`, and
+  `annotations`. Catches accidental cross-family imports.
+- `tests/reporting_fixtures.py` consolidates the in-memory
+  `RiskReport`/`Regression`/`DiffReport` builders previously
+  duplicated across reporting tests, plus a `make_cli_project()`
+  helper that drops a deterministic on-disk fixture (pyproject,
+  source, coverage.json) for CliRunner-based snapshots.
+
 ## [0.2.5] - 2026-05-25
 
 ### Added

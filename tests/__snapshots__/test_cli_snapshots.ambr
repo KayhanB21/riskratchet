@@ -1,0 +1,30 @@
+# serializer version: 1
+# name: test_scan_markdown_snapshot_is_stable
+  '''
+  # riskratchet report
+  
+  **Functions analyzed:** 2
+  **Files analyzed:** 1
+  **Coverage:** missing
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+  | medium | 42.5 | 12.0 | 3 | 0% | n/a | `TMP/src/m.py::branchy` | 4-9 |
+  | medium | 40.0 | 2.0 | 1 | 0% | n/a | `TMP/src/m.py::trivial` | 1-2 |
+  
+  '''
+# ---
+# name: test_scan_pr_comment_snapshot_is_stable
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  Summary: 2 functions across 1 files. 0 critical, 0 high, 2 medium, 0 low
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+  | medium | 42.5 | 12.0 | 3 | 0% | n/a | ungrouped | [`src/m.py::branchy`](https://github.com/acme/project/blob/abc123/src/m.py#L4-L9) | 4-9 |
+  | medium | 40.0 | 2.0 | 1 | 0% | n/a | ungrouped | [`src/m.py::trivial`](https://github.com/acme/project/blob/abc123/src/m.py#L1-L2) | 1-2 |
+  
+  '''
+# ---

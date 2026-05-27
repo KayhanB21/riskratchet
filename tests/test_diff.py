@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from textwrap import dedent
+from syrupy.assertion import SnapshotAssertion
 
 from riskratchet.baseline import diff, regressions_from_diff
 from riskratchet.models import (
@@ -482,7 +482,7 @@ def test_diff_moved_status_unchanged_for_unique_match() -> None:
     assert entry.status is DiffStatus.MOVED
 
 
-def test_render_diff_pr_comment_multi_section_snapshot() -> None:
+def test_render_diff_pr_comment_multi_section_snapshot(snapshot: SnapshotAssertion) -> None:
     old = Baseline(
         version="2",
         entries={
@@ -529,49 +529,4 @@ def test_render_diff_pr_comment_multi_section_snapshot() -> None:
         files=(),
     )
     rendered = render_diff_pr_comment(diff(report, old, fail_regression_above=5.0))
-    expected = dedent(
-        """
-        <!-- riskratchet-report -->
-        # riskratchet
-
-        **Regressions:** 1 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
-
-        | Status | Function | Before | After | Delta | Reason |
-        | --- | --- | ---: | ---: | ---: | --- |
-        | regressed | `a.py::regressed` | 40.0 | 60.0 | +20.0 | risk grew by +20.0 (from 40.0 to 60.0); tolerance is +5.0 |
-        | new | `a.py::new` | n/a | 30.0 | n/a | function is absent from baseline with score 30.0 |
-
-        <details><summary>Improvements (1)</summary>
-
-        | Status | Function | Before | After | Delta | Reason |
-        | --- | --- | ---: | ---: | ---: | --- |
-        | improved | `a.py::improved` | 80.0 | 40.0 | -40.0 | risk improved by -40.0 (from 80.0 to 40.0) |
-
-        </details>
-
-        <details><summary>Moved functions (1)</summary>
-
-        | Status | Function | Before | After | Delta | Reason |
-        | --- | --- | ---: | ---: | ---: | --- |
-        | moved | `new.py::moved` | 20.0 | 20.0 | +0.0 | moved from old.py::moved with no score regression |
-
-        </details>
-
-        <details><summary>Removed functions (1)</summary>
-
-        | Status | Function | Before | After | Delta | Reason |
-        | --- | --- | ---: | ---: | ---: | --- |
-        | removed | `a.py::removed` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
-
-        </details>
-
-        <details><summary>Unchanged functions (1)</summary>
-
-        | Status | Function | Before | After | Delta | Reason |
-        | --- | --- | ---: | ---: | ---: | --- |
-        | unchanged | `a.py::unchanged` | 20.0 | 20.0 | +0.0 | risk unchanged at 20.0 |
-
-        </details>
-        """
-    ).lstrip()
-    assert rendered == expected
+    assert rendered == snapshot

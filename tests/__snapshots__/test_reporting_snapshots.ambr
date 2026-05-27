@@ -1,0 +1,1124 @@
+# serializer version: 1
+# name: test_check_summary_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json",
+    "version": "0.2",
+    "command": "check",
+    "summary": {
+      "regressions": 0,
+      "by_kind": {
+        "new_above_threshold": 0,
+        "regressed": 0,
+        "existing_above_threshold": 0,
+        "component_regressed": 0
+      },
+      "groups": {
+        "ungrouped": {
+          "regressed": 0,
+          "component_regressed": 0,
+          "improved": 1,
+          "new": 1,
+          "removed": 1,
+          "moved": 0,
+          "ambiguous_rename": 0,
+          "unchanged": 1
+        }
+      },
+      "diff": {
+        "regressed": 0,
+        "component_regressed": 0,
+        "improved": 1,
+        "new": 1,
+        "removed": 1,
+        "moved": 0,
+        "ambiguous_rename": 0,
+        "unchanged": 1,
+        "groups": {
+          "ungrouped": {
+            "regressed": 0,
+            "component_regressed": 0,
+            "improved": 1,
+            "new": 1,
+            "removed": 1,
+            "moved": 0,
+            "ambiguous_rename": 0,
+            "unchanged": 1
+          }
+        }
+      }
+    }
+  }
+  
+  '''
+# ---
+# name: test_check_summary_via_cli_snapshot[text]
+  '''
+  check regressions=0 new_above_threshold=0 regressed=0 existing_above_threshold=0 component_regressed=0
+  diff regressed=0 component_regressed=0 improved=1 new=1 ambiguous_rename=0 removed=1 moved=0 unchanged=1
+  group name=ungrouped ambiguous_rename=0 component_regressed=0 improved=1 moved=0 new=1 regressed=0 removed=1 unchanged=1
+  
+  '''
+# ---
+# name: test_check_via_cli_snapshot[github]
+  ''
+# ---
+# name: test_check_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json",
+    "version": "0.2",
+    "regressions": []
+  }
+  
+  '''
+# ---
+# name: test_check_via_cli_snapshot[markdown]
+  '''
+  _No risk regressions detected._
+  
+  '''
+# ---
+# name: test_check_via_cli_snapshot[pr-comment]
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  **Regressions:** 0 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 0 · **Removed:** 1
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | new | `src/m.py::huge` | n/a | 40.0 | n/a | function is absent from baseline with score 40.0 |
+  
+  <details><summary>Improvements (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | improved | `src/m.py::trivial` | 80.0 | 0.0 | -80.0 | risk improved by -80.0 (from 80.0 to 0.0) |
+  
+  </details>
+  
+  <details><summary>Removed functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | removed | `src/m.py::ghost` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
+  
+  </details>
+  
+  <details><summary>Unchanged functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | unchanged | `src/m.py::branchy` | 5.0 | 3.8 | -1.2 | risk unchanged at 3.8 |
+  
+  </details>
+  
+  '''
+# ---
+# name: test_check_via_cli_snapshot[sarif]
+  '''
+  {
+    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "riskratchet",
+            "informationUri": "https://github.com/KayhanB21/riskratchet",
+            "rules": [
+              {
+                "id": "riskratchet.function-risk",
+                "name": "Function maintainability risk",
+                "shortDescription": {
+                  "text": "Function-level maintainability risk score."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              },
+              {
+                "id": "riskratchet.regression",
+                "name": "Risk regression",
+                "shortDescription": {
+                  "text": "Function risk increased beyond the configured ratchet."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              }
+            ]
+          }
+        },
+        "results": []
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_check_via_cli_snapshot[table]
+  '''
+  No risk regressions detected.
+  
+  '''
+# ---
+# name: test_diff_markdown_includes_ambiguous_rename
+  '''
+  # riskratchet diff
+  
+  **Regressions:** 2 · **New:** 1 · **Ambiguous renames:** 1 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | regressed | [`a.py::regressed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 40.0 | 60.0 | +20.0 | risk grew by +20.0 (from 40.0 to 60.0); tolerance is +5.0 |
+  | component_regressed | [`a.py::comp_regressed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 50.0 | 50.0 | +0.0 | component coverage_gap grew by +20.0 |
+  | improved | [`a.py::improved`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 80.0 | 40.0 | -40.0 | risk improved by -40.0 (from 80.0 to 40.0) |
+  | new | [`a.py::new`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | n/a | 30.0 | n/a | function is absent from baseline with score 30.0 |
+  | removed | `a.py::removed` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
+  | moved | [`new.py::moved`](https://github.com/acme/project/blob/abc1234/new.py#L1-L10) | 20.0 | 20.0 | +0.0 | moved from old.py::moved with no score regression |
+  | ambiguous_rename | [`a.py::renamed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | n/a | 55.0 | n/a | rename ambiguous: 2 baseline candidates score within the ambiguity band |
+  | unchanged | `a.py::unchanged` | 20.0 | 20.0 | +0.0 | risk unchanged at 20.0 |
+  
+  '''
+# ---
+# name: test_diff_pr_comment_includes_ambiguous_rename
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  **Regressions:** 2 · **New:** 1 · **Ambiguous renames:** 1 · **Improved:** 1 · **Moved:** 1 · **Removed:** 1
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | regressed | [`a.py::regressed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 40.0 | 60.0 | +20.0 | risk grew by +20.0 (from 40.0 to 60.0); tolerance is +5.0 |
+  | component_regressed | [`a.py::comp_regressed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 50.0 | 50.0 | +0.0 | component coverage_gap grew by +20.0 |
+  | new | [`a.py::new`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | n/a | 30.0 | n/a | function is absent from baseline with score 30.0 |
+  | ambiguous_rename | [`a.py::renamed`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | n/a | 55.0 | n/a | rename ambiguous: 2 baseline candidates score within the ambiguity band |
+  
+  <details><summary>Improvements (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | improved | [`a.py::improved`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 80.0 | 40.0 | -40.0 | risk improved by -40.0 (from 80.0 to 40.0) |
+  
+  </details>
+  
+  <details><summary>Moved functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | moved | [`new.py::moved`](https://github.com/acme/project/blob/abc1234/new.py#L1-L10) | 20.0 | 20.0 | +0.0 | moved from old.py::moved with no score regression |
+  
+  </details>
+  
+  <details><summary>Removed functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | removed | `a.py::removed` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
+  
+  </details>
+  
+  <details><summary>Unchanged functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | unchanged | `a.py::unchanged` | 20.0 | 20.0 | +0.0 | risk unchanged at 20.0 |
+  
+  </details>
+  
+  '''
+# ---
+# name: test_diff_summary_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json",
+    "version": "0.2",
+    "command": "diff",
+    "summary": {
+      "regressed": 0,
+      "component_regressed": 0,
+      "improved": 1,
+      "new": 1,
+      "removed": 1,
+      "moved": 0,
+      "ambiguous_rename": 0,
+      "unchanged": 1,
+      "groups": {
+        "ungrouped": {
+          "regressed": 0,
+          "component_regressed": 0,
+          "improved": 1,
+          "new": 1,
+          "removed": 1,
+          "moved": 0,
+          "ambiguous_rename": 0,
+          "unchanged": 1
+        }
+      }
+    }
+  }
+  
+  '''
+# ---
+# name: test_diff_summary_via_cli_snapshot[text]
+  '''
+  diff regressed=0 component_regressed=0 improved=1 new=1 ambiguous_rename=0 removed=1 moved=0 unchanged=1
+  group name=ungrouped ambiguous_rename=0 component_regressed=0 improved=1 moved=0 new=1 regressed=0 removed=1 unchanged=1
+  
+  '''
+# ---
+# name: test_diff_table_includes_ambiguous_rename
+  '''
+                                                      riskratchet diff                                                    
+  ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃ Status              ┃ Function             ┃ Before ┃ After ┃ Delta ┃ Reason                                         ┃
+  ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+  │ regressed           │ a.py::regressed      │   40.0 │  60.0 │ +20.0 │ risk grew by +20.0 (from 40.0 to 60.0);        │
+  │                     │                      │        │       │       │ tolerance is +5.0                              │
+  │ component_regressed │ a.py::comp_regressed │   50.0 │  50.0 │  +0.0 │ component coverage_gap grew by +20.0           │
+  │ improved            │ a.py::improved       │   80.0 │  40.0 │ -40.0 │ risk improved by -40.0 (from 80.0 to 40.0)     │
+  │ new                 │ a.py::new            │    n/a │  30.0 │   n/a │ function is absent from baseline with score    │
+  │                     │                      │        │       │       │ 30.0                                           │
+  │ removed             │ a.py::removed        │   30.0 │   n/a │   n/a │ removed function from baseline with score 30.0 │
+  │ moved               │ new.py::moved        │   20.0 │  20.0 │  +0.0 │ moved from old.py::moved with no score         │
+  │                     │                      │        │       │       │ regression                                     │
+  │ ambiguous_rename    │ a.py::renamed        │    n/a │  55.0 │   n/a │ rename ambiguous: 2 baseline candidates score  │
+  │                     │                      │        │       │       │ within the ambiguity band                      │
+  │ unchanged           │ a.py::unchanged      │   20.0 │  20.0 │  +0.0 │ risk unchanged at 20.0                         │
+  └─────────────────────┴──────────────────────┴────────┴───────┴───────┴────────────────────────────────────────────────┘
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[github]
+  '''
+  ::warning file=src/m.py,line=15,endLine=46::function is absent from baseline with score 40.0
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json",
+    "version": "0.2",
+    "summary": {
+      "regressed": 0,
+      "component_regressed": 0,
+      "improved": 1,
+      "new": 1,
+      "removed": 1,
+      "moved": 0,
+      "ambiguous_rename": 0,
+      "unchanged": 1,
+      "groups": {
+        "ungrouped": {
+          "regressed": 0,
+          "component_regressed": 0,
+          "improved": 1,
+          "new": 1,
+          "removed": 1,
+          "moved": 0,
+          "ambiguous_rename": 0,
+          "unchanged": 1
+        }
+      }
+    },
+    "entries": [
+      {
+        "path": "src/m.py",
+        "qualname": "huge",
+        "group": null,
+        "status": "new",
+        "current_score": 40.0,
+        "previous_score": null,
+        "delta": null,
+        "previous_path": null,
+        "previous_qualname": null,
+        "reason": "function is absent from baseline with score 40.0",
+        "previous_targets": [],
+        "match_confidence": null
+      },
+      {
+        "path": "src/m.py",
+        "qualname": "trivial",
+        "group": null,
+        "status": "improved",
+        "current_score": 0.0,
+        "previous_score": 80.0,
+        "delta": -80.0,
+        "previous_path": null,
+        "previous_qualname": null,
+        "reason": "risk improved by -80.0 (from 80.0 to 0.0)",
+        "previous_targets": [],
+        "match_confidence": null
+      },
+      {
+        "path": "src/m.py",
+        "qualname": "ghost",
+        "group": null,
+        "status": "removed",
+        "current_score": null,
+        "previous_score": 30.0,
+        "delta": null,
+        "previous_path": null,
+        "previous_qualname": null,
+        "reason": "removed function from baseline with score 30.0",
+        "previous_targets": [],
+        "match_confidence": null
+      },
+      {
+        "path": "src/m.py",
+        "qualname": "branchy",
+        "group": null,
+        "status": "unchanged",
+        "current_score": 3.75,
+        "previous_score": 5.0,
+        "delta": -1.25,
+        "previous_path": null,
+        "previous_qualname": null,
+        "reason": "risk unchanged at 3.8",
+        "previous_targets": [],
+        "match_confidence": null
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[markdown]
+  '''
+  # riskratchet diff
+  
+  **Regressions:** 0 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 0 · **Removed:** 1
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | new | `src/m.py::huge` | n/a | 40.0 | n/a | function is absent from baseline with score 40.0 |
+  | improved | `src/m.py::trivial` | 80.0 | 0.0 | -80.0 | risk improved by -80.0 (from 80.0 to 0.0) |
+  | removed | `src/m.py::ghost` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
+  | unchanged | `src/m.py::branchy` | 5.0 | 3.8 | -1.2 | risk unchanged at 3.8 |
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[pr-comment]
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  **Regressions:** 0 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 0 · **Removed:** 1
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | new | `src/m.py::huge` | n/a | 40.0 | n/a | function is absent from baseline with score 40.0 |
+  
+  <details><summary>Improvements (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | improved | `src/m.py::trivial` | 80.0 | 0.0 | -80.0 | risk improved by -80.0 (from 80.0 to 0.0) |
+  
+  </details>
+  
+  <details><summary>Removed functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | removed | `src/m.py::ghost` | 30.0 | n/a | n/a | removed function from baseline with score 30.0 |
+  
+  </details>
+  
+  <details><summary>Unchanged functions (1)</summary>
+  
+  | Status | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | unchanged | `src/m.py::branchy` | 5.0 | 3.8 | -1.2 | risk unchanged at 3.8 |
+  
+  </details>
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[sarif]
+  '''
+  {
+    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "riskratchet",
+            "informationUri": "https://github.com/KayhanB21/riskratchet",
+            "rules": [
+              {
+                "id": "riskratchet.function-risk",
+                "name": "Function maintainability risk",
+                "shortDescription": {
+                  "text": "Function-level maintainability risk score."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              },
+              {
+                "id": "riskratchet.regression",
+                "name": "Risk regression",
+                "shortDescription": {
+                  "text": "Function risk increased beyond the configured ratchet."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              }
+            ]
+          }
+        },
+        "results": []
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_diff_via_cli_snapshot[table]
+  '''
+                                                riskratchet diff                                               
+  ┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃ Status    ┃ Function          ┃ Before ┃ After ┃ Delta ┃ Reason                                           ┃
+  ┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+  │ new       │ src/m.py::huge    │    n/a │  40.0 │   n/a │ function is absent from baseline with score 40.0 │
+  │ improved  │ src/m.py::trivial │   80.0 │   0.0 │ -80.0 │ risk improved by -80.0 (from 80.0 to 0.0)        │
+  │ removed   │ src/m.py::ghost   │   30.0 │   n/a │   n/a │ removed function from baseline with score 30.0   │
+  │ unchanged │ src/m.py::branchy │    5.0 │   3.8 │  -1.2 │ risk unchanged at 3.8                            │
+  └───────────┴───────────────────┴────────┴───────┴───────┴──────────────────────────────────────────────────┘
+  
+  '''
+# ---
+# name: test_pr_comment_overflow_truncates_lower_priority
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  Summary: 30 functions across 1 files. 0 critical, 0 high, 30 medium, 0 low
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+  | medium | 27.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f29`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f28`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f27`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f26`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f25`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f24`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f23`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f22`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f21`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f20`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f19`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f18`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f17`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f16`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f15`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f14`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f13`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f12`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f11`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f10`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  
+  <details><summary>Lower-priority findings (10)</summary>
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+  | medium | 25.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f09`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f08`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f07`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f06`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f05`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f04`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f03`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f02`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f01`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f00`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  
+  </details>
+  
+  '''
+# ---
+# name: test_regressions_json_covers_all_kinds
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json",
+    "version": "0.2",
+    "regressions": [
+      {
+        "path": "a.py",
+        "qualname": "crit",
+        "kind": "new_above_threshold",
+        "current_score": 90.0,
+        "previous_score": null,
+        "delta": null,
+        "reason": "function is absent from baseline with score 90.0; exceeds new-function threshold 50.0"
+      },
+      {
+        "path": "a.py",
+        "qualname": "grew",
+        "kind": "regressed",
+        "current_score": 75.0,
+        "previous_score": 50.0,
+        "delta": 25.0,
+        "reason": "risk grew by +25.0 (from 50.0 to 75.0); tolerance is +5.0"
+      },
+      {
+        "path": "a.py",
+        "qualname": "existing",
+        "kind": "existing_above_threshold",
+        "current_score": 60.0,
+        "previous_score": 60.0,
+        "delta": 0.0,
+        "reason": "function score 60.0 exceeds fail-above threshold 50.0"
+      },
+      {
+        "path": "b.py",
+        "qualname": "component_grew",
+        "kind": "component_regressed",
+        "current_score": 50.0,
+        "previous_score": 50.0,
+        "delta": 0.0,
+        "reason": "component coverage_gap grew by +30.0 (from 20.0 to 50.0); tolerance is +10.0"
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_regressions_markdown_covers_all_kinds
+  '''
+  # riskratchet regressions
+  
+  | Kind | Function | Before | After | Delta | Reason |
+  | --- | --- | ---: | ---: | ---: | --- |
+  | new_above_threshold | [`a.py::crit`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | n/a | 90.0 | n/a | function is absent from baseline with score 90.0; exceeds new-function threshold 50.0 |
+  | regressed | [`a.py::grew`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 50.0 | 75.0 | +25.0 | risk grew by +25.0 (from 50.0 to 75.0); tolerance is +5.0 |
+  | existing_above_threshold | [`a.py::existing`](https://github.com/acme/project/blob/abc1234/a.py#L1-L10) | 60.0 | 60.0 | +0.0 | function score 60.0 exceeds fail-above threshold 50.0 |
+  | component_regressed | [`b.py::component_grew`](https://github.com/acme/project/blob/abc1234/b.py#L1-L10) | 50.0 | 50.0 | +0.0 | component coverage_gap grew by +30.0 (from 20.0 to 50.0); tolerance is +10.0 |
+  
+  '''
+# ---
+# name: test_regressions_sarif_covers_all_kinds
+  '''
+  {
+    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "riskratchet",
+            "informationUri": "https://github.com/KayhanB21/riskratchet",
+            "rules": [
+              {
+                "id": "riskratchet.function-risk",
+                "name": "Function maintainability risk",
+                "shortDescription": {
+                  "text": "Function-level maintainability risk score."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              },
+              {
+                "id": "riskratchet.regression",
+                "name": "Risk regression",
+                "shortDescription": {
+                  "text": "Function risk increased beyond the configured ratchet."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              }
+            ]
+          }
+        },
+        "results": [
+          {
+            "ruleId": "riskratchet.regression",
+            "level": "error",
+            "message": {
+              "text": "a.py::crit regressed: function is absent from baseline with score 90.0; exceeds new-function threshold 50.0. Current severity is critical with score 90.0."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "a.py"
+                  },
+                  "region": {
+                    "startLine": 1,
+                    "endLine": 10
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "kind": "new_above_threshold",
+              "current_score": 90.0,
+              "previous_score": null,
+              "delta": null,
+              "reason": "function is absent from baseline with score 90.0; exceeds new-function threshold 50.0",
+              "path": "a.py",
+              "qualname": "crit",
+              "severity": "critical",
+              "score": 90.0,
+              "crap": 10.0,
+              "complexity": 5,
+              "line_coverage": 0.5,
+              "branch_coverage": 0.5,
+              "churn_commits": 0,
+              "is_public": true,
+              "components": {
+                "coverage_gap": 90.0,
+                "structural_complexity": 90.0,
+                "branch_gap": 90.0,
+                "churn": 90.0,
+                "public_surface": 90.0,
+                "sprawl": 90.0
+              }
+            }
+          },
+          {
+            "ruleId": "riskratchet.regression",
+            "level": "error",
+            "message": {
+              "text": "a.py::grew regressed: risk grew by +25.0 (from 50.0 to 75.0); tolerance is +5.0. Current severity is critical with score 75.0."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "a.py"
+                  },
+                  "region": {
+                    "startLine": 1,
+                    "endLine": 10
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "kind": "regressed",
+              "current_score": 75.0,
+              "previous_score": 50.0,
+              "delta": 25.0,
+              "reason": "risk grew by +25.0 (from 50.0 to 75.0); tolerance is +5.0",
+              "path": "a.py",
+              "qualname": "grew",
+              "severity": "critical",
+              "score": 75.0,
+              "crap": 10.0,
+              "complexity": 5,
+              "line_coverage": 0.5,
+              "branch_coverage": 0.5,
+              "churn_commits": 0,
+              "is_public": true,
+              "components": {
+                "coverage_gap": 75.0,
+                "structural_complexity": 75.0,
+                "branch_gap": 75.0,
+                "churn": 75.0,
+                "public_surface": 75.0,
+                "sprawl": 75.0
+              }
+            }
+          },
+          {
+            "ruleId": "riskratchet.regression",
+            "level": "warning",
+            "message": {
+              "text": "a.py::existing regressed: function score 60.0 exceeds fail-above threshold 50.0. Current severity is high with score 60.0."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "a.py"
+                  },
+                  "region": {
+                    "startLine": 1,
+                    "endLine": 10
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "kind": "existing_above_threshold",
+              "current_score": 60.0,
+              "previous_score": 60.0,
+              "delta": 0.0,
+              "reason": "function score 60.0 exceeds fail-above threshold 50.0",
+              "path": "a.py",
+              "qualname": "existing",
+              "severity": "high",
+              "score": 60.0,
+              "crap": 10.0,
+              "complexity": 5,
+              "line_coverage": 0.5,
+              "branch_coverage": 0.5,
+              "churn_commits": 0,
+              "is_public": true,
+              "components": {
+                "coverage_gap": 60.0,
+                "structural_complexity": 60.0,
+                "branch_gap": 60.0,
+                "churn": 60.0,
+                "public_surface": 60.0,
+                "sprawl": 60.0
+              }
+            }
+          },
+          {
+            "ruleId": "riskratchet.regression",
+            "level": "warning",
+            "message": {
+              "text": "b.py::component_grew regressed: component coverage_gap grew by +30.0 (from 20.0 to 50.0); tolerance is +10.0. Current severity is high with score 50.0."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "b.py"
+                  },
+                  "region": {
+                    "startLine": 1,
+                    "endLine": 10
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "kind": "component_regressed",
+              "current_score": 50.0,
+              "previous_score": 50.0,
+              "delta": 0.0,
+              "reason": "component coverage_gap grew by +30.0 (from 20.0 to 50.0); tolerance is +10.0",
+              "path": "b.py",
+              "qualname": "component_grew",
+              "severity": "high",
+              "score": 50.0,
+              "crap": 10.0,
+              "complexity": 5,
+              "line_coverage": 0.5,
+              "branch_coverage": 0.5,
+              "churn_commits": 0,
+              "is_public": true,
+              "components": {
+                "coverage_gap": 50.0,
+                "structural_complexity": 50.0,
+                "branch_gap": 50.0,
+                "churn": 50.0,
+                "public_surface": 50.0,
+                "sprawl": 50.0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_regressions_table_covers_all_kinds
+  '''
+                                                  riskratchet regressions                                                 
+  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃ Kind                     ┃ Function             ┃ Before ┃ After ┃ Delta ┃ Reason                                    ┃
+  ┡━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+  │ new_above_threshold      │ a.py::crit           │    n/a │  90.0 │   n/a │ function is absent from baseline with     │
+  │                          │                      │        │       │       │ score 90.0; exceeds new-function          │
+  │                          │                      │        │       │       │ threshold 50.0                            │
+  │ regressed                │ a.py::grew           │   50.0 │  75.0 │ +25.0 │ risk grew by +25.0 (from 50.0 to 75.0);   │
+  │                          │                      │        │       │       │ tolerance is +5.0                         │
+  │ existing_above_threshold │ a.py::existing       │   60.0 │  60.0 │  +0.0 │ function score 60.0 exceeds fail-above    │
+  │                          │                      │        │       │       │ threshold 50.0                            │
+  │ component_regressed      │ b.py::component_grew │   50.0 │  50.0 │  +0.0 │ component coverage_gap grew by +30.0      │
+  │                          │                      │        │       │       │ (from 20.0 to 50.0); tolerance is +10.0   │
+  └──────────────────────────┴──────────────────────┴────────┴───────┴───────┴───────────────────────────────────────────┘
+  
+  '''
+# ---
+# name: test_scan_summary_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json",
+    "version": "0.2",
+    "command": "scan",
+    "summary": {
+      "total_functions": 3,
+      "analyzed_functions": 3,
+      "emitted_functions": 3,
+      "total_files": 1,
+      "coverage_status": "present",
+      "suppressed_functions": 0,
+      "skipped_missing_coverage": 0,
+      "by_severity": {
+        "low": 2,
+        "medium": 1,
+        "high": 0,
+        "critical": 0
+      },
+      "groups": {
+        "ungrouped": {
+          "functions": 3,
+          "max_score": 40.0,
+          "by_severity": {
+            "low": 2,
+            "medium": 1,
+            "high": 0,
+            "critical": 0
+          }
+        }
+      }
+    }
+  }
+  
+  '''
+# ---
+# name: test_scan_summary_via_cli_snapshot[text]
+  '''
+  scan functions=3 analyzed=3 emitted=3 files=1 coverage=present suppressed=0 skipped_missing_coverage=0
+  severity low=2 medium=1 high=0 critical=0
+  group name=ungrouped by_severity.critical=0 by_severity.high=0 by_severity.low=2 by_severity.medium=1 functions=3 max_score=40.0
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[github]
+  '''
+  ::warning file=src/m.py,line=15,endLine=46::src/m.py%3A%3Ahuge has medium risk%3A score 40.0, CRAP 2.0, complexity 1
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[json]
+  '''
+  {
+    "$schema": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
+    "version": "0.2",
+    "summary": {
+      "total_functions": 3,
+      "analyzed_functions": 3,
+      "emitted_functions": 3,
+      "total_files": 1,
+      "coverage_status": "present",
+      "suppressed_functions": 0,
+      "skipped_missing_coverage": 0,
+      "by_severity": {
+        "low": 2,
+        "medium": 1,
+        "high": 0,
+        "critical": 0
+      },
+      "groups": {
+        "ungrouped": {
+          "functions": 3,
+          "max_score": 40.0,
+          "by_severity": {
+            "low": 2,
+            "medium": 1,
+            "high": 0,
+            "critical": 0
+          }
+        }
+      }
+    },
+    "functions": [
+      {
+        "path": "src/m.py",
+        "qualname": "huge",
+        "severity": "medium",
+        "score": 40.0,
+        "crap": 2.0,
+        "complexity": 1,
+        "line_coverage": 0.0,
+        "branch_coverage": null,
+        "churn_commits": 0,
+        "is_public": true,
+        "group": null,
+        "lines": {
+          "start": 15,
+          "end": 46
+        },
+        "components": {
+          "coverage_gap": 100.0,
+          "structural_complexity": 0.0,
+          "branch_gap": 0.0,
+          "churn": 0.0,
+          "public_surface": 100.0,
+          "sprawl": 0.0
+        }
+      },
+      {
+        "path": "src/m.py",
+        "qualname": "branchy",
+        "severity": "low",
+        "score": 3.75,
+        "crap": 4.0,
+        "complexity": 4,
+        "line_coverage": 1.0,
+        "branch_coverage": null,
+        "churn_commits": 0,
+        "is_public": true,
+        "group": null,
+        "lines": {
+          "start": 5,
+          "end": 12
+        },
+        "components": {
+          "coverage_gap": 0.0,
+          "structural_complexity": 15.0,
+          "branch_gap": 0.0,
+          "churn": 0.0,
+          "public_surface": 0.0,
+          "sprawl": 0.0
+        }
+      },
+      {
+        "path": "src/m.py",
+        "qualname": "trivial",
+        "severity": "low",
+        "score": 0.0,
+        "crap": 1.0,
+        "complexity": 1,
+        "line_coverage": 1.0,
+        "branch_coverage": null,
+        "churn_commits": 0,
+        "is_public": true,
+        "group": null,
+        "lines": {
+          "start": 1,
+          "end": 2
+        },
+        "components": {
+          "coverage_gap": 0.0,
+          "structural_complexity": 0.0,
+          "branch_gap": 0.0,
+          "churn": 0.0,
+          "public_surface": 0.0,
+          "sprawl": 0.0
+        }
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[markdown]
+  '''
+  # riskratchet report
+  
+  **Functions analyzed:** 3
+  **Files analyzed:** 1
+  **Coverage:** present
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+  | medium | 40.0 | 2.0 | 1 | 0% | n/a | `src/m.py::huge` | 15-46 |
+  | low | 3.8 | 4.0 | 4 | 100% | n/a | `src/m.py::branchy` | 5-12 |
+  | low | 0.0 | 1.0 | 1 | 100% | n/a | `src/m.py::trivial` | 1-2 |
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[pr-comment]
+  '''
+  <!-- riskratchet-report -->
+  # riskratchet
+  
+  Summary: 3 functions across 1 files. 0 critical, 0 high, 1 medium, 2 low
+  
+  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
+  | medium | 40.0 | 2.0 | 1 | 0% | n/a | ungrouped | `src/m.py::huge` | 15-46 |
+  | low | 3.8 | 4.0 | 4 | 100% | n/a | ungrouped | `src/m.py::branchy` | 5-12 |
+  | low | 0.0 | 1.0 | 1 | 100% | n/a | ungrouped | `src/m.py::trivial` | 1-2 |
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[sarif]
+  '''
+  {
+    "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "riskratchet",
+            "informationUri": "https://github.com/KayhanB21/riskratchet",
+            "rules": [
+              {
+                "id": "riskratchet.function-risk",
+                "name": "Function maintainability risk",
+                "shortDescription": {
+                  "text": "Function-level maintainability risk score."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              },
+              {
+                "id": "riskratchet.regression",
+                "name": "Risk regression",
+                "shortDescription": {
+                  "text": "Function risk increased beyond the configured ratchet."
+                },
+                "helpUri": "https://github.com/KayhanB21/riskratchet"
+              }
+            ]
+          }
+        },
+        "results": [
+          {
+            "ruleId": "riskratchet.function-risk",
+            "level": "warning",
+            "message": {
+              "text": "src/m.py::huge has medium risk: score 40.0, CRAP 2.0, line coverage 0%, branch coverage n/a, complexity 1, churn 0 commits."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "src/m.py"
+                  },
+                  "region": {
+                    "startLine": 15,
+                    "endLine": 46
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "path": "src/m.py",
+              "qualname": "huge",
+              "severity": "medium",
+              "score": 40.0,
+              "crap": 2.0,
+              "complexity": 1,
+              "line_coverage": 0.0,
+              "branch_coverage": null,
+              "churn_commits": 0,
+              "is_public": true,
+              "components": {
+                "coverage_gap": 100.0,
+                "structural_complexity": 0.0,
+                "branch_gap": 0.0,
+                "churn": 0.0,
+                "public_surface": 100.0,
+                "sprawl": 0.0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
+  '''
+# ---
+# name: test_scan_via_cli_snapshot[table]
+  '''
+                                riskratchet scan                              
+  ┏━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━┓
+  ┃ Sev    ┃ Score ┃ CRAP ┃ CC ┃ LCov % ┃ BCov % ┃ Function          ┃ Lines ┃
+  ┡━━━━━━━━╇━━━━━━━╇━━━━━━╇━━━━╇━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━┩
+  │ medium │  40.0 │  2.0 │  1 │      0 │    n/a │ src/m.py::huge    │ 15-46 │
+  │ low    │   3.8 │  4.0 │  4 │    100 │    n/a │ src/m.py::branchy │  5-12 │
+  │ low    │   0.0 │  1.0 │  1 │    100 │    n/a │ src/m.py::trivial │   1-2 │
+  └────────┴───────┴──────┴────┴────────┴────────┴───────────────────┴───────┘
+  Summary: 3 functions across 1 files. 0 critical, 0 high, 1 medium, 2 low
+  
+  '''
+# ---

@@ -207,7 +207,19 @@ Conventions:
 
 - CLI entry: `src/riskratchet/cli.py`
 - Scoring: `src/riskratchet/scoring.py`
-- Renderers (table / JSON / markdown): `src/riskratchet/reporting.py`
+- Renderers (table / JSON / markdown / SARIF / GitHub annotations):
+  `src/riskratchet/reporting/` package (since 0.2.6) — `text.py`,
+  `markdown.py`, `json_payload.py`, `sarif.py`, `annotations.py`, and
+  shared `summary.py`. External callers import from
+  `riskratchet.reporting`; the submodule layout is internal.
 - Baseline I/O and comparison: `src/riskratchet/baseline.py`
 - Pytest plugin: `src/riskratchet/pytest_plugin.py`
 - Schemas: `schemas/`
+- Snapshot tests use `syrupy` (since 0.2.6). To regenerate after an
+  intentional output change: `uv run pytest --snapshot-update`.
+  Snapshots live in `tests/__snapshots__/`. Shared in-memory
+  fixtures are in `tests/reporting_fixtures.py`.
+- Reporting layering rule (since 0.2.6): family submodules under
+  `src/riskratchet/reporting/` (`text`, `markdown`, `json_payload`,
+  `sarif`, `annotations`) may only import from `summary` (the leaf),
+  never from each other. Enforced by `tests/test_reporting_layering.py`.

@@ -4,226 +4,38 @@
 
 # riskratchet
 
-A maintainability ratchet for AI-assisted Python.
+**A maintainability ratchet for AI-assisted Python.** The bar can only move down.
 
 [PyPI](https://pypi.org/project/riskratchet/) · [Source](https://github.com/KayhanB21/riskratchet) · [Post](https://kayhan.dev/posts/014-letting-agents-write-code-without-ratcheting-up-risk/)
 
-riskratchet computes a function-level risk score from coverage gaps,
-cyclomatic complexity, churn, public surface, and sprawl signals. Snapshot
-the current state as a baseline, then fail CI or block the commit whenever
-risk grows. The bar can only move down, never up.
+AI coding agents are very good at writing code that compiles, runs, and passes
+the tests they ship with it. They are less good at:
 
-The review workflow is directly inspired by two practical review surfaces:
-[`cargo-crap`](https://github.com/minikin/cargo-crap), a Rust tool that made
-the CRAP metric practical in CI with threshold gates, baseline deltas,
-GitHub annotations, sticky PR comments, suppressions, missing-coverage
-policies, and schema-backed JSON; and Cursor's
-[`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
-agent prompt, especially its emphasis on maintainability, structure,
-unjustified file sprawl, ad-hoc branching growth, explicit boundaries, and
-reviewing only what the diff shows. riskratchet is not a Python port of
-cargo-crap or an agent prompt: it keeps CRAP as a reported metric, then adds
-Python-specific signals such as branch gaps, churn, public surface, and
-file/function sprawl.
-
-## Use cases
-
-Four real scenarios for how riskratchet earns its keep.
-
-### 1. Solo dev with an AI agent on a year-old side project
-
-You've been vibe-coding a FastAPI backend with an AI agent for eight
-months. It works, tests are green-ish (62% coverage), but you just
-noticed that `services/billing.py::reconcile_subscriptions` quietly grew
-to 180 lines and an 11-way `match` statement you don't remember writing.
-
-```bash
-pip install riskratchet
-pytest --cov --cov-branch --cov-report=json:coverage.json
-riskratchet scan src --coverage coverage.json --top 10
-```
-
-`reconcile_subscriptions` shows up at score 71 (high) with
-`structural_complexity: 90`, `sprawl: 55`, `coverage_gap: 60`. You also
-spot a surprise: a 12-line public utility `_normalize_plan_id` scoring
-48 because it has zero tests. Snapshot the bar:
-
-```bash
-riskratchet baseline src --coverage coverage.json --output .riskratchet.json
-git add .riskratchet.json && git commit -m "Add riskratchet baseline"
-```
-
-From here, every time the agent adds a webhook handler or "refactors the
-billing flow," run `riskratchet check` before committing. If it quietly
-bloated `reconcile_subscriptions` from 180 to 220 lines, the check exits
-1 and names the regression. You stop having to remember to look.
-
-**Why this is the canonical use case:** AI agents are excellent at
-adding code, mediocre at noticing they've made things worse. The
-baseline is your memory.
-
-### 2. Team gating PRs in CI
-
-Five engineers maintain an internal Python SDK that 30 other services
-consume. Coverage is 87%, reviews are decent, but PRs occasionally land
-functions with CC > 25 because reviewers don't catch it. One-time
-setup on `main`:
-
-```bash
-pytest --cov --cov-branch --cov-report=json:coverage.json
-riskratchet baseline src --coverage coverage.json --output .riskratchet.json
-git add .riskratchet.json
-```
-
-In GitHub Actions, on every PR:
-
-```yaml
-- run: pytest --cov --cov-branch --cov-report=json:coverage.json
-- run: |
-    riskratchet check src \
-      --coverage coverage.json \
-      --baseline .riskratchet.json \
-      --format pr-comment > regressions.md
-    status=$?
-    if [ $status -eq 1 ]; then
-      gh pr comment ${{ github.event.pull_request.number }} --body-file regressions.md
-      exit 1
-    fi
-```
-
-Tune `pyproject.toml` to reflect priorities — this SDK changes
-constantly by design, so churn matters less than public surface:
-
-```toml
-[tool.riskratchet.weights]
-churn = 0.0
-public_surface = 0.20
-```
-
-The `pr-comment` format starts with `<!-- riskratchet-report -->`, so
-the bot updates the same comment on each push instead of spamming. `check
---format pr-comment` uses the richer diff body, so reviewers see failing
-regressions plus collapsed improvements, moves, removals, and unchanged
-functions in one comment while the command still exits `1` only for
-configured failing regressions.
-
-**Why this works for teams:** the ratchet is mechanical and unowned.
-Nobody has to be "the complexity cop" in code review.
-
-### 3. Pre-commit hook for a solo repo with no CI
-
-A data scientist has a `pipelines/` repo. No CI, no PR review — just one
-person pushing to `main`. They want a local guardrail before each
-commit. Using Pattern A from the [Pre-commit integration](#pre-commit-integration)
-section:
-
-```yaml
-repos:
-  - repo: local
-    hooks:
-      - id: pytest-cov
-        entry: pytest --cov --cov-branch --cov-report=json:coverage.json -q
-        language: system
-        pass_filenames: false
-        always_run: true
-  - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.4
-    hooks:
-      - id: riskratchet
-        args: ["pipelines", "--coverage", "coverage.json", "--baseline", ".riskratchet.json"]
-```
-
-After the initial `riskratchet baseline pipelines …`, every `git
-commit` regenerates coverage and gates the commit on no regressions. If
-they try to commit a 90-line transform with no tests, the commit fails
-with a list of regressed functions. They can use `--allow
-"pipelines.experiments.*"` to scope out an experimental folder where
-rough code is intentional.
-
-**Why this matters here:** without a team, there's no second pair of
-eyes. The hook *is* the review.
-
-### 4. Investigating one ugly function with `explain` and `diff`
-
-An engineer is assigned the dreaded `inflect.engine._plnoun` (CC=100,
-from the [Sample output](#sample-output-on-real-libraries) section
-below). They want to know why riskratchet flagged it and whether their
-planned refactor actually helps.
-
-```bash
-riskratchet explain src --coverage coverage.json --qualname "engine._plnoun"
-```
-
-This dumps the six component scores, the CRAP value, line numbers, and
-what's driving the risk — e.g. `structural_complexity: 100, sprawl: 78,
-coverage_gap: 2`. Now they know the problem isn't tests; it's the
-function shape.
-
-They branch, spend two days breaking `_plnoun` into seven smaller
-functions, then before opening the PR:
-
-```bash
-riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --json \
-  | jq '.improved[], .regressed[]'
-```
-
-`diff` shows improvements as well as regressions. `_plnoun` dropped from
-36.2 → 18.4, and the seven new helpers all score under 20. They paste
-that into the PR description as evidence that the refactor was
-net-positive — not just rearranging deck chairs.
-
-**Why this scenario matters:** `scan` tells you *what's* risky,
-`explain` tells you *why*, `diff` tells you whether your change helped.
-
----
-
-## Why CRAP alone is useful but incomplete
-
-The classic CRAP score (`CC^2 * (1 - line_coverage)^3 + CC`) is great at
-catching one specific shape of bad code: complex *and* poorly tested.
-That's a real problem, but it misses several others that ship to production
-just as often:
-
-- A function with low complexity that has zero tests because no one wrote
-  any. CRAP gives it `CC` (a single digit). Risk is real but not visible.
-- A function with no missing line coverage but every branch covered the
-  same way. CRAP only looks at line coverage.
-- A function in a 2,000-line module that everyone is afraid to touch.
-  Sprawl is invisible to CRAP.
-- A function that changed in 40 of the last 90 commits. Churn is invisible
-  to CRAP.
-
-riskratchet keeps CRAP as a reported metric (it's still useful as a
-single-number signal) and computes its own composite score from six
-weighted components so those other risks show up too.
-
-The practical inspiration here is cargo-crap's treatment of CRAP as a CI and
-review signal instead of a static dashboard number. riskratchet borrows that
-operational shape for Python while widening the risk model beyond CRAP alone.
-
-## Why AI-assisted workflows need a ratchet
-
-AI coding agents are very good at producing code that compiles, runs, and
-passes the tests it ships with. They are less good at:
-
-- writing meaningful tests for the new code
-- noticing when a 30-line function quietly became 130 lines
-- catching that the public API now exposes a function with no callers in
-  the tests
-- realising that a small refactor turned an `if` ladder into a 14-way
-  cyclomatic monster
+- writing meaningful tests for the new code,
+- noticing a 30-line function quietly became 130 lines,
+- catching that the public API now exposes a function with no callers in tests,
+- realising a small refactor turned an `if` ladder into a 14-way cyclomatic monster.
 
 A traditional review catches some of this. A ratchet catches all of it,
-mechanically, every time. It pairs well with AI-assisted work because it
-turns "did this change introduce risk?" into a yes/no question with a
-diffable baseline.
+mechanically, every time. riskratchet computes a per-function risk score from
+coverage gaps, cyclomatic complexity, churn, public surface, and sprawl, then
+fails CI or blocks the commit whenever risk grows past a baseline. Nobody has to
+play complexity cop.
+
+The review workflow is inspired by
+[`cargo-crap`](https://github.com/minikin/cargo-crap) (which made the CRAP
+metric practical in CI with baselines, PR comments, and JSON output) and
+Cursor's [`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+agent prompt (which emphasises maintainability, structure, sprawl, and
+explicit boundaries). riskratchet is neither a Python port of cargo-crap nor an
+agent prompt: it reports CRAP and adds Python-specific signals on top (branch
+gaps, churn, public surface, sprawl).
 
 ## Quickstart
 
 ```bash
-# install
 pip install riskratchet
-# or run directly without installing
+# or run without installing
 uvx riskratchet --help
 ```
 
@@ -241,8 +53,85 @@ riskratchet scan src --coverage coverage.json
 riskratchet check src --coverage coverage.json --baseline .riskratchet.json
 ```
 
-`riskratchet check` exits with code 1 when any regression is detected,
-exit 2 for usage errors (e.g. missing baseline), and 0 otherwise.
+`riskratchet check` exits `1` on regressions, `2` on usage errors (e.g. missing
+baseline), and `0` otherwise.
+
+For early adoption before a baseline exists, `scan` can also fail on an
+absolute gate (baseline gating remains the recommended mode for mature
+codebases):
+
+```bash
+riskratchet scan src --coverage coverage.json --fail-above 75
+riskratchet scan src --coverage coverage.json --fail-severity high
+```
+
+## The canonical use case: AI agent + side project
+
+You've been vibe-coding a FastAPI backend with an AI agent for eight months.
+It works, tests are green-ish (62% coverage), but you just noticed
+`services/billing.py::reconcile_subscriptions` quietly grew to 180 lines and
+an 11-way `match` statement you don't remember writing.
+
+```bash
+pip install riskratchet
+pytest --cov --cov-branch --cov-report=json:coverage.json
+riskratchet scan src --coverage coverage.json --top 10
+```
+
+`reconcile_subscriptions` shows up at score 71 (high) with
+`structural_complexity: 90`, `sprawl: 55`, `coverage_gap: 60`. You also spot a
+surprise: a 12-line public utility `_normalize_plan_id` scoring 48 because it
+has zero tests. Snapshot the bar:
+
+```bash
+riskratchet baseline src --coverage coverage.json --output .riskratchet.json
+git add .riskratchet.json && git commit -m "Add riskratchet baseline"
+```
+
+From here, every time the agent adds a webhook handler or "refactors the
+billing flow," run `riskratchet check` before committing. If it quietly bloated
+`reconcile_subscriptions` from 180 to 220 lines, the check exits `1` and names
+the regression. You stop having to remember to look.
+
+**Why this is the canonical use case:** AI agents are excellent at adding
+code, mediocre at noticing they've made things worse. The baseline is your
+memory.
+
+### Other patterns
+
+- **Team gating PRs in CI.** Run `pytest --cov` and `riskratchet check --format pr-comment`
+  in GitHub Actions; pipe to `gh pr comment`. The PR-comment format starts with
+  `<!-- riskratchet-report -->` so the bot updates the same comment on each push
+  instead of spamming. The ratchet is mechanical and unowned, so nobody has to
+  play "the complexity cop" in code review. See
+  [Using riskratchet from an AI coding agent](#using-riskratchet-from-an-ai-coding-agent).
+- **Pre-commit hook for a solo repo.** Wire `pytest-cov` and `riskratchet`
+  into `.pre-commit-config.yaml` so every commit regenerates coverage and
+  gates the commit on no regressions. See
+  [Pre-commit integration](#pre-commit-integration).
+- **Investigating one ugly function.** Use `riskratchet explain <path>
+  --qualname <name>` to dump the six component scores and find the driver
+  (complexity vs. coverage vs. sprawl). After refactoring, run `riskratchet
+  diff --json | jq '.improved[], .regressed[]'` to prove the change was
+  net-positive, not just rearranging deck chairs.
+
+## Why CRAP alone is useful but incomplete
+
+The classic CRAP score (`CC^2 * (1 - line_coverage)^3 + CC`) catches one
+shape of bad code: complex *and* poorly tested. That's a real problem, but
+it misses several others that ship to production just as often:
+
+- A function with low complexity and zero tests. CRAP gives it `CC` (a single
+  digit). Risk is real but invisible.
+- A function with full line coverage but every branch covered the same way.
+  CRAP only looks at line coverage.
+- A function in a 2,000-line module everyone is afraid to touch. Sprawl is
+  invisible to CRAP.
+- A function that changed in 40 of the last 90 commits. Churn is invisible
+  to CRAP.
+
+riskratchet keeps CRAP as a reported metric and computes its own composite
+score from six weighted components so those other risks show up too.
 
 ## Pre-commit integration
 
@@ -250,35 +139,27 @@ exit 2 for usage errors (e.g. missing baseline), and 0 otherwise.
 
 Two things about pre-commit matter for riskratchet:
 
-1. **Pre-commit hides your unstaged edits before running hooks.** It
-   "stashes" anything you've edited but not `git add`-ed, so hooks only
+1. **Pre-commit hides your unstaged edits before running hooks.** Hooks only
    see the code you're actually about to commit. Useful in general, but it
-   means riskratchet sees a different source tree than the one open in
-   your editor.
-2. **Each `language: python` hook runs in its own isolated virtualenv.**
-   That venv contains riskratchet and its declared dependencies — *not*
-   your project's pytest, your application code, your fixtures, or your
-   test plugins. So riskratchet can't simply "run your tests" from inside
-   the hook environment; pytest there would fail to import your package.
+   means riskratchet sees a different source tree than the one open in your
+   editor.
+2. **Each `language: python` hook runs in its own isolated virtualenv** that
+   contains riskratchet and its declared deps, *not* your project's pytest,
+   application code, or test plugins.
 
-Together these create one requirement: **the `coverage.json` riskratchet
-reads must reflect the same stashed source tree it's analyzing.** If you
-reuse an old `coverage.json` from before pre-commit stashed your edits,
-the source and coverage drift out of sync — you may see phantom
-"uncovered" lines for code that no longer exists, or score functions
-against the wrong line ranges.
+Together these create one requirement: **the `coverage.json` riskratchet reads
+must reflect the same stashed source tree it's analyzing.** Reusing an old
+`coverage.json` from before pre-commit stashed your edits drifts source and
+coverage out of sync.
 
 That's why the published hook ships with `--no-auto-cov
---allow-missing-coverage` by default: it's safe but limited, and assumes
-you'll wire coverage in yourself. Pick one of the two patterns below to
-make it actually useful.
+--allow-missing-coverage` by default: safe but limited. Pick one of the
+patterns below to make it useful.
 
-### Pattern A: pre-generate coverage in a separate hook (recommended)
+### Pattern A: pre-generate coverage in a sibling hook (recommended)
 
-Add a sibling hook that runs `pytest --cov` *inside the same pre-commit
-chain*. Because that hook runs after pre-commit has already stashed
-unstaged edits, the coverage it produces matches the stashed source tree
-exactly — riskratchet then reads a consistent picture.
+Run `pytest --cov` *inside the same pre-commit chain* so the coverage matches
+the stashed tree exactly.
 
 ```yaml
 repos:
@@ -303,47 +184,36 @@ repos:
           - ".riskratchet.json"
 ```
 
-riskratchet uses the freshly produced `coverage.json` directly, no auto-cov
-needed. The `pytest-cov` hook also catches test failures early.
-
 #### Variant: uv / poetry projects (all `language: system`)
 
-If your project uses `uv` (or `poetry`) and you'd rather not have pre-commit
-manage a parallel venv at all, declare both hooks as `language: system` so
-they run inside your project's environment. This is also what riskratchet
-itself runs against its own source tree (see this repo's
-`.pre-commit-config.yaml`):
+Skip the isolated venv entirely and run both hooks inside your project's
+environment. This is what riskratchet itself uses:
 
 ```yaml
 repos:
   - repo: local
     hooks:
       - id: pytest-cov
-        name: pytest --cov (produces coverage.json for riskratchet)
         entry: uv run pytest --cov --cov-branch --cov-report=json:coverage.json -q
         language: system
         pass_filenames: false
         always_run: true
 
       - id: riskratchet
-        name: riskratchet check (gate on baseline regressions)
         entry: uv run riskratchet check src --coverage coverage.json --baseline .riskratchet.json --no-auto-cov
         language: system
         pass_filenames: false
         always_run: true
 ```
 
-Two upsides over the published-hook form: a single environment for both
-hooks (no isolated-venv surprises), and `uv run` resolves the same Python
-and deps `uv sync` set up. The downside is that contributors must have
-`uv` installed locally; for repos with non-uv contributors, the published
-form above is more portable.
+Two upsides: single env for both hooks (no isolated-venv surprises), and
+`uv run` resolves the same Python and deps `uv sync` set up. Downside:
+contributors must have `uv` installed locally.
 
 ### Pattern B: let riskratchet run pytest itself
 
-To escape the isolated venv, override the hook to `language: system` so
-it inherits your shell PATH (and finds your real pytest, your project,
-and its deps):
+Override the hook to `language: system` so it inherits your shell PATH (and
+finds your real pytest):
 
 ```yaml
 repos:
@@ -356,14 +226,13 @@ repos:
         always_run: true
 ```
 
-riskratchet will run the configured `[tool.riskratchet] test_command`
-(default `pytest --cov --cov-branch --cov-report=json:{output} -q`) and
-cache the result under `.riskratchet/coverage.json`. The cache is reused
-until any `.py` file under the scan paths is newer.
+riskratchet runs the configured `[tool.riskratchet] test_command` (default
+`pytest --cov --cov-branch --cov-report=json:{output} -q`) and caches the
+result under `.riskratchet/coverage.json`. The cache is reused until any `.py`
+file under the scan paths is newer.
 
-For local development outside pre-commit, the auto-coverage default applies
-to plain `riskratchet scan|baseline|check` invocations as well; pass
-`--no-auto-cov` to opt out.
+For local development outside pre-commit, auto-coverage applies to plain
+`riskratchet scan|baseline|check` too; pass `--no-auto-cov` to opt out.
 
 ## Using riskratchet from an AI coding agent
 
@@ -371,28 +240,25 @@ riskratchet is designed to be called from agents and parsed without
 screen-scraping. See [`AGENTS.md`](AGENTS.md) for the full operational
 contract; the recipes below cover the common cases.
 
-One-shot: list the top three highest-risk functions.
+Top three highest-risk functions:
 
 ```bash
 riskratchet scan src --coverage coverage.json --json \
   | jq '.functions[:3] | .[] | {qualname, score, severity}'
 ```
 
-Show the full baseline diff, including improvements and removed functions.
+Full baseline diff including improvements and removed functions:
 
 ```bash
 riskratchet diff src --coverage coverage.json \
   --baseline .riskratchet.json --json
 ```
 
-Gate a CI job on regressions, printing the list when it fails.
+Gate a CI job on regressions:
 
 ```bash
-riskratchet check src \
-  --coverage coverage.json \
-  --baseline .riskratchet.json \
-  --baseline-format riskratchet \
-  --json > regressions.json
+riskratchet check src --coverage coverage.json \
+  --baseline .riskratchet.json --json > regressions.json
 status=$?
 if [ "$status" -eq 1 ]; then
   jq -r '.regressions[] | "- \(.qualname): \(.reason)"' regressions.json
@@ -401,18 +267,15 @@ fi
 exit "$status"
 ```
 
-Post regressions as a PR comment.
+Post regressions as a PR comment (use `--format pr-comment` for a sticky body
+that updates in place via the `<!-- riskratchet-report -->` marker; use
+`--format github` for inline workflow warnings):
 
 ```bash
 riskratchet check src --coverage coverage.json \
   --baseline .riskratchet.json --format markdown \
   | gh pr comment --body-file -
 ```
-
-For a sticky PR-bot body, use `--format pr-comment`. The output starts with
-`<!-- riskratchet-report -->` so a GitHub Actions script can update an
-existing comment instead of posting duplicates. For inline workflow warnings,
-use `--format github`.
 
 Markdown and PR-comment output can link each row back to source:
 
@@ -422,58 +285,47 @@ riskratchet scan src --format pr-comment \
   --commit-ref "$GITHUB_SHA"
 ```
 
-In GitHub Actions, riskratchet fills those values from
-`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, and `GITHUB_SHA` when available.
+In GitHub Actions, those values are filled from `GITHUB_SERVER_URL`,
+`GITHUB_REPOSITORY`, and `GITHUB_SHA` when available.
 
 JSON output is validated against the schemas under
 [`schemas/`](schemas/) on every release:
 
-- `schemas/report.schema.json` — `scan --json`
-- `schemas/regressions.schema.json` — `check --json`
-- `schemas/diff.schema.json` — `diff --json`
-- `schemas/baseline.schema.json` — `.riskratchet.json` on disk
-- `schemas/summary.schema.json` — `scan|check|diff --summary --json`
-- `schemas/config.schema.json` — `config show --json`
+- `report.schema.json`: `scan --json`
+- `regressions.schema.json`: `check --json`
+- `diff.schema.json`: `diff --json`
+- `baseline.schema.json`: `.riskratchet.json` on disk
+- `summary.schema.json`: `scan|check|diff --summary --json`
+- `config.schema.json`: `config show --json`
 
 Native JSON output includes `$schema` and `version` fields so consumers can
 pin parsing behavior.
 
-### Common mistakes
+### Common pitfalls
 
-- Running `check` without a baseline. `riskratchet baseline` must run first
-  (typically on `main`) and the resulting `.riskratchet.json` checked in.
-  Exits with code `2` when missing.
-- Passing `coverage.xml` to `--coverage`. riskratchet reads
-  `coverage.json`. Generate it with `pytest --cov --cov-report=json:coverage.json`
-  or let riskratchet auto-generate it (see Pre-commit integration).
-- Relying on the auto-coverage runner inside a sandbox with no pytest
-  installed. Pass `--no-auto-cov` plus `--allow-missing-coverage`, or set
-  `[tool.riskratchet] test_command` to a runner that does work in your
-  environment.
-- Running without `--no-git` inside a sandbox that has no git history. Churn
-  collection will be empty rather than failing, but pass `--no-git` to be
-  explicit and slightly faster.
-- Parsing stdout as both prose and JSON. Pick a format. With `--json`,
-  stdout is a single JSON object; status messages go to stderr.
-- When `check` exits `1`, it prints a short hint to **stderr** with the
-  two ways out: regenerate the baseline (`riskratchet baseline ...`) or
-  loosen the per-component gate (`--no-component-regression-gate`,
-  `--fail-component-regression-above`). Stdout stays clean so `--json`
-  consumers are unaffected.
-- Bumping the baseline to silence a regression. The baseline is the bar; if
-  it has to move up, do it in a dedicated PR with a written justification.
-- Treating a "new" finding as necessarily part of the current commit. In
-  `check` output, new means absent from the baseline. A function added in an
-  earlier commit can still appear as new until the baseline intentionally
-  accepts it.
+- **Running `check` without a baseline.** `riskratchet baseline` must run
+  first (typically on `main`) and the resulting `.riskratchet.json` checked
+  in. Exits `2` when missing.
+- **Passing `coverage.xml` to `--coverage`.** riskratchet reads
+  `coverage.json`. Generate it with `pytest --cov --cov-report=json:coverage.json`.
+- **Parsing stdout as both prose and JSON.** Pick a format. With `--json`,
+  stdout is a single JSON object; status messages go to stderr. When `check`
+  exits `1`, a short hint with the two escape hatches (regenerate baseline,
+  or loosen the per-component gate) is written to stderr, so stdout stays
+  clean.
+- **Bumping the baseline to silence a regression.** The baseline is the bar;
+  if it has to move up, do it in a dedicated PR with a written justification.
+  In `check` output, "new" means **absent from the baseline**, so a function
+  added in an earlier commit can still appear as new until the baseline
+  intentionally accepts it.
 
 For the broader trust boundaries and non-goals, see
 [`docs/threat-model.md`](docs/threat-model.md).
 
 ### Suppressions and partial coverage
 
-Use `--exclude` to skip files at discovery time. Use `--allow` to analyze a
-file but suppress matching functions from reporting and gating:
+`--exclude` skips files at discovery time. `--allow` analyzes a file but
+suppresses matching functions from reporting and gating:
 
 ```bash
 riskratchet check src --baseline .riskratchet.json \
@@ -484,10 +336,8 @@ riskratchet check src --baseline .riskratchet.json \
 Function patterns match dotted qualified names. Patterns containing `/` or
 `**` match repo-relative POSIX paths.
 
-When a coverage file is present but a scanned source file has no matching
-coverage entry, riskratchet warns on stderr. The default missing-coverage
-policy is pessimistic: treat those functions as uncovered. For partial local
-runs you can choose:
+The default missing-coverage policy is pessimistic: unmapped functions are
+treated as uncovered. For partial local runs:
 
 ```bash
 riskratchet scan src --coverage coverage.json --missing-coverage optimistic
@@ -495,12 +345,12 @@ riskratchet scan src --coverage coverage.json --missing-coverage skip
 ```
 
 `optimistic` treats missing file coverage as fully covered. `skip` drops
-functions from unmapped files and reports the skipped count in JSON summary.
+functions from unmapped files and reports the skipped count.
 
 ## Pytest plugin
 
 riskratchet ships a pytest plugin that runs `check` as part of your test
-session. After `pip install riskratchet`:
+session:
 
 ```bash
 pytest \
@@ -510,10 +360,10 @@ pytest \
   --riskratchet-baseline .riskratchet.json
 ```
 
-The session exits non-zero when riskratchet finds regressions, so you can
-gate CI on `pytest` alone. Available flags:
+The session exits non-zero when riskratchet finds regressions, so CI can gate
+on `pytest` alone. Available flags:
 
-- `--riskratchet` (required to enable the plugin)
+- `--riskratchet` (required to enable)
 - `--riskratchet-paths` (default: `src`, repeatable)
 - `--riskratchet-baseline` (default: `.riskratchet.json`)
 - `--riskratchet-coverage` (default: `coverage.json`)
@@ -524,102 +374,93 @@ gate CI on `pytest` alone. Available flags:
 
 Each function gets six component scores in `[0, 100]`:
 
-| Component             | Weight | What it measures                                      |
-| --------------------- | ------ | ----------------------------------------------------- |
-| coverage_gap          | 30%    | `1 - line_coverage`                                   |
-| structural_complexity | 25%    | cyclomatic complexity, saturating at CC=20            |
-| branch_gap            | 15%    | `1 - branch_coverage` when branch coverage is known   |
-| churn                 | 10%    | commits in the last 90 days, saturating at 10         |
+| Component             | Weight | What it measures                                          |
+| --------------------- | ------ | --------------------------------------------------------- |
+| coverage_gap          | 30%    | `1 - line_coverage`                                       |
+| structural_complexity | 25%    | cyclomatic complexity, saturating at CC=20                |
+| branch_gap            | 15%    | `1 - branch_coverage` when branch coverage is known       |
+| churn                 | 10%    | commits in the last 90 days, saturating at 10             |
 | public_surface        | 10%    | coverage gap penalised harder when the function is public |
-| sprawl                | 10%    | function length and file length blended               |
+| sprawl                | 10%    | function length and file length blended                   |
 
-The total risk is the weighted sum. Severity bands: 0-24 low, 25-49
-medium, 50-74 high, 75-100 critical.
+Total risk is the weighted sum. Severity bands: 0-24 low, 25-49 medium,
+50-74 high, 75-100 critical.
+
+`is_public` is determined statically from the AST: by qualname when no
+`__all__` is declared (leading-underscore is private, dunders are public);
+by additive promotion from a static `__all__` (omission never demotes);
+fall back to the naming rule when `__all__` is dynamic. Full rules in
+[`AGENTS.md`](AGENTS.md#is_public-classification).
 
 ### Components, in plain English
 
-Each component is rescaled to `[0, 100]` (where 100 = maximum risk for
-that signal) before being weighted into the total. Here's what each one
-actually *means*, with a concrete example.
+Each component is rescaled to `[0, 100]` (where 100 = maximum risk for that
+signal) before being weighted into the total. Here's what each one actually
+*means*, with a concrete example.
 
-**`coverage_gap` — "is this function tested at all?"**
-The fraction of lines in the function that your test suite never
-executes. A function with 100% line coverage scores 0; a function with
-0% line coverage scores 100.
+**`coverage_gap`: "is this function tested at all?"**
+The fraction of lines in the function that your test suite never executes.
+A function with 100% line coverage scores 0; a function with 0% line
+coverage scores 100.
 
-> *Example:* a 40-line `parse_invoice` where your tests only exercise
-> the happy path (28 lines covered, 12 missed) → `coverage_gap = 30`.
-> A brand-new `migrate_to_v2` with no tests at all → `coverage_gap = 100`.
+> *Example:* a 40-line `parse_invoice` where your tests only exercise the
+> happy path (28 lines covered, 12 missed) gives `coverage_gap = 30`. A
+> brand-new `migrate_to_v2` with no tests at all gives `coverage_gap = 100`.
 
-**`structural_complexity` — "how many ways can this function go?"**
-Cyclomatic complexity, which roughly counts independent paths through
-the function (each `if`, `elif`, `and`, `or`, `for`, `except` adds
-one). Saturates at CC=20 — anything past that is already "very
-complex" and we don't need to keep counting.
+**`structural_complexity`: "how many ways can this function go?"**
+Cyclomatic complexity, which roughly counts independent paths through the
+function (each `if`, `elif`, `and`, `or`, `for`, `except` adds one).
+Saturates at CC=20; anything past that is already "very complex" and
+there's no value in keeping count.
 
-> *Example:* a getter with one return statement → `CC=1`, score 0.
-> A `validate_user_input` with 6 chained `if/elif` branches → `CC=7`,
-> score ~35. A 14-way `match` statement → `CC=15`, score ~75.
+> *Example:* a getter with one return statement is `CC=1`, score 0. A
+> `validate_user_input` with 6 chained `if/elif` branches is `CC=7`, score
+> ~35. A 14-way `match` statement is `CC=15`, score ~75.
 
-**`branch_gap` — "are both sides of every `if` tested?"**
+**`branch_gap`: "are both sides of every `if` tested?"**
 Like `coverage_gap`, but for branches. A function whose tests only ever
-take the `if True` path of an `if/else` will have full line coverage
-but only 50% branch coverage. Only counts when your coverage run
-included `--cov-branch`.
+take the `if True` path of an `if/else` will have full line coverage but
+only 50% branch coverage. Only counts when your coverage run included
+`--cov-branch`.
 
 > *Example:* `def discount(user): return 0.2 if user.is_premium else 0.0`.
-> A test that only passes premium users → 100% line coverage but 50%
-> branch coverage → `branch_gap = 50`.
+> A test that only passes premium users gets 100% line coverage but 50%
+> branch coverage, so `branch_gap = 50`.
 
-**`churn` — "how often does this function change?"**
-Number of git commits touching the function's line range in the
-configured churn window (default 90 days, set with `--churn-days` or
-`[tool.riskratchet] churn_window_days`). Saturates at 10 commits.
-High churn means many people have edited it recently, which correlates
-with bugs.
+**`churn`: "how often does this function change?"**
+Number of git commits touching the function's line range in the configured
+churn window (default 90 days, set with `--churn-days` or `[tool.riskratchet]
+churn_window_days`). Saturates at 10 commits. High churn means many people
+have edited it recently, which correlates with bugs.
 
-> *Example:* a stable `parse_iso_date` last touched two years ago →
-> `churn = 0`. A `pricing_engine.calculate_total` that's been edited
-> in 14 of the last 90 commits → saturates at 10 → `churn = 100`.
+> *Example:* a stable `parse_iso_date` last touched two years ago is
+> `churn = 0`. A `pricing_engine.calculate_total` edited in 14 of the last
+> 90 commits saturates at 10, so `churn = 100`.
 
-**`public_surface` — "if this breaks, do callers we can't see break too?"**
-A multiplier on coverage gap: when a function is part of your public
-API, its missing coverage is penalized harder than the same gap on a
-private helper. A private helper with 40% coverage is a problem you can
-fix locally; a public function with 40% coverage is a contract problem.
+**`public_surface`: "if this breaks, do callers we can't see break too?"**
+A multiplier on coverage gap: when a function is part of your public API,
+its missing coverage is penalised harder than the same gap on a private
+helper. A private helper with 40% coverage is a problem you can fix
+locally; a public function with 40% coverage is a contract problem.
 
-How "public" is determined:
+> *Example:* `_normalize_path` with 50% coverage gives `public_surface = 25`.
+> Public `format_currency` with 50% coverage gives `public_surface = 50`.
+> `_LegacyExposed` listed in `__all__` with 50% coverage gives
+> `public_surface = 50` (promoted to public despite the underscore).
 
-- **No `__all__` in the module:** by qualname. `foo` is public; `_foo`
-  is private; `Foo.__init__` is public (dunder exception).
-- **Module declares `__all__`:** additive promotion. A leading-underscore
-  top-level name (e.g. `_LegacyExposed`) is treated as public if it
-  appears in `__all__`. Omission never demotes — a public-by-name function
-  not in `__all__` stays public, because `__all__` only controls
-  `import *`, not reachability. Nested segments still follow the naming
-  rule: `_LegacyExposed.bar` is public, but `_LegacyExposed._helper` is
-  not.
-- **Dynamic `__all__`** (`__all__ += [...]`, concatenation, conditional)
-  falls back to the naming rule.
-
-> *Example:* `_normalize_path` with 50% coverage → `public_surface = 25`.
-> Public `format_currency` with 50% coverage → `public_surface = 50`.
-> `_LegacyExposed` in `__all__` with 50% coverage → `public_surface = 50`
-> (promoted to public despite the underscore).
-
-**`sprawl` — "is this function (or its file) just too big?"**
+**`sprawl`: "is this function (or its file) just too big?"**
 A blend of function length and the surrounding file's length. Long
-functions are harder to hold in your head; long files mean any function
-in them has more neighbors competing for attention. Both contribute.
+functions are harder to hold in your head; long files mean any function in
+them has more neighbors competing for attention. Both contribute.
 
-> *Example:* a 12-line function in a 200-line file → `sprawl = 5`.
-> A 180-line function in a 2,000-line module → `sprawl = 85`.
+> *Example:* a 12-line function in a 200-line file gives `sprawl = 5`. A
+> 180-line function in a 2,000-line module gives `sprawl = 85`.
 
-### Putting it together: a worked example
+### A worked example
 
-Suppose `services/billing.py::reconcile_subscriptions` is 180 lines,
-public, has CC=14, 55% line coverage, 40% branch coverage, no recent
-churn, and lives in a 900-line file. Its components might look like:
+Suppose `services/billing.py::reconcile_subscriptions` is 180 lines, public,
+has CC=14, 55% line coverage, 40% branch coverage, no recent churn, and
+lives in a 900-line file. Its components might look like:
 
 | Component             | Raw signal               | Score | Weight | Contribution |
 | --------------------- | ------------------------ | ----: | -----: | -----------: |
@@ -631,17 +472,16 @@ churn, and lives in a 900-line file. Its components might look like:
 | sprawl                | long function, big file  |    65 |   0.10 |          6.5 |
 | **total**             |                          |       |        |     **51.0** |
 
-Score 51 → **high** severity. The dominant drivers are complexity and
-branch coverage; if you wanted to lower it without rewriting the
-function, the cheapest path is adding branch tests, not deleting lines.
+Score 51 → **high** severity. The dominant drivers are complexity and branch
+coverage; if you wanted to lower it without rewriting the function, the
+cheapest path is adding branch tests, not deleting lines.
 
 ### Configuring weights
 
-Weights are configurable per project. Drop a `[tool.riskratchet.weights]`
-table in `pyproject.toml` to override any subset; the remaining
-components keep their defaults and the whole vector is renormalized so the
-total still maps to `[0, 100]`. For example, to ignore churn entirely and
-double-weight coverage:
+Drop a `[tool.riskratchet.weights]` table in `pyproject.toml` to override any
+subset; the remaining components keep their defaults and the whole vector is
+renormalized. For example, to ignore churn entirely and double-weight
+coverage:
 
 ```toml
 [tool.riskratchet.weights]
@@ -668,16 +508,46 @@ riskratchet scan src --coverage coverage.json --min-score 50     # hide lower-ri
 riskratchet scan src --coverage coverage.json --top 10           # emit only the top N
 ```
 
-`riskratchet check` accepts `--baseline-format riskratchet`, which is the
-default and currently the only supported baseline format.
-
-SARIF intentionally has a narrower contract than native JSON: `scan
---format sarif` emits current findings after the same score filter used for
+SARIF intentionally has a narrower contract than native JSON: `scan --format
+sarif` emits current findings after the same score filter used for
 annotations, while `check --format sarif` and `diff --format sarif` emit only
-failing regressions. A clean baseline still produces valid SARIF with an empty
-`results` array.
+failing regressions. A clean baseline still produces valid SARIF with an
+empty `results` array.
 
-## Config validation and groups
+Native JSON output (truncated):
+
+```json
+{
+  "$schema": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
+  "version": "0.2",
+  "summary": {
+    "total_functions": 10,
+    "analyzed_functions": 42,
+    "emitted_functions": 10,
+    "total_files": 6,
+    "coverage_status": "present",
+    "suppressed_functions": 1,
+    "skipped_missing_coverage": 0,
+    "by_severity": { "low": 1, "medium": 6, "high": 3, "critical": 0 }
+  },
+  "functions": [
+    {
+      "path": "src/foo.py",
+      "qualname": "Foo.bar",
+      "score": 62.3,
+      "severity": "high",
+      "components": {
+        "coverage_gap": 80.0, "structural_complexity": 55.0,
+        "branch_gap": 70.0, "churn": 30.0,
+        "public_surface": 80.0, "sprawl": 10.0
+      },
+      "crap": 12.4
+    }
+  ]
+}
+```
+
+## Config validation, groups, and monorepos
 
 Validate project config before relying on it in CI:
 
@@ -687,12 +557,12 @@ riskratchet config show --config pyproject.toml --json
 ```
 
 `config validate` exits `2` for malformed TOML, unknown keys, invalid value
-types, invalid weights, or invalid group definitions. `config show --json`
-prints the resolved config with CLI defaults filled where riskratchet already
-has defaults.
+types, or invalid groups.
 
-Use `[tool.riskratchet.groups]` to roll function-level results up by package
-or workspace area:
+Roll function-level results up by package or workspace area with
+`[tool.riskratchet.groups]`. Each function is assigned to the longest
+matching repo-relative prefix; ungrouped functions are reported as `null` in
+JSON and `ungrouped` in text or markdown.
 
 ```toml
 [tool.riskratchet.groups]
@@ -700,14 +570,9 @@ core = "src/core"
 api = ["src/api", "src/public_api"]
 ```
 
-Each function is assigned to the longest matching repo-relative prefix.
-Ungrouped functions are reported as `null` in JSON fields and `ungrouped` in
-text or markdown summaries.
-
-### Monorepos and per-package coverage
-
-For `packages/*` / `services/*` layouts where a single `coverage.json` is
-not practical, declare one coverage file per repo-relative prefix:
+For `packages/*` / `services/*` layouts where one `coverage.json` is not
+practical, declare a per-prefix coverage map (or pass `--coverage-map` on the
+CLI; longest matching prefix wins):
 
 ```toml
 [tool.riskratchet]
@@ -722,136 +587,50 @@ alpha = "packages/alpha"
 beta = "packages/beta"
 ```
 
-Or pass the map on the CLI (repeatable; longest matching prefix wins):
-
-```bash
-riskratchet scan packages/alpha packages/beta \
-  --coverage-map packages/alpha=packages/alpha/coverage.json \
-  --coverage-map packages/beta=packages/beta/coverage.json
-```
-
-Two workflows are supported:
-
-- **One repo-level baseline** (recommended for tight coupling): a single
-  `.riskratchet.json` covers every package; groups partition the
-  reporting but the ratchet is global.
-- **One baseline per package**: each package has its own `pyproject.toml`
-  and `.riskratchet.json`, and you invoke `riskratchet` once per package
-  directory. Useful when packages release independently.
-
-Every command prints a diagnostic banner to stderr summarizing the
-resolved root, scan paths, and coverage source (`coverage=map=...`,
-`coverage=single=...`, or `coverage=none`). Stdout stays payload-only.
-
-### Rename-aware matching
-
-Since 0.2.5, the comparison logic recognizes function renames and moves
-before classifying them as new. A unique body-fingerprint or signature
-match becomes `MOVED`; a tie between multiple plausible candidates
-becomes `AMBIGUOUS_RENAME` and stays in the gating block of the PR
-comment so risk growth isn't silently masked. See
-[`AGENTS.md`](AGENTS.md#rename-aware-matching-since-025) for the
-full signal weighting.
-
-For early adoption before a baseline exists, `scan` can also fail on an
-absolute gate:
-
-```bash
-riskratchet scan src --coverage coverage.json --fail-above 75
-riskratchet scan src --coverage coverage.json --fail-severity high
-```
-
-Baseline gating is still the recommended mode for mature codebases.
-
-JSON output (truncated):
-
-```json
-{
-  "$schema": "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json",
-  "version": "0.2",
-  "summary": {
-    "total_functions": 10,
-    "analyzed_functions": 42,
-    "emitted_functions": 10,
-    "total_files": 6,
-    "coverage_status": "present",
-    "suppressed_functions": 1,
-    "skipped_missing_coverage": 0,
-    "by_severity": {
-      "low": 1,
-      "medium": 6,
-      "high": 3,
-      "critical": 0
-    }
-  },
-  "functions": [
-    {
-      "path": "src/foo.py",
-      "qualname": "Foo.bar",
-      "score": 62.3,
-      "severity": "high",
-      "components": {
-        "coverage_gap": 80.0,
-        "structural_complexity": 55.0,
-        "branch_gap": 70.0,
-        "churn": 30.0,
-        "public_surface": 80.0,
-        "sprawl": 10.0
-      },
-      "crap": 12.4
-    }
-  ]
-}
-```
-
-Markdown output is suitable for posting as a PR comment via `gh pr
-comment`.
-
-## Editor integration
-
-See [`docs/ide-integration.md`](docs/ide-integration.md) for how to view
-findings inline in VS Code (via the SARIF Viewer extension) and JetBrains
-IDEs.
+One repo-level baseline (recommended for tight coupling) is global; one
+baseline per package is useful when packages release independently. Every
+command prints a diagnostic banner to stderr summarizing the resolved root,
+scan paths, and coverage source.
 
 ## Sample output on real libraries
 
-I ran riskratchet against four widely-used Python libraries to show
-what its output looks like on production code. Each was cloned fresh,
-its own test suite run with `pytest --cov --cov-report=json:coverage.json`,
-then scanned. Top findings:
+I ran riskratchet against four widely-used Python libraries to show what its
+output looks like on production code. Each was cloned fresh, its own test
+suite run with `pytest --cov --cov-report=json:coverage.json`, then scanned.
+Top findings:
 
-| Library | Function | Score | CC | Line cov |
-| --- | --- | ---: | ---: | ---: |
-| python-slugify | `__main__::main` | 53.1 (high) | 3 | 11% (0% branch) |
-| python-slugify | `slugify` | 33.3 | 27 | 88% |
-| tabulate | `_CustomTextWrap._wrap_chunks` | 44.4 | 31 | 60% |
-| tabulate | `_normalize_tabular_data` | 42.6 | 76 | 78% |
-| tabulate | `tabulate` (entry) | 37.1 | 62 | 97% |
-| humanize | `precisedelta` | 32.9 | 26 | 100% |
-| humanize | `naturaldelta` | 32.4 | 33 | 100% |
-| inflect | `engine._sinoun` | 36.7 | 108 | 98% |
-| inflect | `engine._plnoun` | 36.2 | 100 | 99% |
+| Library        | Function                          |       Score |  CC | Line cov        |
+| -------------- | --------------------------------- | ----------: | --: | --------------- |
+| python-slugify | `__main__::main`                  | 53.1 (high) |   3 | 11% (0% branch) |
+| python-slugify | `slugify`                         |        33.3 |  27 | 88%             |
+| tabulate       | `_CustomTextWrap._wrap_chunks`    |        44.4 |  31 | 60%             |
+| tabulate       | `_normalize_tabular_data`         |        42.6 |  76 | 78%             |
+| tabulate       | `tabulate` (entry)                |        37.1 |  62 | 97%             |
+| humanize       | `precisedelta`                    |        32.9 |  26 | 100%            |
+| humanize       | `naturaldelta`                    |        32.4 |  33 | 100%            |
+| inflect        | `engine._sinoun`                  |        36.7 | 108 | 98%             |
+| inflect        | `engine._plnoun`                  |        36.2 | 100 | 99%             |
 
-The point is not that these libraries are bad. They have all-green CI
-and many users. The point is that even mature, well-tested code
-accumulates functions where complexity, coverage, and sprawl combine
-into something worth a second pair of eyes. A CC=108 function with 98%
-coverage is not on fire. It is a function that works and is tested. The
-ratchet's job is to keep those numbers from getting worse over time.
+The point is not that these libraries are bad. They have all-green CI and
+many users. The point is that even mature, well-tested code accumulates
+functions where complexity, coverage, and sprawl combine into something
+worth a second pair of eyes. A CC=108 function with 98% coverage is not on
+fire; it is a function that works and is tested. The ratchet's job is to
+keep those numbers from getting worse over time.
 
 ## Comparison with other tools
 
-| Tool         | Per-function risk | Baseline / ratchet | Combines complexity + coverage + churn |
-| ------------ | ----------------- | ------------------ | -------------------------------------- |
-| coverage.py  | line / branch only| no                 | no                                     |
-| radon        | complexity only   | no                 | no                                     |
-| xenon        | complexity only   | yes (threshold)    | no                                     |
-| pytest-crap  | yes (CRAP)        | no                 | partial (CC + line coverage)           |
-| riskratchet  | yes               | yes                | yes                                    |
+| Tool        | Per-function risk  | Baseline / ratchet | Combines complexity + coverage + churn |
+| ----------- | ------------------ | ------------------ | -------------------------------------- |
+| coverage.py | line / branch only | no                 | no                                     |
+| radon       | complexity only    | no                 | no                                     |
+| xenon       | complexity only    | yes (threshold)    | no                                     |
+| pytest-crap | yes (CRAP)         | no                 | partial (CC + line coverage)           |
+| riskratchet | yes                | yes                | yes                                    |
 
 ## Local development
 
-The same commands run in GitHub Actions. Run them locally before pushing.
+The same commands run in GitHub Actions:
 
 ```bash
 uv sync --locked
@@ -863,22 +642,3 @@ uv build --clear
 ```
 
 Strict typing covers both `src/` and `tests/`.
-
-## Release
-
-Releases are published to PyPI via GitHub Actions [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC, no API tokens). To cut a release:
-
-```bash
-# 1. Bump `version` in pyproject.toml and move CHANGELOG entries from
-#    "Unreleased" into a new dated section. Commit on master.
-# 2. Tag and push:
-git tag vX.Y.Z
-git push origin vX.Y.Z
-```
-
-The `publish.yml` workflow runs the same quality gates as CI (ruff, format
-check, mypy, pytest), builds the distribution, verifies wheel metadata and
-README metadata, runs isolated wheel/source install smoke tests, validates SARIF
-output, and publishes via OIDC with PEP 740 attestations. The `pypi` GitHub
-environment gates the upload step with a required-reviewer rule. If CI is red on
-master, do not tag — the workflow's quality gate will fail anyway.

@@ -15,7 +15,11 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        # Syrupy stores blank lines inside multi-line snapshots as
+        # 2-space-indented lines; stripping them breaks deserialization.
+        exclude: ^tests/__snapshots__/
       - id: end-of-file-fixer
+        exclude: ^tests/__snapshots__/
       - id: check-yaml
       - id: check-toml
       - id: check-merge-conflict
