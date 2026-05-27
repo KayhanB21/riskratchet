@@ -128,10 +128,17 @@ def cli_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, 
     riskratchet's project-root detection anchors at our fixture root,
     not the surrounding repo root. Snapshots stay stable across runs
     (no tmp_path leakage into output).
+
+    Also clears `GITHUB_SERVER_URL` / `GITHUB_REPOSITORY` / `GITHUB_SHA`
+    so the CLI does not auto-fill source-link metadata. Without this,
+    the markdown / pr-comment / diff snapshots wrap target cells in
+    GitHub blob URLs on CI but not locally, breaking byte equality.
     """
     make_cli_project(tmp_path)
     _write_baseline(tmp_path, tmp_path / "src")
     monkeypatch.chdir(tmp_path)
+    for var in ("GITHUB_SERVER_URL", "GITHUB_REPOSITORY", "GITHUB_SHA"):
+        monkeypatch.delenv(var, raising=False)
     return Path("src"), Path("coverage.json"), Path("baseline.json")
 
 

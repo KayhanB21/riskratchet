@@ -109,11 +109,11 @@ memory.
   into `.pre-commit-config.yaml` so every commit regenerates coverage and
   gates the commit on no regressions. See
   [Pre-commit integration](#pre-commit-integration).
-- **Investigating one ugly function.** Use `riskratchet explain <path>
-  --qualname <name>` to dump the six component scores and find the driver
-  (complexity vs. coverage vs. sprawl). After refactoring, run `riskratchet
-  diff --json | jq '.improved[], .regressed[]'` to prove the change was
-  net-positive, not just rearranging deck chairs.
+- **Investigating one ugly function.** Use `riskratchet explain
+  path/to/file.py::qualname` to dump the six component scores and find the
+  driver (complexity vs. coverage vs. sprawl). After refactoring, run
+  `riskratchet diff --json | jq '.improved[], .regressed[]'` to prove the
+  change was net-positive, not just rearranging deck chairs.
 
 ## Why CRAP alone is useful but incomplete
 
@@ -369,6 +369,9 @@ on `pytest` alone. Available flags:
 - `--riskratchet-coverage` (default: `coverage.json`)
 - `--riskratchet-fail-new-above` (default: `50`)
 - `--riskratchet-fail-regression-above` (default: `5`)
+- `--riskratchet-fail-existing-above` (default: unset)
+- `--riskratchet-fail-component-regression-above` (default: `15`)
+- `--riskratchet-no-component-regression-gate`
 
 ## How risk is scored
 
@@ -472,9 +475,9 @@ lives in a 900-line file. Its components might look like:
 | sprawl                | long function, big file  |    65 |   0.10 |          6.5 |
 | **total**             |                          |       |        |     **51.0** |
 
-Score 51 → **high** severity. The dominant drivers are complexity and branch
-coverage; if you wanted to lower it without rewriting the function, the
-cheapest path is adding branch tests, not deleting lines.
+Score 51 puts this in the **high** severity band. The dominant drivers are
+complexity and branch coverage; if you wanted to lower it without rewriting
+the function, the cheapest path is adding branch tests, not deleting lines.
 
 ### Configuring weights
 
