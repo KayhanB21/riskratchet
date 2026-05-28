@@ -620,7 +620,7 @@ def _classify(
     old: Baseline,
     used: set[FunctionId] | None = None,
 ) -> Any:
-    from riskratchet.baseline import (
+    from riskratchet.baseline.classify import (
         _classify_against_baseline,
         _current_fingerprint_counts,
         _unique_old_entries_by_fingerprint,

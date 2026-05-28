@@ -11,6 +11,52 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-05-28
+
+### Added
+
+- Config discovery: when `--config` is not given, riskratchet walks
+  upward from the current directory for the nearest `pyproject.toml`
+  containing `[tool.riskratchet]` and anchors to it. Relative `paths`,
+  `coverage`, `coverage_map`, `coverage_cache`, and `baseline` values
+  from that config resolve against the config file's directory, so
+  running from a nested package directory produces the same result as
+  running from the project root. `--config` still overrides discovery,
+  and an explicit `--coverage` / positional paths stay relative to the
+  current directory. When no `[tool.riskratchet]` ancestor exists,
+  discovery falls back silently to the current directory.
+- Unknown-key warning: `scan`, `baseline`, `check`, `diff`, and
+  `explain` print a stderr warning when `[tool.riskratchet]` contains an
+  unrecognized key (e.g. a typo like `fail_new_abvoe`) instead of
+  silently ignoring it. The command still runs (exit 0); use
+  `riskratchet config validate` for the strict (exit 2) gate. Stdout
+  stays payload-only.
+- `tests/test_baseline_layering.py` enforces the new `baseline/` package
+  layering rule via AST parsing: the family submodules
+  (`compare`, `diff`, `regressions`) import only the `io` / `classify`
+  leaves, never each other.
+
+### Changed
+
+- Internal: `riskratchet.baseline` is now a package
+  (`src/riskratchet/baseline/__init__.py`) re-exporting submodules `io`
+  (JSON load/save), `compare` (the `check` gate), `diff` (full
+  comparison), `regressions` (diff → failing-regression projection), and
+  `classify` (shared matching ladder + component-regression policy). All
+  previous `from riskratchet.baseline import …` imports continue to
+  work; the family layout is an implementation detail. No user-visible
+  behavior change — `check` and `diff` outputs in every `--format` are
+  byte-for-byte identical to `0.2.6` (pinned by the syrupy suite). The
+  rename matcher stays in the top-level `riskratchet.matching` module
+  (also used by `analysis`), so it is intentionally not part of this
+  package.
+- Running from a nested directory now discovers and anchors to an
+  ancestor `[tool.riskratchet]` config (see Config discovery). Before,
+  config was read only from the current directory, so a nested
+  invocation silently used no config. Pass `--config` explicitly to
+  restore the old cwd-only behavior.
+- `.riskratchet.json` regenerated to reflect the new file paths.
+
 ## [0.2.6] - 2026-05-26
 
 ### Changed

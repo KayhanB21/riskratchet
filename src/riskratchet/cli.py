@@ -157,7 +157,7 @@ def config_show(
                 "$schema": CONFIG_SCHEMA_URL,
                 "version": __version__,
                 "config_path": str(config),
-                "config": _resolved_config_payload(cfg),
+                "config": _resolved_config_payload(cfg, config.resolve().parent),
             },
             indent=2,
         )
@@ -244,10 +244,11 @@ def scan(
     ] = None,
 ) -> None:
     """Scan files and report risk; never fails."""
-    cfg = _load_config(config)
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
-    resolved_paths = _resolved_paths(paths, cfg)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    resolved_paths = _resolved_paths(paths, cfg, config_dir)
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=True)
@@ -260,15 +261,18 @@ def scan(
             no_auto_cov=no_auto_cov,
             required=False,
             allow_missing=True,
+            config_dir=config_dir,
         )
     _emit_diagnostics_banner(
         command="scan",
         scan_roots=resolved_paths,
         coverage_path=coverage_path,
+        config_dir=config_dir,
         coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
+        root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
         include=include or [],
@@ -338,10 +342,11 @@ def baseline(
     ] = False,
 ) -> None:
     """Compute current risk and save it as the new baseline."""
-    cfg = _load_config(config)
-    resolved_paths = _resolved_paths(paths, cfg)
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
+    resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
@@ -354,15 +359,18 @@ def baseline(
             no_auto_cov=no_auto_cov,
             required=True,
             allow_missing=allow_missing,
+            config_dir=config_dir,
         )
     _emit_diagnostics_banner(
         command="baseline",
         scan_roots=resolved_paths,
         coverage_path=coverage_path,
+        config_dir=config_dir,
         coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
+        root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
         include=include or [],
@@ -374,7 +382,7 @@ def baseline(
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
     )
-    target = output or Path(cfg.get("baseline", ".riskratchet.json"))
+    target = output or _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
     save_baseline(baseline_from_report(report), target)
     typer.echo(f"wrote baseline with {len(report.functions)} functions to {target}")
 
@@ -457,10 +465,13 @@ def check(
     ] = None,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
-    cfg = _load_config(config)
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
     _validate_baseline_format(baseline_format)
-    baseline_file = baseline_path or Path(cfg.get("baseline", ".riskratchet.json"))
+    baseline_file = baseline_path or _anchor_config_path(
+        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
+    )
     if not baseline_file.exists():
         typer.secho(
             f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first.",
@@ -469,9 +480,9 @@ def check(
         )
         raise typer.Exit(code=2)
     old = load_baseline(baseline_file)
-    resolved_paths = _resolved_paths(paths, cfg)
+    resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
@@ -484,15 +495,18 @@ def check(
             no_auto_cov=no_auto_cov,
             required=True,
             allow_missing=allow_missing,
+            config_dir=config_dir,
         )
     _emit_diagnostics_banner(
         command="check",
         scan_roots=resolved_paths,
         coverage_path=coverage_path,
+        config_dir=config_dir,
         coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
+        root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
         include=include or [],
@@ -564,7 +578,8 @@ def explain(
     """Print full risk breakdown for one function."""
     if "::" not in target:
         raise typer.BadParameter("target must be `path::qualname` (e.g. src/foo.py::Bar.baz)")
-    cfg = _load_config(config)
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
     file_part, _ = target.split("::", 1)
     file_path = Path(file_part)
     coverage_path = _resolve_coverage(
@@ -574,6 +589,7 @@ def explain(
         no_auto_cov=no_auto_cov,
         required=False,
         allow_missing=True,
+        config_dir=config_dir,
     )
     report = analyze(
         [file_path],
@@ -653,9 +669,12 @@ def diff(
     ] = None,
 ) -> None:
     """Show full baseline diff; does not fail."""
-    cfg = _load_config(config)
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
-    baseline_file = baseline_path or Path(cfg.get("baseline", ".riskratchet.json"))
+    baseline_file = baseline_path or _anchor_config_path(
+        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
+    )
     if not baseline_file.exists():
         typer.secho(
             f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first.",
@@ -664,9 +683,9 @@ def diff(
         )
         raise typer.Exit(code=2)
     old = load_baseline(baseline_file)
-    resolved_paths = _resolved_paths(paths, cfg)
+    resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg)
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
@@ -679,15 +698,18 @@ def diff(
             no_auto_cov=no_auto_cov,
             required=True,
             allow_missing=allow_missing,
+            config_dir=config_dir,
         )
     _emit_diagnostics_banner(
         command="diff",
         scan_roots=resolved_paths,
         coverage_path=coverage_path,
+        config_dir=config_dir,
         coverage_map=resolved_coverage_map,
     )
     report = analyze(
         resolved_paths,
+        root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
         include=include or [],
@@ -858,6 +880,77 @@ def _validate_baseline_format(format: str) -> None:
         raise typer.Exit(code=2)
 
 
+def _discover_config(config_path: Path | None) -> tuple[dict[str, Any], Path]:
+    """Resolve the config section and the directory it lives in.
+
+    With an explicit `--config`, load that file; its parent is the config
+    directory. Otherwise walk upward from the current directory for the
+    nearest `pyproject.toml` that defines `[tool.riskratchet]` and anchor
+    there. When no such ancestor exists, fall back silently to the current
+    directory with an empty config.
+
+    The config directory is what relative `paths` / `coverage` / `baseline`
+    values are resolved against, so running from a nested package directory
+    produces the same result as running from the project root.
+    """
+    if config_path is not None:
+        return _load_config(config_path), config_path.resolve().parent
+    cwd = Path.cwd().resolve()
+    for directory in (cwd, *cwd.parents):
+        section = _riskratchet_section(directory / "pyproject.toml")
+        if section is not None:
+            return section, directory
+    return {}, cwd
+
+
+def _riskratchet_section(path: Path) -> dict[str, Any] | None:
+    """Return the `[tool.riskratchet]` table if `path` defines one, else None.
+
+    Unreadable or malformed `pyproject.toml` files are skipped (return None)
+    so a broken file in an ancestor directory cannot crash discovery.
+    """
+    if not path.is_file():
+        return None
+    try:
+        raw = tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return None
+    tool = raw.get("tool")
+    if not isinstance(tool, dict):
+        return None
+    section = tool.get("riskratchet")
+    return section if isinstance(section, dict) else None
+
+
+def _warn_unknown_config_keys(cfg: Mapping[str, Any]) -> None:
+    """Warn (on stderr) about unrecognized `[tool.riskratchet]` keys.
+
+    The main commands tolerate unknown keys so a config written for a newer
+    riskratchet still runs, but a typo like `fail_new_abvoe` silently
+    disabling a policy is a real trap, so we surface it. `config validate`
+    is the strict (exit 2) gate for anyone who wants to enforce it in CI.
+    """
+    unknown = sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
+    if unknown:
+        typer.secho(
+            f"warning: ignoring unknown [tool.riskratchet] key(s): {', '.join(unknown)}",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+
+
+def _anchor_config_path(path: Path, config_dir: Path) -> Path:
+    """Resolve a config-sourced relative path against the config directory.
+
+    A no-op when the config lives in the current directory (the common case)
+    so output, messages, and sort order stay identical to pre-0.2.7
+    behavior; only a genuine nested-directory invocation rewrites the path.
+    """
+    if path.is_absolute() or config_dir == Path.cwd().resolve():
+        return path
+    return config_dir / path
+
+
 def _load_config(config_path: Path | None) -> dict[str, Any]:
     candidate = config_path or Path("pyproject.toml")
     if not candidate.exists():
@@ -953,14 +1046,14 @@ def _is_number(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
-def _resolved_config_payload(cfg: dict[str, Any]) -> dict[str, Any]:
+def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str, Any]:
     groups = _resolved_groups(cfg)
     raw_map = cfg.get("coverage_map")
     coverage_map_payload: dict[str, str] = {}
     if isinstance(raw_map, dict):
         coverage_map_payload = {str(prefix): str(path) for prefix, path in raw_map.items()}
     return {
-        "paths": [str(path) for path in _resolved_paths([], cfg)],
+        "paths": [str(path) for path in _resolved_paths([], cfg, config_dir)],
         "coverage": cfg.get("coverage"),
         "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
@@ -1055,6 +1148,7 @@ def _parse_coverage_map_flag(values: list[str]) -> dict[str, Path]:
 def _resolved_coverage_map(
     cli_value: list[str] | None,
     cfg: dict[str, Any],
+    config_dir: Path,
 ) -> dict[str, Path]:
     if cli_value:
         return _parse_coverage_map_flag(cli_value)
@@ -1066,16 +1160,16 @@ def _resolved_coverage_map(
     except ValueError as exc:
         typer.secho(f"config error: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
-    return {str(prefix): Path(str(path)) for prefix, path in raw.items()}
+    return {str(prefix): _anchor_config_path(Path(str(path)), config_dir) for prefix, path in raw.items()}
 
 
-def _resolved_paths(paths: list[Path] | None, cfg: dict[str, Any]) -> list[Path]:
+def _resolved_paths(paths: list[Path] | None, cfg: dict[str, Any], config_dir: Path) -> list[Path]:
     if paths:
-        return paths
+        return paths  # CLI paths are interpreted relative to the current directory.
     configured = cfg.get("paths")
     if isinstance(configured, list) and configured:
-        return [Path(p) for p in configured]
-    return [Path(".")]
+        return [_anchor_config_path(Path(p), config_dir) for p in configured]
+    return [_anchor_config_path(Path("."), config_dir)]
 
 
 def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | None) -> RiskReport:
@@ -1173,6 +1267,7 @@ def _resolve_coverage(
     no_auto_cov: bool,
     required: bool,
     allow_missing: bool,
+    config_dir: Path,
 ) -> Path | None:
     """Resolve which coverage JSON to use, generating one via tests if needed.
 
@@ -1180,14 +1275,20 @@ def _resolve_coverage(
     configured `coverage` path if it exists; then the auto-coverage cache
     (regenerated by running the configured test command when stale). If
     everything fails and the command requires coverage, exit with code 2
-    unless `--allow-missing-coverage` was set.
+    unless `--allow-missing-coverage` was set. Config-sourced paths (the
+    configured `coverage` and `coverage_cache`) anchor to `config_dir`; an
+    explicit `--coverage` stays relative to the current directory.
     """
     requested, was_configured = _coverage_candidate(value, cfg.get("coverage"))
+    if value is None and requested is not None:
+        requested = _anchor_config_path(requested, config_dir)
     if requested is not None and requested.exists():
         return requested
 
     auto_enabled = not no_auto_cov and _resolved_bool(True, cfg.get("auto_coverage"), default=True)
-    cache_path = Path(str(cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH))))
+    cache_path = _anchor_config_path(
+        Path(str(cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH)))), config_dir
+    )
     test_command = str(cfg.get("test_command", DEFAULT_TEST_COMMAND))
 
     result: AutoCoverageResult = ensure_coverage(
@@ -1291,12 +1392,15 @@ def _emit_diagnostics_banner(
     command: str,
     scan_roots: list[Path],
     coverage_path: Path | None,
+    config_dir: Path,
     coverage_map: Mapping[str, Path] | None = None,
 ) -> None:
     """Print a single 'resolved root + coverage source' line to stderr.
 
     Always-on so monorepo users can see which package is being scanned with
-    which coverage file. Stdout stays payload-only.
+    which coverage file. `root` is the discovered config directory (which
+    equals the current directory unless config was found in an ancestor).
+    Stdout stays payload-only.
     """
     roots = ",".join(str(p) for p in scan_roots) or "."
     if coverage_map:
@@ -1306,7 +1410,7 @@ def _emit_diagnostics_banner(
     else:
         cov = "none"
     typer.secho(
-        f"riskratchet: command={command} root={Path.cwd()} scan_roots=[{roots}] coverage={cov}",
+        f"riskratchet: command={command} root={config_dir} scan_roots=[{roots}] coverage={cov}",
         err=True,
     )
 

@@ -44,6 +44,15 @@ riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --jso
 - `--churn-days N` (default `90`) sets the lookback window used for the
   `churn` component. Also configurable as `[tool.riskratchet]
   churn_window_days = N`. The CLI value wins over config.
+- Config is discovered (since 0.2.7) by walking upward from the current
+  directory for the nearest `pyproject.toml` with `[tool.riskratchet]`;
+  `--config` overrides. Relative config paths (`paths`, `coverage`,
+  `coverage_map`, `coverage_cache`, `baseline`) anchor to that file's
+  directory, so a nested-directory run produces the same output as a
+  root run. Explicit `--coverage` / positional paths stay relative to
+  the current directory. Unknown `[tool.riskratchet]` keys warn on
+  stderr but do not fail the command; `riskratchet config validate` is
+  the strict (exit 2) gate.
 - When `check` exits `1`, a short hint is written to **stderr** with two
   escape hatches: regenerate the baseline (option 1) or loosen the
   per-component regression gate (option 2, only shown when at least one
@@ -215,7 +224,14 @@ Conventions:
   `markdown.py`, `json_payload.py`, `sarif.py`, `annotations.py`, and
   shared `summary.py`. External callers import from
   `riskratchet.reporting`; the submodule layout is internal.
-- Baseline I/O and comparison: `src/riskratchet/baseline.py`
+- Baseline I/O and comparison: `src/riskratchet/baseline/` package
+  (since 0.2.7) — `io.py` (JSON load/save), `compare.py` (the `check`
+  gate), `diff.py` (full comparison), `regressions.py` (diff → failing
+  regressions), and shared `classify.py` (matching ladder +
+  component-regression policy). External callers import from
+  `riskratchet.baseline`; the submodule layout is internal. The rename
+  matcher is `src/riskratchet/matching.py` (top-level; also used by
+  `analysis`, so it intentionally does not live inside `baseline/`).
 - Pytest plugin: `src/riskratchet/pytest_plugin.py`
 - Schemas: `schemas/`
 - Snapshot tests use `syrupy` (since 0.2.6). To regenerate after an
@@ -226,3 +242,7 @@ Conventions:
   `src/riskratchet/reporting/` (`text`, `markdown`, `json_payload`,
   `sarif`, `annotations`) may only import from `summary` (the leaf),
   never from each other. Enforced by `tests/test_reporting_layering.py`.
+- Baseline layering rule (since 0.2.7): family submodules under
+  `src/riskratchet/baseline/` (`compare`, `diff`, `regressions`) may only
+  import from the leaves (`io`, `classify`), never from each other.
+  Enforced by `tests/test_baseline_layering.py`.

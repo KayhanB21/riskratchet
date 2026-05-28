@@ -562,6 +562,17 @@ riskratchet config show --config pyproject.toml --json
 `config validate` exits `2` for malformed TOML, unknown keys, invalid value
 types, or invalid groups.
 
+riskratchet finds config by walking upward from the working directory for the
+nearest `pyproject.toml` containing `[tool.riskratchet]` (pass `--config` to
+point at a specific file). Relative config paths (`paths`, `coverage`,
+`baseline`, the coverage map, the coverage cache) resolve against that file's
+directory, so running from a nested package directory gives the same result as
+running from the project root; an explicit `--coverage` and positional path
+arguments stay relative to your current directory. The scanning commands only
+*warn* on an unknown `[tool.riskratchet]` key, so a config written for a newer
+version still runs; reach for `config validate` when you want that typo to
+fail (exit `2`) in CI.
+
 Roll function-level results up by package or workspace area with
 `[tool.riskratchet.groups]`. Each function is assigned to the longest
 matching repo-relative prefix; ungrouped functions are reported as `null` in
