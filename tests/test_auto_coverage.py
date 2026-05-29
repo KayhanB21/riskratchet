@@ -22,8 +22,8 @@ from riskratchet.auto_coverage import (
 _FAKE_COVERAGE = {"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}}
 
 
-def _writer_runner(path: Path) -> Callable[[str], int]:
-    def run(command: str) -> int:
+def _writer_runner(path: Path) -> Callable[[str, Path], int]:
+    def run(command: str, cwd: Path) -> int:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(_FAKE_COVERAGE), encoding="utf-8")
         return 0
@@ -31,8 +31,8 @@ def _writer_runner(path: Path) -> Callable[[str], int]:
     return run
 
 
-def _failing_runner(returncode: int = 1) -> Callable[[str], int]:
-    def run(command: str) -> int:
+def _failing_runner(returncode: int = 1) -> Callable[[str, Path], int]:
+    def run(command: str, cwd: Path) -> int:
         return returncode
 
     return run
@@ -66,7 +66,7 @@ def test_disabled_returns_none_without_running_tests(tmp_path: Path) -> None:
     cache = tmp_path / ".riskratchet" / "coverage.json"
     runs: list[str] = []
 
-    def runner(command: str) -> int:
+    def runner(command: str, cwd: Path) -> int:
         runs.append(command)
         return 0
 
@@ -100,7 +100,7 @@ def test_fresh_cache_is_reused(tmp_path: Path) -> None:
     os.utime(cache, (future, future))
     runs: list[str] = []
 
-    def runner(command: str) -> int:
+    def runner(command: str, cwd: Path) -> int:
         runs.append(command)
         return 0
 
@@ -203,7 +203,7 @@ def test_runner_failure_with_partial_output_is_still_used(tmp_path: Path) -> Non
     src.mkdir()
     (src / "m.py").write_text("def f(): return 1\n")
 
-    def runner(command: str) -> int:
+    def runner(command: str, cwd: Path) -> int:
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(_FAKE_COVERAGE), encoding="utf-8")
         return 1  # tests failed
@@ -247,10 +247,10 @@ def test_scan_cli_uses_test_command_to_generate_coverage(tmp_path: Path) -> None
         encoding="utf-8",
     )
 
-    received: list[str] = []
+    received: list[tuple[str, Path]] = []
 
-    def stub_runner(command: str) -> int:
-        received.append(command)
+    def stub_runner(command: str, cwd: Path) -> int:
+        received.append((command, cwd))
         # Simulate the test command writing a coverage.json file.
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(_FAKE_COVERAGE), encoding="utf-8")
@@ -268,7 +268,9 @@ def test_scan_cli_uses_test_command_to_generate_coverage(tmp_path: Path) -> None
         auto_coverage._default_runner = original
 
     assert result.exit_code == 0, result.stdout
-    assert received == [f"stub-runner {cache}"]
+    # The test command runs from the config directory (#1), not whatever
+    # directory the CLI was invoked from, so coverage measures the project.
+    assert received == [(f"stub-runner {cache}", tmp_path.resolve())]
     payload = json.loads(result.stdout)
     assert "functions" in payload
 

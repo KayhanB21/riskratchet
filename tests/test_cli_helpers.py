@@ -1,8 +1,8 @@
 """Tests for the CLI helper functions.
 
 These exercise the small pure helpers (`_load_config`, `_resolved_paths`,
-`_resolved_optional`, `_resolved_float`) directly so the integration tests
-in `test_cli.py` can stay focused on end-to-end runs.
+`_resolved_float`) directly so the integration tests in `test_cli.py` can
+stay focused on end-to-end runs.
 """
 
 from __future__ import annotations
@@ -17,13 +17,14 @@ import typer
 from typer.testing import CliRunner
 
 from riskratchet.cli import (
-    _load_config,
     _render_regressions,
-    _resolved_float,
-    _resolved_optional,
-    _resolved_paths,
     _root,
     app,
+)
+from riskratchet.config import (
+    _load_config,
+    _resolved_float,
+    _resolved_paths,
 )
 from riskratchet.models import (
     ChurnStats,
@@ -152,36 +153,15 @@ def test_load_config_ignores_non_mapping_tool_section(tmp_path: Path) -> None:
 
 
 def test_resolved_paths_falls_back_to_config() -> None:
-    assert _resolved_paths([], {"paths": ["alpha", "beta"]}) == [Path("alpha"), Path("beta")]
+    assert _resolved_paths([], {"paths": ["alpha", "beta"]}, Path.cwd()) == [Path("alpha"), Path("beta")]
 
 
 def test_resolved_paths_defaults_to_cwd_when_nothing_configured() -> None:
-    assert _resolved_paths([], {}) == [Path(".")]
+    assert _resolved_paths([], {}, Path.cwd()) == [Path(".")]
 
 
 def test_resolved_paths_prefers_explicit_argument() -> None:
-    assert _resolved_paths([Path("explicit")], {"paths": ["ignored"]}) == [Path("explicit")]
-
-
-def test_resolved_optional_prefers_explicit_value(tmp_path: Path) -> None:
-    explicit = tmp_path / "x.json"
-    explicit.write_text("{}", encoding="utf-8")
-    assert _resolved_optional(explicit, "ignored.json") == explicit
-
-
-def test_resolved_optional_returns_none_when_default_is_not_pathlike() -> None:
-    assert _resolved_optional(None, 42) is None
-    assert _resolved_optional(None, None) is None
-
-
-def test_resolved_optional_accepts_existing_path_default(tmp_path: Path) -> None:
-    existing = tmp_path / "x.json"
-    existing.write_text("{}", encoding="utf-8")
-    assert _resolved_optional(None, existing) == existing
-
-
-def test_resolved_optional_ignores_missing_string_default(tmp_path: Path) -> None:
-    assert _resolved_optional(None, str(tmp_path / "missing.json")) is None
+    assert _resolved_paths([Path("explicit")], {"paths": ["ignored"]}, Path.cwd()) == [Path("explicit")]
 
 
 def test_resolved_float_prefers_cli_value() -> None:
