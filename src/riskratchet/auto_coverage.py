@@ -22,7 +22,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-Runner = Callable[[str], int]
+Runner = Callable[[str, Path], int]
 Logger = Callable[[str], None]
 
 DEFAULT_CACHE_PATH = Path(".riskratchet/coverage.json")
@@ -52,10 +52,16 @@ def ensure_coverage(
     cache_path: Path,
     test_command: str,
     enabled: bool,
+    cwd: Path = Path("."),
     runner: Runner | None = None,
     log: Logger | None = None,
 ) -> AutoCoverageResult:
-    """Return a usable coverage JSON path, generating it via tests if needed."""
+    """Return a usable coverage JSON path, generating it via tests if needed.
+
+    `cwd` is the working directory for the test command, so auto-coverage
+    measures the whole project (the config directory) rather than whatever
+    nested directory the CLI happened to be invoked from.
+    """
     say = log or _stderr_log
 
     if requested is not None and requested.exists():
@@ -73,7 +79,7 @@ def ensure_coverage(
     cache_path.parent.mkdir(parents=True, exist_ok=True)
 
     invoke = runner or _default_runner
-    returncode = invoke(command)
+    returncode = invoke(command, cwd)
     if returncode != 0:
         say(f"riskratchet: test command exited {returncode}. Continuing with whatever coverage was written.")
     if not cache_path.exists():
@@ -110,11 +116,11 @@ def _cache_is_fresh(cache_path: Path, sources: list[Path]) -> bool:
     return True
 
 
-def _default_runner(command: str) -> int:
+def _default_runner(command: str, cwd: Path) -> int:
     # shell=False keeps argument quoting honest. The configured command is
     # split with shlex so users can still write a single template string.
     args = shlex.split(command)
-    result = subprocess.run(args, check=False)
+    result = subprocess.run(args, check=False, cwd=cwd)
     return result.returncode
 
 

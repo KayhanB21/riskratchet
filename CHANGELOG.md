@@ -24,13 +24,22 @@ release; renames or removals are called out below under **Breaking**.
   running from the project root. `--config` still overrides discovery,
   and an explicit `--coverage` / positional paths stay relative to the
   current directory. When no `[tool.riskratchet]` ancestor exists,
-  discovery falls back silently to the current directory.
+  discovery falls back silently to the current directory. With
+  `[tool.riskratchet]` present at multiple levels, the nearest one
+  (walking up from the cwd) wins. The auto-coverage test command also
+  runs from the config directory so it measures the whole project, and a
+  no-arg invocation scans the current directory rather than the entire
+  project rooted at the config dir.
 - Unknown-key warning: `scan`, `baseline`, `check`, `diff`, and
   `explain` print a stderr warning when `[tool.riskratchet]` contains an
   unrecognized key (e.g. a typo like `fail_new_abvoe`) instead of
   silently ignoring it. The command still runs (exit 0); use
   `riskratchet config validate` for the strict (exit 2) gate. Stdout
   stays payload-only.
+- A `pyproject.toml` that exists but fails to parse warns on stderr
+  during discovery and is skipped, instead of being silently passed over
+  (which would let a broken local config quietly fall through to an
+  ancestor's config).
 - `tests/test_baseline_layering.py` enforces the new `baseline/` package
   layering rule via AST parsing: the family submodules
   (`compare`, `diff`, `regressions`) import only the `io` / `classify`
@@ -54,8 +63,18 @@ release; renames or removals are called out below under **Breaking**.
   ancestor `[tool.riskratchet]` config (see Config discovery). Before,
   config was read only from the current directory, so a nested
   invocation silently used no config. Pass `--config` explicitly to
-  restore the old cwd-only behavior.
-- `.riskratchet.json` regenerated to reflect the new file paths.
+  restore the old cwd-only behavior. The auto-coverage test command now
+  runs from the config directory for everyone (not just nested runs); a
+  project run from its own root sees no change.
+- Internal: config discovery, validation, anchoring, and value
+  resolution moved out of `cli.py` into a new `src/riskratchet/config.py`
+  module (`cli.py` keeps only command definitions and dispatch, per the
+  AGENTS.md "thin CLI" rule). No CLI behavior change.
+- `.riskratchet.json` regenerated to reflect the new file paths. Part of
+  the score drop on moved functions is the per-file `sprawl` component
+  (smaller files score lower) rather than a genuine maintainability win;
+  validating whether `sprawl` overlaps `structural_complexity` is a
+  calibration item (roadmap P21), not a weight change here.
 
 ## [0.2.6] - 2026-05-26
 

@@ -45,14 +45,18 @@ riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --jso
   `churn` component. Also configurable as `[tool.riskratchet]
   churn_window_days = N`. The CLI value wins over config.
 - Config is discovered (since 0.2.7) by walking upward from the current
-  directory for the nearest `pyproject.toml` with `[tool.riskratchet]`;
-  `--config` overrides. Relative config paths (`paths`, `coverage`,
-  `coverage_map`, `coverage_cache`, `baseline`) anchor to that file's
-  directory, so a nested-directory run produces the same output as a
-  root run. Explicit `--coverage` / positional paths stay relative to
-  the current directory. Unknown `[tool.riskratchet]` keys warn on
-  stderr but do not fail the command; `riskratchet config validate` is
-  the strict (exit 2) gate.
+  directory for the nearest `pyproject.toml` with `[tool.riskratchet]`
+  (nearest wins if several ancestors define it); `--config` overrides;
+  with no match it falls back silently to the cwd. Path-resolution
+  contract: relative config paths (`paths`, `coverage`, `coverage_map`,
+  `coverage_cache`, `baseline`) anchor to the config file's directory,
+  the auto-coverage test command runs from that directory, and report
+  paths are relative to it — so a nested-directory run produces the same
+  output as a root run. Explicit `--coverage` / positional paths and the
+  no-arg default stay relative to the current directory. Unknown
+  `[tool.riskratchet]` keys warn on stderr but do not fail the command,
+  and a malformed `pyproject.toml` warns and is skipped during the walk;
+  `riskratchet config validate` is the strict (exit 2) gate.
 - When `check` exits `1`, a short hint is written to **stderr** with two
   escape hatches: regenerate the baseline (option 1) or loosen the
   per-component regression gate (option 2, only shown when at least one
@@ -217,7 +221,10 @@ Conventions:
 
 ## Where to look first
 
-- CLI entry: `src/riskratchet/cli.py`
+- CLI entry (commands + dispatch only): `src/riskratchet/cli.py`
+- Config discovery / validation / anchoring / value resolution:
+  `src/riskratchet/config.py` (since 0.2.7). `cli.py` is a thin shell
+  over it — business logic does not live in `cli.py`.
 - Scoring: `src/riskratchet/scoring.py`
 - Renderers (table / JSON / markdown / SARIF / GitHub annotations):
   `src/riskratchet/reporting/` package (since 0.2.6) — `text.py`,
