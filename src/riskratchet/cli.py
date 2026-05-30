@@ -30,6 +30,7 @@ from riskratchet.config import (
     _anchor_config_path,
     _discover_config,
     _ensure_coverage_map_exists,
+    _format_setup_error,
     _load_config_strict,
     _resolve_coverage,
     _resolved_bool,
@@ -44,8 +45,15 @@ from riskratchet.config import (
     _resolved_weights,
     _warn_unknown_config_keys,
 )
+from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 from riskratchet.engine import analyze
-from riskratchet.models import DiffReport, Regression, RegressionKind, RiskReport
+from riskratchet.init import (
+    InitOutcome,
+    detect_test_runner,
+    render_ci_snippet,
+    write_starter_config,
+)
+from riskratchet.models import Baseline, DiffReport, Regression, RegressionKind, RiskReport, Severity
 from riskratchet.reporting import (
     SourceLinks,
     render_diff_github,
@@ -56,6 +64,8 @@ from riskratchet.reporting import (
     render_diff_summary_text,
     render_diff_table,
     render_function_explanation,
+    render_function_json,
+    render_function_summary_json,
     render_regressions_github,
     render_regressions_json,
     render_regressions_markdown,
@@ -277,6 +287,9 @@ def scan(
         links=links,
         summary=summary,
     )
+    if effective_format == "table" and not quiet and not summary and output is None:
+        baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+        _emit_scan_next_step_footer(filtered, baseline_file=baseline_file)
     _exit_for_scan_gate(filtered, fail_above=fail_above, fail_severity=fail_severity)
 
 
@@ -474,8 +487,16 @@ def check(
     baseline_present = baseline_file.exists()
     if not baseline_present and fail_above_resolved is None:
         typer.secho(
-            f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first, "
-            f"or pass --fail-above N to gate on an absolute score threshold (no baseline).",
+            _format_setup_error(
+                f"riskratchet: baseline file not found: {baseline_file}",
+                [
+                    ("Create a baseline of current risk:", "riskratchet baseline"),
+                    (
+                        "Gate on an absolute threshold (no baseline required):",
+                        "riskratchet check --fail-above 60",
+                    ),
+                ],
+            ),
             fg=typer.colors.RED,
             err=True,
         )
@@ -488,14 +509,7 @@ def check(
             fg=typer.colors.YELLOW,
             err=True,
         )
-    if not baseline_present and effective_format == "pr-comment":
-        typer.secho(
-            "--format pr-comment requires a baseline; not supported in --fail-above-only mode.",
-            fg=typer.colors.RED,
-            err=True,
-        )
-        raise typer.Exit(code=2)
-    old = load_baseline(baseline_file) if baseline_present else None
+    old = _load_baseline_or_exit(baseline_file) if baseline_present else None
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
@@ -570,8 +584,13 @@ def check(
             else render_regressions_summary_text(regressions, diff_report=diff_report)
         )
     elif effective_format == "pr-comment":
-        assert diff_report is not None
-        rendered = render_diff_pr_comment(diff_report, links=links)
+        # P8 (since 0.2.8): no-baseline mode renders the regressions-only
+        # PR comment instead of bailing out, so the format works in both
+        # baseline and `--fail-above` modes.
+        if diff_report is not None:
+            rendered = render_diff_pr_comment(diff_report, links=links)
+        else:
+            rendered = render_regressions_pr_comment(regressions, links=links)
     else:
         rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)
@@ -589,6 +608,17 @@ def explain(
     target: Annotated[str, typer.Argument(help="Function target as `path/to/file.py::qualname`.")],
     coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
     config: Annotated[Path | None, typer.Option("--config")] = None,
+    json_output: Annotated[
+        bool,
+        typer.Option("--json", help="Emit JSON envelope (since 0.2.8 P9). Pairs with --summary."),
+    ] = False,
+    summary: Annotated[
+        bool,
+        typer.Option(
+            "--summary",
+            help="Emit aggregate summary only (since 0.2.8 P9). Pairs with --json.",
+        ),
+    ] = False,
     no_git: Annotated[bool, typer.Option("--no-git")] = False,
     churn_days: Annotated[
         int | None,
@@ -601,6 +631,14 @@ def explain(
             help="Skip auto-generating coverage by running the test command.",
         ),
     ] = False,
+    repo_url: Annotated[
+        str | None,
+        typer.Option("--repo-url", help="Repository URL for source links (since 0.2.8 P10)."),
+    ] = None,
+    commit_ref: Annotated[
+        str | None,
+        typer.Option("--commit-ref", help="Commit ref for source links (since 0.2.8 P10)."),
+    ] = None,
 ) -> None:
     """Print full risk breakdown for one function."""
     if "::" not in target:
@@ -630,7 +668,19 @@ def explain(
     if fn is None:
         typer.secho(f"function not found: {target}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2)
-    typer.echo(render_function_explanation(fn), nl=False)
+    links = _resolve_source_links(repo_url, commit_ref)
+    if summary and json_output:
+        typer.echo(render_function_summary_json(fn), nl=False)
+    elif json_output:
+        typer.echo(render_function_json(fn, links=links), nl=False)
+    elif summary:
+        # Text summary: severity/score one-liner.
+        typer.echo(
+            f"{fn.id.as_target()}  severity={severity(fn.score).value}  "
+            f"score={fn.score:.1f}  crap={fn.crap:.1f}"
+        )
+    else:
+        typer.echo(render_function_explanation(fn), nl=False)
 
 
 @app.command()
@@ -704,12 +754,15 @@ def diff(
     )
     if not baseline_file.exists():
         typer.secho(
-            f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first.",
+            _format_setup_error(
+                f"riskratchet: baseline file not found: {baseline_file}",
+                [("Create a baseline of current risk:", "riskratchet baseline")],
+            ),
             fg=typer.colors.RED,
             err=True,
         )
         raise typer.Exit(code=2)
-    old = load_baseline(baseline_file)
+    old = _load_baseline_or_exit(baseline_file)
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
@@ -773,7 +826,7 @@ def diff(
             else render_diff_summary_text(diff_report)
         )
     elif effective_format == "json":
-        rendered = render_diff_json(diff_report)
+        rendered = render_diff_json(diff_report, links=links)
     elif effective_format == "markdown":
         rendered = render_diff_markdown(diff_report, links=links)
     elif effective_format == "pr-comment":
@@ -793,6 +846,126 @@ def diff(
     _write(rendered, output)
 
 
+DOCTOR_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/doctor.schema.json"
+
+
+@app.command("init")
+def init_command(
+    pyproject: Annotated[
+        Path,
+        typer.Option("--pyproject", help="Target pyproject.toml. Default: ./pyproject.toml."),
+    ] = Path("pyproject.toml"),
+    force: Annotated[
+        bool,
+        typer.Option(
+            "--force",
+            help="Replace an existing [tool.riskratchet] block in place.",
+        ),
+    ] = False,
+    no_snippet: Annotated[
+        bool,
+        typer.Option(
+            "--no-snippet",
+            help="Skip the CI snippet output (script-friendly).",
+        ),
+    ] = False,
+) -> None:
+    """Scaffold `[tool.riskratchet]` config + print the CI snippet.
+
+    Idempotent: re-running on a configured project is a no-op unless
+    `--force`. Detects the test runner so the suggested test command
+    matches your stack.
+    """
+    outcome = write_starter_config(pyproject, force=force)
+    runner = detect_test_runner(pyproject.resolve().parent)
+    color = {
+        InitOutcome.CREATED: typer.colors.GREEN,
+        InitOutcome.APPENDED: typer.colors.GREEN,
+        InitOutcome.REPLACED: typer.colors.YELLOW,
+        InitOutcome.SKIPPED: typer.colors.CYAN,
+    }[outcome]
+    typer.secho(f"riskratchet init: {outcome.value} [tool.riskratchet] in {pyproject}", fg=color)
+    typer.echo(f"detected test runner: {runner.value}")
+    if outcome is InitOutcome.SKIPPED:
+        typer.echo("(re-run with --force to replace the existing block)")
+    if not no_snippet:
+        typer.echo("")
+        typer.echo(render_ci_snippet(__version__))
+    typer.echo("Next:")
+    typer.echo("  1. pytest --cov --cov-branch --cov-report=json:coverage.json -q")
+    typer.echo("  2. riskratchet baseline src --coverage coverage.json")
+    typer.echo("  3. riskratchet check src --coverage coverage.json")
+
+
+@app.command()
+def doctor(
+    config: Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")] = None,
+    json_output: Annotated[bool, typer.Option("--json", help="Emit the doctor envelope as JSON.")] = False,
+) -> None:
+    """Diagnose setup: paths, baseline, coverage, git, config, suppressions.
+
+    Exits 0 only when every check is `pass` or `warn`. A single `fail` exits 1
+    with the remediation command in the per-check row, so a user can
+    copy-paste the fix instead of guessing.
+    """
+    cfg, config_dir = _discover_config(config)
+    _warn_unknown_config_keys(cfg)
+    paths = _resolved_paths(None, cfg, config_dir, verify_exists=False)
+    baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    coverage_value = cfg.get("coverage")
+    coverage_path: Path | None = None
+    if isinstance(coverage_value, str):
+        coverage_path = _anchor_config_path(Path(coverage_value), config_dir)
+    checks = diagnose(
+        config_dir=config_dir,
+        cfg=cfg,
+        paths=paths,
+        baseline_file=baseline_file,
+        coverage_path=coverage_path,
+    )
+    if json_output:
+        payload: dict[str, object] = {
+            "$schema": DOCTOR_SCHEMA_URL,
+            "version": __version__,
+            "checks": [_doctor_check_payload(c) for c in checks],
+            "summary": summarize(checks),
+        }
+        typer.echo(json.dumps(payload, indent=2))
+    else:
+        _emit_doctor_table(checks)
+    if any(c.status is CheckStatus.FAIL for c in checks):
+        raise typer.Exit(code=1)
+
+
+def _doctor_check_payload(check: DoctorCheck) -> dict[str, object]:
+    return {
+        "name": check.name,
+        "status": check.status.value,
+        "summary": check.summary,
+        "remediation": check.remediation,
+    }
+
+
+def _emit_doctor_table(checks: list[DoctorCheck]) -> None:
+    """Plain-text doctor output: one line per check, `→ fix:` for failures."""
+    status_glyph = {
+        CheckStatus.PASS: typer.style("PASS", fg=typer.colors.GREEN),
+        CheckStatus.WARN: typer.style("WARN", fg=typer.colors.YELLOW),
+        CheckStatus.FAIL: typer.style("FAIL", fg=typer.colors.RED),
+    }
+    typer.echo("riskratchet doctor")
+    for check in checks:
+        typer.echo(f"  {status_glyph[check.status]}  {check.name:<13} {check.summary}")
+        if check.status is not CheckStatus.PASS and check.remediation:
+            typer.echo(f"        → fix:    {check.remediation}")
+    summary = summarize(checks)
+    typer.echo("")
+    typer.echo(
+        f"riskratchet: {summary['passed']} pass, {summary['warned']} warn, "
+        f"{summary['failed']} fail (of {summary['total']})"
+    )
+
+
 def _emit_report(
     report: RiskReport,
     *,
@@ -810,7 +983,7 @@ def _emit_report(
             render_report_summary_json(report) if format == "json" else render_report_summary_text(report)
         )
     elif format == "json":
-        rendered = render_report_json(report)
+        rendered = render_report_json(report, links=links)
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit, links=links)
     elif format == "sarif":
@@ -829,6 +1002,29 @@ def _effective_format(format: str, json_output: bool) -> str:
         return "json"
     _validate_format(format)
     return format
+
+
+def _emit_scan_next_step_footer(report: RiskReport, *, baseline_file: Path) -> None:
+    """One-line stdout footer suggesting `riskratchet baseline` or `--fail-above`.
+
+    Fires only when the user has no baseline configured — once a baseline is
+    on disk the user is in steady-state and doesn't need the hint. Adapts
+    wording to whether the scan turned up anything above medium severity so
+    a clean repo gets a "nothing to baseline yet" message instead of a
+    misleading "lock these in" prompt.
+    """
+    if baseline_file.exists():
+        return
+    risky = sum(1 for fn in report.functions if severity(fn.score) is not Severity.LOW)
+    typer.echo("")
+    if risky:
+        typer.echo(
+            f"riskratchet: {risky} function(s) at severity medium or higher. Next:\n"
+            f"  - lock in this state as a baseline:   riskratchet baseline\n"
+            f"  - gate on absolute threshold instead: riskratchet check --fail-above 60"
+        )
+    else:
+        typer.echo("riskratchet: 0 functions at severity medium or higher — nothing to baseline yet.")
 
 
 def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path) -> None:
@@ -906,7 +1102,7 @@ def _render_regressions(
     links: SourceLinks | None = None,
 ) -> str:
     if format == "json":
-        return render_regressions_json(regressions)
+        return render_regressions_json(regressions, links=links)
     if format == "markdown":
         return render_regressions_markdown(regressions, links=links)
     if format == "pr-comment":
@@ -929,6 +1125,28 @@ def _write(rendered: str, output: Path | None) -> None:
 def _validate_format(format: str) -> None:
     if format not in VALID_FORMATS:
         raise typer.BadParameter(f"format must be one of {', '.join(VALID_FORMATS)}")
+
+
+def _load_baseline_or_exit(baseline_file: Path) -> Baseline:
+    """Load a baseline, converting parse failures into actionable stderr.
+
+    `load_baseline` raises `ValueError` on a malformed file (junk JSON,
+    truncated write, etc.); rather than dump that traceback on the user,
+    re-emit it as a remediation-form setup error pointing at the next
+    command to run.
+    """
+    try:
+        return load_baseline(baseline_file)
+    except ValueError as exc:
+        typer.secho(
+            _format_setup_error(
+                f"riskratchet: cannot read baseline {baseline_file}: {exc}",
+                [("Regenerate the baseline from current risk:", "riskratchet baseline")],
+            ),
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2) from exc
 
 
 def _validate_baseline_format(format: str) -> None:

@@ -116,7 +116,8 @@
             "end": { "type": "integer", "minimum": 1 }
           }
         },
-        "components": { "$ref": "#/$defs/components" }
+        "components": { "$ref": "#/$defs/components" },
+        "source_url": { "type": "string", "description": "Optional blob URL (P10, since 0.2.8); emitted when --repo-url and --commit-ref are passed." }
       }
     },
     "components": {

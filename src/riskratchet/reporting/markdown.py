@@ -1,13 +1,6 @@
-"""Markdown and PR-comment renderers.
-
-`SourceLinks` lives here because the markdown/PR renderers are its
-only consumers. It is re-exported from `riskratchet.reporting` for
-backwards compatibility.
-"""
+"""Markdown and PR-comment renderers."""
 
 from __future__ import annotations
-
-from dataclasses import dataclass
 
 from riskratchet.models import (
     DiffEntry,
@@ -20,25 +13,15 @@ from riskratchet.models import (
 )
 from riskratchet.reporting.summary import (
     PR_COMMENT_MARKER,
+    SourceLinks,
     _branch_markdown,
     _diff_summary_line,
     _fmt_optional,
+    _regressions_summary_line,
     _sorted_by_risk,
     _summary_line,
 )
 from riskratchet.scoring import severity
-
-
-@dataclass(frozen=True, slots=True)
-class SourceLinks:
-    repo_url: str
-    commit_ref: str
-
-    def link_for(self, fn: FunctionRisk) -> str:
-        return (
-            f"{self.repo_url.rstrip('/')}/blob/{self.commit_ref}/"
-            f"{fn.id.path}#L{fn.span.start_line}-L{fn.span.end_line}"
-        )
 
 
 def render_report_markdown(
@@ -135,6 +118,8 @@ def render_regressions_pr_comment(
     lines = [
         PR_COMMENT_MARKER,
         "# riskratchet",
+        "",
+        _regressions_summary_line(regressions),
         "",
     ]
     if not regressions:

@@ -186,9 +186,11 @@ def test_render_regressions_markdown_links_current_when_available() -> None:
 
 
 def test_render_regressions_pr_comment_empty_and_populated_with_links() -> None:
-    assert render_regressions_pr_comment([]) == (
-        "<!-- riskratchet-report -->\n# riskratchet\n\n_No risk regressions detected._\n"
-    )
+    empty = render_regressions_pr_comment([])
+    # P8 (since 0.2.8): the regressions PR comment now carries a one-line
+    # summary block for parity with scan/diff PR comments.
+    assert empty.startswith("<!-- riskratchet-report -->\n# riskratchet\n\n**Regressions:** 0 ")
+    assert "_No risk regressions detected._" in empty
     fn = _fn("foo", 70.0)
     regression = Regression(
         id=fn.id,
@@ -204,6 +206,8 @@ def test_render_regressions_pr_comment_empty_and_populated_with_links() -> None:
         links=SourceLinks(repo_url="https://github.com/acme/project", commit_ref="abc123"),
     )
     assert out.startswith("<!-- riskratchet-report -->\n# riskratchet\n")
+    assert "**Regressions:** 1" in out
+    assert "**Regressed:** 1" in out
     assert "| Kind | Function | Before | After | Delta | Reason |" in out
     assert "[`m.py::foo`](https://github.com/acme/project/blob/abc123/m.py#L1-L10)" in out
 

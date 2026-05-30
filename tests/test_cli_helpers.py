@@ -153,7 +153,10 @@ def test_load_config_ignores_non_mapping_tool_section(tmp_path: Path) -> None:
 
 
 def test_resolved_paths_falls_back_to_config() -> None:
-    assert _resolved_paths([], {"paths": ["alpha", "beta"]}, Path.cwd()) == [Path("alpha"), Path("beta")]
+    assert _resolved_paths([], {"paths": ["alpha", "beta"]}, Path.cwd(), verify_exists=False) == [
+        Path("alpha"),
+        Path("beta"),
+    ]
 
 
 def test_resolved_paths_defaults_to_cwd_when_nothing_configured() -> None:
@@ -161,7 +164,9 @@ def test_resolved_paths_defaults_to_cwd_when_nothing_configured() -> None:
 
 
 def test_resolved_paths_prefers_explicit_argument() -> None:
-    assert _resolved_paths([Path("explicit")], {"paths": ["ignored"]}, Path.cwd()) == [Path("explicit")]
+    assert _resolved_paths([Path("explicit")], {"paths": ["ignored"]}, Path.cwd(), verify_exists=False) == [
+        Path("explicit")
+    ]
 
 
 def test_resolved_float_prefers_cli_value() -> None:

@@ -45,6 +45,206 @@ release; renames or removals are called out below under **Breaking**.
   intent), and the new `regressions_above_threshold` helper is added as
   a new baseline entry. No baseline-relative behavior change for users
   not opting into `--fail-above`.
+- `.riskratchet.json` regenerated for the 0.2.8 P26 work: three new
+  helpers (`_format_setup_error`, `_check_paths_exist`,
+  `_load_baseline_or_exit`) are added as new baseline entries, and
+  `cli.py` component churn moves with the file's commit history. No
+  baseline-relative behavior change for users not opting into the new
+  setup-error path.
+
+### Added (P26: actionable setup errors)
+
+- The top first-failure messages now lead with a copy-pasteable
+  remediation instead of just describing the symptom:
+  - **Missing coverage** (`baseline` / `check` / `diff`): the "coverage
+    data is required" error block now lists three remediations
+    (generate coverage with the exact `pytest --cov` command,
+    `--allow-missing-coverage`, `--no-auto-cov --coverage <path>`).
+  - **Stale coverage / auto-coverage produced nothing**: the
+    "test command did not produce" warning now lists three remediations
+    (update the test command to write coverage at the right path,
+    `--coverage <path>`, `--no-auto-cov`).
+  - **No baseline** (`check` / `diff`): the "baseline file not found"
+    error now leads with `riskratchet baseline`, with `riskratchet
+    check --fail-above 60` as the no-commitment fallback.
+  - **Malformed baseline**: a junk-bytes baseline used to bubble up an
+    unhandled `ValueError`; it now renders as a setup error pointing at
+    `riskratchet baseline` to regenerate.
+  - **Missing scan path** (`scan` / `check` / `baseline` / `diff`):
+    a non-existent positional path or `[tool.riskratchet] paths` entry
+    used to produce a silent empty report; it now fails fast (exit `2`)
+    with a remediation hint and (for config-sourced paths) the offending
+    `paths = [...]` literal.
+
+### Changed (P26)
+
+- `riskratchet.config._resolved_paths` gained a `verify_exists: bool =
+  True` parameter. The default makes scan/check/baseline/diff fail fast
+  on missing paths; `config show` and unit tests opt out by passing
+  `verify_exists=False`. The return type and resolution order are
+  unchanged.
+
+### Added (P25: zero-flag scan UX)
+
+- `riskratchet scan` (default table format, no `--quiet`, no
+  `--summary`, no `--output`) now prints a one-line next-step footer
+  on stdout **only when no baseline file exists**. The wording adapts
+  to the report: if any function is at severity medium or higher the
+  footer suggests `riskratchet baseline` (lock in current state) and
+  `riskratchet check --fail-above 60` (gate on absolute threshold);
+  if every function is below medium the footer says "nothing to
+  baseline yet". Existing JSON/SARIF/markdown/PR-comment outputs are
+  unchanged because the footer is gated on `format == "table"` — the
+  payload contract is preserved.
+
+### Changed (P25)
+
+- `.riskratchet.json` regenerated for the 0.2.8 P25 work: the
+  `scan` command's score grew (additional table-format branching for
+  the footer is the intent), and the new `_emit_scan_next_step_footer`
+  helper is added as a new baseline entry. No baseline-relative
+  behavior change for users who already configured a baseline.
+
+### Added (P27: reusable GitHub Action)
+
+- Root `action.yml` composite action so adopters can use
+  `uses: KayhanB21/riskratchet@v0.2.8` instead of copy-pasting the
+  riskratchet CI workflow. Inputs: `paths`, `coverage`, `baseline`
+  (default `.riskratchet.json`), `fail-above` (default `60`, used
+  when the baseline file does not exist — wires through to P28's
+  no-baseline gate), `comment` (default `true`), `python-version`
+  (default `3.12`), `riskratchet-version` (pin a PyPI release;
+  default latest), `github-token` (default `${{ github.token }}`).
+  The action installs riskratchet via `pip`, runs `check` with
+  `--format pr-comment` when a baseline exists or
+  `--fail-above N --format markdown` when it does not, upserts a
+  sticky PR comment by matching the `<!-- riskratchet-report -->`
+  marker, and surfaces the underlying `check` exit code so PR status
+  reflects regressions. A separate Marketplace wrapper repo
+  (`riskratchet-action`) will land alongside the 0.2.8 tag for
+  discovery; both shapes share this action.yml as their source of
+  truth.
+
+### Added (P13: doctor command)
+
+- `riskratchet doctor` runs six setup checks (paths, baseline,
+  coverage + freshness, git, config, suppressions) and reports each
+  with a status (pass / warn / fail) and, for non-pass results, a
+  copy-pasteable remediation command. Exit `0` only when every check
+  is pass or warn; a single fail exits `1`. The CLI default format
+  is a colored text table on stdout; `--json` emits a structured
+  envelope validated against `schemas/doctor.schema.json`.
+- New schema `schemas/doctor.schema.json` (Draft 2020-12) with shape
+  `{$schema, version, checks[], summary}` where each check has
+  `{name, status, summary, remediation?}`. The `name` field is an
+  enum of the six checks; additive new checks would land as new
+  enum entries within a minor version.
+- New module `src/riskratchet/doctor.py` exposes `diagnose()`,
+  `summarize()`, `DoctorCheck`, and `CheckStatus` so the doctor logic
+  can be embedded outside the CLI (e.g. from the future P15 `init`
+  command's "warn before overwriting").
+
+### Added (P15: init command)
+
+- `riskratchet init` scaffolds a starter `[tool.riskratchet]` block
+  in `pyproject.toml` (creates the file if absent, appends the
+  section if the file exists without one, no-op if `[tool.riskratchet]`
+  is already present). Idempotent re-runs are safe. `--force`
+  replaces an existing block in place (line-based text substitution
+  so other TOML sections / comments survive); subtables like
+  `[tool.riskratchet.weights]` are intentionally removed under
+  `--force` (start-over semantic). `--no-snippet` suppresses the CI
+  snippet output (script-friendly).
+- Test-runner detection: `pytest` is recognised from any of a
+  `pytest.ini`, `conftest.py`, `[tool.pytest.ini_options]`,
+  pytest in `[project.dependencies]` / `[project.optional-dependencies]` /
+  `[dependency-groups]`. Falls back to `unittest` when only a
+  `tests/test_*.py` layout exists, `unknown` otherwise.
+- CI snippet pins the action ref to `v<__version__>` so users
+  installing riskratchet 0.2.8 get a snippet that pins
+  `KayhanB21/riskratchet@v0.2.8`.
+- New module `src/riskratchet/init.py` exposes
+  `write_starter_config()`, `detect_test_runner()`, and
+  `render_ci_snippet()` so the wizard logic is reusable from tests
+  and (potentially) the future `doctor --fix` mode.
+
+### Added (P8: PR-comment renderer parity)
+
+- `render_regressions_pr_comment` gains a one-line markdown summary
+  block (`**Regressions:** N · **New above threshold:** N · …`) for
+  parity with `render_diff_pr_comment` and `render_report_pr_comment`,
+  so the three PR-comment surfaces (scan / check / diff) read as the
+  same family of comment.
+- `check --fail-above N --format pr-comment` (no-baseline mode) now
+  renders the regressions-only PR comment instead of failing with
+  exit `2`. Same sticky marker (`<!-- riskratchet-report -->`), same
+  table shape — only the data source differs (regressions vs full
+  diff). Baseline mode still renders the diff PR comment.
+
+### Changed (P8)
+
+- The composite action (`action.yml`) now uses `--format pr-comment`
+  in both modes; the no-baseline branch no longer prepends the
+  sticky marker manually because `check` emits it itself.
+- AGENTS.md `--fail-above` section reflects the relaxed pr-comment
+  restriction.
+
+### Added (P9: summary-format parity)
+
+- `explain --json` and `explain --summary --json` (paired, can be
+  combined): the previously text-only `explain` command now emits
+  machine-readable JSON so CI scripts can consume per-function
+  diagnostics with the same envelope shape (`$schema`, `version`,
+  `command`, body) as `scan --json` / `check --json` / `diff --json`.
+  Pass both flags for the compact summary (just severity/score/crap);
+  pass `--json` alone for the full function payload (severity,
+  components, line coverage, etc.).
+- New schema `schemas/explain.schema.json` (Draft 2020-12) describing
+  the full `explain --json` payload; the `function` body uses the
+  same shape as a `scan --json` `functions[]` item so consumers can
+  use one per-function parser across both commands.
+- `schemas/summary.schema.json` `command` enum gains `"explain"` so
+  `explain --summary --json` is contract-validated by the existing
+  summary schema.
+- `_regressions_summary_line` is exposed via summary.py (was already
+  added in P8) as the canonical regressions summary text. No new
+  flag wiring beyond `explain`.
+
+### Changed (P9)
+
+- `.riskratchet.json` regenerated for the 0.2.8 P9 work: `explain`
+  grew (extra branching for `--summary` / `--json`), and
+  `_doctor_check_payload` / new `render_function_json` /
+  `render_function_summary_json` helpers are added as new baseline
+  entries.
+
+### Added (P10: source-link parity)
+
+- `--repo-url` / `--commit-ref` now thread through every JSON
+  renderer that lists functions: `scan --json`, `check --json`,
+  `diff --json`, and the new `explain --json`. When both flags are
+  passed, each function / regression / diff entry payload gains an
+  optional `source_url` field with the standard
+  `<repo>/blob/<ref>/<path>#L<start>-L<end>` shape. Existing JSON
+  consumers are unaffected: the field is missing when no links are
+  supplied, so the contract is additive.
+- `explain` gains `--repo-url` / `--commit-ref` flags (it previously
+  had no source-link support); behaviour matches scan/check/diff.
+- `report.schema.json`, `regressions.schema.json`, `diff.schema.json`,
+  and `explain.schema.json` all add an optional `source_url` string
+  field. Additive, no `required` change, so the schema diff is
+  backwards compatible.
+
+### Changed (P10)
+
+- `SourceLinks` moved from `riskratchet.reporting.markdown` to
+  `riskratchet.reporting.summary` (the layering leaf) so the JSON
+  family submodule can use it without violating the family-isolation
+  rule enforced by `tests/test_reporting_layering.py`. Re-exported
+  from `riskratchet.reporting` unchanged — no public API breakage.
+- Markdown / PR-comment renderers no longer own the `SourceLinks`
+  declaration; they import it from `summary` like every other
+  family.
 
 ## [0.2.7] - 2026-05-28
 

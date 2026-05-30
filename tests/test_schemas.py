@@ -58,6 +58,8 @@ def _project(tmp_path: Path) -> Path:
         "diff.schema.json",
         "summary.schema.json",
         "config.schema.json",
+        "doctor.schema.json",
+        "explain.schema.json",
     ],
 )
 def test_schema_is_valid_draft_2020_12(schema_name: str) -> None:
@@ -71,6 +73,17 @@ def test_scan_json_matches_report_schema(tmp_path: Path) -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     Draft202012Validator(_load_schema("report.schema.json")).validate(payload)
+
+
+def test_doctor_json_matches_doctor_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    _ = src  # marker: src referenced via cwd
+    result = runner.invoke(app, ["doctor", "--json"])
+    # Exit 1 is expected: no baseline present in the fresh tmp project.
+    assert result.exit_code == 1, result.output
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("doctor.schema.json")).validate(payload)
 
 
 def test_check_json_matches_regressions_schema(tmp_path: Path) -> None:
@@ -186,6 +199,42 @@ def test_summary_json_matches_summary_schema(tmp_path: Path, command: str) -> No
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
     Draft202012Validator(_load_schema("summary.schema.json")).validate(payload)
+
+
+def test_explain_json_matches_explain_schema(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "explain",
+            f"{src / 'm.py'}::branchy",
+            "--json",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("explain.schema.json")).validate(payload)
+
+
+def test_explain_summary_json_matches_summary_schema(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "explain",
+            f"{src / 'm.py'}::branchy",
+            "--summary",
+            "--json",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("summary.schema.json")).validate(payload)
+    assert payload["command"] == "explain"
 
 
 def test_config_show_json_matches_config_schema(tmp_path: Path) -> None:

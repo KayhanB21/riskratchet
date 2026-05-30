@@ -165,9 +165,13 @@ def test_fail_above_out_of_range_returns_exit_2(tmp_path: Path, monkeypatch: pyt
     assert too_low.exit_code == 2
 
 
-def test_fail_above_no_baseline_rejects_pr_comment_format(
+def test_fail_above_no_baseline_renders_regressions_pr_comment(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """P8 normalization (since 0.2.8): no-baseline mode renders the
+    regressions-only PR comment instead of failing with exit 2. The
+    output still carries the sticky-comment marker so the P27 action's
+    upsert logic finds it."""
     monkeypatch.chdir(tmp_path)
     src = _project(tmp_path)
     result = runner.invoke(
@@ -176,15 +180,19 @@ def test_fail_above_no_baseline_rejects_pr_comment_format(
             "check",
             str(src),
             "--fail-above",
-            "50",
+            "5",
             "--format",
             "pr-comment",
+            "--allow-missing-coverage",
             "--no-auto-cov",
             "--no-git",
         ],
     )
-    assert result.exit_code == 2
-    assert "pr-comment requires a baseline" in result.output
+    assert result.exit_code == 1, result.output  # at least one above_threshold regression
+    assert "<!-- riskratchet-report -->" in result.stdout
+    assert "# riskratchet" in result.stdout
+    assert "**Regressions:**" in result.stdout
+    assert "Above threshold" in result.stdout
 
 
 def test_fail_above_no_baseline_summary_text_works(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

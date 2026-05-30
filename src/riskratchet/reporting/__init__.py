@@ -25,13 +25,14 @@ from riskratchet.reporting.annotations import (
 from riskratchet.reporting.json_payload import (
     render_diff_json,
     render_diff_summary_json,
+    render_function_json,
+    render_function_summary_json,
     render_regressions_json,
     render_regressions_summary_json,
     render_report_json,
     render_report_summary_json,
 )
 from riskratchet.reporting.markdown import (
-    SourceLinks,
     render_diff_markdown,
     render_diff_pr_comment,
     render_regressions_markdown,
@@ -46,11 +47,13 @@ from riskratchet.reporting.sarif import (
 )
 from riskratchet.reporting.summary import (
     DIFF_SCHEMA_URL,
+    EXPLAIN_SCHEMA_URL,
     OUTPUT_VERSION,
     PR_COMMENT_MARKER,
     REGRESSIONS_SCHEMA_URL,
     REPORT_SCHEMA_URL,
     SUMMARY_SCHEMA_URL,
+    SourceLinks,
 )
 from riskratchet.reporting.text import (
     render_diff_summary_text,
@@ -64,6 +67,7 @@ from riskratchet.reporting.text import (
 
 __all__ = [
     "DIFF_SCHEMA_URL",
+    "EXPLAIN_SCHEMA_URL",
     "OUTPUT_VERSION",
     "PR_COMMENT_MARKER",
     "REGRESSIONS_SCHEMA_URL",
@@ -79,6 +83,8 @@ __all__ = [
     "render_diff_summary_text",
     "render_diff_table",
     "render_function_explanation",
+    "render_function_json",
+    "render_function_summary_json",
     "render_regressions_github",
     "render_regressions_json",
     "render_regressions_markdown",

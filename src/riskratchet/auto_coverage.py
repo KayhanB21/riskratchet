@@ -84,8 +84,15 @@ def ensure_coverage(
         say(f"riskratchet: test command exited {returncode}. Continuing with whatever coverage was written.")
     if not cache_path.exists():
         say(
-            f"riskratchet: test command did not produce {cache_path}. "
-            "Pass --coverage <path> or disable auto-coverage with --no-auto-cov."
+            f"riskratchet: test command did not produce {cache_path}.\n"
+            "\n"
+            "Fix one of:\n"
+            f"  1. Update the test command to write coverage at that path:\n"
+            f"       pytest --cov --cov-branch --cov-report=json:{cache_path} -q\n"
+            "  2. Point --coverage at an existing coverage.json:\n"
+            "       <command> --coverage <path>\n"
+            "  3. Disable auto-coverage entirely:\n"
+            "       <command> --no-auto-cov"
         )
         return AutoCoverageResult(
             path=None,

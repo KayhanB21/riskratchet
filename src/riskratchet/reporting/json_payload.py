@@ -20,10 +20,12 @@ from riskratchet.models import (
 )
 from riskratchet.reporting.summary import (
     DIFF_SCHEMA_URL,
+    EXPLAIN_SCHEMA_URL,
     OUTPUT_VERSION,
     REGRESSIONS_SCHEMA_URL,
     REPORT_SCHEMA_URL,
     SUMMARY_SCHEMA_URL,
+    SourceLinks,
     _diff_summary,
     _regressions_summary,
     _sorted_by_risk,
@@ -32,12 +34,12 @@ from riskratchet.reporting.summary import (
 from riskratchet.scoring import severity
 
 
-def render_report_json(report: RiskReport) -> str:
+def render_report_json(report: RiskReport, *, links: SourceLinks | None = None) -> str:
     payload: dict[str, Any] = {
         "$schema": REPORT_SCHEMA_URL,
         "version": OUTPUT_VERSION,
         "summary": _summary_payload(report),
-        "functions": [_function_payload(fn) for fn in _sorted_by_risk(report.functions)],
+        "functions": [_function_payload(fn, links=links) for fn in _sorted_by_risk(report.functions)],
     }
     return json.dumps(payload, indent=2) + "\n"
 
@@ -46,13 +48,17 @@ def render_report_summary_json(report: RiskReport) -> str:
     return _summary_envelope("scan", _summary_payload(report))
 
 
-def render_regressions_json(regressions: list[Regression]) -> str:
+def render_regressions_json(
+    regressions: list[Regression],
+    *,
+    links: SourceLinks | None = None,
+) -> str:
     return (
         json.dumps(
             {
                 "$schema": REGRESSIONS_SCHEMA_URL,
                 "version": OUTPUT_VERSION,
-                "regressions": [_regression_payload(reg) for reg in regressions],
+                "regressions": [_regression_payload(reg, links=links) for reg in regressions],
             },
             indent=2,
         )
@@ -68,14 +74,14 @@ def render_regressions_summary_json(
     return _summary_envelope("check", _regressions_summary(regressions, diff_report=diff_report))
 
 
-def render_diff_json(report: DiffReport) -> str:
+def render_diff_json(report: DiffReport, *, links: SourceLinks | None = None) -> str:
     return (
         json.dumps(
             {
                 "$schema": DIFF_SCHEMA_URL,
                 "version": OUTPUT_VERSION,
                 "summary": _diff_summary(report),
-                "entries": [_diff_entry_payload(entry) for entry in report.entries],
+                "entries": [_diff_entry_payload(entry, links=links) for entry in report.entries],
             },
             indent=2,
         )
@@ -87,8 +93,47 @@ def render_diff_summary_json(report: DiffReport) -> str:
     return _summary_envelope("diff", _diff_summary(report))
 
 
-def _function_payload(fn: FunctionRisk) -> dict[str, Any]:
-    return {
+def render_function_json(fn: FunctionRisk, *, links: SourceLinks | None = None) -> str:
+    """Single-function envelope for `explain --json`.
+
+    Mirrors the `--summary` envelope shape (`$schema`, `version`,
+    `command`, plus a command-specific body) so consumers can use one
+    parser across scan / check / diff / explain.
+    """
+    return (
+        json.dumps(
+            {
+                "$schema": EXPLAIN_SCHEMA_URL,
+                "version": OUTPUT_VERSION,
+                "command": "explain",
+                "function": _function_payload(fn, links=links),
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+def render_function_summary_json(fn: FunctionRisk) -> str:
+    """Compact single-function summary envelope for `explain --summary --json`.
+
+    Trims the components / coverage detail down to the headline numbers
+    so CI scripts can route on `severity` / `score` without re-parsing
+    the full envelope.
+    """
+    summary = {
+        "path": fn.id.path,
+        "qualname": fn.id.qualname,
+        "severity": severity(fn.score).value,
+        "score": fn.score,
+        "crap": fn.crap,
+        "group": fn.group,
+    }
+    return _summary_envelope("explain", summary)
+
+
+def _function_payload(fn: FunctionRisk, *, links: SourceLinks | None = None) -> dict[str, Any]:
+    payload: dict[str, Any] = {
         "path": fn.id.path,
         "qualname": fn.id.qualname,
         "severity": severity(fn.score).value,
@@ -110,10 +155,13 @@ def _function_payload(fn: FunctionRisk) -> dict[str, Any]:
             "sprawl": fn.components.sprawl,
         },
     }
+    if links is not None:
+        payload["source_url"] = links.link_for(fn)
+    return payload
 
 
-def _regression_payload(reg: Regression) -> dict[str, Any]:
-    return {
+def _regression_payload(reg: Regression, *, links: SourceLinks | None = None) -> dict[str, Any]:
+    payload: dict[str, Any] = {
         "path": reg.id.path,
         "qualname": reg.id.qualname,
         "kind": reg.kind.value,
@@ -122,9 +170,12 @@ def _regression_payload(reg: Regression) -> dict[str, Any]:
         "delta": reg.delta,
         "reason": reg.reason,
     }
+    if links is not None and reg.current is not None:
+        payload["source_url"] = links.link_for(reg.current)
+    return payload
 
 
-def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
+def _diff_entry_payload(entry: DiffEntry, *, links: SourceLinks | None = None) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "path": entry.id.path,
         "qualname": entry.id.qualname,
@@ -141,6 +192,8 @@ def _diff_entry_payload(entry: DiffEntry) -> dict[str, Any]:
             round(entry.match_confidence, 4) if entry.match_confidence is not None else None
         ),
     }
+    if links is not None and entry.current is not None:
+        payload["source_url"] = links.link_for(entry.current)
     return payload
 
 

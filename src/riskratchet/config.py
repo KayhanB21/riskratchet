@@ -47,6 +47,23 @@ else:
 
 VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
 CONFIG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/config.schema.json"
+
+
+def _format_setup_error(headline: str, fixes: list[tuple[str, str]]) -> str:
+    """Build a multi-line stderr message: headline + numbered remediations.
+
+    Each fix is `(description, command)`. The command is rendered on its own
+    indented line so it is copy-pasteable. Used for first-failure messages
+    (missing coverage, missing baseline, missing scan path) so every setup
+    error tells the user the exact command to run next.
+    """
+    lines = [headline, "", "Fix one of:"]
+    for index, (desc, command) in enumerate(fixes, start=1):
+        lines.append(f"  {index}. {desc}")
+        lines.append(f"       {command}")
+    return "\n".join(lines)
+
+
 CONFIG_ALLOWED_KEYS = {
     "allow",
     "allow_missing_coverage",
@@ -259,7 +276,7 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
     if isinstance(raw_map, dict):
         coverage_map_payload = {str(prefix): str(path) for prefix, path in raw_map.items()}
     return {
-        "paths": [str(path) for path in _resolved_paths([], cfg, config_dir)],
+        "paths": [str(path) for path in _resolved_paths([], cfg, config_dir, verify_exists=False)],
         "coverage": cfg.get("coverage"),
         "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
@@ -370,16 +387,72 @@ def _resolved_coverage_map(
     return {str(prefix): _anchor_config_path(Path(str(path)), config_dir) for prefix, path in raw.items()}
 
 
-def _resolved_paths(paths: list[Path] | None, cfg: dict[str, Any], config_dir: Path) -> list[Path]:
+def _resolved_paths(
+    paths: list[Path] | None,
+    cfg: dict[str, Any],
+    config_dir: Path,
+    *,
+    verify_exists: bool = True,
+) -> list[Path]:
+    """Resolve the scan-target paths, anchoring config-sourced ones.
+
+    `verify_exists=True` (the default for scan/check/baseline/diff) makes a
+    missing path fail fast with a P26 actionable error. Disable from pure
+    read paths (`config show`) and unit tests of the resolution logic.
+    """
     if paths:
-        return paths  # CLI paths are interpreted relative to the current directory.
+        # CLI paths are interpreted relative to the current directory.
+        if verify_exists:
+            _check_paths_exist(paths, origin="argument")
+        return paths
     configured = cfg.get("paths")
     if isinstance(configured, list) and configured:
-        return [_anchor_config_path(Path(p), config_dir) for p in configured]
+        anchored = [_anchor_config_path(Path(p), config_dir) for p in configured]
+        if verify_exists:
+            _check_paths_exist(anchored, origin="config", raw=configured)
+        return anchored
     # No paths given anywhere: scan the current directory, not the whole
     # project. The implicit default follows the same cwd-relative rule as an
     # explicit CLI path, so a no-arg run in a subdirectory stays scoped to it.
     return [Path(".")]
+
+
+def _check_paths_exist(paths: list[Path], *, origin: str, raw: list[Any] | None = None) -> None:
+    """Exit with an actionable error when any scan path is missing.
+
+    Today's behaviour is silent: a typo in `--scan src/typo.py` or a stale
+    `[tool.riskratchet] paths = [...]` entry yields an empty report with no
+    warning. Fail fast at the boundary with a remediation hint.
+    """
+    missing = [p for p in paths if not p.exists()]
+    if not missing:
+        return
+    shown = [str(p) for p in missing]
+    headline_origin = (
+        "scan paths from CLI arguments do not exist"
+        if origin == "argument"
+        else "scan paths from [tool.riskratchet] paths do not exist"
+    )
+    fixes: list[tuple[str, str]] = [
+        ("Check the path spelling and rerun:", f"<command> {' '.join(shown)}"),
+        ("List a different path:", "<command> src/"),
+    ]
+    if origin == "config" and raw:
+        fixes.append(
+            (
+                "Edit pyproject.toml `[tool.riskratchet] paths`:",
+                f"paths = {raw!r}",
+            )
+        )
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: {headline_origin}: {', '.join(shown)}",
+            fixes,
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
 
 
 def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, bool]:
@@ -438,19 +511,36 @@ def _resolve_coverage(
     if not required or allow_missing:
         if requested is not None and value is not None and not requested.exists():
             typer.secho(
-                f"warning: coverage file not found: {requested}; continuing without coverage.",
+                _format_setup_error(
+                    f"riskratchet: coverage file not found: {requested}; continuing without coverage.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{requested} -q",
+                        ),
+                    ],
+                ),
                 fg=typer.colors.YELLOW,
                 err=True,
             )
         return None
 
+    resolved_test_command = test_command.format(output=str(cache_path))
     typer.secho(
-        (
-            "coverage data is required but none could be produced. "
-            f"Tried --coverage path ({requested}), the auto-coverage cache "
-            f"({cache_path}), and `{test_command.format(output=str(cache_path))}`. "
-            "Generate coverage manually, pass --allow-missing-coverage, "
-            "or disable auto-generation with --no-auto-cov."
+        _format_setup_error(
+            (
+                f"riskratchet: coverage data is required but none could be produced. "
+                f"Tried --coverage ({requested}), auto-coverage cache ({cache_path}), "
+                f"and `{resolved_test_command}`."
+            ),
+            [
+                (
+                    "Generate coverage manually:",
+                    f"pytest --cov --cov-branch --cov-report=json:{cache_path} -q",
+                ),
+                ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                ("Disable auto-coverage and supply a path:", "<command> --no-auto-cov --coverage <path>"),
+            ],
         ),
         fg=typer.colors.RED,
         err=True,
@@ -504,15 +594,29 @@ def _ensure_coverage_map_exists(
     for prefix, path in missing:
         if allow_missing:
             typer.secho(
-                f"warning: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
+                _format_setup_error(
+                    f"riskratchet: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                        ),
+                    ],
+                ),
                 fg=typer.colors.YELLOW,
                 err=True,
             )
         else:
             typer.secho(
-                (
-                    f"coverage-map[{prefix}] file not found: {path}. "
-                    "Generate it or pass --allow-missing-coverage."
+                _format_setup_error(
+                    f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                        ),
+                        ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                    ],
                 ),
                 fg=typer.colors.RED,
                 err=True,

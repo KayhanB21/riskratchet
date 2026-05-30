@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/doctor.schema.json",
+  "title": "riskratchet doctor",
+  "description": "Output of `riskratchet doctor --json`. Six setup checks plus an aggregate summary; exit 0 only when every check is pass or warn.",
+  "type": "object",
+  "required": ["$schema", "version", "checks", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "summary"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "enum": ["paths", "baseline", "coverage", "git", "config", "suppressions"]
+          },
+          "status": { "enum": ["pass", "warn", "fail"] },
+          "summary": { "type": "string" },
+          "remediation": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["passed", "warned", "failed", "total"],
+      "additionalProperties": false,
+      "properties": {
+        "passed": { "type": "integer", "minimum": 0 },
+        "warned": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

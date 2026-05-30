@@ -1121,5 +1121,9 @@
   └────────┴───────┴──────┴────┴────────┴────────┴───────────────────┴───────┘
   Summary: 3 functions across 1 files. 0 critical, 0 high, 1 medium, 2 low
   
+  riskratchet: 1 function(s) at severity medium or higher. Next:
+    - lock in this state as a baseline:   riskratchet baseline
+    - gate on absolute threshold instead: riskratchet check --fail-above 60
+  
   '''
 # ---
