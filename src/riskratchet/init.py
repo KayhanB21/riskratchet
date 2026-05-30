@@ -13,7 +13,6 @@ text-manipulation logic is reusable from tests.
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
@@ -43,13 +42,6 @@ class RunnerKind(str, Enum):
     PYTEST = "pytest"
     UNITTEST = "unittest"
     UNKNOWN = "unknown"
-
-
-@dataclass(frozen=True, slots=True)
-class InitResult:
-    outcome: InitOutcome
-    pyproject: Path
-    runner: RunnerKind
 
 
 def write_starter_config(pyproject: Path, *, force: bool) -> InitOutcome:

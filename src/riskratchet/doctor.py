@@ -25,8 +25,6 @@ from riskratchet.analysis import iter_python_files
 from riskratchet.baseline import load_baseline
 from riskratchet.config import CONFIG_ALLOWED_KEYS
 
-CHECK_NAMES = ("paths", "baseline", "coverage", "git", "config", "suppressions")
-
 
 class CheckStatus(str, Enum):
     PASS = "pass"

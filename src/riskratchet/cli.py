@@ -938,16 +938,18 @@ def doctor(
 
 
 def _doctor_check_payload(check: DoctorCheck) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "name": check.name,
         "status": check.status.value,
         "summary": check.summary,
-        "remediation": check.remediation,
     }
+    if check.remediation is not None:
+        payload["remediation"] = check.remediation
+    return payload
 
 
 def _emit_doctor_table(checks: list[DoctorCheck]) -> None:
-    """Plain-text doctor output: one line per check, `→ fix:` for failures."""
+    """Plain-text doctor output: status table on stdout, `→ fix:` on stderr."""
     status_glyph = {
         CheckStatus.PASS: typer.style("PASS", fg=typer.colors.GREEN),
         CheckStatus.WARN: typer.style("WARN", fg=typer.colors.YELLOW),
@@ -957,7 +959,8 @@ def _emit_doctor_table(checks: list[DoctorCheck]) -> None:
     for check in checks:
         typer.echo(f"  {status_glyph[check.status]}  {check.name:<13} {check.summary}")
         if check.status is not CheckStatus.PASS and check.remediation:
-            typer.echo(f"        → fix:    {check.remediation}")
+            # Remediation on stderr so `2>/dev/null` filters to status only.
+            typer.echo(f"        → fix:    {check.remediation}", err=True)
     summary = summarize(checks)
     typer.echo("")
     typer.echo(

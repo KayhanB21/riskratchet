@@ -48,10 +48,12 @@ def test_doctor_cli_fails_when_baseline_missing(tmp_path: Path, monkeypatch: pyt
     monkeypatch.chdir(tmp_path)
     _project(tmp_path)
     result = runner.invoke(app, ["doctor"])
-    assert result.exit_code == 1, result.output
+    assert result.exit_code == 1, (result.stdout, result.stderr)
+    # Status table stays on stdout; remediation routes to stderr.
     assert "baseline" in result.stdout
     assert "FAIL" in result.stdout
-    assert "riskratchet baseline" in result.stdout
+    assert "riskratchet baseline" in result.stderr
+    assert "riskratchet baseline" not in result.stdout
 
 
 def test_doctor_cli_passes_when_everything_setup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
