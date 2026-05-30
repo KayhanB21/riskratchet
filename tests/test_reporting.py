@@ -245,15 +245,15 @@ def test_render_regressions_summary_text_counts_kinds_groups_and_diff() -> None:
     out = render_regressions_summary_text([regression], diff_report=diff_report)
     assert out.startswith(
         "check regressions=1 new_above_threshold=0 regressed=1 "
-        "existing_above_threshold=0 component_regressed=0\n"
+        "existing_above_threshold=0 component_regressed=0 above_threshold=0\n"
     )
     assert (
         "diff regressed=1 component_regressed=0 improved=0 new=1 "
         "ambiguous_rename=0 removed=0 moved=0 unchanged=0"
     ) in out
     assert (
-        "group name=core component_regressed=0 existing_above_threshold=0 new_above_threshold=0 regressed=1"
-        in out
+        "group name=core above_threshold=0 component_regressed=0 existing_above_threshold=0 "
+        "new_above_threshold=0 regressed=1" in out
     )
 
     clean_out = render_regressions_summary_text([], diff_report=diff_report)
@@ -272,6 +272,7 @@ def test_render_regressions_summary_json_uses_summary_envelope() -> None:
         "regressed": 0,
         "existing_above_threshold": 0,
         "component_regressed": 0,
+        "above_threshold": 0,
     }
 
 

@@ -106,6 +106,30 @@ def test_check_json_matches_regressions_schema(tmp_path: Path) -> None:
     Draft202012Validator(_load_schema("regressions.schema.json")).validate(payload)
 
 
+def test_check_fail_above_json_matches_regressions_schema(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """No-baseline mode reuses the regressions envelope with kind=above_threshold."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--fail-above",
+            "5",
+            "--json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 1
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("regressions.schema.json")).validate(payload)
+
+
 def test_diff_json_matches_diff_schema(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"

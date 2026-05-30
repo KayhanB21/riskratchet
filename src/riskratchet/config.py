@@ -58,6 +58,7 @@ CONFIG_ALLOWED_KEYS = {
     "coverage_cache",
     "coverage_map",
     "exclude",
+    "fail_above",
     "fail_component_regression_above",
     "fail_existing_above",
     "fail_new_above",
@@ -193,6 +194,7 @@ def _validate_config(cfg: dict[str, Any]) -> None:
         if key in cfg and not isinstance(cfg[key], str):
             raise ValueError(f"{key} must be a string.")
     for key in (
+        "fail_above",
         "fail_new_above",
         "fail_regression_above",
         "fail_existing_above",
@@ -200,6 +202,10 @@ def _validate_config(cfg: dict[str, Any]) -> None:
     ):
         if key in cfg and not _is_number(cfg[key]):
             raise ValueError(f"{key} must be a number.")
+    if "fail_above" in cfg:
+        value = cfg["fail_above"]
+        if not (0 < value <= 100):
+            raise ValueError("fail_above must be a number in (0, 100].")
     for key in ("allow_missing_coverage", "component_regression_gate", "auto_coverage"):
         if key in cfg and not isinstance(cfg[key], bool):
             raise ValueError(f"{key} must be a boolean.")
@@ -257,6 +263,7 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
         "coverage": cfg.get("coverage"),
         "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
+        "fail_above": _resolved_optional_float(None, cfg.get("fail_above")),
         "fail_new_above": _resolved_float(None, cfg.get("fail_new_above"), default=50.0),
         "fail_regression_above": _resolved_float(None, cfg.get("fail_regression_above"), default=5.0),
         "fail_existing_above": _resolved_optional_float(None, cfg.get("fail_existing_above")),

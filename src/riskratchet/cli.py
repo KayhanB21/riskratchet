@@ -18,6 +18,7 @@ from riskratchet import __version__
 from riskratchet.baseline import (
     baseline_from_report,
     load_baseline,
+    regressions_above_threshold,
     regressions_from_diff,
     save_baseline,
 )
@@ -44,7 +45,7 @@ from riskratchet.config import (
     _warn_unknown_config_keys,
 )
 from riskratchet.engine import analyze
-from riskratchet.models import Regression, RegressionKind, RiskReport
+from riskratchet.models import DiffReport, Regression, RegressionKind, RiskReport
 from riskratchet.reporting import (
     SourceLinks,
     render_diff_github,
@@ -395,6 +396,16 @@ def check(
     ] = "riskratchet",
     output: Annotated[Path | None, typer.Option("--output")] = None,
     summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
+    fail_above: Annotated[
+        float | None,
+        typer.Option(
+            "--fail-above",
+            help=(
+                "Fail when any function's current score exceeds N. Makes --baseline "
+                "optional; ignored when a baseline is resolved."
+            ),
+        ),
+    ] = None,
     fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
     fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
     fail_existing_above: Annotated[float | None, typer.Option("--fail-existing-above")] = None,
@@ -449,17 +460,42 @@ def check(
     _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
     _validate_baseline_format(baseline_format)
-    baseline_file = baseline_path or _anchor_config_path(
-        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
-    )
-    if not baseline_file.exists():
+    fail_above_resolved = _resolved_optional_float(fail_above, cfg.get("fail_above"))
+    if fail_above_resolved is not None and not (0 < fail_above_resolved <= 100):
         typer.secho(
-            f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first.",
+            "--fail-above must be a number in (0, 100].",
             fg=typer.colors.RED,
             err=True,
         )
         raise typer.Exit(code=2)
-    old = load_baseline(baseline_file)
+    baseline_file = baseline_path or _anchor_config_path(
+        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
+    )
+    baseline_present = baseline_file.exists()
+    if not baseline_present and fail_above_resolved is None:
+        typer.secho(
+            f"baseline file not found: {baseline_file}. Run `riskratchet baseline` first, "
+            f"or pass --fail-above N to gate on an absolute score threshold (no baseline).",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if baseline_present and fail_above_resolved is not None:
+        typer.secho(
+            f"warning: --fail-above ignored when a baseline is present ({baseline_file}); "
+            f"baseline gate is authoritative. Use --fail-existing-above for a "
+            f"baseline-aware absolute threshold.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    if not baseline_present and effective_format == "pr-comment":
+        typer.secho(
+            "--format pr-comment requires a baseline; not supported in --fail-above-only mode.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    old = load_baseline(baseline_file) if baseline_present else None
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
@@ -498,28 +534,34 @@ def check(
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
     )
-    diff_report = diff_baseline(
-        report,
-        old,
-        fail_regression_above=_resolved_float(
-            fail_regression_above, cfg.get("fail_regression_above"), default=5.0
-        ),
-        fail_component_regression_above=_resolved_float(
-            fail_component_regression_above,
-            cfg.get("fail_component_regression_above"),
-            default=15.0,
-        ),
-        component_regression_gate=(
-            not no_component_regression_gate
-            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
-        ),
-        groups=_resolved_groups(cfg),
-    )
-    regressions = regressions_from_diff(
-        diff_report,
-        fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
-        fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
-    )
+    diff_report: DiffReport | None
+    if old is not None:
+        diff_report = diff_baseline(
+            report,
+            old,
+            fail_regression_above=_resolved_float(
+                fail_regression_above, cfg.get("fail_regression_above"), default=5.0
+            ),
+            fail_component_regression_above=_resolved_float(
+                fail_component_regression_above,
+                cfg.get("fail_component_regression_above"),
+                default=15.0,
+            ),
+            component_regression_gate=(
+                not no_component_regression_gate
+                and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+            ),
+            groups=_resolved_groups(cfg),
+        )
+        regressions = regressions_from_diff(
+            diff_report,
+            fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
+            fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
+        )
+    else:
+        assert fail_above_resolved is not None
+        diff_report = None
+        regressions = regressions_above_threshold(report, threshold=fail_above_resolved)
     links = _resolve_source_links(repo_url, commit_ref)
     if summary:
         rendered = (
@@ -528,12 +570,17 @@ def check(
             else render_regressions_summary_text(regressions, diff_report=diff_report)
         )
     elif effective_format == "pr-comment":
+        assert diff_report is not None
         rendered = render_diff_pr_comment(diff_report, links=links)
     else:
         rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)
     if regressions:
-        _emit_regression_hint(regressions, baseline_file=baseline_file)
+        if old is not None:
+            _emit_regression_hint(regressions, baseline_file=baseline_file)
+        else:
+            assert fail_above_resolved is not None
+            _emit_above_threshold_hint(regressions, threshold=fail_above_resolved)
         raise typer.Exit(code=1)
 
 
@@ -813,6 +860,40 @@ def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path)
         )
     typer.secho(
         "  Tip: option 1 keeps the ratchet honest; option 2 is for one-off triage.",
+        fg=typer.colors.CYAN,
+        err=True,
+    )
+
+
+def _emit_above_threshold_hint(regressions: list[Regression], *, threshold: float) -> None:
+    """Stderr hint shown when `check --fail-above N` (no-baseline) gates.
+
+    Different remediation menu than the baseline path: there is no baseline
+    to regenerate, so the options are to fix the function, loosen the
+    threshold, or adopt a baseline going forward.
+    """
+    typer.secho("", err=True)
+    typer.secho(
+        f"riskratchet: {len(regressions)} function(s) scored above --fail-above {threshold:.1f}. Options:",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+    typer.secho(
+        "  1. Reduce risk in the listed functions (extract helpers, add tests, etc.).",
+        err=True,
+    )
+    typer.secho(
+        f"  2. Raise the threshold (this run only): --fail-above {min(threshold + 5.0, 100.0):.0f}",
+        err=True,
+    )
+    typer.secho(
+        "  3. Adopt a baseline so only future regressions fail:\n"
+        "       riskratchet baseline <paths> --coverage <coverage.json>",
+        err=True,
+    )
+    typer.secho(
+        "  Tip: --fail-above is for the no-baseline 'try it on a public repo' use case; "
+        "for steady-state CI prefer option 3.",
         fg=typer.colors.CYAN,
         err=True,
     )

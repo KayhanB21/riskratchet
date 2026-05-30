@@ -146,7 +146,8 @@ def render_regressions_summary_text(
             f"new_above_threshold={by_kind['new_above_threshold']} "
             f"regressed={by_kind['regressed']} "
             f"existing_above_threshold={by_kind['existing_above_threshold']} "
-            f"component_regressed={by_kind['component_regressed']}"
+            f"component_regressed={by_kind['component_regressed']} "
+            f"above_threshold={by_kind['above_threshold']}"
         )
     ]
     if "diff" in summary:

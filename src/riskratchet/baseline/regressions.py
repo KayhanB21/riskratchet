@@ -5,6 +5,11 @@ ones. `regressions_from_diff` is the conversion: ambiguous renames and
 over-threshold new functions become `NEW_ABOVE_THRESHOLD`, regressed and
 component-regressed entries carry through, and existing functions above
 `fail_existing_above` are flagged.
+
+`regressions_above_threshold` is the no-baseline gate (`check
+--fail-above N`): every current function with `score > N` becomes an
+`ABOVE_THRESHOLD` regression. Baseline-less and config-less; the
+threshold is the only signal.
 """
 
 from __future__ import annotations
@@ -14,6 +19,7 @@ from riskratchet.models import (
     DiffStatus,
     Regression,
     RegressionKind,
+    RiskReport,
 )
 
 
@@ -101,4 +107,30 @@ def regressions_from_diff(
                 )
             )
     out.sort(key=lambda r: (-(r.delta or r.current_score), r.id.as_target()))
+    return out
+
+
+def regressions_above_threshold(report: RiskReport, *, threshold: float) -> list[Regression]:
+    """Gate a current `RiskReport` against an absolute score threshold.
+
+    No baseline involved: every function whose score strictly exceeds
+    `threshold` becomes an `ABOVE_THRESHOLD` regression with
+    `previous_score=None` and `delta=None`. Sorted by descending current
+    score, ties broken by stable function id.
+    """
+    out: list[Regression] = []
+    for fn in report.functions:
+        if fn.score > threshold:
+            out.append(
+                Regression(
+                    id=fn.id,
+                    kind=RegressionKind.ABOVE_THRESHOLD,
+                    current_score=fn.score,
+                    previous_score=None,
+                    delta=None,
+                    reason=(f"score {fn.score:.1f} exceeds threshold {threshold:.1f} (no baseline)"),
+                    current=fn,
+                )
+            )
+    out.sort(key=lambda r: (-r.current_score, r.id.as_target()))
     return out

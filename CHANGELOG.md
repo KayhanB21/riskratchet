@@ -11,6 +11,41 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+### Added
+
+- `check --fail-above N` (roadmap P28): a no-baseline absolute-threshold
+  gate. When `--fail-above` is given and no baseline is resolved, every
+  function whose current score strictly exceeds `N` is reported as a
+  `kind: "above_threshold"` regression and `check` exits `1`. Configurable
+  via `[tool.riskratchet] fail_above = N` (a number in `(0, 100]`).
+  Powers the "try it on any public Python repo" Marketplace-action mode
+  where no baseline exists yet.
+- `regressions.schema.json` adds `"above_threshold"` to the `kind` enum.
+  Additive; existing four `kind` values are unchanged. `previous_score`
+  and `delta` are `null` for the new kind.
+- `riskratchet.baseline.regressions_above_threshold(report, threshold=N)`
+  helper (re-exported from `riskratchet.baseline`) for embedding the
+  no-baseline gate without going through the CLI.
+
+### Changed
+
+- `check` no longer hard-requires `--baseline`: when `--fail-above` is
+  given and no baseline resolves, `check` runs in no-baseline mode.
+  When both `--baseline` (resolved) and `--fail-above` are given, the
+  baseline gate is authoritative and `--fail-above` is ignored with a
+  stderr warning (matches the precedence pinned in the 0.2.8 roadmap).
+- `check --summary` text output adds an `above_threshold=N` field to
+  the per-kind summary line for parity with the existing four kinds
+  and with the JSON `by_kind` map. Additive; no field rename or removal.
+- `check` no-baseline mode rejects `--format pr-comment` with exit `2`,
+  since the PR-comment renderer is a diff-against-baseline view. Use
+  `--format table` / `markdown` / `json` / `sarif` / `github` instead.
+- `.riskratchet.json` regenerated for the 0.2.8 P28 work: the `check`
+  command's score grew (additional `--fail-above` branching is the
+  intent), and the new `regressions_above_threshold` helper is added as
+  a new baseline entry. No baseline-relative behavior change for users
+  not opting into `--fail-above`.
+
 ## [0.2.7] - 2026-05-28
 
 ### Added

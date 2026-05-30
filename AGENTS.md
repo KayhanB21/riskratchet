@@ -62,6 +62,18 @@ riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --jso
   per-component regression gate (option 2, only shown when at least one
   regression has `kind == "component_regressed"`). The hint is on stderr
   so `--json` stdout consumers are unaffected.
+- `check --fail-above N` (since 0.2.8) is a **no-baseline absolute gate**:
+  pass `--fail-above N` and skip `--baseline` to fail when any current
+  function's score exceeds `N`. Reports each violating function as a
+  `kind: "above_threshold"` regression (`previous_score: null`,
+  `delta: null`) in the same envelope as the baseline gate, so JSON
+  consumers and SARIF/table/markdown renderers work unchanged.
+  `--format pr-comment` is rejected (PR-comment is a diff-against-baseline
+  view). When both `--baseline` (resolved) and `--fail-above` are given,
+  the baseline gate is authoritative and `--fail-above` is ignored with a
+  stderr warning — for a baseline-aware absolute threshold use
+  `--fail-existing-above` instead. Configurable via
+  `[tool.riskratchet] fail_above = N` (number in `(0, 100]`).
 
 ## `is_public` classification
 

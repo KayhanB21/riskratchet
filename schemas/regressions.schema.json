@@ -23,7 +23,8 @@
               "new_above_threshold",
               "regressed",
               "existing_above_threshold",
-              "component_regressed"
+              "component_regressed",
+              "above_threshold"
             ]
           },
           "current_score": { "type": "number", "minimum": 0, "maximum": 100 },
