@@ -1,0 +1,147 @@
+name: riskratchet
+description: 'Score per-function risk, ratchet against a baseline, post a sticky PR review comment.'
+author: KayhanB21
+branding:
+  icon: bar-chart-2
+  color: blue
+
+inputs:
+  paths:
+    description: 'Files or directories to scan, space-separated. Defaults to [tool.riskratchet] paths.'
+    required: false
+    default: ''
+  coverage:
+    description: 'Path to coverage.json. Optional; auto-coverage runs if absent.'
+    required: false
+    default: ''
+  baseline:
+    description: 'Path to baseline JSON. Default `.riskratchet.json`; if the file is missing, the action runs in no-baseline `--fail-above` mode.'
+    required: false
+    default: '.riskratchet.json'
+  fail-above:
+    description: 'Threshold for no-baseline mode (when `baseline` file does not exist). Default 60.'
+    required: false
+    default: '60'
+  comment:
+    description: 'Post a sticky PR review comment. Default `true`. Set `false` for status-check-only mode.'
+    required: false
+    default: 'true'
+  python-version:
+    description: 'Python version to install. Default 3.12.'
+    required: false
+    default: '3.12'
+  riskratchet-version:
+    description: 'Pin a riskratchet version (e.g. 0.2.8). Default: latest from PyPI.'
+    required: false
+    default: ''
+  local-wheel:
+    description: |
+      Glob for a local wheel to install instead of fetching from PyPI. Used by the
+      repository's own dogfood workflow to test action.yml against an unreleased build.
+      Leave empty in normal use.
+    required: false
+    default: ''
+  github-token:
+    description: 'Token used to upsert the PR comment. Falls back to the workflow github.token when empty.'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+
+    - name: Install riskratchet
+      shell: bash
+      env:
+        RR_PIN: ${{ inputs.riskratchet-version }}
+        RR_LOCAL_WHEEL: ${{ inputs.local-wheel }}
+      run: |
+        set -euo pipefail
+        if [ -n "$RR_LOCAL_WHEEL" ]; then
+          # Glob expansion intentional: dogfood passes `dist/*.whl`.
+          # shellcheck disable=SC2086
+          uv tool install $RR_LOCAL_WHEEL
+        elif [ -n "$RR_PIN" ]; then
+          uv tool install "riskratchet==$RR_PIN"
+        else
+          uv tool install riskratchet
+        fi
+        riskratchet --version
+
+    - name: Run riskratchet check
+      id: ratchet
+      shell: bash
+      env:
+        RR_PATHS: ${{ inputs.paths }}
+        RR_COVERAGE: ${{ inputs.coverage }}
+        RR_BASELINE: ${{ inputs.baseline }}
+        RR_FAIL_ABOVE: ${{ inputs.fail-above }}
+      run: |
+        set +e
+        declare -a args=(check)
+        # Positional scan paths are inserted unquoted so users can supply
+        # multiple space-separated entries via the `paths` input.
+        if [ -n "$RR_PATHS" ]; then
+          # shellcheck disable=SC2206  # intentional word splitting
+          args+=( $RR_PATHS )
+        fi
+        if [ -n "$RR_COVERAGE" ]; then
+          args+=( --coverage "$RR_COVERAGE" )
+        fi
+        if [ -f "$RR_BASELINE" ]; then
+          args+=( --baseline "$RR_BASELINE" --format pr-comment )
+        else
+          # No baseline file → no-baseline mode. Since P8 (0.2.8),
+          # `check --fail-above --format pr-comment` renders the
+          # regressions-only PR comment with the same sticky marker, so
+          # the upsert step below works in both modes.
+          args+=( --fail-above "$RR_FAIL_ABOVE" --format pr-comment )
+        fi
+        echo "::group::riskratchet command"
+        printf '%s\n' "riskratchet ${args[*]}"
+        echo "::endgroup::"
+        riskratchet "${args[@]}" >> riskratchet-comment.md
+        status=$?
+        echo "status=$status" >> "$GITHUB_OUTPUT"
+        echo "::group::riskratchet output"
+        cat riskratchet-comment.md
+        echo "::endgroup::"
+        exit 0
+
+    - name: Upsert PR comment
+      if: inputs.comment == 'true' && github.event_name == 'pull_request' && steps.ratchet.outputs.status != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        set -euo pipefail
+        # Match the existing riskratchet comment (if any) by the marker the
+        # CLI emits so we update in place instead of spamming a new one each
+        # push.
+        existing=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+          --jq '.[] | select(.body | startswith("<!-- riskratchet-report -->")) | .id' \
+          | head -n1)
+        if [ -n "$existing" ]; then
+          gh api -X PATCH "repos/${REPO}/issues/comments/${existing}" \
+            --field body=@riskratchet-comment.md > /dev/null
+        else
+          gh pr comment "${PR_NUMBER}" --body-file riskratchet-comment.md
+        fi
+
+    - name: Surface riskratchet exit status
+      shell: bash
+      run: |
+        status='${{ steps.ratchet.outputs.status }}'
+        if [ "$status" != "0" ]; then
+          echo "::error::riskratchet exited $status — see PR comment for details."
+          exit "$status"
+        fi

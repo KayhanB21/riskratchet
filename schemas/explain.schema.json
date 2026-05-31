@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/explain.schema.json",
+  "title": "riskratchet explain",
+  "description": "Output of `riskratchet explain --json`. The `function` body mirrors the per-function shape used by `scan --json`'s `functions[]` items so consumers can use one parser across both commands.",
+  "type": "object",
+  "required": ["$schema", "version", "command", "function"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string" },
+    "command": { "enum": ["explain"] },
+    "function": {
+      "type": "object",
+      "required": [
+        "path",
+        "qualname",
+        "severity",
+        "score",
+        "crap",
+        "complexity",
+        "line_coverage",
+        "branch_coverage",
+        "churn_commits",
+        "is_public",
+        "group",
+        "lines",
+        "components"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "qualname": { "type": "string" },
+        "severity": { "enum": ["low", "medium", "high", "critical"] },
+        "score": { "type": "number" },
+        "crap": { "type": "number" },
+        "complexity": { "type": "integer", "minimum": 0 },
+        "line_coverage": { "type": "number" },
+        "branch_coverage": { "type": ["number", "null"] },
+        "churn_commits": { "type": "integer", "minimum": 0 },
+        "is_public": { "type": "boolean" },
+        "group": { "type": ["string", "null"] },
+        "lines": {
+          "type": "object",
+          "required": ["start", "end"],
+          "additionalProperties": false,
+          "properties": {
+            "start": { "type": "integer", "minimum": 0 },
+            "end": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "components": {
+          "type": "object",
+          "required": [
+            "coverage_gap",
+            "structural_complexity",
+            "branch_gap",
+            "churn",
+            "public_surface",
+            "sprawl"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "coverage_gap": { "type": "number" },
+            "structural_complexity": { "type": "number" },
+            "branch_gap": { "type": "number" },
+            "churn": { "type": "number" },
+            "public_surface": { "type": "number" },
+            "sprawl": { "type": "number" }
+          }
+        },
+        "source_url": { "type": "string", "description": "Optional blob URL (P10, since 0.2.8)." }
+      }
+    }
+  }
+}

@@ -153,7 +153,10 @@ def test_load_config_ignores_non_mapping_tool_section(tmp_path: Path) -> None:
 
 
 def test_resolved_paths_falls_back_to_config() -> None:
-    assert _resolved_paths([], {"paths": ["alpha", "beta"]}, Path.cwd()) == [Path("alpha"), Path("beta")]
+    assert _resolved_paths([], {"paths": ["alpha", "beta"]}, Path.cwd()) == [
+        Path("alpha"),
+        Path("beta"),
+    ]
 
 
 def test_resolved_paths_defaults_to_cwd_when_nothing_configured() -> None:

@@ -1,0 +1,24 @@
+# serializer version: 1
+# name: test_doctor_with_fail_stderr_snapshot
+  '''
+          → fix:    riskratchet baseline
+          → fix:    pytest --cov --cov-branch --cov-report=json:.riskratchet/coverage.json -q
+          → fix:    git init  # or pass --no-git to silence this
+          → fix:    add [tool.riskratchet] with at least `paths = ["src"]`
+  
+  '''
+# ---
+# name: test_doctor_with_fail_stdout_snapshot
+  '''
+  riskratchet doctor
+    PASS  paths         .
+    FAIL  baseline      baseline not found: .riskratchet.json
+    WARN  coverage      no coverage configured (using pessimistic policy)
+    WARN  git           not a git repo (churn signals disabled)
+    WARN  config        no [tool.riskratchet] in pyproject.toml
+    PASS  suppressions  0 patterns
+  
+  riskratchet: 2 pass, 3 warn, 1 fail (of 6)
+  
+  '''
+# ---

@@ -9,6 +9,7 @@ formatters, summary-payload builders, and the schema URL constants.
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import Any
 
 from riskratchet.models import (
@@ -27,8 +28,33 @@ REPORT_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/report.sch
 REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json"
 DIFF_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json"
 SUMMARY_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json"
+EXPLAIN_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/explain.schema.json"
 OUTPUT_VERSION = "0.2"
 PR_COMMENT_MARKER = "<!-- riskratchet-report -->"
+
+
+@dataclass(frozen=True, slots=True)
+class SourceLinks:
+    """Repo coordinates used to build per-function blob URLs.
+
+    Lives in `summary.py` (the reporting leaf) because every family
+    submodule that wants to attach a link to its output — markdown,
+    json_payload, sarif, annotations — needs this type, and the
+    family-isolation rule requires shared code to live in the leaf.
+    """
+
+    repo_url: str
+    commit_ref: str
+
+    def link_for(self, fn: FunctionRisk) -> str:
+        return self.link_for_span(fn.id.path, fn.span.start_line, fn.span.end_line)
+
+    def link_for_span(self, path: str, start_line: int, end_line: int) -> str:
+        """Build a `blob/<ref>/<path>#L<start>-L<end>` URL without a
+        `FunctionRisk` in hand. Used by JSON / SARIF renderers, which
+        sometimes get only the raw payload fields (no `FunctionRisk` for
+        regressions or diff entries that lack a current snapshot)."""
+        return f"{self.repo_url.rstrip('/')}/blob/{self.commit_ref}/{path}#L{start_line}-L{end_line}"
 
 
 def _remediation(fn: FunctionRisk) -> str:
@@ -186,6 +212,28 @@ def _diff_summary_line(report: DiffReport) -> str:
         f"**Improved:** {summary['improved']}",
         f"**Moved:** {summary['moved']}",
         f"**Removed:** {summary['removed']}",
+    ]
+    return " · ".join(parts)
+
+
+def _regressions_summary_line(regressions: list[Regression]) -> str:
+    """One-line markdown summary for the `check` PR comment.
+
+    Matches the shape of `_diff_summary_line` (bold counts joined by ` · `)
+    so the three PR-comment surfaces (scan / check / diff) read as the
+    same family of comment. Counts are by `RegressionKind`; the total is
+    leading so reviewers see the headline number first.
+    """
+    by_kind: dict[str, int] = {kind.value: 0 for kind in RegressionKind}
+    for reg in regressions:
+        by_kind[reg.kind.value] += 1
+    parts = [
+        f"**Regressions:** {len(regressions)}",
+        f"**New above threshold:** {by_kind['new_above_threshold']}",
+        f"**Regressed:** {by_kind['regressed']}",
+        f"**Existing above threshold:** {by_kind['existing_above_threshold']}",
+        f"**Component regressed:** {by_kind['component_regressed']}",
+        f"**Above threshold:** {by_kind['above_threshold']}",
     ]
     return " · ".join(parts)
 

@@ -186,9 +186,11 @@ def test_render_regressions_markdown_links_current_when_available() -> None:
 
 
 def test_render_regressions_pr_comment_empty_and_populated_with_links() -> None:
-    assert render_regressions_pr_comment([]) == (
-        "<!-- riskratchet-report -->\n# riskratchet\n\n_No risk regressions detected._\n"
-    )
+    empty = render_regressions_pr_comment([])
+    # P8 (since 0.2.8): the regressions PR comment now carries a one-line
+    # summary block for parity with scan/diff PR comments.
+    assert empty.startswith("<!-- riskratchet-report -->\n# riskratchet\n\n**Regressions:** 0 ")
+    assert "_No risk regressions detected._" in empty
     fn = _fn("foo", 70.0)
     regression = Regression(
         id=fn.id,
@@ -204,6 +206,8 @@ def test_render_regressions_pr_comment_empty_and_populated_with_links() -> None:
         links=SourceLinks(repo_url="https://github.com/acme/project", commit_ref="abc123"),
     )
     assert out.startswith("<!-- riskratchet-report -->\n# riskratchet\n")
+    assert "**Regressions:** 1" in out
+    assert "**Regressed:** 1" in out
     assert "| Kind | Function | Before | After | Delta | Reason |" in out
     assert "[`m.py::foo`](https://github.com/acme/project/blob/abc123/m.py#L1-L10)" in out
 
@@ -245,15 +249,15 @@ def test_render_regressions_summary_text_counts_kinds_groups_and_diff() -> None:
     out = render_regressions_summary_text([regression], diff_report=diff_report)
     assert out.startswith(
         "check regressions=1 new_above_threshold=0 regressed=1 "
-        "existing_above_threshold=0 component_regressed=0\n"
+        "existing_above_threshold=0 component_regressed=0 above_threshold=0\n"
     )
     assert (
         "diff regressed=1 component_regressed=0 improved=0 new=1 "
         "ambiguous_rename=0 removed=0 moved=0 unchanged=0"
     ) in out
     assert (
-        "group name=core component_regressed=0 existing_above_threshold=0 new_above_threshold=0 regressed=1"
-        in out
+        "group name=core above_threshold=0 component_regressed=0 existing_above_threshold=0 "
+        "new_above_threshold=0 regressed=1" in out
     )
 
     clean_out = render_regressions_summary_text([], diff_report=diff_report)
@@ -272,6 +276,7 @@ def test_render_regressions_summary_json_uses_summary_envelope() -> None:
         "regressed": 0,
         "existing_above_threshold": 0,
         "component_regressed": 0,
+        "above_threshold": 0,
     }
 
 

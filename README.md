@@ -56,14 +56,90 @@ riskratchet check src --coverage coverage.json --baseline .riskratchet.json
 `riskratchet check` exits `1` on regressions, `2` on usage errors (e.g. missing
 baseline), and `0` otherwise.
 
-For early adoption before a baseline exists, `scan` can also fail on an
-absolute gate (baseline gating remains the recommended mode for mature
-codebases):
+For early adoption before a baseline exists, `check --fail-above N` gates
+on an absolute threshold without requiring a baseline (baseline gating
+remains the recommended mode for mature codebases):
 
 ```bash
+# No baseline yet: fail if any function scores above 60.
+riskratchet check src --coverage coverage.json --fail-above 60
+
+# scan also exposes a no-baseline gate (different exit/output shape).
 riskratchet scan src --coverage coverage.json --fail-above 75
 riskratchet scan src --coverage coverage.json --fail-severity high
 ```
+
+When `--baseline` and `--fail-above` are both given, the baseline gate
+is authoritative and `--fail-above` is ignored with a stderr warning.
+
+## Setting up riskratchet
+
+`riskratchet init` scaffolds a `[tool.riskratchet]` section in
+`pyproject.toml` and prints a ready-to-paste CI snippet. With
+`--with-baseline` (or by saying yes to the interactive prompt on a
+TTY when pytest is detected), it also runs `pytest --cov` and creates
+the baseline in one go:
+
+```bash
+riskratchet init                  # write config, print snippet
+riskratchet init --with-baseline  # also run pytest --cov + baseline
+riskratchet init --force          # replace existing [tool.riskratchet]
+```
+
+`riskratchet doctor` is a six-check pre-flight that names whatever
+would make `check` fail to start (missing paths, missing/malformed
+baseline, missing/stale coverage, no git history, unknown config
+keys, invalid suppressions) and prints the exact fix command for
+each. The status table goes to stdout; the `→ fix:` remediations go
+to stderr so you can pipe them separately:
+
+```bash
+riskratchet doctor                # human-readable table + remediation
+riskratchet doctor --json         # validates against schemas/doctor.schema.json
+riskratchet doctor 2>/dev/null    # status table only
+riskratchet doctor >/dev/null     # remediation commands only
+```
+
+`doctor` exits `0` only when every check is pass or warn; a single
+fail exits `1`. The intended workflow is `init` → `doctor` → fix the
+warnings → `baseline` → `check`.
+
+## GitHub Action
+
+The composite action ships in `action.yml` so adopters don't have to
+copy a workflow file — `uses: KayhanB21/riskratchet@v0.2.8` is the
+canonical reference. The action installs riskratchet via `uv tool
+install`, runs `check` (`--format pr-comment` in both baseline and
+no-baseline modes), upserts a sticky PR comment, and surfaces the
+check exit status so PR checks reflect regressions.
+
+```yaml
+# .github/workflows/riskratchet.yml
+on: [pull_request]
+
+jobs:
+  riskratchet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - uses: KayhanB21/riskratchet@v0.2.8
+        with:
+          coverage: coverage.json
+```
+
+Inputs (defaults in parentheses): `paths` (`[tool.riskratchet]
+paths`), `coverage` (auto-detected), `baseline` (`.riskratchet.json`
+— when the file is missing, the action runs in `--fail-above` mode),
+`fail-above` (`60`), `comment` (`true`), `python-version` (`3.12`),
+`riskratchet-version` (latest from PyPI), `github-token`
+(`${{ github.token }}`).
+
+For Marketplace discovery, the `KayhanB21/riskratchet-action`
+wrapper repo is the recommended entry point; it delegates to the
+root action.yml so both shapes share one source of truth.
 
 ## The canonical use case: AI agent + side project
 
@@ -173,7 +249,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.4
+    rev: v0.2.8
     hooks:
       - id: riskratchet
         args:

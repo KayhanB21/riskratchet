@@ -9,6 +9,8 @@ to verify the auto-coverage path explicitly do so by passing their own
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 import riskratchet.auto_coverage as auto_coverage
@@ -16,11 +18,12 @@ import riskratchet.auto_coverage as auto_coverage
 
 @pytest.fixture(autouse=True)
 def block_auto_coverage_runner(monkeypatch: pytest.MonkeyPatch) -> None:
-    def refuse(command: str) -> int:
+    def refuse(command: str, cwd: Path) -> int:
         raise AssertionError(
             "auto_coverage._default_runner was invoked during tests "
-            f"(command: {command!r}). Pass --no-auto-cov, --allow-missing-coverage, "
-            "or inject a fake runner via ensure_coverage(runner=...)."
+            f"(command: {command!r}, cwd: {cwd!r}). Pass --no-auto-cov, "
+            "--allow-missing-coverage, or inject a fake runner via "
+            "ensure_coverage(runner=...)."
         )
 
     monkeypatch.setattr(auto_coverage, "_default_runner", refuse)

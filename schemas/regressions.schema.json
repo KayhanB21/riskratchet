@@ -23,7 +23,8 @@
               "new_above_threshold",
               "regressed",
               "existing_above_threshold",
-              "component_regressed"
+              "component_regressed",
+              "above_threshold"
             ]
           },
           "current_score": { "type": "number", "minimum": 0, "maximum": 100 },
@@ -33,7 +34,8 @@
             "maximum": 100
           },
           "delta": { "type": ["number", "null"] },
-          "reason": { "type": "string" }
+          "reason": { "type": "string" },
+          "source_url": { "type": "string", "description": "Optional blob URL (P10, since 0.2.8); emitted when --repo-url and --commit-ref are passed and the regression has a current snapshot." }
         }
       }
     }

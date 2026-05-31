@@ -28,7 +28,10 @@ from riskratchet.baseline.io import (
     load_baseline,
     save_baseline,
 )
-from riskratchet.baseline.regressions import regressions_from_diff
+from riskratchet.baseline.regressions import (
+    regressions_above_threshold,
+    regressions_from_diff,
+)
 
 __all__ = [
     "BASELINE_VERSION",
@@ -36,6 +39,7 @@ __all__ = [
     "compare",
     "diff",
     "load_baseline",
+    "regressions_above_threshold",
     "regressions_from_diff",
     "save_baseline",
 ]

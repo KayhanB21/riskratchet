@@ -114,7 +114,8 @@
               }
             }
           },
-          "match_confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+          "match_confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "source_url": { "type": "string", "description": "Optional blob URL (P10, since 0.2.8); emitted when --repo-url and --commit-ref are passed and the entry has a current snapshot." }
         }
       }
     }

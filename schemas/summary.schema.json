@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json",
   "title": "riskratchet summary output",
-  "description": "Output of `riskratchet scan|check|diff --summary --json`.",
+  "description": "Output of `riskratchet scan|check|diff|explain --summary --json`.",
   "type": "object",
   "required": ["$schema", "version", "command", "summary"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "string" },
-    "command": { "enum": ["scan", "check", "diff"] },
+    "command": { "enum": ["scan", "check", "diff", "explain"] },
     "summary": {
       "type": "object",
       "additionalProperties": true

@@ -47,6 +47,23 @@ else:
 
 VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
 CONFIG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/config.schema.json"
+
+
+def _format_setup_error(headline: str, fixes: list[tuple[str, str]]) -> str:
+    """Build a multi-line stderr message: headline + numbered remediations.
+
+    Each fix is `(description, command)`. The command is rendered on its own
+    indented line so it is copy-pasteable. Used for first-failure messages
+    (missing coverage, missing baseline, missing scan path) so every setup
+    error tells the user the exact command to run next.
+    """
+    lines = [headline, "", "Fix one of:"]
+    for index, (desc, command) in enumerate(fixes, start=1):
+        lines.append(f"  {index}. {desc}")
+        lines.append(f"       {command}")
+    return "\n".join(lines)
+
+
 CONFIG_ALLOWED_KEYS = {
     "allow",
     "allow_missing_coverage",
@@ -58,6 +75,7 @@ CONFIG_ALLOWED_KEYS = {
     "coverage_cache",
     "coverage_map",
     "exclude",
+    "fail_above",
     "fail_component_regression_above",
     "fail_existing_above",
     "fail_new_above",
@@ -193,6 +211,7 @@ def _validate_config(cfg: dict[str, Any]) -> None:
         if key in cfg and not isinstance(cfg[key], str):
             raise ValueError(f"{key} must be a string.")
     for key in (
+        "fail_above",
         "fail_new_above",
         "fail_regression_above",
         "fail_existing_above",
@@ -200,6 +219,10 @@ def _validate_config(cfg: dict[str, Any]) -> None:
     ):
         if key in cfg and not _is_number(cfg[key]):
             raise ValueError(f"{key} must be a number.")
+    if "fail_above" in cfg:
+        value = cfg["fail_above"]
+        if not (0 < value <= 100):
+            raise ValueError("fail_above must be a number in (0, 100].")
     for key in ("allow_missing_coverage", "component_regression_gate", "auto_coverage"):
         if key in cfg and not isinstance(cfg[key], bool):
             raise ValueError(f"{key} must be a boolean.")
@@ -257,6 +280,7 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
         "coverage": cfg.get("coverage"),
         "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
+        "fail_above": _resolved_optional_float(None, cfg.get("fail_above")),
         "fail_new_above": _resolved_float(None, cfg.get("fail_new_above"), default=50.0),
         "fail_regression_above": _resolved_float(None, cfg.get("fail_regression_above"), default=5.0),
         "fail_existing_above": _resolved_optional_float(None, cfg.get("fail_existing_above")),
@@ -363,9 +387,21 @@ def _resolved_coverage_map(
     return {str(prefix): _anchor_config_path(Path(str(path)), config_dir) for prefix, path in raw.items()}
 
 
-def _resolved_paths(paths: list[Path] | None, cfg: dict[str, Any], config_dir: Path) -> list[Path]:
+def _resolved_paths(
+    paths: list[Path] | None,
+    cfg: dict[str, Any],
+    config_dir: Path,
+) -> list[Path]:
+    """Resolve the scan-target paths, anchoring config-sourced ones.
+
+    Pure resolution: returns the paths, never exits. Callers that need to
+    fail fast on a missing path (scan / check / baseline / diff) call
+    `cli._check_paths_exist` after resolving. Inspection-only callers
+    (`config show`) skip that check by design.
+    """
     if paths:
-        return paths  # CLI paths are interpreted relative to the current directory.
+        # CLI paths are interpreted relative to the current directory.
+        return paths
     configured = cfg.get("paths")
     if isinstance(configured, list) and configured:
         return [_anchor_config_path(Path(p), config_dir) for p in configured]
@@ -431,19 +467,36 @@ def _resolve_coverage(
     if not required or allow_missing:
         if requested is not None and value is not None and not requested.exists():
             typer.secho(
-                f"warning: coverage file not found: {requested}; continuing without coverage.",
+                _format_setup_error(
+                    f"riskratchet: coverage file not found: {requested}; continuing without coverage.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{requested} -q",
+                        ),
+                    ],
+                ),
                 fg=typer.colors.YELLOW,
                 err=True,
             )
         return None
 
+    resolved_test_command = test_command.format(output=str(cache_path))
     typer.secho(
-        (
-            "coverage data is required but none could be produced. "
-            f"Tried --coverage path ({requested}), the auto-coverage cache "
-            f"({cache_path}), and `{test_command.format(output=str(cache_path))}`. "
-            "Generate coverage manually, pass --allow-missing-coverage, "
-            "or disable auto-generation with --no-auto-cov."
+        _format_setup_error(
+            (
+                f"riskratchet: coverage data is required but none could be produced. "
+                f"Tried --coverage ({requested}), auto-coverage cache ({cache_path}), "
+                f"and `{resolved_test_command}`."
+            ),
+            [
+                (
+                    "Generate coverage manually:",
+                    f"pytest --cov --cov-branch --cov-report=json:{cache_path} -q",
+                ),
+                ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                ("Disable auto-coverage and supply a path:", "<command> --no-auto-cov --coverage <path>"),
+            ],
         ),
         fg=typer.colors.RED,
         err=True,
@@ -497,15 +550,29 @@ def _ensure_coverage_map_exists(
     for prefix, path in missing:
         if allow_missing:
             typer.secho(
-                f"warning: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
+                _format_setup_error(
+                    f"riskratchet: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                        ),
+                    ],
+                ),
                 fg=typer.colors.YELLOW,
                 err=True,
             )
         else:
             typer.secho(
-                (
-                    f"coverage-map[{prefix}] file not found: {path}. "
-                    "Generate it or pass --allow-missing-coverage."
+                _format_setup_error(
+                    f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
+                    [
+                        (
+                            "Generate coverage at this path:",
+                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                        ),
+                        ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                    ],
                 ),
                 fg=typer.colors.RED,
                 err=True,

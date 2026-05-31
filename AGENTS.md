@@ -62,6 +62,38 @@ riskratchet diff src --coverage coverage.json --baseline .riskratchet.json --jso
   per-component regression gate (option 2, only shown when at least one
   regression has `kind == "component_regressed"`). The hint is on stderr
   so `--json` stdout consumers are unaffected.
+- `check --fail-above N` (since 0.2.8) is a **no-baseline absolute gate**:
+  pass `--fail-above N` and skip `--baseline` to fail when any current
+  function's score exceeds `N`. Reports each violating function as a
+  `kind: "above_threshold"` regression (`previous_score: null`,
+  `delta: null`) in the same envelope as the baseline gate, so JSON
+  consumers and SARIF/table/markdown/pr-comment renderers work unchanged.
+  `--format pr-comment` in no-baseline mode renders the regressions-only
+  PR comment (since 0.2.8 P8); in baseline mode it renders the full
+  diff-against-baseline PR comment as before. When both `--baseline`
+  (resolved) and `--fail-above` are given, the baseline gate is
+  authoritative and `--fail-above` is ignored with a stderr warning —
+  for a baseline-aware absolute threshold use `--fail-existing-above`
+  instead. Configurable via `[tool.riskratchet] fail_above = N`
+  (number in `(0, 100]`).
+- **Setup errors are remediation-form** (since 0.2.8). When riskratchet
+  cannot start work because of a setup problem — missing coverage,
+  missing baseline, malformed baseline, missing scan path, auto-coverage
+  produced nothing — it writes a multi-line stderr block in the shape
+  `riskratchet: <headline>\n\nFix one of:\n  1. <description>\n       <command>`
+  so every first failure suggests the exact command to run next. Tests
+  that contract on this shape live in `tests/test_setup_errors.py`;
+  rely on the presence of `Fix one of:` and the remediation command
+  string, not on the exact headline wording.
+- **Zero-flag `scan` prints a next-step footer** (since 0.2.8). When
+  `scan` runs without `--quiet`, `--summary`, `--output`, and the
+  default `table` format applies, AND no baseline file exists at the
+  resolved baseline path, scan appends a stdout footer pointing at
+  `riskratchet baseline` (with `riskratchet check --fail-above 60` as
+  the no-commitment alternative). The footer adapts to the empty
+  state ("0 functions ... nothing to baseline yet"). JSON / SARIF /
+  markdown / PR-comment outputs are unaffected because the gate is
+  `format == "table"`.
 
 ## `is_public` classification
 

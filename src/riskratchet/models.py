@@ -22,6 +22,7 @@ class RegressionKind(str, Enum):
     REGRESSED = "regressed"
     EXISTING_ABOVE_THRESHOLD = "existing_above_threshold"
     COMPONENT_REGRESSED = "component_regressed"
+    ABOVE_THRESHOLD = "above_threshold"
 
 
 class DiffStatus(str, Enum):
