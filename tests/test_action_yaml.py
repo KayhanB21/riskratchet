@@ -49,6 +49,7 @@ def test_action_runs_is_composite() -> None:
         ("comment", "true"),
         ("python-version", "3.12"),
         ("riskratchet-version", ""),
+        ("local-wheel", ""),
     ],
 )
 def test_action_declares_required_inputs(name: str, default: str) -> None:
@@ -63,12 +64,21 @@ def test_action_declares_required_inputs(name: str, default: str) -> None:
     )
 
 
-def test_action_install_step_uses_pip() -> None:
+def test_action_install_step_uses_uv_tool_install() -> None:
+    """Since 0.2.8 the install uses `uv tool install` via `astral-sh/setup-uv`
+    rather than raw `pip install`; this is faster and consistent with the
+    project's own dev environment."""
     steps = _load()["runs"]["steps"]
+    setup_uv = next((s for s in steps if s.get("name") == "Set up uv"), None)
+    assert setup_uv is not None, "action must include a `Set up uv` step"
+    uses = str(setup_uv.get("uses") or "")
+    assert uses.startswith("astral-sh/setup-uv@"), "uv setup must SHA-pin astral-sh/setup-uv"
+    assert "@v" not in uses.split("#")[0], "uses must be SHA-pinned, not tag-pinned"
     install = next((s for s in steps if s.get("name") == "Install riskratchet"), None)
     assert install is not None, "action must install riskratchet"
     run = str(install.get("run") or "")
-    assert "pip install" in run
+    assert "uv tool install" in run
+    assert "RR_LOCAL_WHEEL" in run, "install must honour the local-wheel escape hatch"
     assert "riskratchet --version" in run, "install step should verify the CLI is on PATH"
 
 

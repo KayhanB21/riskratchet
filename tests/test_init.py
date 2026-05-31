@@ -142,10 +142,29 @@ def test_detect_runner_unknown_when_no_signals(tmp_path: Path) -> None:
     assert detect_test_runner(tmp_path) is RunnerKind.UNKNOWN
 
 
-def test_render_ci_snippet_pins_action_to_installed_version() -> None:
-    snippet = render_ci_snippet("0.2.8")
+def test_render_ci_snippet_pins_action_to_release_tag() -> None:
+    snippet = render_ci_snippet("v0.2.8")
     assert "KayhanB21/riskratchet@v0.2.8" in snippet
     assert "coverage: coverage.json" in snippet
+
+
+def test_render_ci_snippet_defaults_to_action_ref_constant() -> None:
+    """Decoupled from `__version__`: the default ref is the release tag, not
+    the runtime package version, so pre-release builds still emit a valid
+    snippet that pins the tag the release will create."""
+    from riskratchet.init import ACTION_REF
+
+    snippet = render_ci_snippet()
+    assert f"KayhanB21/riskratchet@{ACTION_REF}" in snippet
+
+
+def test_render_ci_snippet_sha_pins_checkout() -> None:
+    """SHA-pinning `actions/checkout` defends against tag-mutation supply-chain
+    attacks. The full 40-char SHA + readable v-tag in a trailing comment."""
+    snippet = render_ci_snippet()
+    assert "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" in snippet
+    assert "# v4.2.2" in snippet
+    assert "actions/checkout@v4\n" not in snippet
 
 
 def test_init_cli_creates_and_prints_snippet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -165,6 +184,64 @@ def test_init_cli_is_idempotent_no_force(tmp_path: Path, monkeypatch: pytest.Mon
     assert result.exit_code == 0, result.output
     assert "skipped" in result.stdout
     assert "--force" in result.stdout
+
+
+def test_init_cli_no_baseline_flag_prints_next_steps(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`--no-baseline` skips the prompt entirely, even on a TTY."""
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["init", "--no-baseline"])
+    assert result.exit_code == 0, result.output
+    assert "Next:" in result.stdout
+    assert "running: pytest --cov" not in result.stdout
+
+
+def test_init_cli_skips_prompt_when_not_tty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Without a TTY (CliRunner.invoke default), no prompt fires and the
+    `Next:` list ships as the fallback."""
+    monkeypatch.chdir(tmp_path)
+    # Drop a pytest signal so the runner detector returns PYTEST; the prompt
+    # gate also requires TTY, which CliRunner.invoke does not simulate.
+    (tmp_path / "conftest.py").write_text("", encoding="utf-8")
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code == 0, result.output
+    assert "Next:" in result.stdout
+    assert "Run pytest --cov and create a baseline now?" not in result.stdout
+
+
+def test_init_cli_force_replaces_existing_block(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """`--force` replaces an existing block and preserves unrelated sections."""
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / "pyproject.toml"
+    target.write_text(
+        dedent(
+            """
+            [project]
+            name = "demo"
+            version = "0.0.1"
+
+            [tool.riskratchet]
+            paths = ["legacy_src"]
+            fail_new_above = 30
+
+            [tool.ruff]
+            line-length = 100
+            """
+        ).strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["init", "--force", "--no-baseline"])
+    assert result.exit_code == 0, result.output
+    assert "replaced" in result.stdout
+    text = target.read_text(encoding="utf-8")
+    # Other sections preserved byte-for-byte.
+    assert "[project]" in text
+    assert 'name = "demo"' in text
+    assert "[tool.ruff]" in text
+    assert "line-length = 100" in text
+    # Old riskratchet block replaced with the starter.
+    assert "legacy_src" not in text
+    assert 'paths = ["src"]' in text
 
 
 def test_init_cli_no_snippet_suppresses_snippet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

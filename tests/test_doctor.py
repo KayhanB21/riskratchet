@@ -13,6 +13,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
+from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -207,3 +208,32 @@ def test_summarize_counts_match_status_distribution() -> None:
     ]
     s = summarize(checks)
     assert s == {"passed": 3, "warned": 2, "failed": 1, "total": 6}
+
+
+def _normalise(text: str, tmp_path: Path) -> str:
+    """Drop tmp_path leakage so the snapshot is portable across machines."""
+    return text.replace(str(tmp_path), "<tmp>")
+
+
+def test_doctor_with_fail_stdout_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, snapshot: SnapshotAssertion
+) -> None:
+    """Pins the status-table content (stdout) when one check fails. Together
+    with the stderr snapshot below, locks the P13 stdout-vs-stderr routing
+    that the contrarian critique flagged as silently regressable."""
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 1, (result.stdout, result.stderr)
+    assert _normalise(result.stdout, tmp_path) == snapshot
+
+
+def test_doctor_with_fail_stderr_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, snapshot: SnapshotAssertion
+) -> None:
+    """Pins the `→ fix:` remediation block (stderr) when one check fails."""
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 1, (result.stdout, result.stderr)
+    assert _normalise(result.stderr, tmp_path) == snapshot

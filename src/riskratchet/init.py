@@ -26,6 +26,17 @@ STARTER_BLOCK = """[tool.riskratchet]
 paths = ["src"]
 """
 
+# Action ref written into the CI snippet. Bump alongside the release tag
+# (not `__version__`) — `init` is run against an installed version, but
+# the snippet pins the *Action tag*, which only exists after publish.
+ACTION_REF = "v0.2.8"
+
+# SHA-pinned third-party Actions referenced by the snippet. Pinning to a
+# full 40-char SHA prevents tag-mutation supply-chain attacks; the
+# trailing comment names the human-readable tag for the next bump.
+_CHECKOUT_PIN = "11bd71901bbe5b1630ceea73d27597364c9af683"  # v4.2.2
+_CHECKOUT_TAG = "v4.2.2"
+
 
 class InitOutcome(str, Enum):
     CREATED = "created"  # pyproject.toml did not exist; created with starter block
@@ -86,18 +97,17 @@ def detect_test_runner(config_dir: Path) -> RunnerKind:
     return RunnerKind.UNKNOWN
 
 
-def render_ci_snippet(version: str) -> str:
+def render_ci_snippet(ref: str = ACTION_REF) -> str:
     """Return the two-step CI snippet for the P27 composite action.
 
-    `version` is embedded as the action ref (`@v<version>`) so the
-    snippet pins to the package version the user just installed; users
-    can hand-edit later to point at a different tag.
+    `ref` defaults to `ACTION_REF` (the release tag), not the runtime
+    `__version__`, so a user running `init` on an unreleased build
+    still gets a snippet pinning the tag that will exist at release.
     """
-    tag = f"v{version}"
     return (
         "# Add this to .github/workflows/riskratchet.yml:\n"
-        "- uses: actions/checkout@v4\n"
-        f"- uses: KayhanB21/riskratchet@{tag}\n"
+        f"- uses: actions/checkout@{_CHECKOUT_PIN}  # {_CHECKOUT_TAG}\n"
+        f"- uses: KayhanB21/riskratchet@{ref}\n"
         "  with:\n"
         "    coverage: coverage.json\n"
     )

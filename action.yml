@@ -34,6 +34,13 @@ inputs:
     description: 'Pin a riskratchet version (e.g. 0.2.8). Default: latest from PyPI.'
     required: false
     default: ''
+  local-wheel:
+    description: |
+      Glob for a local wheel to install instead of fetching from PyPI. Used by the
+      repository's own dogfood workflow to test action.yml against an unreleased build.
+      Leave empty in normal use.
+    required: false
+    default: ''
   github-token:
     description: 'Token used to upsert the PR comment. Default `${{ github.token }}`.'
     required: false
@@ -47,15 +54,24 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
+    - name: Set up uv
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+
     - name: Install riskratchet
       shell: bash
+      env:
+        RR_PIN: ${{ inputs.riskratchet-version }}
+        RR_LOCAL_WHEEL: ${{ inputs.local-wheel }}
       run: |
         set -euo pipefail
-        python -m pip install --upgrade pip
-        if [ -n "${{ inputs.riskratchet-version }}" ]; then
-          python -m pip install "riskratchet==${{ inputs.riskratchet-version }}"
+        if [ -n "$RR_LOCAL_WHEEL" ]; then
+          # Glob expansion intentional: dogfood passes `dist/*.whl`.
+          # shellcheck disable=SC2086
+          uv tool install $RR_LOCAL_WHEEL
+        elif [ -n "$RR_PIN" ]; then
+          uv tool install "riskratchet==$RR_PIN"
         else
-          python -m pip install riskratchet
+          uv tool install riskratchet
         fi
         riskratchet --version
 

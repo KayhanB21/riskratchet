@@ -175,3 +175,70 @@ def test_explain_json_includes_source_url(tmp_path: Path) -> None:
     fn = payload["function"]
     assert fn["source_url"].startswith("https://github.com/acme/demo/blob/abc123/")
     assert f"#L{fn['lines']['start']}-L{fn['lines']['end']}" in fn["source_url"]
+
+
+def test_scan_sarif_includes_source_url_when_links_present(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(src),
+            "--format",
+            "sarif",
+            "--min-score",
+            "0",
+            "--repo-url",
+            "https://github.com/acme/demo",
+            "--commit-ref",
+            "abc123",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    results = payload["runs"][0]["results"]
+    assert results, "expected at least one SARIF result"
+    for r in results:
+        assert "source_url" in r["properties"]
+        assert r["properties"]["source_url"].startswith("https://github.com/acme/demo/blob/abc123/")
+
+
+def test_scan_sarif_omits_source_url_when_links_absent(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--format", "sarif", "--min-score", "0", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    for r in payload["runs"][0]["results"]:
+        assert "source_url" not in r["properties"]
+
+
+def test_scan_table_emits_source_footer_when_links_present(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(src),
+            "--repo-url",
+            "https://github.com/acme/demo",
+            "--commit-ref",
+            "abc123",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "Source:" in result.stdout
+    assert "https://github.com/acme/demo/blob/abc123/" in result.stdout
+
+
+def test_scan_table_omits_source_footer_when_links_absent(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git"])
+    assert result.exit_code == 0, result.output
+    assert "Source:" not in result.stdout

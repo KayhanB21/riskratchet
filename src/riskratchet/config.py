@@ -276,7 +276,7 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
     if isinstance(raw_map, dict):
         coverage_map_payload = {str(prefix): str(path) for prefix, path in raw_map.items()}
     return {
-        "paths": [str(path) for path in _resolved_paths([], cfg, config_dir, verify_exists=False)],
+        "paths": [str(path) for path in _resolved_paths([], cfg, config_dir)],
         "coverage": cfg.get("coverage"),
         "coverage_map": coverage_map_payload,
         "baseline": cfg.get("baseline", ".riskratchet.json"),
@@ -391,68 +391,24 @@ def _resolved_paths(
     paths: list[Path] | None,
     cfg: dict[str, Any],
     config_dir: Path,
-    *,
-    verify_exists: bool = True,
 ) -> list[Path]:
     """Resolve the scan-target paths, anchoring config-sourced ones.
 
-    `verify_exists=True` (the default for scan/check/baseline/diff) makes a
-    missing path fail fast with a P26 actionable error. Disable from pure
-    read paths (`config show`) and unit tests of the resolution logic.
+    Pure resolution: returns the paths, never exits. Callers that need to
+    fail fast on a missing path (scan / check / baseline / diff) call
+    `cli._check_paths_exist` after resolving. Inspection-only callers
+    (`config show`) skip that check by design.
     """
     if paths:
         # CLI paths are interpreted relative to the current directory.
-        if verify_exists:
-            _check_paths_exist(paths, origin="argument")
         return paths
     configured = cfg.get("paths")
     if isinstance(configured, list) and configured:
-        anchored = [_anchor_config_path(Path(p), config_dir) for p in configured]
-        if verify_exists:
-            _check_paths_exist(anchored, origin="config", raw=configured)
-        return anchored
+        return [_anchor_config_path(Path(p), config_dir) for p in configured]
     # No paths given anywhere: scan the current directory, not the whole
     # project. The implicit default follows the same cwd-relative rule as an
     # explicit CLI path, so a no-arg run in a subdirectory stays scoped to it.
     return [Path(".")]
-
-
-def _check_paths_exist(paths: list[Path], *, origin: str, raw: list[Any] | None = None) -> None:
-    """Exit with an actionable error when any scan path is missing.
-
-    Today's behaviour is silent: a typo in `--scan src/typo.py` or a stale
-    `[tool.riskratchet] paths = [...]` entry yields an empty report with no
-    warning. Fail fast at the boundary with a remediation hint.
-    """
-    missing = [p for p in paths if not p.exists()]
-    if not missing:
-        return
-    shown = [str(p) for p in missing]
-    headline_origin = (
-        "scan paths from CLI arguments do not exist"
-        if origin == "argument"
-        else "scan paths from [tool.riskratchet] paths do not exist"
-    )
-    fixes: list[tuple[str, str]] = [
-        ("Check the path spelling and rerun:", f"<command> {' '.join(shown)}"),
-        ("List a different path:", "<command> src/"),
-    ]
-    if origin == "config" and raw:
-        fixes.append(
-            (
-                "Edit pyproject.toml `[tool.riskratchet] paths`:",
-                f"paths = {raw!r}",
-            )
-        )
-    typer.secho(
-        _format_setup_error(
-            f"riskratchet: {headline_origin}: {', '.join(shown)}",
-            fixes,
-        ),
-        fg=typer.colors.RED,
-        err=True,
-    )
-    raise typer.Exit(code=2)
 
 
 def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, bool]:

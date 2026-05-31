@@ -148,30 +148,30 @@ def test_missing_scan_path_in_config_emits_remediation(
 
 
 def test_stale_coverage_test_command_failure_emits_remediation(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """`ensure_coverage` "generated_missing" branch logs the new remediation.
-
-    Exercising the path through the CLI is awkward (the test-suite-wide
-    fixture in conftest.py refuses to let the default runner spawn), so
-    test the auto_coverage seam directly: a stub runner that produces no
-    file, then assert the stderr hint.
+    """End-to-end: `riskratchet baseline` with auto-coverage enabled, but the
+    test command produces no coverage.json, surfaces the new remediation
+    block on stderr. Overrides the autouse `refuse` stub for this one
+    test so the auto-coverage path actually runs.
     """
-    from riskratchet.auto_coverage import ensure_coverage
+    import riskratchet.auto_coverage as auto_coverage
 
-    cache_path = tmp_path / ".riskratchet" / "coverage.json"
-    result = ensure_coverage(
-        requested=None,
-        sources=[tmp_path],
-        cache_path=cache_path,
-        test_command="pytest --cov --cov-report=json:{output} -q",
-        enabled=True,
-        cwd=tmp_path,
-        runner=lambda command, cwd: 0,
+    def fake_runner_that_writes_nothing(command: str, cwd: Path) -> int:
+        # Match the real runner shape (str, Path) but skip the side effect
+        # — the test asserts that an empty result triggers the hint.
+        return 0
+
+    monkeypatch.setattr(auto_coverage, "_default_runner", fake_runner_that_writes_nothing)
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["baseline", str(src), "--no-git"],
     )
-    captured = capsys.readouterr()
-    assert result.source == "generated_missing"
-    assert "test command did not produce" in captured.err
-    assert "Fix one of:" in captured.err
-    assert "pytest --cov" in captured.err
-    assert "--no-auto-cov" in captured.err
+    # exit 2 because auto-coverage produced nothing and no fallback is allowed.
+    assert result.exit_code == 2, (result.stdout, result.stderr)
+    assert "test command did not produce" in result.stderr
+    assert "Fix one of:" in result.stderr
+    assert "pytest --cov" in result.stderr
+    assert "--no-auto-cov" in result.stderr

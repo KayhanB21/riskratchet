@@ -3,6 +3,7 @@ verbose function explanation used by `riskratchet explain`."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from io import StringIO
 
 from rich.console import Console
@@ -16,6 +17,7 @@ from riskratchet.models import (
     Severity,
 )
 from riskratchet.reporting.summary import (
+    SourceLinks,
     _branch_cell,
     _branch_pct,
     _diff_summary,
@@ -51,7 +53,13 @@ def _make_buffered_console() -> tuple[StringIO, Console]:
     return buf, Console(file=buf, force_terminal=False, color_system=None, width=120)
 
 
-def render_report_table(report: RiskReport, *, limit: int | None = 20, include_summary: bool = True) -> str:
+def render_report_table(
+    report: RiskReport,
+    *,
+    limit: int | None = 20,
+    include_summary: bool = True,
+    links: SourceLinks | None = None,
+) -> str:
     sorted_fns = _sorted_by_risk(report.functions)
     displayed = sorted_fns if limit is None else sorted_fns[:limit]
 
@@ -85,6 +93,8 @@ def render_report_table(report: RiskReport, *, limit: int | None = 20, include_s
         console.print(_summary_line(report))
         if report.coverage_status == "missing":
             console.print("Coverage: missing (all functions are treated as uncovered).")
+    if links is not None:
+        buf.write(_table_source_footer((fn.id.as_target(), links.link_for(fn)) for fn in displayed))
     return buf.getvalue()
 
 
@@ -107,7 +117,7 @@ def render_report_summary_text(report: RiskReport) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_regressions_table(regressions: list[Regression]) -> str:
+def render_regressions_table(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
     buf, console = _make_buffered_console()
     if not regressions:
         console.print("[green]No risk regressions detected.[/]")
@@ -129,6 +139,10 @@ def render_regressions_table(regressions: list[Regression]) -> str:
             reg.reason,
         )
     console.print(table)
+    if links is not None:
+        buf.write(
+            _table_source_footer((reg.id.as_target(), _regression_link(reg, links)) for reg in regressions)
+        )
     return buf.getvalue()
 
 
@@ -167,7 +181,7 @@ def render_regressions_summary_text(
     return "\n".join(lines) + "\n"
 
 
-def render_diff_table(report: DiffReport) -> str:
+def render_diff_table(report: DiffReport, *, links: SourceLinks | None = None) -> str:
     buf, console = _make_buffered_console()
     table = Table(title="riskratchet diff", show_header=True, header_style="bold")
     table.add_column("Status")
@@ -186,6 +200,14 @@ def render_diff_table(report: DiffReport) -> str:
             entry.reason,
         )
     console.print(table)
+    if links is not None:
+        rows: list[tuple[str, str]] = []
+        for entry in report.entries:
+            fn = entry.current
+            if fn is None:
+                continue
+            rows.append((entry.id.as_target(), links.link_for(fn)))
+        buf.write(_table_source_footer(rows))
     return buf.getvalue()
 
 
@@ -206,6 +228,42 @@ def render_diff_summary_text(report: DiffReport) -> str:
     ]
     lines.extend(_group_summary_lines(summary.get("groups", {})))
     return "\n".join(lines) + "\n"
+
+
+def _regression_link(reg: Regression, links: SourceLinks) -> str:
+    """Choose the best span for a regression's source URL.
+
+    `Regression.current` is the post-state FunctionRisk; when missing
+    (entries that only exist in baseline), fall back to a 1-line span
+    via `Regression.id.path` so the URL still points somewhere useful.
+    """
+    if reg.current is not None:
+        return links.link_for(reg.current)
+    return links.link_for_span(reg.id.path, 1, 1)
+
+
+def _table_source_footer(rows: Iterable[tuple[str, str]]) -> str:
+    """Build the `Source:` footer block under a Rich table.
+
+    Rendered with direct string writes (not Rich) so the addition
+    leaves byte-stable snapshots for callers that don't pass `links`.
+    Duplicates by qualname are dropped so a function listed twice in
+    the table (e.g. as both `current` and `previous`) gets one URL.
+    """
+    seen: list[tuple[str, str]] = []
+    seen_targets: set[str] = set()
+    for qualname, url in rows:
+        if qualname in seen_targets:
+            continue
+        seen.append((qualname, url))
+        seen_targets.add(qualname)
+    if not seen:
+        return ""
+    out = ["", "Source:"]
+    for qualname, url in seen:
+        out.append(f"  {qualname:<40} {url}")
+    out.append("")
+    return "\n".join(out)
 
 
 def render_function_explanation(fn: FunctionRisk) -> str:

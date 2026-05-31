@@ -12,19 +12,29 @@ from riskratchet.models import (
     RiskReport,
     Severity,
 )
-from riskratchet.reporting.summary import _branch_pct, _sorted_by_risk
+from riskratchet.reporting.summary import SourceLinks, _branch_pct, _sorted_by_risk
 from riskratchet.scoring import severity
 
 
-def render_report_sarif(report: RiskReport, *, min_score: float = 25.0) -> str:
+def render_report_sarif(
+    report: RiskReport, *, min_score: float = 25.0, links: SourceLinks | None = None
+) -> str:
     results = [
-        _function_sarif_result(fn) for fn in _sorted_by_risk(report.functions) if fn.score >= min_score
+        _function_sarif_result(fn, links=links)
+        for fn in _sorted_by_risk(report.functions)
+        if fn.score >= min_score
     ]
     return json.dumps(_sarif_log(results), indent=2) + "\n"
 
 
-def render_regressions_sarif(regressions: list[Regression]) -> str:
-    return json.dumps(_sarif_log([_regression_sarif_result(reg) for reg in regressions]), indent=2) + "\n"
+def render_regressions_sarif(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
+    return (
+        json.dumps(
+            _sarif_log([_regression_sarif_result(reg, links=links) for reg in regressions]),
+            indent=2,
+        )
+        + "\n"
+    )
 
 
 def _sarif_log(results: list[dict[str, Any]]) -> dict[str, Any]:
@@ -61,8 +71,11 @@ def _sarif_log(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _function_sarif_result(fn: FunctionRisk) -> dict[str, Any]:
+def _function_sarif_result(fn: FunctionRisk, *, links: SourceLinks | None = None) -> dict[str, Any]:
     sev = severity(fn.score)
+    properties = _sarif_function_properties(fn)
+    if links is not None:
+        properties["source_url"] = links.link_for(fn)
     return {
         "ruleId": "riskratchet.function-risk",
         "level": _sarif_level_for_severity(sev),
@@ -75,11 +88,11 @@ def _function_sarif_result(fn: FunctionRisk) -> dict[str, Any]:
             )
         },
         "locations": [_sarif_location(fn.id.path, fn.span.start_line, fn.span.end_line)],
-        "properties": _sarif_function_properties(fn),
+        "properties": properties,
     }
 
 
-def _regression_sarif_result(reg: Regression) -> dict[str, Any]:
+def _regression_sarif_result(reg: Regression, *, links: SourceLinks | None = None) -> dict[str, Any]:
     fn = reg.current
     sev = severity(reg.current_score)
     result: dict[str, Any] = {
@@ -104,6 +117,8 @@ def _regression_sarif_result(reg: Regression) -> dict[str, Any]:
     }
     if fn is not None:
         result["properties"].update(_sarif_function_properties(fn))
+        if links is not None:
+            result["properties"]["source_url"] = links.link_for(fn)
     return result
 
 

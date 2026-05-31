@@ -1,0 +1,18 @@
+# serializer version: 1
+# name: test_footer_config_present_snapshot
+  '''
+  riskratchet: 1 function(s) at severity medium or higher. Next:
+    - lock in this state as a baseline:   riskratchet baseline
+    - gate on absolute threshold instead: riskratchet check --fail-above 60
+  
+  '''
+# ---
+# name: test_footer_no_config_snapshot
+  '''
+  riskratchet: 1 function(s) at severity medium or higher. Next:
+    - configure first:                    riskratchet init
+    - lock in this state as a baseline:   riskratchet baseline
+    - gate on absolute threshold instead: riskratchet check --fail-above 60
+  
+  '''
+# ---
