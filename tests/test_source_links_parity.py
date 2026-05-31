@@ -21,6 +21,15 @@ from riskratchet.cli import app
 runner = CliRunner()
 
 
+@pytest.fixture(autouse=True)
+def _isolate_github_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    # CLI auto-derives source links from GITHUB_* env vars when --repo-url is
+    # absent; clear them so "omits source_url when links absent" tests stay
+    # deterministic under GitHub Actions.
+    for var in ("GITHUB_SERVER_URL", "GITHUB_REPOSITORY", "GITHUB_SHA"):
+        monkeypatch.delenv(var, raising=False)
+
+
 def _project(tmp_path: Path) -> Path:
     src = tmp_path / "src"
     src.mkdir()
