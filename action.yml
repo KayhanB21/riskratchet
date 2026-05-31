@@ -42,9 +42,9 @@ inputs:
     required: false
     default: ''
   github-token:
-    description: 'Token used to upsert the PR comment. Default `${{ github.token }}`.'
+    description: 'Token used to upsert the PR comment. Falls back to `${{ github.token }}` when empty.'
     required: false
-    default: ${{ github.token }}
+    default: ''
 
 runs:
   using: composite
@@ -119,7 +119,7 @@ runs:
       if: inputs.comment == 'true' && github.event_name == 'pull_request' && steps.ratchet.outputs.status != ''
       shell: bash
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
+        GH_TOKEN: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         REPO: ${{ github.repository }}
       run: |
