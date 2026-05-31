@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [Unreleased]
+## [0.2.8] - 2026-05-30
 
 0.2.8 is the "first 5 minutes + adoption surface + PR review" release.
 Three sub-themes:
@@ -70,7 +70,11 @@ Three sub-themes:
   `.github/workflows/dogfood-action.yml` builds the in-tree wheel
   and runs the local action against the riskratchet repo itself,
   satisfying the P27 "CI runs the action against a synthetic PR"
-  acceptance criterion.
+  acceptance criterion. The Marketplace wrapper repo
+  `KayhanB21/riskratchet-action` shipped concurrently
+  (`@v1` / `@v1.0.0`) and delegates to
+  `KayhanB21/riskratchet@v0.2.8`; both shapes share `action.yml`
+  as their source of truth.
 - (P28) `check --fail-above N` — a no-baseline absolute-threshold
   gate. When `--fail-above` is given and no baseline resolves,
   every function whose current score strictly exceeds `N` is
@@ -156,14 +160,6 @@ Three sub-themes:
 - (cleanup) Unused `CHECK_NAMES` tuple in `src/riskratchet/doctor.py`.
 - (cleanup) Unused `InitResult` dataclass in
   `src/riskratchet/init.py`.
-
-### Known follow-ups (out of 0.2.8 PR scope)
-
-- The `KayhanB21/riskratchet-action` Marketplace wrapper repo is
-  scaffolded but not yet pushed. Until then, the canonical
-  reference is `KayhanB21/riskratchet@v0.2.8`. The wrapper exists
-  for Marketplace discoverability; both shapes share `action.yml`
-  as their source of truth.
 
 ## [0.2.7] - 2026-05-28
 

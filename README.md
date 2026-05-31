@@ -249,7 +249,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.4
+    rev: v0.2.8
     hooks:
       - id: riskratchet
         args:
