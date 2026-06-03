@@ -9,6 +9,69 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.9] - 2026-06-02
+
+0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI
+failures debuggable without polluting stdout, lets closed-source adopters redact
+identifiers from shared output, and carries a research finding on the `sprawl`
+component. No native payload field was renamed or removed; non-redacted,
+non-verbose output is byte-for-byte unchanged from 0.2.8.
+
+### Added
+
+- (P11) Structured diagnostics on `scan`, `baseline`, `check`, `diff`, and
+  `explain`:
+  - `--verbose` prints a small fixed set of run diagnostics to **stderr** —
+    coverage source (single / map / auto, including whether the auto-coverage
+    cache was reused or regenerated), git/churn settings, include/exclude/allow
+    filter effects, the analysis tallies, and (for `check`/`diff`) the resolved
+    baseline path and entry count.
+  - `--debug-json` emits the same diagnostics as a schema-versioned JSON
+    envelope to stderr; `--debug-json-file PATH` writes it to a file instead.
+    The envelope is its own contract, validated against the new
+    `schemas/debug.schema.json` (`version: 1`), independent of the native
+    payload schemas.
+  - Stdout stays payload-only regardless of either flag.
+- (P12) Privacy-aware output redaction on `scan`, `check`, `diff`, and
+  `explain`:
+  - `--redact-paths` and `--redact-qualnames` replace source paths and function
+    qualnames with deterministic hashes across every output format (table,
+    markdown, PR comment, GitHub annotations, SARIF, and JSON), including
+    inside `reason` strings so a matched-rename note can't leak the original
+    target.
+  - `--private-comment` is a preset: redact paths + qualnames and suppress
+    source links.
+  - `--redact-salt TEXT` (or the `RISKRATCHET_REDACT_SALT` env var, or
+    `[tool.riskratchet] redact_salt`) salts the hashes; the default is
+    unsalted. Hashes are deterministic for a given (value, salt).
+  - Redaction is an output transform applied after baseline matching, so the
+    ratchet decision (regressions, exit code, MOVED matches) is **invariant**:
+    a redacted run gates identically to an un-redacted one. The persisted
+    baseline file is never redacted — the `baseline` command does not accept
+    redaction flags.
+
+### Research
+
+- (P24) Sprawl-component validation. A reproducible experiment
+  (`bin/experiments/sprawl_vs_complexity.py`, raw data in
+  `data/calibration/sprawl-experiment.json`) shows the per-file `sprawl`
+  component is largely orthogonal to `structural_complexity` (Pearson
+  r≈0.28) — it measures size, not branching — but its file-line half is a
+  file-level property that mechanically shifts every function's score by up to
+  5 points when a file crosses the 500–1000 line band, independent of any
+  change to the function. The finding (`docs/sprawl-component-finding.md`)
+  judges this **not unambiguous enough** to retune in a patch release: no
+  weight or scoring change ships in 0.2.9; the question feeds the P21
+  calibration thread.
+
+### Changed
+
+- The dogfood baseline (`.riskratchet.json`) was regenerated. See the baseline
+  bump rationale in the release PR: the new diagnostics/redaction wiring grew
+  `cli.py`, which raised the `sprawl` file-line term for the functions in it —
+  itself a live instance of the P24 artifact above. No function gained genuine
+  structural complexity beyond tolerance.
+
 ## [0.2.8] - 2026-05-30
 
 0.2.8 is the "first 5 minutes + adoption surface + PR review" release.

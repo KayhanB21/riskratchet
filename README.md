@@ -626,6 +626,38 @@ Native JSON output (truncated):
 }
 ```
 
+### Diagnostics and privacy controls
+
+Diagnostics never touch stdout — they go to stderr (or a file), so `--json`
+consumers and pipes stay clean:
+
+```bash
+riskratchet scan src --verbose            # human-readable run diagnostics on stderr
+riskratchet scan src --debug-json         # same diagnostics as a JSON envelope on stderr
+riskratchet scan src --debug-json-file diag.json   # ...or written to a file
+```
+
+The `--debug-json` envelope reports the coverage source (single / map / auto,
+including whether the auto-coverage cache was reused or regenerated), git/churn
+settings, include/exclude/allow filter effects, the analysis tallies, and (for
+`check`/`diff`) the resolved baseline. It is validated against
+`schemas/debug.schema.json` and is its own versioned contract.
+
+For closed-source repos, redaction hashes identifiers in **every** output
+format while leaving the ratchet decision unchanged (redaction runs after
+baseline matching):
+
+```bash
+riskratchet check src --coverage coverage.json --redact-paths       # hash file paths
+riskratchet check src --coverage coverage.json --redact-qualnames   # hash function names
+riskratchet check src --coverage coverage.json --private-comment    # both + drop source links
+```
+
+Hashes are deterministic; salt them with `--redact-salt TEXT` or the
+`RISKRATCHET_REDACT_SALT` environment variable. The `baseline` command does not
+accept redaction flags — the persisted baseline is the source of truth for
+future rename matching and is never hashed.
+
 ## Config validation, groups, and monorepos
 
 Validate project config before relying on it in CI:

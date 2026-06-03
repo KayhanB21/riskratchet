@@ -60,11 +60,24 @@ def _project(tmp_path: Path) -> Path:
         "config.schema.json",
         "doctor.schema.json",
         "explain.schema.json",
+        "debug.schema.json",
     ],
 )
 def test_schema_is_valid_draft_2020_12(schema_name: str) -> None:
     schema = _load_schema(schema_name)
     Draft202012Validator.check_schema(schema)
+
+
+def test_debug_json_matches_debug_schema(tmp_path: Path) -> None:
+    src = _project(tmp_path)
+    out = tmp_path / "diag.json"
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--no-auto-cov", "--no-git", "--debug-json-file", str(out)],
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    Draft202012Validator(_load_schema("debug.schema.json")).validate(payload)
 
 
 def test_scan_json_matches_report_schema(tmp_path: Path) -> None:

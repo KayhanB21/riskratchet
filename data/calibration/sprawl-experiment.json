@@ -1,0 +1,398 @@
+{
+  "synthetic": {
+    "description": "identical 40-line, CC=8 function in files of varying size",
+    "rows": [
+      {
+        "file_total_lines": 300,
+        "sprawl": 0.0,
+        "structural_complexity": 35.0,
+        "total_score": 36.25
+      },
+      {
+        "file_total_lines": 600,
+        "sprawl": 10.0,
+        "structural_complexity": 35.0,
+        "total_score": 37.25
+      },
+      {
+        "file_total_lines": 1200,
+        "sprawl": 50.0,
+        "structural_complexity": 35.0,
+        "total_score": 41.25
+      }
+    ]
+  },
+  "corpus_analysis": {
+    "corpus": [
+      "/Users/kayhanb/Projects/repos/kayhan-dev/etc/post-014/riskratchet/src"
+    ],
+    "n_functions": 275,
+    "n_files": 29,
+    "correlation": {
+      "sprawl_vs_structural": 0.2795,
+      "file_line_term_vs_structural": 0.165,
+      "function_line_term_vs_structural": 0.4485,
+      "file_line_term_vs_function_line_term": 0.3279
+    },
+    "split_simulation": {
+      "file": "src/riskratchet/cli.py",
+      "original_total_lines": 1800,
+      "simulated_total_lines": 900,
+      "weight_sprawl": 0.1,
+      "max_score_drop": -1.0,
+      "functions": [
+        {
+          "qualname": "_root",
+          "score_before": 37.5,
+          "score_after_split": 36.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "config_validate",
+          "score_before": 46.25,
+          "score_after_split": 45.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "config_show",
+          "score_before": 47.5,
+          "score_after_split": 46.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "scan",
+          "score_before": 65.0,
+          "score_after_split": 64.0,
+          "delta": -1.0
+        },
+        {
+          "qualname": "baseline",
+          "score_before": 56.56,
+          "score_after_split": 55.56,
+          "delta": -1.0
+        },
+        {
+          "qualname": "check",
+          "score_before": 75.0,
+          "score_after_split": 74.0,
+          "delta": -1.0
+        },
+        {
+          "qualname": "explain",
+          "score_before": 55.69,
+          "score_after_split": 54.69,
+          "delta": -1.0
+        },
+        {
+          "qualname": "diff",
+          "score_before": 71.25,
+          "score_after_split": 70.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "init_command",
+          "score_before": 48.75,
+          "score_after_split": 47.75,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_should_run_baseline",
+          "score_before": 38.75,
+          "score_after_split": 37.75,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_run_baseline_from_init",
+          "score_before": 38.75,
+          "score_after_split": 37.75,
+          "delta": -1.0
+        },
+        {
+          "qualname": "doctor",
+          "score_before": 51.25,
+          "score_after_split": 50.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_doctor_check_payload",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_doctor_table",
+          "score_before": 38.75,
+          "score_after_split": 37.75,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_report",
+          "score_before": 47.5,
+          "score_after_split": 46.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_effective_format",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_scan_next_step_footer",
+          "score_before": 42.5,
+          "score_after_split": 41.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_regression_hint",
+          "score_before": 40.0,
+          "score_after_split": 39.0,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_above_threshold_hint",
+          "score_before": 35.0,
+          "score_after_split": 34.0,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_render_regressions",
+          "score_before": 41.25,
+          "score_after_split": 40.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_write",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_validate_format",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_load_baseline_or_exit",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_check_paths_exist",
+          "score_before": 47.5,
+          "score_after_split": 46.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_validate_baseline_format",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_filtered_report",
+          "score_before": 41.25,
+          "score_after_split": 40.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_exit_for_scan_gate",
+          "score_before": 46.25,
+          "score_after_split": 45.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_links_for",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_resolve_source_links",
+          "score_before": 42.5,
+          "score_after_split": 41.5,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_env",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_diagnostics",
+          "score_before": 41.25,
+          "score_after_split": 40.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_resolve_redaction",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_populate_run_diagnostics",
+          "score_before": 36.25,
+          "score_after_split": 35.25,
+          "delta": -1.0
+        },
+        {
+          "qualname": "_emit_diagnostics_banner",
+          "score_before": 41.25,
+          "score_after_split": 40.25,
+          "delta": -1.0
+        }
+      ]
+    },
+    "per_file_file_line_term": {
+      "src/riskratchet/_version.py": {
+        "total_lines": 35.0,
+        "file_line_term": 0.0,
+        "functions": 2
+      },
+      "src/riskratchet/analysis.py": {
+        "total_lines": 272.0,
+        "file_line_term": 0.0,
+        "functions": 19
+      },
+      "src/riskratchet/auto_coverage.py": {
+        "total_lines": 135.0,
+        "file_line_term": 0.0,
+        "functions": 4
+      },
+      "src/riskratchet/baseline/classify.py": {
+        "total_lines": 166.0,
+        "file_line_term": 0.0,
+        "functions": 6
+      },
+      "src/riskratchet/baseline/compare.py": {
+        "total_lines": 162.0,
+        "file_line_term": 0.0,
+        "functions": 3
+      },
+      "src/riskratchet/baseline/diff.py": {
+        "total_lines": 236.0,
+        "file_line_term": 0.0,
+        "functions": 7
+      },
+      "src/riskratchet/baseline/io.py": {
+        "total_lines": 133.0,
+        "file_line_term": 0.0,
+        "functions": 6
+      },
+      "src/riskratchet/baseline/regressions.py": {
+        "total_lines": 136.0,
+        "file_line_term": 0.0,
+        "functions": 2
+      },
+      "src/riskratchet/cli.py": {
+        "total_lines": 1800.0,
+        "file_line_term": 100.0,
+        "functions": 34
+      },
+      "src/riskratchet/complexity.py": {
+        "total_lines": 82.0,
+        "file_line_term": 0.0,
+        "functions": 4
+      },
+      "src/riskratchet/config.py": {
+        "total_lines": 618.0,
+        "file_line_term": 23.6,
+        "functions": 26
+      },
+      "src/riskratchet/coverage.py": {
+        "total_lines": 202.0,
+        "file_line_term": 0.0,
+        "functions": 13
+      },
+      "src/riskratchet/diagnostics.py": {
+        "total_lines": 175.0,
+        "file_line_term": 0.0,
+        "functions": 9
+      },
+      "src/riskratchet/doctor.py": {
+        "total_lines": 251.0,
+        "file_line_term": 0.0,
+        "functions": 10
+      },
+      "src/riskratchet/engine.py": {
+        "total_lines": 201.0,
+        "file_line_term": 0.0,
+        "functions": 3
+      },
+      "src/riskratchet/git.py": {
+        "total_lines": 204.0,
+        "file_line_term": 0.0,
+        "functions": 8
+      },
+      "src/riskratchet/groups.py": {
+        "total_lines": 74.0,
+        "file_line_term": 0.0,
+        "functions": 5
+      },
+      "src/riskratchet/init.py": {
+        "total_lines": 185.0,
+        "file_line_term": 0.0,
+        "functions": 7
+      },
+      "src/riskratchet/matching.py": {
+        "total_lines": 197.0,
+        "file_line_term": 0.0,
+        "functions": 6
+      },
+      "src/riskratchet/models.py": {
+        "total_lines": 234.0,
+        "file_line_term": 0.0,
+        "functions": 8
+      },
+      "src/riskratchet/pytest_plugin.py": {
+        "total_lines": 155.0,
+        "file_line_term": 0.0,
+        "functions": 4
+      },
+      "src/riskratchet/redaction.py": {
+        "total_lines": 200.0,
+        "file_line_term": 0.0,
+        "functions": 14
+      },
+      "src/riskratchet/reporting/annotations.py": {
+        "total_lines": 58.0,
+        "file_line_term": 0.0,
+        "functions": 5
+      },
+      "src/riskratchet/reporting/json_payload.py": {
+        "total_lines": 212.0,
+        "file_line_term": 0.0,
+        "functions": 12
+      },
+      "src/riskratchet/reporting/markdown.py": {
+        "total_lines": 253.0,
+        "file_line_term": 0.0,
+        "functions": 9
+      },
+      "src/riskratchet/reporting/sarif.py": {
+        "total_lines": 171.0,
+        "file_line_term": 0.0,
+        "functions": 9
+      },
+      "src/riskratchet/reporting/summary.py": {
+        "total_lines": 265.0,
+        "file_line_term": 0.0,
+        "functions": 18
+      },
+      "src/riskratchet/reporting/text.py": {
+        "total_lines": 294.0,
+        "file_line_term": 0.0,
+        "functions": 10
+      },
+      "src/riskratchet/scoring.py": {
+        "total_lines": 193.0,
+        "file_line_term": 0.0,
+        "functions": 12
+      }
+    }
+  }
+}

@@ -46,6 +46,7 @@ from riskratchet.reporting.sarif import (
     render_report_sarif,
 )
 from riskratchet.reporting.summary import (
+    DEBUG_SCHEMA_URL,
     DIFF_SCHEMA_URL,
     EXPLAIN_SCHEMA_URL,
     OUTPUT_VERSION,
@@ -66,6 +67,7 @@ from riskratchet.reporting.text import (
 )
 
 __all__ = [
+    "DEBUG_SCHEMA_URL",
     "DIFF_SCHEMA_URL",
     "EXPLAIN_SCHEMA_URL",
     "OUTPUT_VERSION",
