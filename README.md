@@ -643,6 +643,10 @@ settings, include/exclude/allow filter effects, the analysis tallies, and (for
 `check`/`diff`) the resolved baseline. It is validated against
 `schemas/debug.schema.json` and is its own versioned contract.
 
+When redaction is active, the diagnostics surfaces above (banner, `--verbose`,
+`--debug-json`) hash their paths too, so a `--private-comment` run does not leak
+through diagnostics.
+
 For closed-source repos, redaction hashes identifiers in **every** output
 format while leaving the ratchet decision unchanged (redaction runs after
 baseline matching):
@@ -653,10 +657,17 @@ riskratchet check src --coverage coverage.json --redact-qualnames   # hash funct
 riskratchet check src --coverage coverage.json --private-comment    # both + drop source links
 ```
 
-Hashes are deterministic; salt them with `--redact-salt TEXT` or the
-`RISKRATCHET_REDACT_SALT` environment variable. The `baseline` command does not
-accept redaction flags — the persisted baseline is the source of truth for
-future rename matching and is never hashed.
+**Salt.** Hashes are salted, with this precedence: `--redact-salt TEXT`, then
+`RISKRATCHET_REDACT_SALT`, then `[tool.riskratchet] redact_salt`. With none set,
+the salt is derived from the commit (`GITHUB_REPOSITORY`@`GITHUB_SHA`, else
+`git rev-parse HEAD`); riskratchet warns only when there is no salt source at
+all, because unsalted hashes over known paths are guessable. So hashes are
+stable within a commit (scan/check/diff in one run correlate) and intentionally
+unlinkable across commits and repos — set an explicit `--redact-salt` if you
+need a fixed mapping across commits.
+
+The `baseline` command does not accept redaction flags — the persisted baseline
+is the source of truth for future rename matching and is never hashed.
 
 ## Config validation, groups, and monorepos
 

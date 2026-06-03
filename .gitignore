@@ -225,3 +225,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 /.claude/settings.local.json
+
+# P24 calibration corpus: shallow clones fetched by
+# bin/experiments/sprawl_vs_complexity.py --clone. The rolled-up results in
+# data/calibration/sprawl-experiment.json are committed; the clones are not.
+/data/calibration/corpus/

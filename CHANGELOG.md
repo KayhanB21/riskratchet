@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.2.9] - 2026-06-02
+## [0.2.9] - 2026-06-03
 
 0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI
 failures debuggable without polluting stdout, lets closed-source adopters redact
@@ -31,19 +31,30 @@ non-verbose output is byte-for-byte unchanged from 0.2.8.
     The envelope is its own contract, validated against the new
     `schemas/debug.schema.json` (`version: 1`), independent of the native
     payload schemas.
-  - Stdout stays payload-only regardless of either flag.
+  - Stdout stays payload-only regardless of either flag. When redaction is
+    active, the diagnostics surfaces (the always-on banner, `--verbose`, and
+    `--debug-json`) hash their path fields too, so `--private-comment` cannot
+    leak paths through diagnostics.
+  - Implementation note: these diagnostics are assembled at the CLI layer from
+    the report fields and resolved config (not threaded through `analyze`), and
+    the category set is deliberately small (~5). Git timing / commit counts were
+    considered and intentionally left out until a real debugging need appears.
 - (P12) Privacy-aware output redaction on `scan`, `check`, `diff`, and
   `explain`:
   - `--redact-paths` and `--redact-qualnames` replace source paths and function
     qualnames with deterministic hashes across every output format (table,
     markdown, PR comment, GitHub annotations, SARIF, and JSON), including
-    inside `reason` strings so a matched-rename note can't leak the original
-    target.
+    inside `reason` strings so a matched-rename or ambiguous-rename note can't
+    leak the original target.
   - `--private-comment` is a preset: redact paths + qualnames and suppress
     source links.
-  - `--redact-salt TEXT` (or the `RISKRATCHET_REDACT_SALT` env var, or
-    `[tool.riskratchet] redact_salt`) salts the hashes; the default is
-    unsalted. Hashes are deterministic for a given (value, salt).
+  - **Salt:** `--redact-salt TEXT`, then `RISKRATCHET_REDACT_SALT`, then
+    `[tool.riskratchet] redact_salt`. When none is set, the salt is **derived
+    from the commit** (`GITHUB_REPOSITORY`@`GITHUB_SHA`, else `git rev-parse
+    HEAD`); only when there is no salt source at all does riskratchet warn that
+    the hashes are guessable. Consequence: hashes are deterministic within a
+    commit (scan/check/diff in one CI run correlate) and intentionally
+    unlinkable across commits and repositories. An explicit salt overrides this.
   - Redaction is an output transform applied after baseline matching, so the
     ratchet decision (regressions, exit code, MOVED matches) is **invariant**:
     a redacted run gates identically to an un-redacted one. The persisted
@@ -52,25 +63,32 @@ non-verbose output is byte-for-byte unchanged from 0.2.8.
 
 ### Research
 
-- (P24) Sprawl-component validation. A reproducible experiment
-  (`bin/experiments/sprawl_vs_complexity.py`, raw data in
-  `data/calibration/sprawl-experiment.json`) shows the per-file `sprawl`
-  component is largely orthogonal to `structural_complexity` (Pearson
-  r≈0.28) — it measures size, not branching — but its file-line half is a
-  file-level property that mechanically shifts every function's score by up to
-  5 points when a file crosses the 500–1000 line band, independent of any
-  change to the function. The finding (`docs/sprawl-component-finding.md`)
-  judges this **not unambiguous enough** to retune in a patch release: no
-  weight or scoring change ships in 0.2.9; the question feeds the P21
-  calibration thread.
+- (P24) Sprawl-component validation. A reproducible multi-repo experiment
+  (`bin/experiments/sprawl_vs_complexity.py --clone`; rolled-up results in
+  `data/calibration/sprawl-experiment.json`) over ~3,900 functions in 4 repos
+  (riskratchet, requests, httpx, rich) finds the per-file `sprawl` component is
+  **near-orthogonal** to `structural_complexity` (pooled Spearman ≈ 0.07) — it
+  measures size, not branching — and that its function-length half fires for
+  only ~1% of functions, so in practice sprawl is the *file-line* term: a
+  file-level property that shifts a function's score by up to 5 points on file
+  size alone. Engaging the literature (El Emam et al. 2001 on size as a
+  confound; Fenton & Neil 1999; Lanza & Marinescu 2006 on God-Class
+  thresholds), the finding (`docs/sprawl-component-finding.md`) judges this a
+  real but file-level signal whose maintainability validity is unproven, and
+  **not unambiguous enough** to retune in a patch release. No weight or scoring
+  change ships in 0.2.9; the question, with concrete candidate fixes, feeds the
+  P21 calibration thread. (This corrects an earlier single-repo pass that
+  reported a misleadingly high r≈0.28 using Pearson on saturated data.)
 
 ### Changed
 
-- The dogfood baseline (`.riskratchet.json`) was regenerated. See the baseline
-  bump rationale in the release PR: the new diagnostics/redaction wiring grew
-  `cli.py`, which raised the `sprawl` file-line term for the functions in it —
-  itself a live instance of the P24 artifact above. No function gained genuine
-  structural complexity beyond tolerance.
+- The dogfood baseline (`.riskratchet.json`) was regenerated. The diagnostics +
+  redaction wiring grew `cli.py`, which raised the `sprawl` file-line term for
+  the functions in it — itself a live instance of the P24 artifact above. Cheap
+  simplifications were applied first (helper extraction); the residual bump is
+  the file-size sprawl effect, not genuine added complexity. `cli.py` keeps
+  growing each release; splitting it is deferred (working-rule #3) but noted as
+  recurring tension.
 
 ## [0.2.8] - 2026-05-30
 

@@ -62,6 +62,30 @@ def collect_function_churn(
     }
 
 
+def head_sha(root: Path) -> str | None:
+    """Return the current HEAD commit SHA, or None if not a repo / git absent.
+
+    Used to derive a default redaction salt so unsalted redaction is still
+    unlinkable across commits. Any git failure collapses to None (the caller
+    then warns and runs unsalted).
+    """
+    if not (root / ".git").exists():
+        return None
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip() or None
+
+
 def collect_file_churn(
     root: Path,
     *,

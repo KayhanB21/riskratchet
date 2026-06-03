@@ -11,7 +11,7 @@ Redaction is NEVER applied to the persisted baseline file: that file is the
 source of truth for future matching, so the `baseline` command does not accept
 redaction flags.
 
-Two subtleties this module handles:
+Three subtleties this module handles:
 
 - `FunctionId` appears in many nested places (a regression's `current`, a diff
   entry's `previous_id` / `previous_targets`, etc.); every one is rewritten.
@@ -19,24 +19,37 @@ Two subtleties this module handles:
   structural id rewrite alone would leak the original target through the
   free-text reason. We scrub `reason` using a map of the ids reachable from the
   same entry.
+- Diagnostics (`--verbose` / `--debug-json` / the always-on banner) carry raw
+  paths too; `redact_diagnostics` / `redact_path_string` hash those so a
+  `--private-comment` run cannot leak through the diagnostics surface.
+
+Determinism: hashes are deterministic for a given (value, salt). The default
+salt is derived from the commit (see `resolve_salt`), so within one CI run the
+same path hashes consistently (scan/check/diff outputs correlate) while hashes
+are intentionally unlinkable across commits and repositories. An explicit salt
+overrides this.
 """
 
 from __future__ import annotations
 
 import hashlib
 import os
+from collections.abc import Callable
 from dataclasses import dataclass, replace
+from typing import TYPE_CHECKING
 
 from riskratchet.models import (
     BaselineEntry,
     DiffEntry,
     DiffReport,
-    FileStats,
     FunctionId,
     FunctionRisk,
     Regression,
     RiskReport,
 )
+
+if TYPE_CHECKING:
+    from riskratchet.diagnostics import Diagnostics
 
 REDACT_SALT_ENV = "RISKRATCHET_REDACT_SALT"
 _HASH_LEN = 12
@@ -71,16 +84,54 @@ def _hash(value: str, salt: str | None) -> str:
     return hashlib.sha256(payload).hexdigest()[:_HASH_LEN]
 
 
-def resolve_salt(cli_salt: str | None, cfg_salt: object) -> str | None:
-    """Resolve the redaction salt: CLI flag, then env var, then config, else None."""
+@dataclass(frozen=True, slots=True)
+class SaltResolution:
+    """Resolved salt plus where it came from, so the CLI can warn on `none`."""
+
+    salt: str | None
+    source: str  # "explicit" | "env" | "config" | "auto" | "none"
+
+
+def resolve_salt(
+    cli_salt: str | None,
+    cfg_salt: object,
+    *,
+    auto: Callable[[], str | None] | None = None,
+) -> SaltResolution:
+    """Resolve the redaction salt and record its source.
+
+    Precedence: `--redact-salt` flag, then `RISKRATCHET_REDACT_SALT`, then
+    `[tool.riskratchet] redact_salt`, then an injected `auto` derivation (the
+    CLI passes one that reads `GITHUB_REPOSITORY`/`GITHUB_SHA` or falls back to
+    `git rev-parse HEAD`). When nothing yields a salt the source is `none` and
+    the caller warns that unsalted hashes are guessable.
+
+    `auto` is injected (not called here) so this module stays free of git /
+    subprocess concerns and is trivially unit-testable.
+    """
     if cli_salt is not None:
-        return cli_salt
+        return SaltResolution(cli_salt, "explicit")
     env_salt = os.environ.get(REDACT_SALT_ENV)
     if env_salt:
-        return env_salt
+        return SaltResolution(env_salt, "env")
     if isinstance(cfg_salt, str) and cfg_salt:
-        return cfg_salt
-    return None
+        return SaltResolution(cfg_salt, "config")
+    if auto is not None:
+        derived = auto()
+        if derived:
+            return SaltResolution(derived, "auto")
+    return SaltResolution(None, "none")
+
+
+def redact_path_string(path: str, cfg: RedactionConfig) -> str:
+    """Hash a bare path string when path redaction is active; else return it.
+
+    Used for the diagnostics surfaces (banner / `--verbose` / `--debug-json`),
+    which carry paths outside the `FunctionId` machinery.
+    """
+    if not cfg.redact_paths or not path:
+        return path
+    return _hash(path, cfg.salt)
 
 
 def redact_function_id(fid: FunctionId, cfg: RedactionConfig) -> FunctionId:
@@ -91,18 +142,13 @@ def redact_function_id(fid: FunctionId, cfg: RedactionConfig) -> FunctionId:
     return FunctionId(path=path, qualname=qualname)
 
 
-def _redact_file_stats(stats: FileStats, cfg: RedactionConfig) -> FileStats:
-    if not cfg.redact_paths or not stats.path:
-        return stats
-    return replace(stats, path=_hash(stats.path, cfg.salt))
-
-
 def redact_function_risk(fn: FunctionRisk, cfg: RedactionConfig) -> FunctionRisk:
+    # Only the FunctionId is redacted: no renderer emits `file_stats.path`
+    # (they use `file_stats.total_lines`), so hashing it would be dead work.
     new_id = redact_function_id(fn.id, cfg)
-    new_stats = _redact_file_stats(fn.file_stats, cfg)
-    if new_id is fn.id and new_stats is fn.file_stats:
+    if new_id is fn.id:
         return fn
-    return replace(fn, id=new_id, file_stats=new_stats)
+    return replace(fn, id=new_id)
 
 
 def _redact_baseline_entry(entry: BaselineEntry, cfg: RedactionConfig) -> BaselineEntry:
@@ -140,10 +186,10 @@ def _scrub(text: str, mapping: dict[str, str]) -> str:
 def redact_report(report: RiskReport, cfg: RedactionConfig) -> RiskReport:
     if not cfg.active:
         return report
+    # `report.files` is only ever surfaced as a count, so it needs no redaction.
     return replace(
         report,
         functions=tuple(redact_function_risk(fn, cfg) for fn in report.functions),
-        files=tuple(_redact_file_stats(fs, cfg) for fs in report.files),
     )
 
 
@@ -198,3 +244,26 @@ def redact_diff(report: DiffReport, cfg: RedactionConfig) -> DiffReport:
             )
         )
     return DiffReport(entries=tuple(entries))
+
+
+def redact_diagnostics(diag: Diagnostics, cfg: RedactionConfig) -> Diagnostics:
+    """Hash the path-like fields a `Diagnostics` carries (coverage / baseline).
+
+    Mirrors the report transform-before-render pattern so `--verbose` and
+    `--debug-json` cannot leak paths that the report itself redacts. Counts,
+    flags, and the command name are untouched. No-op unless `redact_paths`.
+    """
+    if not cfg.redact_paths:
+        return diag
+    new_coverage = diag.coverage
+    if diag.coverage is not None:
+        new_coverage = dict(diag.coverage)
+        if new_coverage.get("path"):
+            new_coverage["path"] = _hash(new_coverage["path"], cfg.salt)
+        if new_coverage.get("map"):
+            new_coverage["map"] = {key: _hash(value, cfg.salt) for key, value in new_coverage["map"].items()}
+    new_baseline = diag.baseline
+    if diag.baseline is not None and diag.baseline.get("path"):
+        new_baseline = dict(diag.baseline)
+        new_baseline["path"] = _hash(new_baseline["path"], cfg.salt)
+    return replace(diag, coverage=new_coverage, baseline=new_baseline)

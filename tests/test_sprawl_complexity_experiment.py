@@ -11,6 +11,7 @@ rests on, so a future scoring change can't silently invalidate the writeup:
 from __future__ import annotations
 
 import importlib.util
+import math
 from pathlib import Path
 from types import ModuleType
 
@@ -66,3 +67,27 @@ def test_experiment_pearson_helper() -> None:
     mod = _load_experiment()
     assert round(mod._pearson([1.0, 2.0, 3.0], [2.0, 4.0, 6.0]), 4) == 1.0
     assert round(mod._pearson([1.0, 2.0, 3.0], [3.0, 2.0, 1.0]), 4) == -1.0
+
+
+def test_experiment_spearman_helper() -> None:
+    mod = _load_experiment()
+    # Perfectly monotonic (but non-linear) → Spearman 1.0 where Pearson < 1.
+    xs = [1.0, 2.0, 3.0, 4.0]
+    ys = [1.0, 4.0, 9.0, 16.0]
+    assert round(mod._spearman(xs, ys), 4) == 1.0
+    assert mod._pearson(xs, ys) < 1.0
+    assert round(mod._spearman([1.0, 2.0, 3.0], [3.0, 2.0, 1.0]), 4) == -1.0
+    # Ties get averaged ranks, so a flat series correlates with nothing.
+    assert math.isnan(mod._spearman([1.0, 1.0, 1.0], [1.0, 2.0, 3.0]))
+
+
+def test_experiment_distribution_helper() -> None:
+    mod = _load_experiment()
+    dist = mod._distribution([0.0, 0.0, 10.0, 20.0, 95.0])
+    assert dist["n"] == 5
+    assert dist["min"] == 0.0
+    assert dist["max"] == 95.0
+    assert dist["zeros_frac"] == 0.4
+    assert sum(dist["hist_0_100_by_10"]) == 5
+    assert dist["hist_0_100_by_10"][9] == 1  # the 95.0 lands in the top bucket
+    assert mod._distribution([]) == {"n": 0}

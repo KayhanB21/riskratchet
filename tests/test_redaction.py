@@ -18,7 +18,14 @@ from typer.testing import CliRunner
 
 from riskratchet.cli import app
 from riskratchet.models import FunctionId
-from riskratchet.redaction import RedactionConfig, redact_function_id, resolve_salt
+from riskratchet.redaction import (
+    RedactionConfig,
+    SaltResolution,
+    _scrub,
+    _target_map,
+    redact_function_id,
+    resolve_salt,
+)
 
 runner = CliRunner()
 
@@ -69,11 +76,14 @@ def test_hash_is_deterministic_and_salt_sensitive() -> None:
 
 def test_resolve_salt_precedence(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("RISKRATCHET_REDACT_SALT", "env-salt")
-    assert resolve_salt("cli-salt", "cfg-salt") == "cli-salt"
-    assert resolve_salt(None, "cfg-salt") == "env-salt"
+    assert resolve_salt("cli-salt", "cfg-salt") == SaltResolution("cli-salt", "explicit")
+    assert resolve_salt(None, "cfg-salt") == SaltResolution("env-salt", "env")
     monkeypatch.delenv("RISKRATCHET_REDACT_SALT")
-    assert resolve_salt(None, "cfg-salt") == "cfg-salt"
-    assert resolve_salt(None, None) is None
+    assert resolve_salt(None, "cfg-salt") == SaltResolution("cfg-salt", "config")
+    # Falls through to the injected auto-deriver, then to "none".
+    assert resolve_salt(None, None, auto=lambda: "git-sha") == SaltResolution("git-sha", "auto")
+    assert resolve_salt(None, None, auto=lambda: None) == SaltResolution(None, "none")
+    assert resolve_salt(None, None) == SaltResolution(None, "none")
 
 
 def test_redact_function_id_partial() -> None:
@@ -81,6 +91,21 @@ def test_redact_function_id_partial() -> None:
     paths_only = redact_function_id(fid, RedactionConfig(redact_paths=True))
     assert paths_only.path != "src/m.py"
     assert paths_only.qualname == "Foo.bar"
+
+
+def test_scrub_handles_substring_targets() -> None:
+    """A target that is a substring of a longer one must not shadow it."""
+    cfg = RedactionConfig(redact_qualnames=True, salt="s")
+    short = FunctionId(path="m.py", qualname="foo")
+    long = FunctionId(path="m.py", qualname="foobar")
+    mapping = _target_map([short, long], cfg)
+    text = f"could match: {long.as_target()}, {short.as_target()}"
+    scrubbed = _scrub(text, mapping)
+    # Both originals gone; the longer one wasn't partially mangled by the shorter.
+    assert "foo" not in scrubbed
+    assert "foobar" not in scrubbed
+    assert mapping[long.as_target()] in scrubbed
+    assert mapping[short.as_target()] in scrubbed
 
 
 # --- CLI: invariance of the ratchet decision ----------------------------
@@ -196,3 +221,102 @@ def test_baseline_file_is_never_redacted(tmp_path: Path, monkeypatch: pytest.Mon
     assert out_plain.read_text(encoding="utf-8") == out_salted.read_text(encoding="utf-8")
     # And the raw qualname is present (not hashed) in the baseline.
     assert "alpha" in out_plain.read_text(encoding="utf-8")
+
+
+# --- ambiguous-rename reason scrub (the riskiest reason path) -------------
+
+TWIN_BODIES = "def alpha(x):\n    return x + 1\n\n\ndef beta(x):\n    return x + 1\n"
+TWIN_RENAMED = "def gamma(x):\n    return x + 1\n"
+
+
+def test_ambiguous_rename_reason_is_scrubbed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _write_project(tmp_path, TWIN_BODIES)
+    common = ["--allow-missing-coverage", "--no-auto-cov", "--no-git"]
+    runner.invoke(app, ["baseline", str(src), *common])
+
+    # Both alpha and beta share a body fingerprint; replacing them with a single
+    # identical-body gamma makes gamma match both -> AMBIGUOUS_RENAME, whose
+    # reason embeds "could match: m.py::alpha, m.py::beta".
+    (src / "m.py").write_text(TWIN_RENAMED, encoding="utf-8")
+
+    redacted = runner.invoke(app, ["diff", str(src), *common, "--json", "--redact-qualnames"])
+    assert redacted.exit_code == 0, redacted.output
+    payload = redacted.stdout
+    entries = json.loads(payload)["entries"]
+    ambiguous = [e for e in entries if e["status"] == "ambiguous_rename"]
+    assert ambiguous, entries
+    # Neither original qualname may survive anywhere, including the reason and
+    # the previous_targets list.
+    assert "alpha" not in payload
+    assert "beta" not in payload
+    assert "alpha" not in (ambiguous[0]["reason"] or "")
+    assert all("alpha" not in t["qualname"] for t in ambiguous[0]["previous_targets"])
+
+
+def test_check_decision_invariant_default_gates(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Invariance under *default* gates (not a tuned --fail-regression-above)."""
+    monkeypatch.chdir(tmp_path)
+    src = _write_project(tmp_path, "def f(x):\n    return x\n")
+    common = ["--allow-missing-coverage", "--no-auto-cov", "--no-git"]
+    runner.invoke(app, ["baseline", str(src), *common])
+
+    # A large complexity jump regresses well past the default tolerance (5.0).
+    big = (
+        "def f(x):\n"
+        + "".join(f"    if x == {i}:\n        return {i}\n" for i in range(12))
+        + "    return -1\n"
+    )
+    (src / "m.py").write_text(big, encoding="utf-8")
+
+    plain = runner.invoke(app, ["check", str(src), *common, "--json"])
+    redacted = runner.invoke(app, ["check", str(src), *common, "--json", "--private-comment"])
+    assert plain.exit_code == redacted.exit_code == 1
+    assert len(json.loads(plain.stdout)["regressions"]) == len(json.loads(redacted.stdout)["regressions"])
+
+
+# --- diagnostics privacy (#7) and salt warning (#8) ----------------------
+
+
+def test_diagnostics_paths_redacted_under_redaction(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _write_project(tmp_path, COMPLEX)
+    common = ["--allow-missing-coverage", "--no-auto-cov", "--no-git"]
+    runner.invoke(app, ["baseline", str(src), *common])
+
+    out = tmp_path / "diag.json"
+    result = runner.invoke(
+        app,
+        ["check", str(src), *common, "--private-comment", "--debug-json-file", str(out)],
+    )
+    assert result.exit_code in (0, 1), result.output
+    envelope = json.loads(out.read_text(encoding="utf-8"))
+    baseline_path = envelope["diagnostics"]["baseline"]["path"]
+    # The baseline path is hashed (12 hex chars), not the real ".riskratchet.json".
+    assert baseline_path != ".riskratchet.json"
+    assert ".riskratchet.json" not in baseline_path
+    assert len(baseline_path) == 12
+    # The always-on banner on stderr must not leak the source path either.
+    assert "src/m.py" not in result.stderr
+    assert str(src) not in result.stderr
+
+
+def test_unsalted_redaction_warns_once(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)  # not a git repo -> no auto salt
+    monkeypatch.delenv("RISKRATCHET_REDACT_SALT", raising=False)
+    monkeypatch.delenv("GITHUB_REPOSITORY", raising=False)
+    monkeypatch.delenv("GITHUB_SHA", raising=False)
+    src = _write_project(tmp_path, COMPLEX)
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git", "--redact-paths"])
+    assert result.exit_code == 0
+    assert result.stderr.count("redacting without a salt") == 1
+
+
+def test_explicit_salt_silences_warning(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _write_project(tmp_path, COMPLEX)
+    result = runner.invoke(
+        app, ["scan", str(src), "--no-auto-cov", "--no-git", "--redact-paths", "--redact-salt", "s"]
+    )
+    assert result.exit_code == 0
+    assert "redacting without a salt" not in result.stderr
