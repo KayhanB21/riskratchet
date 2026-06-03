@@ -45,8 +45,10 @@ from riskratchet.config import (
     _resolved_weights,
     _warn_unknown_config_keys,
 )
+from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 from riskratchet.engine import analyze
+from riskratchet.git import head_sha
 from riskratchet.init import (
     InitOutcome,
     RunnerKind,
@@ -55,6 +57,16 @@ from riskratchet.init import (
     write_starter_config,
 )
 from riskratchet.models import Baseline, DiffReport, Regression, RegressionKind, RiskReport, Severity
+from riskratchet.redaction import (
+    RedactionConfig,
+    redact_diagnostics,
+    redact_diff,
+    redact_function,
+    redact_path_string,
+    redact_regressions,
+    redact_report,
+    resolve_salt,
+)
 from riskratchet.reporting import (
     SourceLinks,
     render_diff_github,
@@ -234,11 +246,51 @@ def scan(
         str | None,
         typer.Option("--commit-ref", help="Commit ref for markdown links."),
     ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", help="Emit structured run diagnostics to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json: Annotated[
+        bool,
+        typer.Option("--debug-json", help="Emit diagnostics as a JSON envelope to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json_file: Annotated[
+        Path | None,
+        typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
+    ] = None,
+    redact_paths: Annotated[
+        bool,
+        typer.Option("--redact-paths", help="Hash source paths in output (since 0.2.9 P12)."),
+    ] = False,
+    redact_qualnames: Annotated[
+        bool,
+        typer.Option("--redact-qualnames", help="Hash function qualnames in output (since 0.2.9 P12)."),
+    ] = False,
+    private_comment: Annotated[
+        bool,
+        typer.Option(
+            "--private-comment",
+            help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
+        ),
+    ] = False,
+    redact_salt: Annotated[
+        str | None,
+        typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
+    ] = None,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg, config_dir = _discover_config(config)
     _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
+    redaction = _resolve_redaction(
+        redact_paths=redact_paths,
+        redact_qualnames=redact_qualnames,
+        private_comment=private_comment,
+        redact_salt=redact_salt,
+        cfg=cfg,
+        config_dir=config_dir,
+    )
+    diag = Diagnostics(command="scan")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
@@ -246,6 +298,11 @@ def scan(
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=True)
         coverage_path = None
+        diag.set_coverage(
+            mode="map",
+            source="map",
+            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
+        )
     else:
         coverage_path = _resolve_coverage(
             coverage,
@@ -255,6 +312,7 @@ def scan(
             required=False,
             allow_missing=True,
             config_dir=config_dir,
+            diagnostics=diag,
         )
     _emit_diagnostics_banner(
         command="scan",
@@ -262,23 +320,40 @@ def scan(
         coverage_path=coverage_path,
         config_dir=config_dir,
         coverage_map=resolved_coverage_map,
+        redaction=redaction,
     )
+    resolved_include = include or []
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     report = analyze(
         resolved_paths,
         root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
-        include=include or [],
-        exclude=exclude or cfg.get("exclude", []),
-        allow=allow or cfg.get("allow", []),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
         use_git=not no_git,
-        churn_days=_resolved_churn_days(churn_days, cfg),
+        churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
     )
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
-    links = _resolve_source_links(repo_url, commit_ref)
+    _populate_run_diagnostics(
+        diag,
+        report=report,
+        reported_functions=len(filtered.functions),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        root=config_dir,
+    )
+    links = _links_for(repo_url, commit_ref, redaction)
+    filtered = redact_report(filtered, redaction)
     _emit_report(
         filtered,
         format=effective_format,
@@ -292,6 +367,13 @@ def scan(
     if effective_format == "table" and not quiet and not summary and output is None:
         baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
         _emit_scan_next_step_footer(filtered, baseline_file=baseline_file, config_present=bool(cfg))
+    _emit_diagnostics(
+        diag,
+        verbose=verbose,
+        debug_json=debug_json,
+        debug_json_file=debug_json_file,
+        redaction=redaction,
+    )
     _exit_for_scan_gate(filtered, fail_above=fail_above, fail_severity=fail_severity)
 
 
@@ -336,10 +418,27 @@ def baseline(
             help="Skip auto-generating coverage by running the test command.",
         ),
     ] = False,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", help="Emit structured run diagnostics to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json: Annotated[
+        bool,
+        typer.Option("--debug-json", help="Emit diagnostics as a JSON envelope to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json_file: Annotated[
+        Path | None,
+        typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
+    ] = None,
 ) -> None:
-    """Compute current risk and save it as the new baseline."""
+    """Compute current risk and save it as the new baseline.
+
+    Redaction flags are intentionally not accepted here: the baseline file is
+    the source of truth for future rename matching and must never be hashed.
+    """
     cfg, config_dir = _discover_config(config)
     _warn_unknown_config_keys(cfg)
+    diag = Diagnostics(command="baseline")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
@@ -348,6 +447,11 @@ def baseline(
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
         coverage_path = None
+        diag.set_coverage(
+            mode="map",
+            source="map",
+            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
+        )
     else:
         coverage_path = _resolve_coverage(
             coverage,
@@ -357,6 +461,7 @@ def baseline(
             required=True,
             allow_missing=allow_missing,
             config_dir=config_dir,
+            diagnostics=diag,
         )
     _emit_diagnostics_banner(
         command="baseline",
@@ -364,23 +469,46 @@ def baseline(
         coverage_path=coverage_path,
         config_dir=config_dir,
         coverage_map=resolved_coverage_map,
+        redaction=RedactionConfig(),
     )
+    resolved_include = include or []
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     report = analyze(
         resolved_paths,
         root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
-        include=include or [],
-        exclude=exclude or cfg.get("exclude", []),
-        allow=allow or cfg.get("allow", []),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
         use_git=not no_git,
-        churn_days=_resolved_churn_days(churn_days, cfg),
+        churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
     )
+    _populate_run_diagnostics(
+        diag,
+        report=report,
+        reported_functions=len(report.functions),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        root=config_dir,
+    )
     target = output or _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
     save_baseline(baseline_from_report(report), target)
+    _emit_diagnostics(
+        diag,
+        verbose=verbose,
+        debug_json=debug_json,
+        debug_json_file=debug_json_file,
+        redaction=RedactionConfig(),
+    )
     typer.echo(f"wrote baseline with {len(report.functions)} functions to {target}")
 
 
@@ -470,11 +598,51 @@ def check(
         str | None,
         typer.Option("--commit-ref", help="Commit ref for markdown links."),
     ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", help="Emit structured run diagnostics to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json: Annotated[
+        bool,
+        typer.Option("--debug-json", help="Emit diagnostics as a JSON envelope to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json_file: Annotated[
+        Path | None,
+        typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
+    ] = None,
+    redact_paths: Annotated[
+        bool,
+        typer.Option("--redact-paths", help="Hash source paths in output (since 0.2.9 P12)."),
+    ] = False,
+    redact_qualnames: Annotated[
+        bool,
+        typer.Option("--redact-qualnames", help="Hash function qualnames in output (since 0.2.9 P12)."),
+    ] = False,
+    private_comment: Annotated[
+        bool,
+        typer.Option(
+            "--private-comment",
+            help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
+        ),
+    ] = False,
+    redact_salt: Annotated[
+        str | None,
+        typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
+    ] = None,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg, config_dir = _discover_config(config)
     _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
+    redaction = _resolve_redaction(
+        redact_paths=redact_paths,
+        redact_qualnames=redact_qualnames,
+        private_comment=private_comment,
+        redact_salt=redact_salt,
+        cfg=cfg,
+        config_dir=config_dir,
+    )
+    diag = Diagnostics(command="check")
     _validate_baseline_format(baseline_format)
     fail_above_resolved = _resolved_optional_float(fail_above, cfg.get("fail_above"))
     if fail_above_resolved is not None and not (0 < fail_above_resolved <= 100):
@@ -513,6 +681,11 @@ def check(
             err=True,
         )
     old = _load_baseline_or_exit(baseline_file) if baseline_present else None
+    diag.set_baseline(
+        path=str(baseline_file),
+        present=baseline_present,
+        entry_count=len(old.entries) if old is not None else None,
+    )
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
@@ -521,6 +694,11 @@ def check(
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
         coverage_path = None
+        diag.set_coverage(
+            mode="map",
+            source="map",
+            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
+        )
     else:
         coverage_path = _resolve_coverage(
             coverage,
@@ -530,6 +708,7 @@ def check(
             required=True,
             allow_missing=allow_missing,
             config_dir=config_dir,
+            diagnostics=diag,
         )
     _emit_diagnostics_banner(
         command="check",
@@ -537,21 +716,39 @@ def check(
         coverage_path=coverage_path,
         config_dir=config_dir,
         coverage_map=resolved_coverage_map,
+        redaction=redaction,
     )
+    resolved_include = include or []
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     report = analyze(
         resolved_paths,
         root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
-        include=include or [],
-        exclude=exclude or cfg.get("exclude", []),
-        allow=allow or cfg.get("allow", []),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
         use_git=not no_git,
-        churn_days=_resolved_churn_days(churn_days, cfg),
+        churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
     )
+    _populate_run_diagnostics(
+        diag,
+        report=report,
+        reported_functions=len(report.functions),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        root=config_dir,
+    )
+    fail_new_above_val = _resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0)
+    fail_existing_above_val = _resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above"))
     diff_report: DiffReport | None
     if old is not None:
         diff_report = diff_baseline(
@@ -573,14 +770,28 @@ def check(
         )
         regressions = regressions_from_diff(
             diff_report,
-            fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
-            fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
+            fail_new_above=fail_new_above_val,
+            fail_existing_above=fail_existing_above_val,
         )
     else:
         assert fail_above_resolved is not None
         diff_report = None
         regressions = regressions_above_threshold(report, threshold=fail_above_resolved)
-    links = _resolve_source_links(repo_url, commit_ref)
+    if redaction.active:
+        # Redact the diff first (it carries the structured previous ids the
+        # reason strings embed), then re-derive regressions so they inherit the
+        # scrubbed reasons. The no-baseline path's reasons carry no foreign
+        # targets, so redacting the regressions directly is sufficient.
+        if diff_report is not None:
+            diff_report = redact_diff(diff_report, redaction)
+            regressions = regressions_from_diff(
+                diff_report,
+                fail_new_above=fail_new_above_val,
+                fail_existing_above=fail_existing_above_val,
+            )
+        else:
+            regressions = redact_regressions(regressions, redaction)
+    links = _links_for(repo_url, commit_ref, redaction)
     if summary:
         rendered = (
             render_regressions_summary_json(regressions, diff_report=diff_report)
@@ -598,6 +809,13 @@ def check(
     else:
         rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)
+    _emit_diagnostics(
+        diag,
+        verbose=verbose,
+        debug_json=debug_json,
+        debug_json_file=debug_json_file,
+        redaction=redaction,
+    )
     if regressions:
         if old is not None:
             _emit_regression_hint(regressions, baseline_file=baseline_file)
@@ -643,12 +861,44 @@ def explain(
         str | None,
         typer.Option("--commit-ref", help="Commit ref for source links (since 0.2.8 P10)."),
     ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", help="Emit structured run diagnostics to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json: Annotated[
+        bool,
+        typer.Option("--debug-json", help="Emit diagnostics as a JSON envelope to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json_file: Annotated[
+        Path | None,
+        typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
+    ] = None,
+    redact_paths: Annotated[
+        bool,
+        typer.Option("--redact-paths", help="Hash source paths in output (since 0.2.9 P12)."),
+    ] = False,
+    redact_qualnames: Annotated[
+        bool,
+        typer.Option("--redact-qualnames", help="Hash function qualnames in output (since 0.2.9 P12)."),
+    ] = False,
+    private_comment: Annotated[
+        bool,
+        typer.Option(
+            "--private-comment",
+            help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
+        ),
+    ] = False,
+    redact_salt: Annotated[
+        str | None,
+        typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
+    ] = None,
 ) -> None:
     """Print full risk breakdown for one function."""
     if "::" not in target:
         raise typer.BadParameter("target must be `path::qualname` (e.g. src/foo.py::Bar.baz)")
     cfg, config_dir = _discover_config(config)
     _warn_unknown_config_keys(cfg)
+    diag = Diagnostics(command="explain")
     file_part, _ = target.split("::", 1)
     file_path = Path(file_part)
     coverage_path = _resolve_coverage(
@@ -659,20 +909,42 @@ def explain(
         required=False,
         allow_missing=True,
         config_dir=config_dir,
+        diagnostics=diag,
     )
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     report = analyze(
         [file_path],
         coverage_path=coverage_path,
         use_git=not no_git,
-        churn_days=_resolved_churn_days(churn_days, cfg),
+        churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
         groups=_resolved_groups(cfg),
+    )
+    _populate_run_diagnostics(
+        diag,
+        report=report,
+        reported_functions=len(report.functions),
+        include=[],
+        exclude=[],
+        allow=[],
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        root=config_dir,
     )
     fn = report.find(target)
     if fn is None:
         typer.secho(f"function not found: {target}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2)
-    links = _resolve_source_links(repo_url, commit_ref)
+    redaction = _resolve_redaction(
+        redact_paths=redact_paths,
+        redact_qualnames=redact_qualnames,
+        private_comment=private_comment,
+        redact_salt=redact_salt,
+        cfg=cfg,
+        config_dir=config_dir,
+    )
+    fn = redact_function(fn, redaction)
+    links = _links_for(repo_url, commit_ref, redaction)
     if summary and json_output:
         typer.echo(render_function_summary_json(fn), nl=False)
     elif json_output:
@@ -685,6 +957,13 @@ def explain(
         )
     else:
         typer.echo(render_function_explanation(fn), nl=False)
+    _emit_diagnostics(
+        diag,
+        verbose=verbose,
+        debug_json=debug_json,
+        debug_json_file=debug_json_file,
+        redaction=redaction,
+    )
 
 
 @app.command()
@@ -748,11 +1027,51 @@ def diff(
         str | None,
         typer.Option("--commit-ref", help="Commit ref for markdown links."),
     ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", help="Emit structured run diagnostics to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json: Annotated[
+        bool,
+        typer.Option("--debug-json", help="Emit diagnostics as a JSON envelope to stderr (since 0.2.9 P11)."),
+    ] = False,
+    debug_json_file: Annotated[
+        Path | None,
+        typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
+    ] = None,
+    redact_paths: Annotated[
+        bool,
+        typer.Option("--redact-paths", help="Hash source paths in output (since 0.2.9 P12)."),
+    ] = False,
+    redact_qualnames: Annotated[
+        bool,
+        typer.Option("--redact-qualnames", help="Hash function qualnames in output (since 0.2.9 P12)."),
+    ] = False,
+    private_comment: Annotated[
+        bool,
+        typer.Option(
+            "--private-comment",
+            help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
+        ),
+    ] = False,
+    redact_salt: Annotated[
+        str | None,
+        typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
+    ] = None,
 ) -> None:
     """Show full baseline diff; does not fail."""
     cfg, config_dir = _discover_config(config)
     _warn_unknown_config_keys(cfg)
     effective_format = _effective_format(format, json_output)
+    redaction = _resolve_redaction(
+        redact_paths=redact_paths,
+        redact_qualnames=redact_qualnames,
+        private_comment=private_comment,
+        redact_salt=redact_salt,
+        cfg=cfg,
+        config_dir=config_dir,
+    )
+    diag = Diagnostics(command="diff")
     baseline_file = baseline_path or _anchor_config_path(
         Path(cfg.get("baseline", ".riskratchet.json")), config_dir
     )
@@ -767,6 +1086,7 @@ def diff(
         )
         raise typer.Exit(code=2)
     old = _load_baseline_or_exit(baseline_file)
+    diag.set_baseline(path=str(baseline_file), present=True, entry_count=len(old.entries))
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
@@ -775,6 +1095,11 @@ def diff(
     if resolved_coverage_map:
         _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
         coverage_path = None
+        diag.set_coverage(
+            mode="map",
+            source="map",
+            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
+        )
     else:
         coverage_path = _resolve_coverage(
             coverage,
@@ -784,6 +1109,7 @@ def diff(
             required=True,
             allow_missing=allow_missing,
             config_dir=config_dir,
+            diagnostics=diag,
         )
     _emit_diagnostics_banner(
         command="diff",
@@ -791,20 +1117,36 @@ def diff(
         coverage_path=coverage_path,
         config_dir=config_dir,
         coverage_map=resolved_coverage_map,
+        redaction=redaction,
     )
+    resolved_include = include or []
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     report = analyze(
         resolved_paths,
         root=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
-        include=include or [],
-        exclude=exclude or cfg.get("exclude", []),
-        allow=allow or cfg.get("allow", []),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
         use_git=not no_git,
-        churn_days=_resolved_churn_days(churn_days, cfg),
+        churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
         missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
+    )
+    _populate_run_diagnostics(
+        diag,
+        report=report,
+        reported_functions=len(report.functions),
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        root=config_dir,
     )
     diff_report = diff_baseline(
         report,
@@ -823,7 +1165,9 @@ def diff(
         ),
         groups=_resolved_groups(cfg),
     )
-    links = _resolve_source_links(repo_url, commit_ref)
+    if redaction.active:
+        diff_report = redact_diff(diff_report, redaction)
+    links = _links_for(repo_url, commit_ref, redaction)
     if summary:
         rendered = (
             render_diff_summary_json(diff_report)
@@ -850,6 +1194,13 @@ def diff(
     else:
         rendered = render_diff_table(diff_report, links=links)
     _write(rendered, output)
+    _emit_diagnostics(
+        diag,
+        verbose=verbose,
+        debug_json=debug_json,
+        debug_json_file=debug_json_file,
+        redaction=redaction,
+    )
 
 
 DOCTOR_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/doctor.schema.json"
@@ -1347,6 +1698,17 @@ def _exit_for_scan_gate(
             raise typer.Exit(code=1)
 
 
+def _links_for(
+    repo_url: str | None,
+    commit_ref: str | None,
+    redaction: RedactionConfig,
+) -> SourceLinks | None:
+    """Resolve source links, suppressed when redaction would break the URLs."""
+    if redaction.drop_links:
+        return None
+    return _resolve_source_links(repo_url, commit_ref)
+
+
 def _resolve_source_links(repo_url: str | None, commit_ref: str | None) -> SourceLinks | None:
     resolved_repo = repo_url
     if resolved_repo is None:
@@ -1367,6 +1729,113 @@ def _env(name: str) -> str | None:
     return value or None
 
 
+def _emit_diagnostics(
+    diag: Diagnostics,
+    *,
+    verbose: bool,
+    debug_json: bool,
+    debug_json_file: Path | None,
+    redaction: RedactionConfig,
+) -> None:
+    """Render `--verbose` lines and/or the `--debug-json` envelope to stderr/file.
+
+    Stdout is never touched here: verbose lines and the bare `--debug-json`
+    envelope go to stderr; `--debug-json PATH` writes the envelope to a file.
+    Paths in the diagnostics are redacted first so a `--private-comment` run
+    does not leak through this surface.
+    """
+    diag = redact_diagnostics(diag, redaction)
+    if verbose:
+        for line in diag.to_lines():
+            typer.secho(line, err=True)
+    if debug_json or debug_json_file is not None:
+        payload = write_debug_json(diag, debug_json_file)
+        if payload is not None:
+            typer.echo(payload, err=True)
+
+
+def _resolve_redaction(
+    *,
+    redact_paths: bool,
+    redact_qualnames: bool,
+    private_comment: bool,
+    redact_salt: str | None,
+    cfg: Mapping[str, Any],
+    config_dir: Path,
+) -> RedactionConfig:
+    """Build a RedactionConfig from CLI flags, config, and the salt sources.
+
+    `--private-comment` is a preset: it forces both path and qualname redaction
+    and suppresses source links for PR comments. When redaction is active but no
+    explicit / env / config / git-derived salt exists, warn once that unsalted
+    hashes are guessable.
+    """
+    rp = _resolved_bool(redact_paths, cfg.get("redact_paths"))
+    rq = _resolved_bool(redact_qualnames, cfg.get("redact_qualnames"))
+    pc = _resolved_bool(private_comment, cfg.get("private_comment"))
+    if pc:
+        rp = True
+        rq = True
+    if not (rp or rq):
+        # Inactive: skip salt resolution entirely so a normal run never shells
+        # out to git for a salt it will not use.
+        return RedactionConfig()
+
+    def _auto_salt() -> str | None:
+        repo = _env("GITHUB_REPOSITORY")
+        sha = _env("GITHUB_SHA")
+        if repo and sha:
+            return f"{repo}@{sha}"
+        return head_sha(config_dir)
+
+    resolution = resolve_salt(redact_salt, cfg.get("redact_salt"), auto=_auto_salt)
+    if (rp or rq) and resolution.source == "none":
+        typer.secho(
+            "warning: redacting without a salt; hashes are guessable from known paths. "
+            "Set --redact-salt or RISKRATCHET_REDACT_SALT for stronger redaction.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    return RedactionConfig(
+        redact_paths=rp,
+        redact_qualnames=rq,
+        suppress_links=pc,
+        salt=resolution.salt,
+    )
+
+
+def _populate_run_diagnostics(
+    diag: Diagnostics,
+    *,
+    report: RiskReport,
+    reported_functions: int,
+    include: list[str],
+    exclude: list[str],
+    allow: list[str],
+    use_git: bool,
+    churn_days: int,
+    root: Path,
+) -> None:
+    """Fill the git / filters / analysis categories from post-run data."""
+    diag.set_git(
+        enabled=use_git,
+        churn_window_days=churn_days,
+        repo_present=(root / ".git").exists(),
+    )
+    diag.set_filters(
+        include=include,
+        exclude=exclude,
+        allow=allow,
+        suppressed_functions=report.suppressed_functions,
+    )
+    diag.set_analysis(
+        coverage_status=report.coverage_status,
+        analyzed_functions=report.analyzed_functions or len(report.functions),
+        reported_functions=reported_functions,
+        skipped_missing_coverage=report.skipped_missing_coverage,
+    )
+
+
 def _emit_diagnostics_banner(
     *,
     command: str,
@@ -1374,23 +1843,36 @@ def _emit_diagnostics_banner(
     coverage_path: Path | None,
     config_dir: Path,
     coverage_map: Mapping[str, Path] | None = None,
+    redaction: RedactionConfig | None = None,
 ) -> None:
     """Print a single 'resolved root + coverage source' line to stderr.
 
     Always-on so monorepo users can see which package is being scanned with
     which coverage file. `root` is the discovered config directory (which
     equals the current directory unless config was found in an ancestor).
-    Stdout stays payload-only.
+    Stdout stays payload-only. When path redaction is active the path-like
+    fields are hashed so this always-on line does not leak under
+    `--private-comment`.
+
+    This one-liner is emitted *before* analysis (so a slow or failing run still
+    shows what was being scanned); `--verbose` adds a detailed post-analysis
+    block via `_emit_diagnostics`. The small coverage-source overlap between the
+    two is intentional layering, not duplication.
     """
-    roots = ",".join(str(p) for p in scan_roots) or "."
+    cfg = redaction or RedactionConfig()
+    root = redact_path_string(str(config_dir), cfg)
+    roots = ",".join(redact_path_string(str(p), cfg) for p in scan_roots) or "."
     if coverage_map:
-        cov = "map=" + ",".join(f"{prefix}:{path}" for prefix, path in coverage_map.items())
+        cov = "map=" + ",".join(
+            f"{redact_path_string(prefix, cfg)}:{redact_path_string(str(path), cfg)}"
+            for prefix, path in coverage_map.items()
+        )
     elif coverage_path is not None:
-        cov = f"single={coverage_path}"
+        cov = f"single={redact_path_string(str(coverage_path), cfg)}"
     else:
         cov = "none"
     typer.secho(
-        f"riskratchet: command={command} root={config_dir} scan_roots=[{roots}] coverage={cov}",
+        f"riskratchet: command={command} root={root} scan_roots=[{roots}] coverage={cov}",
         err=True,
     )
 

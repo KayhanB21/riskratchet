@@ -29,6 +29,7 @@ REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regre
 DIFF_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json"
 SUMMARY_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json"
 EXPLAIN_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/explain.schema.json"
+DEBUG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/debug.schema.json"
 OUTPUT_VERSION = "0.2"
 PR_COMMENT_MARKER = "<!-- riskratchet-report -->"
 

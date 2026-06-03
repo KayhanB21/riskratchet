@@ -25,9 +25,12 @@ from __future__ import annotations
 import sys
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import typer
+
+if TYPE_CHECKING:
+    from riskratchet.diagnostics import Diagnostics
 
 from riskratchet.auto_coverage import (
     DEFAULT_CACHE_PATH,
@@ -84,6 +87,10 @@ CONFIG_ALLOWED_KEYS = {
     "include",
     "missing_coverage",
     "paths",
+    "private_comment",
+    "redact_paths",
+    "redact_qualnames",
+    "redact_salt",
     "test_command",
     "weights",
 }
@@ -207,7 +214,7 @@ def _validate_config(cfg: dict[str, Any]) -> None:
     _validate_string_list(cfg, "include")
     _validate_string_list(cfg, "exclude")
     _validate_string_list(cfg, "allow")
-    for key in ("coverage", "baseline", "coverage_cache", "test_command"):
+    for key in ("coverage", "baseline", "coverage_cache", "test_command", "redact_salt"):
         if key in cfg and not isinstance(cfg[key], str):
             raise ValueError(f"{key} must be a string.")
     for key in (
@@ -223,7 +230,14 @@ def _validate_config(cfg: dict[str, Any]) -> None:
         value = cfg["fail_above"]
         if not (0 < value <= 100):
             raise ValueError("fail_above must be a number in (0, 100].")
-    for key in ("allow_missing_coverage", "component_regression_gate", "auto_coverage"):
+    for key in (
+        "allow_missing_coverage",
+        "component_regression_gate",
+        "auto_coverage",
+        "redact_paths",
+        "redact_qualnames",
+        "private_comment",
+    ):
         if key in cfg and not isinstance(cfg[key], bool):
             raise ValueError(f"{key} must be a boolean.")
     if "churn_window_days" in cfg:
@@ -421,6 +435,20 @@ def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, 
     return None, False
 
 
+def _record_coverage_diag(
+    diagnostics: Diagnostics | None,
+    *,
+    mode: str,
+    source: str,
+    path: str | None = None,
+    command: str | None = None,
+    returncode: int | None = None,
+) -> None:
+    """Record the resolved coverage source on the collector, if one is present."""
+    if diagnostics is not None:
+        diagnostics.set_coverage(mode=mode, source=source, path=path, command=command, returncode=returncode)
+
+
 def _resolve_coverage(
     value: Path | None,
     cfg: dict[str, Any],
@@ -430,6 +458,7 @@ def _resolve_coverage(
     required: bool,
     allow_missing: bool,
     config_dir: Path,
+    diagnostics: Diagnostics | None = None,
 ) -> Path | None:
     """Resolve which coverage JSON to use, generating one via tests if needed.
 
@@ -445,6 +474,7 @@ def _resolve_coverage(
     if value is None and requested is not None:
         requested = _anchor_config_path(requested, config_dir)
     if requested is not None and requested.exists():
+        _record_coverage_diag(diagnostics, mode="single", source="explicit", path=str(requested))
         return requested
 
     auto_enabled = not no_auto_cov and _resolved_bool(True, cfg.get("auto_coverage"), default=True)
@@ -460,6 +490,14 @@ def _resolve_coverage(
         test_command=test_command,
         enabled=auto_enabled,
         cwd=config_dir,
+    )
+    _record_coverage_diag(
+        diagnostics,
+        mode="single" if result.path is not None else "none",
+        source=result.source,
+        path=str(result.path) if result.path is not None else None,
+        command=result.command,
+        returncode=result.returncode,
     )
     if result.path is not None:
         return result.path

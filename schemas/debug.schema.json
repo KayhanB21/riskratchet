@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KayhanB21/riskratchet/schemas/debug.schema.json",
+  "title": "riskratchet debug diagnostics",
+  "description": "Output of `--debug-json` on scan/baseline/check/diff/explain. A diagnostic aid for CI debugging; its own versioned contract, independent of the native payload schemas. Unset categories are null.",
+  "type": "object",
+  "required": ["$schema", "version", "command", "diagnostics"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "command": { "type": "string" },
+    "diagnostics": {
+      "type": "object",
+      "required": ["coverage", "git", "filters", "analysis", "baseline"],
+      "additionalProperties": false,
+      "properties": {
+        "coverage": {
+          "type": ["object", "null"],
+          "required": ["mode", "source", "path", "map", "command", "returncode"],
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "enum": ["single", "map", "none"] },
+            "source": { "type": "string" },
+            "path": { "type": ["string", "null"] },
+            "map": {
+              "type": ["object", "null"],
+              "additionalProperties": { "type": "string" }
+            },
+            "command": { "type": ["string", "null"] },
+            "returncode": { "type": ["integer", "null"] }
+          }
+        },
+        "git": {
+          "type": ["object", "null"],
+          "required": ["enabled", "churn_window_days", "repo_present"],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "churn_window_days": { "type": "integer", "minimum": 1 },
+            "repo_present": { "type": "boolean" }
+          }
+        },
+        "filters": {
+          "type": ["object", "null"],
+          "required": ["include", "exclude", "allow", "suppressed_functions"],
+          "additionalProperties": false,
+          "properties": {
+            "include": { "type": "array", "items": { "type": "string" } },
+            "exclude": { "type": "array", "items": { "type": "string" } },
+            "allow": { "type": "array", "items": { "type": "string" } },
+            "suppressed_functions": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "analysis": {
+          "type": ["object", "null"],
+          "required": [
+            "coverage_status",
+            "analyzed_functions",
+            "reported_functions",
+            "skipped_missing_coverage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "coverage_status": { "type": "string" },
+            "analyzed_functions": { "type": "integer", "minimum": 0 },
+            "reported_functions": { "type": "integer", "minimum": 0 },
+            "skipped_missing_coverage": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "baseline": {
+          "type": ["object", "null"],
+          "required": ["path", "present", "entry_count"],
+          "additionalProperties": false,
+          "properties": {
+            "path": { "type": "string" },
+            "present": { "type": "boolean" },
+            "entry_count": { "type": ["integer", "null"], "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}
