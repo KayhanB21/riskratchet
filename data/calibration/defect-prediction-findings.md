@@ -1,0 +1,231 @@
+# Sprawl & defect prediction — findings and hypotheses (P21, phase 2)
+
+Status: **directional, not conclusive.** Snapshot dataset of 4 OSS repos, generated
+by `bin/calibration/` (harness phase 2). No product scoring change follows from
+this document; it records what the data say so far, the hypotheses they support,
+and what would confirm or refute them. Numbers below are reproducible from the
+SHA-pinned snapshots in `repos/<name>/repo.toml` (see §3).
+
+---
+
+## 1. The question
+
+riskratchet scores each function's maintainability risk as a weighted blend of six
+components (coverage gap, structural complexity, branch gap, churn, public surface,
+**sprawl**). The P24 investigation
+([`docs/sprawl-component-finding.md`](../../docs/sprawl-component-finding.md))
+showed that `sprawl` is, in practice, almost entirely its **file-line term** — a
+*file-level* property (how big is the file this function lives in) injected into a
+*per-function* score — and is near-orthogonal to structural complexity (pooled
+Spearman ≈ 0.07). P24 could not say whether that file-line term is a real signal or
+a size confound (El Emam et al. 2001 [R3]), because it only had *inter-metric*
+correlations, not *outcomes*.
+
+This phase asks the outcome question directly, in the spirit of Abreu et al. 2024
+[R1]: **does the score — and the sprawl component specifically — predict actual
+defects?** And operationally: **if we drop or dampen the file-line sprawl term,
+does defect prediction get better or worse?**
+
+## 2. Method (summary)
+
+Per repo, for a historical snapshot commit `S` (~365 days before HEAD):
+
+1. **Score** every function at `S` with riskratchet under full coverage (the repo's
+   own suite replayed under coverage). → population with a real score per function.
+2. **Label** via SZZ (Śliwerski–Zimmermann–Zeller [R2]): mine bug-fix commits in
+   `(S, HEAD]`, `git blame -w` their deleted lines at each fix's parent to the
+   introducing function, and track that function back to `S` (exact id, else body
+   fingerprint via the rename matcher). A function is **defect-implicated** if ≥1
+   later fix traces to it.
+3. **Evaluate**: for each sprawl *candidate* (baseline; drop the file-line term;
+   shrink its share to 0.75/0.90 function-weight; raise the 500/1000 saturation
+   band to 750/1500, 1000/2000, 1500/3000 — all **component recomputes**, not weight
+   overrides), compute the **AUC** of the score against the defect label, where
+   `AUC = P(score of a buggy fn > score of a clean fn) = U/(n_buggy·n_clean)`,
+   derived from the Mann–Whitney `U` (`bin/calibration/predict.py`,
+   `bin/calibration/stats.py`). We report `total_auc` (whole score) and
+   `sprawl_auc` (the sprawl component alone), plus the MWU `z`.
+
+Code: `bin/calibration/{defects,szz,fixes,predict,rescore,coverage_replay}.py`.
+The headline lever — `total_auc(drop_file_line) − total_auc(baseline)` — is a crude
+single-feature **ablation**: how much does the file-line term help or hurt the full
+model's ability to rank buggy functions above clean ones.
+
+## 3. Dataset
+
+Four repos whose suites run under the replay budget and yield defect signal. Each
+snapshot is SHA-pinned (`repos/<name>/repo.toml`); raw per-function labels and the
+AUC tables live in `repos/<name>/defect-{labels,prediction}.json`.
+
+| repo | snapshot `S` | window | fixes blamed | defect fns / total | untracked |
+| --- | --- | ---: | ---: | --- | ---: |
+| requests | `5b4b64c3` | 365d | 9 | 10 / 240 | 0 |
+| rich | `eaaebe48` | 365d | 24 | 19 / 901 | 9 |
+| click | `7b4f1ce2` | 365d | 32 | 28 / 526 | 2 |
+| sqlglot | `1d20aa22` | 365d | 40 | 20 / 2396 | 79 |
+
+"untracked" = implicated functions at a fix's parent that could not be matched back
+to `S` (added after `S`, or refactored past the rename threshold). sqlglot's high
+count (79) reflects how fast it churns — already a hint of selection bias (§6.3).
+
+## 4. Findings
+
+| repo | baseline `total_auc` | baseline `sprawl_auc` | `drop_file_line` total | Δ (drop−base) | `z` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| requests | 0.632 | 0.520 | 0.615 | **−0.017** | 1.4 |
+| rich | 0.614 | 0.640 | 0.624 | **+0.010** | 1.7 |
+| click | 0.648 | 0.542 | 0.664 | **+0.016** | 2.7 |
+| sqlglot | 0.771 | 0.541 | 0.785 | **+0.014** | 4.2 |
+
+Three observations:
+
+- **F1 — the overall score is a weak-to-moderate defect predictor.** `total_auc`
+  ranges 0.61–0.77 (0.5 = chance). Better than nothing; far from the file-line
+  values a strong predictor would show. Consistent with Abreu's headline [R1] that a
+  hand-weighted static score is a *weak* predictor.
+- **F2 — the sprawl component alone is near-chance in 3 of 4 repos** (`sprawl_auc`
+  ≈ 0.52–0.54), the exception being rich (0.64). On its own, sprawl barely
+  distinguishes buggy from clean functions.
+- **F3 — dropping the file-line term *helps* in 3 of 4 repos**, including both
+  repos where the effect is statistically meaningful (click `z`≈2.7, sqlglot
+  `z`≈4.2). Only requests — the smallest sample (n_buggy=10) and weakest signal —
+  gets slightly worse. The swept candidates agree directionally: for sqlglot, every
+  "dampen the file-line term" candidate beats baseline, and the most aggressive band
+  (`raise_band@1500-3000`) is highest (`total_auc` 0.805 vs 0.771; full sweep in
+  `repos/sqlglot/defect-prediction.json`).
+
+## 5. Hypotheses
+
+Stated falsifiably, to be confirmed or rejected as the corpus grows (§6).
+
+- **H1 (primary).** *The file-line half of the sprawl component is, on balance, net
+  noise for defect prediction.* Removing it does not reduce — and often slightly
+  increases — the score's ability to rank defect-implicated functions above clean
+  ones. **Refuted if**, across a larger corpus, `total_auc(drop_file_line)` is
+  reliably *below* baseline (most repos negative, or a significant repo strongly
+  negative).
+- **H2.** *What little predictive value `sprawl` has comes from the function-length
+  half, not the file-line half.* **Refuted if** `sprawl_auc` collapses toward 0.5
+  under `drop_file_line` across repos (it rose slightly here: e.g. sqlglot
+  0.54→0.59, requests 0.52→0.54).
+- **H3.** *The score's defect-prediction value comes mostly from coverage and
+  structural complexity, not sprawl.* Testable by ablating each component the same
+  way (not yet done — see §7).
+
+Note the scope limit baked into all three: SZZ measures **defects**, not
+**maintainability**. Sprawl is pitched as a maintainability signal. H1–H3 concern
+*defect* prediction only; see §6.1.
+
+## 6. What might go wrong — threats to validity
+
+### 6.1 Construct: defects ≠ maintainability
+SZZ labels functions that later needed a **bug-fix**. Sprawl claims to flag
+**maintainability** risk. A function can be sprawly and hard to maintain yet not
+generate logged bug-fixes in a 1-year window; conversely, tiny well-structured
+functions can be defect-hotspots. So even a clean "file-line term is noise for
+defects" result does **not** prove it is noise for maintainability — only that it
+does not predict this particular, observable outcome. This is the single biggest
+inferential gap; the document's claims must stay scoped to defect prediction.
+
+### 6.2 External validity: we are measuring the wrong population
+All four repos are **mature, heavily-reviewed, well-tested OSS libraries**.
+riskratchet's stated target is *AI-assisted code in side projects* — the opposite
+end of the quality and review spectrum. Findings here may not transfer to that
+population at all. Worse, the corpus is **selected for the ability to run a fast,
+offline, whole-package test suite under coverage**, which systematically favors
+small, stable, dependency-light libraries and excludes apps, services, async/IO-
+heavy code (httpx was dropped for exactly this), and anything needing a live
+service. The enabled set is a convenience sample, not a representative one.
+
+### 6.3 Selection / survivorship bias in the label
+Functions are only labelled if they exist at `S` **and** can be tracked forward to a
+fix. Functions added after `S` are unscored; functions refactored beyond the rename
+threshold between `S` and a fix are dropped (sqlglot: 79 such — a large fraction of
+its implicated set). The functions that survive a year unrefactored and still get
+matched are a biased subset — plausibly the *stable* ones, which is precisely the
+opposite of where sprawl-driven churn would show up. This could suppress any real
+sprawl signal.
+
+### 6.4 SZZ precision and recall
+- *Fix detection* is keyword-heuristic (`fix|bug|close|resolve|hotfix`): false
+  positives ("fix typo in docstring") and false negatives (fixes phrased without
+  keywords). `n_fixes_blamed` (9–40 per repo) is small.
+- *Blame over-attribution*: `git blame` returns the commit that **last touched** a
+  line, which SZZ treats as "introduced the bug" — a known over-approximation;
+  `-w` and ignore-revs reduce but do not remove refactor/format noise.
+- Merge commits are excluded (no single old side), a recall hit.
+
+### 6.5 Statistical power
+n_buggy is **10–28 per repo**. AUC confidence intervals at that n are wide; only
+click and sqlglot reach `z`>2. The Δ(drop−base) values (±0.01–0.02) are well within
+noise for any single repo. The consistency of *sign* across repos is the only thing
+carrying weight, and it is 3-of-4, not 4-of-4.
+
+### 6.6 The ablation is crude
+`total_auc(drop_file_line) − total_auc(baseline)` is a single-feature ablation on a
+fixed 6-component blend. It does not control for interactions, is not a proper
+model-comparison (no cross-validation, no regression with the feature in/out), and
+AUC deltas are not additive across components. A defensible weight decision needs a
+real model (e.g. logistic regression with/without the term, pooled, cross-validated)
+— see §7.
+
+### 6.7 Coverage is "now", not "at risk-time"
+The snapshot is scored with coverage regenerated from the **current** test suite run
+against the **historical** source. Coverage of `S`'s code by today's tests is not
+the coverage that existed when the bug was introduced. This biases the
+coverage_gap / branch_gap components (which dominate `total_auc`, F1/H3) more than
+sprawl, but it muddies the whole total.
+
+### 6.8 Reproducibility drift
+Snapshots are SHA-pinned, but `head_sha` (the end of the fix window) is **not** — a
+re-run mines fixes merged since, so defect counts and AUCs drift upward over time.
+The committed JSON is a point-in-time snapshot, not a stable target. Pin `head_sha`
+too before treating any number as fixed.
+
+## 7. What I expect from adding more repos — and the pre-registered test
+
+**Expectation (pre-registered so it can be wrong):** as the enabled corpus grows to
+~10–15 repos, I expect (a) `sprawl_auc` to cluster near 0.5 (sprawl weakly
+predictive at best), (b) `Δ(drop−base)` to be **small and mostly ≥ 0** — i.e. the
+file-line term keeps looking like noise-to-slightly-harmful — and (c) `total_auc`
+to stay in the 0.6–0.8 band, driven by coverage/complexity, not sprawl.
+
+**Decision rule (what would justify a 0.3.0 weight change):** *only* if, across
+≥10 repos with a proper pooled logistic-regression ablation (§6.6), removing or
+shrinking the file-line term yields a non-trivial, cross-validated improvement (or
+clearly no loss) — **and** the maintainability-vs-defect construct gap (§6.1) is
+addressed or explicitly accepted. Absent that, keep the shipped weights and keep
+this as a research note. Conversely, if added repos flip the sign (drop_file_line
+reliably *below* baseline), H1 is refuted and the file-line term stays as-is.
+
+**What adding repos will *not* fix:** the construct gap (§6.1) and the external-
+validity gap (§6.2). More OSS libraries is more of the same biased population. The
+higher-value moves are: (1) a corpus that resembles the actual target (AI-assisted
+/ side-project code with a defect or revert signal), and (2) a proper ablation
+model rather than AUC deltas.
+
+**What might break as repos are added:** most candidate repos will fail the recipe
+(test-only deps, coverage-config conflicts, suites that exceed the budget, repos too
+stable to have fixes in-window — all four failure modes already seen: rich needed
+`attrs`, click needed bare `--cov`, httpx exceeded budget, jinja2 had zero fixes).
+Expect to enable maybe half of what you try, and expect the per-repo `repo.toml` to
+accumulate bespoke recipe tweaks. The harness skips failures gracefully and records
+why; that is by design.
+
+## 8. References
+
+In-repo:
+- P24 sprawl investigation — `docs/sprawl-component-finding.md`; raw data
+  `data/calibration/sprawl-experiment.json`.
+- Harness — `bin/calibration/` (`defects.py`, `szz.py`, `fixes.py`, `predict.py`,
+  `rescore.py`, `coverage_replay.py`); per-repo data `repos/<name>/`.
+- Roadmap — `docs/riskratchet-0.2x-roadmap.md` (P21 calibration thread).
+
+External:
+- **[R1]** Abreu, Murali, Rigby, Maddila, Mockus, Nagappan, et al. (2024).
+  *Moving Faster and Reducing Risk: Using LLMs in Release Deployment.*
+  arXiv:2410.06351. (Validate against labelled outcomes; static scores are weak.)
+- **[R2]** Śliwerski, Zimmermann, Zeller (2005). *When Do Changes Induce Fixes?*
+  MSR 2005. (Origin of the SZZ defect-linking algorithm.)
+- **[R3]** El Emam, Benlarbi, Goel, Rai (2001). *The confounding effect of class
+  size on the validity of object-oriented metrics.* IEEE TSE. (Size confound.)

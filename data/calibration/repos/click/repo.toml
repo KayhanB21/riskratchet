@@ -8,6 +8,8 @@ extras = []
 # config so --cov=click can't trigger a CoverageWarning -> error.
 test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
 coverage_prefix = "src/click"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "7b4f1ce2923399deb7331b02d05a2fcff2074f2b"
 replay_enabled = true
 
 [timeouts]
