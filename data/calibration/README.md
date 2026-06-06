@@ -38,7 +38,7 @@ needs `gh` auth and network), not something CI does.
 ## Populating (phase 1)
 
 ```bash
-# 1. Replay recent merged PRs for the enabled repos (requests, httpx, rich).
+# 1. Replay recent merged PRs for an enabled repo (e.g. requests, click, sqlglot).
 #    Per-SHA results are cached under _cache/, so re-runs are cheap.
 uv run python -m bin.calibration.harness replay --repos requests --max-prs 10
 
@@ -102,26 +102,34 @@ fix-detection is heuristic; functions added after `S` or refactored past the ren
 threshold are censored/untracked (counted in the label file); a single repo's AUC
 is directional — pool the corpus first.
 
-Each `repos/<name>/defect-{labels,prediction}.json` now carries a real
-point-in-time snapshot for the four enabled repos whose suites run under the
-replay budget:
+Each `repos/<name>/defect-{labels,prediction}.json` carries a real point-in-time
+snapshot for the **ten enabled repos** whose suites run under the replay budget
+(ordered by n_buggy — the only thing that buys power):
 
 | repo | defect fns | baseline total_auc | baseline sprawl_auc | drop_file_line total_auc | z |
 | --- | --- | --- | --- | --- | --- |
-| requests | 10/240 | 0.632 | 0.520 | 0.615 | 1.4 |
-| rich | 19/901 | 0.614 | 0.640 | 0.624 | 1.7 |
-| click | 28/526 | 0.648 | 0.542 | **0.664** | 2.7 |
-| sqlglot | 20/2396 | 0.771 | 0.541 | **0.785** | 4.2 |
+| click | 28/526 | 0.648 | 0.542 | **0.664** | 2.73 |
+| sqlglot | 20/2396 | 0.771 | 0.541 | **0.785** | 4.22 |
+| rich | 19/901 | 0.614 | 0.640 | 0.624 | 1.71 |
+| requests | 10/240 | 0.632 | 0.520 | 0.615 | 1.41 |
+| pygments | 9/936 | **0.362** | 0.412 | 0.423 | −1.43 |
+| markdown | 8/382 | 0.588 | 0.423 | 0.626 | 0.87 |
+| jsonschema | 5/646 | 0.479 | 0.429 | 0.549 | −0.16 |
+| arrow | 4/175 | 0.501 | 0.559 | 0.614 | 0.01 |
+| werkzeug | 3/1113 | 0.530 | 0.638 | 0.531 | 0.23 |
+| flask | 2/369 | 0.830 | 0.828 | 0.790 | 1.62 |
 
-**Directional finding (4 repos, small n):** the overall score is better than
-chance everywhere (total_auc 0.61–0.77). The `sprawl` component on its own is
-near-chance in 3 of 4 (≈0.52–0.54; rich is the exception at 0.64). And **dropping
-the file-line sprawl term raises total AUC in 3 of 4 repos** (rich, click,
-sqlglot — including the two statistically meaningful ones, click z≈2.7 and sqlglot
-z≈4.2); only `requests` (the weakest, n=10) disagrees. That is consistent with the
-P24 suspicion that the file-line term is mostly noise for defect prediction — but
-it is **4 repos with 10–28 defects each**, so it is a direction to pursue, not a
-mandate. (Snapshots are SHA-pinned per repo for reproducibility.)
+**Directional finding (10 repos).** Growing the corpus 4→10 **strengthened** the
+narrow claim and **weakened** the broad one. Narrow: **dropping the file-line sprawl
+term raises total AUC in 8 of 10 repos** (sign-test p≈0.055), including both
+statistically meaningful ones (click z≈2.7, sqlglot z≈4.2) — consistent with the P24
+suspicion that the file-line term is mostly noise for defect prediction. Broad: the
+overall score is **not** better than chance everywhere — pygments is anti-predictive
+(total_auc 0.36, z≈−1.4) and jsonschema (0.48)/arrow (0.50) sit at/below chance, so
+the "0.61–0.77 everywhere" from the 4-repo sample does not hold. Six of the ten repos
+have n_buggy ≤ 9 and carry little power individually; they are for pooling, not
+per-repo reading. This is a direction to pursue, not a mandate. Full analysis,
+hypotheses, and threats: `defect-prediction-findings.md`. (Snapshots SHA-pinned.)
 
 `httpx`, `jinja2`, `fastapi`, `cassandra-python-driver` are disabled (see each
 `repos/<name>/repo.toml`): httpx's suite exceeds the replay budget, jinja2 had zero

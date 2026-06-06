@@ -161,10 +161,27 @@ def test_shipped_corpus_config_is_valid() -> None:
         "click",
         "jinja2",
         "sqlglot",
+        "arrow",
+        "jsonschema",
+        "flask",
+        "werkzeug",
+        "pygments",
+        "markdown",
     } == names
     enabled = {r.name for r in repos if r.replay_enabled}
-    # Repos whose suites run under the replay budget and yield defect signal.
-    assert enabled == {"requests", "rich", "click", "sqlglot"}
+    # Repos whose suites run under the replay budget and yield a defect snapshot.
+    assert enabled == {
+        "requests",
+        "rich",
+        "click",
+        "sqlglot",
+        "arrow",
+        "jsonschema",
+        "flask",
+        "werkzeug",
+        "pygments",
+        "markdown",
+    }
     for repo in repos:
         assert config.COVERAGE_PLACEHOLDER in repo.test_command
 

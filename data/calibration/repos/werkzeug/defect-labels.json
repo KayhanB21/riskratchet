@@ -1,0 +1,24 @@
+{
+  "snapshot_sha": "99fc293bc7dccd6a7dc96b96012d4aa849794ba4",
+  "head_sha": "1b00618e787f40dfb21eba29caf8f8be7c8e1d93",
+  "window_days": 365,
+  "n_functions": 1113,
+  "n_defect_functions": 3,
+  "n_fixes_scanned": 5,
+  "n_fixes_blamed": 5,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/werkzeug/sansio/response.py::Response.www_authenticate",
+      "defect_count": 1
+    },
+    {
+      "target": "src/werkzeug/test.py::EnvironBuilder.close",
+      "defect_count": 1
+    },
+    {
+      "target": "src/werkzeug/wrappers/request.py::Request.script_root",
+      "defect_count": 1
+    }
+  ]
+}

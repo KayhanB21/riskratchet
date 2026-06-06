@@ -1,0 +1,32 @@
+{
+  "snapshot_sha": "60c7b35b629fecfe6757db052e80acc52d71f30c",
+  "head_sha": "ac10ea747895d53633daa05128d0677032760ced",
+  "window_days": 365,
+  "n_functions": 646,
+  "n_defect_functions": 5,
+  "n_fixes_scanned": 6,
+  "n_fixes_blamed": 6,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "jsonschema/_legacy_keywords.py::find_evaluated_property_keys_by_schema",
+      "defect_count": 1
+    },
+    {
+      "target": "jsonschema/exceptions.py::by_relevance",
+      "defect_count": 1
+    },
+    {
+      "target": "jsonschema/protocols.py::Validator.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "jsonschema/tests/test_exceptions.py::TestBestMatch.test_one_error",
+      "defect_count": 1
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestRefResolver.test_it_retrieves_unstored_refs_via_urlopen",
+      "defect_count": 1
+    }
+  ]
+}

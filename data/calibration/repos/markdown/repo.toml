@@ -1,0 +1,20 @@
+name = "markdown"
+url = "https://github.com/Python-Markdown/markdown"
+paths = ["markdown"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# tests/test_apis.py imports yaml; pyyaml is a test-only dep.
+test_deps = ["pyyaml"]
+# tests/.../test_md_in_html.py defines a legacy unittest TestSuite class that
+# pytest cannot collect (has __init__); ignore that one module so collection
+# succeeds. Costs a little md_in_html coverage; coverage only feeds the score.
+test_command = "pytest tests --ignore=tests/test_syntax/extensions/test_md_in_html.py -q --cov=markdown --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "markdown"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "64a3c0fbc00327fbfee1fd6b44da0e5453287fe4"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

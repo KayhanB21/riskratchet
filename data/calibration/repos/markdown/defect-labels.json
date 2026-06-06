@@ -1,0 +1,44 @@
+{
+  "snapshot_sha": "64a3c0fbc00327fbfee1fd6b44da0e5453287fe4",
+  "head_sha": "ddead47873e7918829e1d8b0eaee6ab725793cc9",
+  "window_days": 365,
+  "n_functions": 382,
+  "n_defect_functions": 8,
+  "n_fixes_scanned": 7,
+  "n_fixes_blamed": 7,
+  "n_implications_untracked": 11,
+  "labels": [
+    {
+      "target": "markdown/__main__.py::parse_options",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/core.py::Markdown.convertFile",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.parse_html_declaration",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.handle_comment",
+      "defect_count": 3
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.parse_html_declaration",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.parse_starttag",
+      "defect_count": 1
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.reset",
+      "defect_count": 1
+    }
+  ]
+}
