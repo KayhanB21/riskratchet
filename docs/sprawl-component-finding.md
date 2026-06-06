@@ -55,10 +55,27 @@ exactly what a module split changes.
 - **McCabe (1976)** for cyclomatic complexity (what `structural_complexity`
   measures) and the **CRAP** metric (Savoia/Alberg) that riskratchet also
   reports — both per-function, size-independent by construction.
+- **Abreu, Murali, Rigby, Maddila, Mockus, Nagappan et al. (2024), "Moving
+  Faster and Reducing Risk: Using LLMs in Release Deployment"
+  ([arXiv:2410.06351](https://arxiv.org/abs/2410.06351)).** The constructive
+  counterpart to the size-confound critiques: it shows what validating a
+  code-risk score against *labelled outcomes* actually looks like at scale.
+  Meta trains a diff-risk score against real severe incidents (SEVs) and gates
+  deployment in proportional risk zones. Two findings bear directly on us:
+  (1) a static-feature logistic-regression baseline captured only ~18.7% of
+  SEVs at a 5% gating budget, while a content-aware learned model captured
+  ~1.4× more — i.e. a hand-weighted static score (which is exactly what
+  riskratchet is) is empirically a *weak* risk predictor and leaves real risk
+  uncaught; (2) the payoff came from training against an outcome label, not
+  from reweighting static components. This is the strongest argument we have
+  that P21 must chase labelled outcomes rather than re-tune sprawl in the dark,
+  and that "orthogonal to complexity" says nothing about predictive value.
 
 The literature does not settle our question; it frames it. El Emam says "expect
-size to confound"; Lanza & Marinescu say "size still matters past a threshold."
-That tension is exactly what corpus outcome data (P21) must resolve.
+size to confound"; Lanza & Marinescu say "size still matters past a threshold";
+Abreu et al. say "a static score is a weak predictor — validate against real
+outcomes, don't tune in the dark." That tension, and that prescription, are
+exactly what corpus outcome data (P21) must resolve.
 
 ## Evidence
 
@@ -145,7 +162,11 @@ Concrete outcomes:
 
 1. **Ship this finding + the reproducible multi-repo experiment.**
 2. **Feed P21 a specific, testable question:** do human reviewers accept
-   split-driven sprawl drops as real improvements? Candidate corrections to
+   split-driven sprawl drops as real improvements? The methodology cue from
+   Abreu et al. (2024): the validation target is a *labelled outcome*
+   (accepted/rejected change, or a defect/incident link), not another
+   inter-metric correlation — and the baseline to beat is low, so any candidate
+   fix must be judged on whether it tracks that label. Candidate corrections to
    evaluate *against outcomes*, ruled in by this data:
    - drop the file-line term (sprawl = function length only) — note this would
      make sprawl ~0 for 99% of functions, i.e. nearly delete the component;
