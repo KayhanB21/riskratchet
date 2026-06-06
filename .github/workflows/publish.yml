@@ -148,7 +148,10 @@ jobs:
       - name: Publish via OIDC
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
         with:
-          # PEP 740 attestations, signed with the publish job's OIDC identity.
-          # The downloaded dist/ holds only the wheel + sdist (the SBOM ships as a
-          # separate "sbom" artifact), so packages-dir stays distribution-only.
+          # PEP 740 attestations are already ON BY DEFAULT under Trusted
+          # Publishing; set explicitly so the requirement is visible and survives
+          # a future default change. (The build-provenance attestation in the
+          # build job is the genuinely new control.) The downloaded dist/ holds
+          # only the wheel + sdist — the SBOM ships as a separate "sbom" artifact
+          # — so packages-dir stays distribution-only.
           attestations: true

@@ -18,11 +18,14 @@ calibration harness. No native payload field renamed or removed.
 ### Added
 
 - (P14) Release builds now publish supply-chain provenance. The `publish.yml`
-  build job generates a CycloneDX SBOM for the wheel's runtime dependency closure
-  (uploaded as a separate `sbom` artifact) and attaches a GitHub build-provenance
-  attestation to the wheel and sdist; the PyPI upload step requests PEP 740
-  attestations signed with its OIDC identity. See `docs/threat-model.md` for how
-  to fetch and verify each.
+  build job generates a CycloneDX SBOM from the declared runtime dependency
+  closure (uploaded as a separate `sbom` artifact) and — the genuinely new
+  control — attaches a **GitHub build-provenance attestation** to the wheel and
+  sdist (`actions/attest-build-provenance`), verifiable offline with
+  `gh attestation verify`. The PyPI upload's PEP 740 attestations were already
+  on by default under Trusted Publishing; the workflow now sets `attestations:
+  true` explicitly so the requirement is visible and survives a default change.
+  See `docs/threat-model.md` for how to fetch and verify each.
 
 ### Research
 

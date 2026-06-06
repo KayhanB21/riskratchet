@@ -129,9 +129,12 @@ def cmd_rescore(args: argparse.Namespace) -> int:
         "schema": 1,
         "n_labeled_prs": len(prs),
         "note": (
-            "Separation is directional, not significant, until many PRs are "
-            "labelled. effect/z > 0 means rejected PRs carry more regressions "
-            "than accepted ones under that candidate."
+            "Phase-1 proxy: the accept/reject label is hand-labelled and the "
+            "rejected class is near-empty in merge history, so the separation "
+            "below is a smoke test of the machinery, NOT evidence about sprawl. "
+            "Intended successor: SZZ defect-linking (see "
+            "data/calibration/README.md). effect/z > 0 means rejected PRs carry "
+            "more regressions than accepted ones under that candidate."
         ),
         "candidates": results,
     }

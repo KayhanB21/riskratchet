@@ -44,12 +44,40 @@ uv run python -m bin.calibration.harness replay --repos requests --max-prs 10
 uv run python -m bin.calibration.harness rescore
 ```
 
-`rescore` re-scores each labelled PR under the three candidate sprawl fixes
-(drop the file-line term, shrink its share, raise the 500/1000 band) plus the
-shipped baseline, and reports whether each candidate makes *rejected* PRs carry
-more regressions than *accepted* ones. With only a handful of labels the
-separation is directional, not significant — the rollup says so.
+`rescore` re-scores each labelled PR under the swept candidate sprawl fixes
+(drop the file-line term, shrink its file share at 0.60/0.75/0.90, raise the
+file-line band at 750/1500, 1000/2000, 1500/3000) plus the shipped baseline, and
+reports whether each candidate makes *rejected* PRs carry more regressions than
+*accepted* ones. With only a handful of labels the separation is directional,
+not significant — the rollup says so.
+
+## On the label — and why phase 1's is weak
+
+The accept/reject label here is a **deliberately weak phase-1 proxy**, and it is
+the harness's biggest limitation. Two problems:
+
+1. **It is hand-labelled, so it won't scale.** You will realistically tag tens of
+   PRs, not thousands. A separation statistic on n that small is noise.
+2. **The "rejected" class is nearly empty by construction.** Almost every merged
+   PR was *accepted* — that is why it is in the history. Changes rejected
+   *specifically for maintainability* (a sprawl-driven revert, a "please don't
+   split this" review) are rare and hard to find in merge history, so the bucket
+   the whole separation analysis depends on starves.
+
+The Abreu et al. (2024) work this is modelled on did **not** use reviewer
+acceptance; it used **real labelled outcomes** (severe incidents). The obtainable,
+literature-standard equivalent for an OSS corpus is **defect-linking (SZZ)**:
+mine bug-fixing commits, `git blame` the fixed lines to the commits that last
+touched them, and map those to functions. The label becomes "was this function
+later implicated in a bug-fix" — derived from git history, **no manual labelling**,
+and far closer to the real risk question than "did a reviewer accept the PR."
+
+Phase 1 ships the *plumbing* (replay → coverage → diff → re-score → separation)
+and validates it end-to-end, but its label is a placeholder. The intended phase-2
+successor is an SZZ defect-linker that auto-populates the outcome label; see the
+0.2.x roadmap. Until then, treat any separation number here as a smoke test of the
+machinery, not evidence about the sprawl component.
 
 **No product weight change ships from this.** Re-scoring is analysis only; any
-weight change waits on enough labelled outcome data to be defensible (see
+weight change waits on a real outcome label and enough data to be defensible (see
 `docs/sprawl-component-finding.md` and the 0.2.x roadmap).

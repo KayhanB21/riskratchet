@@ -72,10 +72,13 @@ from this repository, at a known commit, with a known dependency closure:
 
   A pass proves the artifact was produced by this repo's `publish.yml` at the
   attested commit; a mismatch or missing attestation means do not trust the file.
-- **PyPI publish attestations (PEP 740).** The PyPI upload step requests
-  attestations signed with the publish job's OIDC identity (Trusted Publishing).
-  These appear on the project's PyPI release files and let `pip`/installers verify
-  that the uploaded distribution came from the expected GitHub publisher.
+- **PyPI publish attestations (PEP 740).** Trusted Publishing already generates
+  these by default; the workflow sets `attestations: true` explicitly so the
+  requirement is visible. They appear on the project's PyPI release files and let
+  `pip`/installers verify that the uploaded distribution came from the expected
+  GitHub publisher. This is not new in 0.2.10 — the **build-provenance
+  attestation above is the control this release adds**; the SBOM and the explicit
+  PyPI line make the existing guarantees inspectable.
 
 Trust boundary (post-0.2.10): the SBOM and both attestation families describe and
 sign **what was built and published**. They do not vouch for the correctness or
