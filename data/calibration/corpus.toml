@@ -28,6 +28,8 @@ paths = ["src/requests"]
 pr_branch = "main"
 python = "3.12"
 extras = ["socks"]
+# Pinned so the committed defect dataset's snapshot population is reproducible.
+snapshot_sha = "5b4b64c3467fd7a3c03f91ee641aaa348b6bed3b"
 test_command = "pytest tests -q --cov=requests --cov-branch --cov-report=json:{coverage_out}"
 coverage_prefix = "src/requests"
 replay_enabled = true
@@ -42,9 +44,19 @@ paths = ["httpx"]
 pr_branch = "master"
 python = "3.12"
 extras = []
-test_command = "pytest tests -q --cov=httpx --cov-branch --cov-report=json:{coverage_out}"
+# httpx's test suite needs trio/anyio/chardet etc.; its requirements.txt pulls
+# them (plus -e .[brotli,cli,http2,socks,zstd]). Use bare --cov so coverage reads
+# httpx's own [tool.coverage.run] include= config — passing --cov=httpx sets
+# source=, which conflicts (CoverageWarning) and httpx's filterwarnings=error
+# escalates that to a hard failure.
+test_requirements = "requirements.txt"
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
 coverage_prefix = "httpx"
-replay_enabled = true
+# Disabled: the install/recipe above is correct (trio/anyio via requirements.txt,
+# bare --cov to use httpx's own coverage config), but the full async/network suite
+# exceeds the 1200s replay budget. Re-enable with a fast unit-only subset if the
+# snapshot is worth the cost.
+replay_enabled = false
 [repo.timeouts]
 install_seconds = 600
 test_seconds = 1200
@@ -56,6 +68,10 @@ paths = ["rich"]
 pr_branch = "master"
 python = "3.12"
 extras = []
+# rich's tests import attrs (a poetry dev-dep, not a package extra).
+test_deps = ["attrs"]
+# Pinned so the committed defect dataset's snapshot population is reproducible.
+snapshot_sha = "eaaebe486050c6f1d3b07c83529c49caeb7fccac"
 test_command = "pytest tests -q --cov=rich --cov-branch --cov-report=json:{coverage_out}"
 coverage_prefix = "rich"
 replay_enabled = true

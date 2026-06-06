@@ -91,10 +91,18 @@ def _run_suite(
     """
     extras = f"[{','.join(repo.extras)}]" if repo.extras else ""
     venv = worktree / ".venv"
-    run(["uv", "venv", "--python", repo.python, str(venv)], worktree, repo.timeouts.install_seconds)
+    secs = repo.timeouts.install_seconds
+    run(["uv", "venv", "--python", repo.python, str(venv)], worktree, secs)
     install = ["uv", "pip", "install", "--python", str(venv), "-e", f".{extras}"]
     install += ["coverage", "pytest", "pytest-cov"]
-    run(install, worktree, repo.timeouts.install_seconds)
+    run(install, worktree, secs)
+    # Test-only dependencies (trio, attrs, ...) that `.[extras]` does not cover.
+    if repo.test_requirements:
+        req = worktree / repo.test_requirements
+        if req.exists():
+            run(["uv", "pip", "install", "--python", str(venv), "-r", str(req)], worktree, secs)
+    if repo.test_deps:
+        run(["uv", "pip", "install", "--python", str(venv), *repo.test_deps], worktree, secs)
     command = repo.test_command.format(coverage_out=str(coverage_out))
     proc = run(["uv", "run", "--python", str(venv), *command.split()], worktree, repo.timeouts.test_seconds)
     failed = _FAILED_RE.search(proc.stdout + proc.stderr)

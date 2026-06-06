@@ -99,8 +99,13 @@ fix-detection is heuristic; functions added after `S` or refactored past the ren
 threshold are censored/untracked (counted in the label file); a single repo's AUC
 is directional — pool the corpus first.
 
-`defect-labels.json` / `defect-prediction.json` are checked in **empty**;
-populating them is the same human-run, networked step as the phase-1 rollups.
+`defect-labels.json` / `defect-prediction.json` now carry a real point-in-time
+snapshot for the two enabled repos whose suites run under the replay budget —
+`requests` (10/240 defect functions from 9 fixes) and `rich` (19/901 from 24).
+The snapshots are SHA-pinned in `corpus.toml` for reproducibility. `httpx` is
+disabled: its install recipe is correct, but the full async/network suite exceeds
+the 1200s replay budget. Re-running `defects` + `predict` refreshes the dataset
+(it picks up fixes merged since, so the numbers drift — that is expected).
 
 **No product weight change ships from this.** Re-scoring is analysis only; any
 weight change waits on a real outcome label and enough data to be defensible (see

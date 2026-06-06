@@ -154,7 +154,7 @@ def test_shipped_corpus_config_is_valid() -> None:
     names = {r.name for r in repos}
     assert {"requests", "httpx", "rich", "fastapi", "cassandra-python-driver"} == names
     enabled = {r.name for r in repos if r.replay_enabled}
-    assert enabled == {"requests", "httpx", "rich"}
+    assert enabled == {"requests", "rich"}  # httpx disabled: suite exceeds replay budget
     for repo in repos:
         assert config.COVERAGE_PLACEHOLDER in repo.test_command
 

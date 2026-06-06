@@ -49,6 +49,8 @@ _REPO_KNOWN = frozenset(
         "defect_window_days",
         "fix_keywords",
         "ignore_revs_file",
+        "test_requirements",
+        "test_deps",
     }
 )
 _TIMEOUTS_KNOWN = frozenset({"install_seconds", "test_seconds"})
@@ -86,6 +88,10 @@ class RepoConfig:
     defect_window_days: int = 365
     fix_keywords: tuple[str, ...] = ()
     ignore_revs_file: str = ""
+    # Test-only deps the suite needs that `.[extras]` doesn't cover: a repo-relative
+    # requirements file and/or an explicit package list (installed into the venv).
+    test_requirements: str = ""
+    test_deps: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -148,6 +154,8 @@ def _parse_repo(table: dict[str, object]) -> RepoConfig:
         defect_window_days=_int_field(table, "defect_window_days", 365, ident),
         fix_keywords=tuple(str(k) for k in _as_list(table.get("fix_keywords", []), ident, "fix_keywords")),
         ignore_revs_file=str(table.get("ignore_revs_file", "")),
+        test_requirements=str(table.get("test_requirements", "")),
+        test_deps=tuple(str(d) for d in _as_list(table.get("test_deps", []), ident, "test_deps")),
     )
 
 
