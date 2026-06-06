@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "n_labeled_prs": 0,
+  "note": "Separation is directional, not significant, until many PRs are labelled. effect/z > 0 means rejected PRs carry more regressions than accepted ones under that candidate.",
+  "candidates": [
+    {
+      "candidate": "baseline",
+      "description": "current shipped scoring (control)",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "drop_file_line",
+      "description": "sprawl = function-length term only",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "shrink_file_share",
+      "description": "0.75 function / 0.25 file blend",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "raise_band",
+      "description": "file-line band raised 500/1000 -> 1000/2000",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    }
+  ]
+}

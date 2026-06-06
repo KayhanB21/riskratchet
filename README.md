@@ -141,6 +141,21 @@ For Marketplace discovery, the `KayhanB21/riskratchet-action`
 wrapper repo is the recommended entry point; it delegates to the
 root action.yml so both shapes share one source of truth.
 
+### Verifying releases
+
+Every tagged release ships supply-chain provenance you can inspect: a CycloneDX
+SBOM of the wheel's runtime dependency closure (the `sbom` workflow artifact), a
+signed GitHub build-provenance attestation on the wheel and sdist, and PEP 740
+PyPI attestations from Trusted Publishing. To confirm a downloaded wheel was built
+by this repo:
+
+```bash
+gh attestation verify riskratchet-<version>-py3-none-any.whl --owner KayhanB21
+```
+
+See [`docs/threat-model.md`](docs/threat-model.md#ci-and-release-supply-chain) for
+what each artifact does and does not vouch for.
+
 ## The canonical use case: AI agent + side project
 
 You've been vibe-coding a FastAPI backend with an AI agent for eight months.

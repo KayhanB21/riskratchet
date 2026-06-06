@@ -97,6 +97,11 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--strict-markers", "-ra"]
+# Repo root on sys.path so tests can import the dev-only calibration harness
+# (`bin.calibration.*`). riskratchet itself is imported from the installed
+# editable package, not via this entry.
+pythonpath = ["."]
+markers = ["slow: opt-in tests that clone/replay real repos (excluded by default)"]
 
 [tool.coverage.run]
 source = ["src/riskratchet"]

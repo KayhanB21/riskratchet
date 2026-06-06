@@ -1,0 +1,92 @@
+# Calibration corpus for the empirical harness (P21, phase 1).
+#
+# Each [[repo]] is replayed PR-by-PR: the harness checks out the base and head of
+# recent merged PRs, regenerates coverage by running the repo's own suite, scores
+# each revision with riskratchet, and records the regression set. `rescore.py`
+# then re-scores the captured data under candidate sprawl fixes.
+#
+# Fields:
+#   name             stable identifier (also the corpus/ + _cache/ subdir name)
+#   url              clone URL
+#   paths            repo-relative subtrees to analyze (empty => repo root)
+#   pr_branch        base branch merged PRs target (for `gh pr list --base`)
+#   python           uv python pin for the per-revision venv
+#   extras           pip extras to install for the test suite
+#   test_command     suite-under-coverage command; {coverage_out} is substituted
+#   coverage_prefix  import package as it appears on disk (coverage path mapping)
+#   replay_enabled   false => scaffolded but not coverage-replayed this phase
+#   [repo.timeouts]  install_seconds / test_seconds caps
+#
+# Phase 1 enables the original three repos (requests, httpx, rich). fastapi and
+# cassandra-python-driver extend the corpus to five but stay disabled: fastapi's
+# [all] suite is heavy and cassandra's integration tests need a live service.
+
+[[repo]]
+name = "requests"
+url = "https://github.com/psf/requests"
+paths = ["src/requests"]
+pr_branch = "main"
+python = "3.12"
+extras = ["socks"]
+test_command = "pytest tests -q --cov=requests --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/requests"
+replay_enabled = true
+[repo.timeouts]
+install_seconds = 600
+test_seconds = 1200
+
+[[repo]]
+name = "httpx"
+url = "https://github.com/encode/httpx"
+paths = ["httpx"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=httpx --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "httpx"
+replay_enabled = true
+[repo.timeouts]
+install_seconds = 600
+test_seconds = 1200
+
+[[repo]]
+name = "rich"
+url = "https://github.com/Textualize/rich"
+paths = ["rich"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=rich --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "rich"
+replay_enabled = true
+[repo.timeouts]
+install_seconds = 600
+test_seconds = 1800
+
+[[repo]]
+name = "fastapi"
+url = "https://github.com/fastapi/fastapi"
+paths = ["fastapi"]
+pr_branch = "master"
+python = "3.12"
+extras = ["all"]
+test_command = "pytest tests -q --cov=fastapi --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "fastapi"
+replay_enabled = false
+[repo.timeouts]
+install_seconds = 900
+test_seconds = 2400
+
+[[repo]]
+name = "cassandra-python-driver"
+url = "https://github.com/datastax/python-driver"
+paths = ["cassandra"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests/unit -q --cov=cassandra --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "cassandra"
+replay_enabled = false
+[repo.timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -9,6 +9,37 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+Targeting `0.2.10` — "supply-chain trust and calibration phase 1". Makes release
+provenance inspectable and turns the P24 corpus tooling into a standing empirical
+calibration harness. No native payload field renamed or removed.
+
+### Added
+
+- (P14) Release builds now publish supply-chain provenance. The `publish.yml`
+  build job generates a CycloneDX SBOM for the wheel's runtime dependency closure
+  (uploaded as a separate `sbom` artifact) and attaches a GitHub build-provenance
+  attestation to the wheel and sdist; the PyPI upload step requests PEP 740
+  attestations signed with its OIDC identity. See `docs/threat-model.md` for how
+  to fetch and verify each.
+
+### Research
+
+- (P21) Empirical calibration harness, phase 1, under `bin/calibration/`. It
+  promotes the P24 corpus tooling into a reusable harness: a 5-repo corpus config
+  (`data/calibration/corpus.toml`), PR replay with per-revision coverage (checkout
+  + the repo's own suite under coverage, cached per SHA), an in-process regression
+  diff (head vs base) reusing the engine's `baseline_from_report` / `diff`, and
+  candidate re-scoring of the `sprawl` component against hand-labelled PR outcomes.
+  The three candidates from the P24 finding — drop the file-line term, shrink its
+  share, raise the 500/1000 band — are evaluated by **recomputing the component**
+  (not via weight overrides, since the file-line term lives inside the blended
+  sprawl score) and measuring accept/reject separation. Analysis only: **no scoring
+  weight or threshold changes in this release.** Populating the rollups is a
+  human-run step (see `data/calibration/README.md`); the committed rollups start
+  empty.
+
 ## [0.2.9] - 2026-06-03
 
 0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI
