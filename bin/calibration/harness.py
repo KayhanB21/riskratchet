@@ -27,8 +27,9 @@ import json
 import sys
 import time
 from dataclasses import replace
+from pathlib import Path
 
-from bin.calibration.config import RepoConfig, load_corpus, load_labels
+from bin.calibration.config import REPOS_DIR, RepoConfig, load_corpus, load_labels
 from bin.calibration.corpus import CALIBRATION_DIR
 from bin.calibration.coverage_replay import replay_revision, revision_cache_dir
 from bin.calibration.defects import DefectLabels, SnapshotPopulation, collect_defect_labels
@@ -41,8 +42,15 @@ from riskratchet.models import FunctionId, RiskReport
 
 ROLLUP_PATH = CALIBRATION_DIR / "pr-replay-rollup.json"
 CANDIDATES_PATH = CALIBRATION_DIR / "sprawl-candidates.json"
-DEFECT_LABELS_PATH = CALIBRATION_DIR / "defect-labels.json"
-DEFECT_PREDICTION_PATH = CALIBRATION_DIR / "defect-prediction.json"
+
+
+def defect_labels_path(repo_name: str) -> Path:
+    return REPOS_DIR / repo_name / "defect-labels.json"
+
+
+def defect_prediction_path(repo_name: str) -> Path:
+    return REPOS_DIR / repo_name / "defect-prediction.json"
+
 
 _PREDICTION_NOTE = (
     "AUC of the total score and of the sprawl component alone, per sprawl "
@@ -212,7 +220,7 @@ def cmd_defects(args: argparse.Namespace) -> int:
     if not repos:
         print("no replay-enabled repos selected", file=sys.stderr)
         return 1
-    out: dict[str, object] = {}
+    written = 0
     for repo in repos:
         _, labels = collect_defect_labels(
             repo,
@@ -224,24 +232,29 @@ def cmd_defects(args: argparse.Namespace) -> int:
         if labels is None:
             print(f"  skip {repo.name}: snapshot unscored / clone failed", file=sys.stderr)
             continue
-        out[repo.name] = _labels_to_dict(labels)
+        path = defect_labels_path(repo.name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # Per-repo file: a run for one repo only rewrites that repo's folder.
+        path.write_text(json.dumps(_labels_to_dict(labels), indent=2) + "\n", encoding="utf-8")
+        written += 1
         print(
             f"{repo.name}: {labels.n_defect_functions}/{labels.n_functions} defect functions "
             f"from {labels.n_fixes_blamed} fixes ({labels.n_implications_untracked} untracked)",
             file=sys.stderr,
         )
-    DEFECT_LABELS_PATH.write_text(json.dumps({"schema": 1, "repos": out}, indent=2) + "\n", encoding="utf-8")
-    print(f"wrote {DEFECT_LABELS_PATH.name} ({len(out)} repos)")
+    print(f"wrote defect-labels.json for {written} repo(s)")
     return 0
 
 
 def cmd_predict(args: argparse.Namespace) -> int:
-    if not DEFECT_LABELS_PATH.exists():
-        print(f"no labels at {DEFECT_LABELS_PATH}; run `defects` first", file=sys.stderr)
+    label_files = sorted(REPOS_DIR.glob("*/defect-labels.json"))
+    if not label_files:
+        print("no per-repo defect-labels.json found; run `defects` first", file=sys.stderr)
         return 1
-    data = json.loads(DEFECT_LABELS_PATH.read_text(encoding="utf-8"))
-    out: dict[str, object] = {}
-    for repo_name, raw in data.get("repos", {}).items():
+    written = 0
+    for label_file in label_files:
+        repo_name = label_file.parent.name
+        raw = json.loads(label_file.read_text(encoding="utf-8"))
         report = _load_cached_report(repo_name, str(raw["snapshot_sha"]))
         if report is None:
             print(f"  skip {repo_name}: snapshot analyze cache missing", file=sys.stderr)
@@ -249,17 +262,17 @@ def cmd_predict(args: argparse.Namespace) -> int:
         labels = _labels_from_dict(repo_name, raw)
         snapshot = SnapshotPopulation(snapshot_sha=labels.snapshot_sha, report=report)
         results = evaluate_candidates(snapshot, labels)
-        out[repo_name] = {
+        payload = {
+            "schema": 1,
+            "note": _PREDICTION_NOTE,
             "n_buggy": labels.n_defect_functions,
             "n_clean": labels.n_functions - labels.n_defect_functions,
             "coverage": "full (snapshot replayed under coverage)",
             "candidates": [r.to_dict() for r in results],
         }
-    DEFECT_PREDICTION_PATH.write_text(
-        json.dumps({"schema": 1, "note": _PREDICTION_NOTE, "repos": out}, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    print(f"wrote {DEFECT_PREDICTION_PATH.name} ({len(out)} repos)")
+        defect_prediction_path(repo_name).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        written += 1
+    print(f"wrote defect-prediction.json for {written} repo(s)")
     return 0
 
 

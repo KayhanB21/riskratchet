@@ -1,0 +1,15 @@
+name = "sqlglot"
+url = "https://github.com/tobymao/sqlglot"
+paths = ["sqlglot"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# executor/optimizer/bigquery test modules need these optional deps.
+test_deps = ["duckdb", "pandas", "pytz"]
+test_command = "pytest tests -q --cov=sqlglot --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "sqlglot"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

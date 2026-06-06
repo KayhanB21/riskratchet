@@ -1,0 +1,124 @@
+{
+  "snapshot_sha": "7b4f1ce2923399deb7331b02d05a2fcff2074f2b",
+  "head_sha": "4fc0e90e1c19faf82bc18f8551eb1ed78dc738ac",
+  "window_days": 365,
+  "n_functions": 526,
+  "n_defect_functions": 28,
+  "n_fixes_scanned": 50,
+  "n_fixes_blamed": 32,
+  "n_implications_untracked": 2,
+  "labels": [
+    {
+      "target": "src/click/_termui_impl.py::Editor.edit_files",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/_termui_impl.py::_nullpager",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/_termui_impl.py::_pipepager",
+      "defect_count": 2
+    },
+    {
+      "target": "src/click/_termui_impl.py::_tempfilepager",
+      "defect_count": 2
+    },
+    {
+      "target": "src/click/_termui_impl.py::_translate_ch_to_exc",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/_termui_impl.py::open_url",
+      "defect_count": 2
+    },
+    {
+      "target": "src/click/_termui_impl.py::pager",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Command.format_help_text",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Option.__init__",
+      "defect_count": 5
+    },
+    {
+      "target": "src/click/core.py::Option.get_default",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Option.get_help_extra",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Option.resolve_envvar_value",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Option.value_from_envvar",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/core.py::Parameter.handle_parse_result",
+      "defect_count": 3
+    },
+    {
+      "target": "src/click/core.py::Parameter.value_from_envvar",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/exceptions.py::BadParameter.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/exceptions.py::MissingParameter.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/exceptions.py::MissingParameter.format_message",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/formatting.py::wrap_text",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/parser.py::_Argument.process",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/parser.py::_OptionParser._get_value_from_state",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/parser.py::_unpack_args",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/shell_completion.py::FishComplete.format_completion",
+      "defect_count": 4
+    },
+    {
+      "target": "src/click/shell_completion.py::ZshComplete.format_completion",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/termui.py::confirm",
+      "defect_count": 2
+    },
+    {
+      "target": "src/click/termui.py::prompt",
+      "defect_count": 3
+    },
+    {
+      "target": "src/click/testing.py::_NamedTextIOWrapper.__next__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/click/types.py::BoolParamType.convert",
+      "defect_count": 1
+    }
+  ]
+}

@@ -41,8 +41,7 @@ def _labels(snapshot: SnapshotPopulation) -> DefectLabels:
 
 
 def test_defects_then_predict_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(harness, "DEFECT_LABELS_PATH", tmp_path / "defect-labels.json")
-    monkeypatch.setattr(harness, "DEFECT_PREDICTION_PATH", tmp_path / "defect-prediction.json")
+    monkeypatch.setattr(harness, "REPOS_DIR", tmp_path / "repos")
     monkeypatch.setattr(coverage_replay, "CACHE_DIR", tmp_path / "_cache")
 
     snapshot = _snapshot(tmp_path / "proj")
@@ -54,8 +53,8 @@ def test_defects_then_predict_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(harness, "collect_defect_labels", _fake_collect)
 
     assert harness.main(["defects", "--repos", "requests"]) == 0
-    labels_out = json.loads(harness.DEFECT_LABELS_PATH.read_text())
-    req = labels_out["repos"]["requests"]
+    # Per-repo file under repos/requests/, not a combined top-level file.
+    req = json.loads(harness.defect_labels_path("requests").read_text())
     assert req["snapshot_sha"] == _SNAP
     assert req["n_defect_functions"] == 1
     assert req["labels"][0]["defect_count"] == 2
@@ -66,16 +65,15 @@ def test_defects_then_predict_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     (cache / "analyze.json").write_text(json.dumps(report_to_dict(snapshot.report)), encoding="utf-8")
 
     assert harness.main(["predict"]) == 0
-    pred = json.loads(harness.DEFECT_PREDICTION_PATH.read_text())
-    repo = pred["repos"]["requests"]
-    assert repo["n_buggy"] == 1
-    assert repo["n_clean"] == len(snapshot.report.functions) - 1
-    keys = {c["candidate"] for c in repo["candidates"]}
+    pred = json.loads(harness.defect_prediction_path("requests").read_text())
+    assert pred["n_buggy"] == 1
+    assert pred["n_clean"] == len(snapshot.report.functions) - 1
+    keys = {c["candidate"] for c in pred["candidates"]}
     assert "baseline" in keys and "drop_file_line" in keys
 
 
 def test_predict_without_labels_errors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(harness, "DEFECT_LABELS_PATH", tmp_path / "nope.json")
+    monkeypatch.setattr(harness, "REPOS_DIR", tmp_path / "empty-repos")
     assert harness.main(["predict"]) == 1
 
 

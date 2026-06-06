@@ -1,0 +1,14 @@
+name = "cassandra-python-driver"
+url = "https://github.com/datastax/python-driver"
+paths = ["cassandra"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests/unit -q --cov=cassandra --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "cassandra"
+# Disabled (scaffold): integration tests need a live Cassandra service.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -24,7 +24,7 @@ else:  # pragma: no cover - exercised only on 3.10
 
 from bin.calibration.corpus import CALIBRATION_DIR
 
-CORPUS_PATH = CALIBRATION_DIR / "corpus.toml"
+REPOS_DIR = CALIBRATION_DIR / "repos"
 LABELS_PATH = CALIBRATION_DIR / "pr-labels.toml"
 
 COVERAGE_PLACEHOLDER = "{coverage_out}"
@@ -204,13 +204,16 @@ def _parse_label(table: dict[str, object]) -> PrLabel:
     )
 
 
-def load_corpus(path: Path | None = None) -> list[RepoConfig]:
-    """Parse ``corpus.toml`` into validated ``RepoConfig`` entries."""
-    data = _load_toml(path or CORPUS_PATH)
-    repos_raw = data.get("repo", [])
-    if not isinstance(repos_raw, list):
-        raise ConfigError("corpus.toml: [[repo]] must be an array of tables")
-    return [_parse_repo(r) for r in repos_raw]
+def load_repo(path: Path) -> RepoConfig:
+    """Parse a single per-repo ``repo.toml`` (top-level keys = the repo table)."""
+    return _parse_repo(_load_toml(path))
+
+
+def load_corpus(repos_dir: Path | None = None) -> list[RepoConfig]:
+    """Load every ``repos/<name>/repo.toml`` under the corpus, sorted by name."""
+    root = repos_dir or REPOS_DIR
+    repos = [load_repo(p) for p in sorted(root.glob("*/repo.toml"))]
+    return sorted(repos, key=lambda r: r.name)
 
 
 def load_labels(path: Path | None = None) -> list[PrLabel]:

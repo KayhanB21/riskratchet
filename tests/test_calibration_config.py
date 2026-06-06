@@ -149,12 +149,22 @@ def test_load_labels_missing_file_is_empty(tmp_path: object) -> None:
 
 
 def test_shipped_corpus_config_is_valid() -> None:
-    """The checked-in corpus.toml parses and has the expected phase-1 shape."""
+    """Every checked-in repos/<name>/repo.toml parses and has the expected shape."""
     repos = load_corpus()
     names = {r.name for r in repos}
-    assert {"requests", "httpx", "rich", "fastapi", "cassandra-python-driver"} == names
+    assert {
+        "requests",
+        "httpx",
+        "rich",
+        "fastapi",
+        "cassandra-python-driver",
+        "click",
+        "jinja2",
+        "sqlglot",
+    } == names
     enabled = {r.name for r in repos if r.replay_enabled}
-    assert enabled == {"requests", "rich"}  # httpx disabled: suite exceeds replay budget
+    # Repos whose suites run under the replay budget and yield defect signal.
+    assert enabled == {"requests", "rich", "click", "sqlglot"}
     for repo in repos:
         assert config.COVERAGE_PLACEHOLDER in repo.test_command
 

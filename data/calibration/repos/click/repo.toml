@@ -1,0 +1,15 @@
+name = "click"
+url = "https://github.com/pallets/click"
+paths = ["src/click"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# click sets [tool.coverage.run] source + filterwarnings=error; bare --cov uses its
+# config so --cov=click can't trigger a CoverageWarning -> error.
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
+coverage_prefix = "src/click"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900
