@@ -43,6 +43,12 @@ _REPO_KNOWN = frozenset(
         "coverage_prefix",
         "replay_enabled",
         "timeouts",
+        # phase-2 SZZ defect-linking (all optional)
+        "snapshot_sha",
+        "snapshot_days",
+        "defect_window_days",
+        "fix_keywords",
+        "ignore_revs_file",
     }
 )
 _TIMEOUTS_KNOWN = frozenset({"install_seconds", "test_seconds"})
@@ -72,6 +78,14 @@ class RepoConfig:
     extras: tuple[str, ...] = ()
     replay_enabled: bool = False
     timeouts: Timeouts = field(default_factory=Timeouts)
+    # phase-2 SZZ defect-linking. snapshot_sha pins S; otherwise it is derived
+    # from snapshot_days. fix_keywords empty => harness default. ignore_revs_file
+    # is a repo-relative path of mass-reformat SHAs to skip during blame.
+    snapshot_sha: str = ""
+    snapshot_days: int = 365
+    defect_window_days: int = 365
+    fix_keywords: tuple[str, ...] = ()
+    ignore_revs_file: str = ""
 
 
 @dataclass(frozen=True)
@@ -129,6 +143,11 @@ def _parse_repo(table: dict[str, object]) -> RepoConfig:
         extras=tuple(str(e) for e in _as_list(table.get("extras", []), ident, "extras")),
         replay_enabled=bool(table.get("replay_enabled", False)),
         timeouts=timeouts,
+        snapshot_sha=str(table.get("snapshot_sha", "")),
+        snapshot_days=_int_field(table, "snapshot_days", 365, ident),
+        defect_window_days=_int_field(table, "defect_window_days", 365, ident),
+        fix_keywords=tuple(str(k) for k in _as_list(table.get("fix_keywords", []), ident, "fix_keywords")),
+        ignore_revs_file=str(table.get("ignore_revs_file", "")),
     )
 
 
@@ -147,6 +166,13 @@ def _validate_test_command(command: str, ident: str) -> None:
 def _as_list(value: object, ident: str, key: str) -> list[object]:
     if not isinstance(value, list):
         raise ConfigError(f"repo {ident!r}: {key} must be an array")
+    return value
+
+
+def _int_field(table: dict[str, object], key: str, default: int, ident: str) -> int:
+    value = table.get(key, default)
+    if not isinstance(value, int):
+        raise ConfigError(f"repo {ident!r}: {key} must be an integer")
     return value
 
 

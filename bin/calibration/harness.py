@@ -1,21 +1,23 @@
-"""Calibration harness CLI (P21, phase 1).
+"""Calibration harness CLI (P21).
 
-Two subcommands:
+Subcommands:
 
-  replay   Enumerate recent merged PRs for each enabled corpus repo, replay base
-           and head under coverage (cached per SHA), diff head vs base, join
-           manual labels, and write the committed `pr-replay-rollup.json`.
+  replay    Phase 1. Replay recent merged PRs (base/head under coverage, cached),
+            diff head vs base, join manual labels -> `pr-replay-rollup.json`.
+  rescore   Phase 1. Re-score labelled PRs under each sprawl candidate and write
+            the accept/reject separation -> `sprawl-candidates.json`.
+  defects   Phase 2. Mine SZZ defect labels at a historical snapshot S (score S
+            under coverage, blame bug-fixes to the introducing function, track
+            back to S) -> `defect-labels.json`.
+  predict   Phase 2. Per sprawl candidate, AUC of the score vs the SZZ defect
+            label -> `defect-prediction.json`.
 
-  rescore  Re-score every labelled PR's cached reports under each sprawl candidate
-           and write the accept/reject separation to `sprawl-candidates.json`.
+These are human-run local steps: they clone real repos and run their suites under
+coverage (minutes, needs network; `replay` also needs `gh`). None run in CI; the
+test suite exercises the pieces hermetically.
 
-This is a human-run local step: `replay` clones real repos and runs their test
-suites under coverage (hours, needs `gh` auth + network). `rescore` is fast and
-offline — it reads the per-SHA analyze cache `replay` left behind. Neither runs in
-CI; the test suite exercises the pieces hermetically.
-
-  uv run python -m bin.calibration.harness replay --repos requests --max-prs 5
-  uv run python -m bin.calibration.harness rescore
+  uv run python -m bin.calibration.harness defects --repos requests --snapshot-days 365
+  uv run python -m bin.calibration.harness predict
 """
 
 from __future__ import annotations
@@ -29,14 +31,27 @@ from dataclasses import replace
 from bin.calibration.config import RepoConfig, load_corpus, load_labels
 from bin.calibration.corpus import CALIBRATION_DIR
 from bin.calibration.coverage_replay import replay_revision, revision_cache_dir
+from bin.calibration.defects import DefectLabels, SnapshotPopulation, collect_defect_labels
+from bin.calibration.predict import evaluate_candidates
 from bin.calibration.prs import enumerate_merged_prs
 from bin.calibration.replay import OutcomeRecord, join_label, replay_reports
 from bin.calibration.rescore import LabeledPr, evaluate
 from bin.calibration.serial import report_from_dict
-from riskratchet.models import RiskReport
+from riskratchet.models import FunctionId, RiskReport
 
 ROLLUP_PATH = CALIBRATION_DIR / "pr-replay-rollup.json"
 CANDIDATES_PATH = CALIBRATION_DIR / "sprawl-candidates.json"
+DEFECT_LABELS_PATH = CALIBRATION_DIR / "defect-labels.json"
+DEFECT_PREDICTION_PATH = CALIBRATION_DIR / "defect-prediction.json"
+
+_PREDICTION_NOTE = (
+    "AUC of the total score and of the sprawl component alone, per sprawl "
+    "candidate, against the SZZ defect label. total_auc(drop_file_line) > "
+    "total_auc(baseline) => the file-line term is noise; lower => signal. "
+    "sprawl_auc ~ 0.5 => the component is non-predictive. Directional until the "
+    "corpus is pooled; SZZ precision and right-censoring caveats apply (see "
+    "data/calibration/README.md)."
+)
 
 
 def _select_repos(repos: list[RepoConfig], only: set[str] | None) -> list[RepoConfig]:
@@ -150,6 +165,104 @@ def _load_cached_report(repo: str, sha: str) -> RiskReport | None:
     return report_from_dict(json.loads(analyze_path.read_text(encoding="utf-8")))
 
 
+def _labels_to_dict(labels: DefectLabels) -> dict[str, object]:
+    return {
+        "snapshot_sha": labels.snapshot_sha,
+        "head_sha": labels.head_sha,
+        "window_days": labels.window_days,
+        "n_functions": labels.n_functions,
+        "n_defect_functions": labels.n_defect_functions,
+        "n_fixes_scanned": labels.n_fixes_scanned,
+        "n_fixes_blamed": labels.n_fixes_blamed,
+        "n_implications_untracked": labels.n_implications_untracked,
+        "labels": [
+            {"target": fid.as_target(), "defect_count": count}
+            for fid, count in sorted(labels.counts.items(), key=lambda kv: kv[0].as_target())
+        ],
+    }
+
+
+def _labels_from_dict(repo: str, data: dict[str, object]) -> DefectLabels:
+    rows = data["labels"]
+    assert isinstance(rows, list)
+    counts: dict[FunctionId, int] = {}
+    for row in rows:
+        path, _, qualname = str(row["target"]).partition("::")
+        counts[FunctionId(path, qualname)] = _as_int(row["defect_count"])
+    return DefectLabels(
+        repo=repo,
+        snapshot_sha=str(data["snapshot_sha"]),
+        head_sha=str(data["head_sha"]),
+        window_days=_as_int(data["window_days"]),
+        n_functions=_as_int(data["n_functions"]),
+        n_fixes_scanned=_as_int(data["n_fixes_scanned"]),
+        n_fixes_blamed=_as_int(data["n_fixes_blamed"]),
+        n_implications_untracked=_as_int(data["n_implications_untracked"]),
+        counts=counts,
+    )
+
+
+def _as_int(value: object) -> int:
+    assert isinstance(value, int)
+    return value
+
+
+def cmd_defects(args: argparse.Namespace) -> int:
+    repos = _select_repos(load_corpus(), set(args.repos.split(",")) if args.repos else None)
+    if not repos:
+        print("no replay-enabled repos selected", file=sys.stderr)
+        return 1
+    out: dict[str, object] = {}
+    for repo in repos:
+        _, labels = collect_defect_labels(
+            repo,
+            snapshot_sha_override=args.snapshot_sha,
+            snapshot_days=args.snapshot_days,
+            window_days=args.window_days,
+            max_fixes=args.max_fixes,
+        )
+        if labels is None:
+            print(f"  skip {repo.name}: snapshot unscored / clone failed", file=sys.stderr)
+            continue
+        out[repo.name] = _labels_to_dict(labels)
+        print(
+            f"{repo.name}: {labels.n_defect_functions}/{labels.n_functions} defect functions "
+            f"from {labels.n_fixes_blamed} fixes ({labels.n_implications_untracked} untracked)",
+            file=sys.stderr,
+        )
+    DEFECT_LABELS_PATH.write_text(json.dumps({"schema": 1, "repos": out}, indent=2) + "\n", encoding="utf-8")
+    print(f"wrote {DEFECT_LABELS_PATH.name} ({len(out)} repos)")
+    return 0
+
+
+def cmd_predict(args: argparse.Namespace) -> int:
+    if not DEFECT_LABELS_PATH.exists():
+        print(f"no labels at {DEFECT_LABELS_PATH}; run `defects` first", file=sys.stderr)
+        return 1
+    data = json.loads(DEFECT_LABELS_PATH.read_text(encoding="utf-8"))
+    out: dict[str, object] = {}
+    for repo_name, raw in data.get("repos", {}).items():
+        report = _load_cached_report(repo_name, str(raw["snapshot_sha"]))
+        if report is None:
+            print(f"  skip {repo_name}: snapshot analyze cache missing", file=sys.stderr)
+            continue
+        labels = _labels_from_dict(repo_name, raw)
+        snapshot = SnapshotPopulation(snapshot_sha=labels.snapshot_sha, report=report)
+        results = evaluate_candidates(snapshot, labels)
+        out[repo_name] = {
+            "n_buggy": labels.n_defect_functions,
+            "n_clean": labels.n_functions - labels.n_defect_functions,
+            "coverage": "full (snapshot replayed under coverage)",
+            "candidates": [r.to_dict() for r in results],
+        }
+    DEFECT_PREDICTION_PATH.write_text(
+        json.dumps({"schema": 1, "note": _PREDICTION_NOTE, "repos": out}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"wrote {DEFECT_PREDICTION_PATH.name} ({len(out)} repos)")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="bin.calibration.harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -163,6 +276,21 @@ def build_parser() -> argparse.ArgumentParser:
 
     rescore = sub.add_parser("rescore", help="re-score labelled PRs under sprawl candidates")
     rescore.set_defaults(func=cmd_rescore)
+
+    defects = sub.add_parser("defects", help="mine SZZ defect labels at a snapshot")
+    defects.add_argument("--repos", default="", help="comma-separated subset of enabled repos")
+    defects.add_argument(
+        "--snapshot-sha", default="", help="pin snapshot S (else derive from --snapshot-days)"
+    )
+    defects.add_argument("--snapshot-days", type=int, default=365, help="S = this many days before HEAD")
+    defects.add_argument(
+        "--window-days", type=int, default=365, help="recorded defect window (informational)"
+    )
+    defects.add_argument("--max-fixes", type=int, default=100, help="cap fixes blamed per repo")
+    defects.set_defaults(func=cmd_defects)
+
+    predict = sub.add_parser("predict", help="AUC of score vs SZZ defect label per candidate")
+    predict.set_defaults(func=cmd_predict)
     return parser
 
 

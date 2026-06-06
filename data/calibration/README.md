@@ -21,8 +21,11 @@ suite reproduces the digests; nothing weaker does.
 | `pr-labels.toml` | yes | manual accepted/rejected outcome labels, pinned to SHAs |
 | `pr-replay-rollup.json` | yes | per-PR regression digests from a replay run |
 | `sprawl-candidates.json` | yes | accept/reject separation per sprawl candidate |
+| `defect-labels.json` | yes | SZZ defect-implication labels per function at snapshot S (phase 2) |
+| `defect-prediction.json` | yes | per-candidate AUC of score vs the SZZ defect label (phase 2) |
+| `ignore-revs/<repo>.txt` | yes | optional mass-reformat SHAs to skip during blame |
 | `sprawl-experiment.json` | yes | the P24 inter-metric investigation (0.2.9) |
-| `corpus/`, `_cache/` | no | clones, venvs, per-SHA coverage + analyze cache |
+| `corpus/`, `_cache/` | no | clones, venvs, per-SHA coverage + analyze/blame cache |
 
 `pr-replay-rollup.json` and `sprawl-candidates.json` are checked in **empty**: no
 PRs have been replayed or labelled yet. Populating them is a deliberate, human-run
@@ -73,10 +76,31 @@ later implicated in a bug-fix" — derived from git history, **no manual labelli
 and far closer to the real risk question than "did a reviewer accept the PR."
 
 Phase 1 ships the *plumbing* (replay → coverage → diff → re-score → separation)
-and validates it end-to-end, but its label is a placeholder. The intended phase-2
-successor is an SZZ defect-linker that auto-populates the outcome label; see the
-0.2.x roadmap. Until then, treat any separation number here as a smoke test of the
-machinery, not evidence about the sprawl component.
+and validates it end-to-end, but the accept/reject label is a placeholder.
+
+**Phase 2 (shipped) replaces it with the SZZ defect-linker.** The `defects`
+subcommand scores every function at a historical snapshot `S`, mines bug-fix
+commits in `(S, HEAD]`, `git blame`s their deleted lines to the introducing
+function, and tracks that function back to `S` (exact id, else fingerprint match).
+The `predict` subcommand then reports, per sprawl candidate, the **AUC** of the
+score against the defect label:
+
+```bash
+uv run python -m bin.calibration.harness defects --repos requests --snapshot-days 365 --max-fixes 50
+uv run python -m bin.calibration.harness predict
+# inspect defect-labels.json + defect-prediction.json
+```
+
+Read `defect-prediction.json` as: `total_auc(drop_file_line) > total_auc(baseline)`
+means the file-line sprawl term is **noise** (removing it improves defect
+prediction); lower means it is **signal**; `sprawl_auc ≈ 0.5` means the component
+is non-predictive regardless of blend. Caveats that bound any conclusion: SZZ
+fix-detection is heuristic; functions added after `S` or refactored past the rename
+threshold are censored/untracked (counted in the label file); a single repo's AUC
+is directional — pool the corpus first.
+
+`defect-labels.json` / `defect-prediction.json` are checked in **empty**;
+populating them is the same human-run, networked step as the phase-1 rollups.
 
 **No product weight change ships from this.** Re-scoring is analysis only; any
 weight change waits on a real outcome label and enough data to be defensible (see

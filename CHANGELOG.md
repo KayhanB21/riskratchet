@@ -43,6 +43,19 @@ calibration harness. No native payload field renamed or removed.
   human-run step (see `data/calibration/README.md`); the committed rollups start
   empty.
 
+- (P21) Empirical calibration harness, phase 2 — SZZ defect-linking + predictive
+  validity, under `bin/calibration/` (`szz.py`, `fixes.py`, `defects.py`,
+  `predict.py`, `git_checkout.py`). Replaces phase 1's weak hand-labelled
+  accept/reject proxy with a mined outcome label: the `defects` subcommand scores
+  every function at a historical snapshot, mines bug-fix commits, `git blame`s
+  their deleted lines to the introducing function (reusing riskratchet's diff
+  parsing, `parse_file`, and `match_rename`), and tracks it back to the snapshot;
+  the `predict` subcommand reports, per sprawl candidate, the AUC of the score
+  against that defect label (AUC derived from the existing `mann_whitney_u`, no new
+  stats). The readout answers whether the file-line sprawl term helps or hurts
+  defect prediction. Analysis only — **no scoring change**; committed
+  `defect-labels.json` / `defect-prediction.json` start empty.
+
 ## [0.2.9] - 2026-06-03
 
 0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI
