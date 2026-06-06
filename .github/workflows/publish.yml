@@ -97,16 +97,21 @@ jobs:
             /tmp/report.sarif
       - name: Generate CycloneDX SBOM
         run: |
-          # The wheel smoke-test venv carries riskratchet + its runtime deps only
-          # (no dev deps), so it is the correct source for a release SBOM. Emit it
-          # outside dist/ so the publish job's packages-dir stays distribution-only
-          # (gh-action-pypi-publish rejects non-distribution files).
+          # Build the SBOM from the *declared* runtime dependency closure
+          # (uv.lock minus dev deps), with riskratchet as the root component.
+          # Scanning an installed venv would wrongly list pip and venv seed
+          # packages as dependencies, so export the locked requirements instead.
+          # Emit outside dist/ so the publish job's packages-dir stays
+          # distribution-only (gh-action-pypi-publish rejects non-dist files).
           version=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
           mkdir -p sbom
-          uvx --from cyclonedx-bom cyclonedx-py environment /tmp/wheel-env \
+          uv export --no-dev --no-emit-project --frozen --format requirements-txt > sbom/requirements.txt
+          uvx --from cyclonedx-bom cyclonedx-py requirements sbom/requirements.txt \
+            --pyproject pyproject.toml \
             --output-format JSON \
             --output-reproducible \
             --output-file "sbom/riskratchet-${version}.cdx.json"
+          rm -f sbom/requirements.txt
           test -s "sbom/riskratchet-${version}.cdx.json"
       - name: Attest build provenance
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32  # v4.1.0

@@ -71,7 +71,7 @@ def enumerate_merged_prs(
         "--limit",
         str(max_prs),
         "--json",
-        "number,baseRefOid,headRefOid,mergeCommitOid",
+        "number,baseRefOid,headRefOid,mergeCommit",
     ]
     try:
         stdout = runner(argv)
@@ -105,13 +105,16 @@ def parse_pr_list(repo_name: str, stdout: str) -> list[PrRef]:
         head = row.get("headRefOid") or ""
         if not base or not head:
             continue
+        # `gh` returns mergeCommit as an object {"oid": ...} (or null for
+        # squash/rebase merges where the merge commit isn't retained).
+        merge_obj = row.get("mergeCommit") or {}
         refs.append(
             PrRef(
                 repo=repo_name,
                 number=int(row["number"]),
                 base_sha=base,
                 head_sha=head,
-                merge_commit=row.get("mergeCommitOid") or "",
+                merge_commit=merge_obj.get("oid") or "",
             )
         )
     return refs

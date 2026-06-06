@@ -79,7 +79,9 @@ def test_replay_then_rescore_cli(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     candidates = json.loads(harness.CANDIDATES_PATH.read_text())
     assert candidates["n_labeled_prs"] == 1
     keys = {c["candidate"] for c in candidates["candidates"]}
-    assert {"baseline", "drop_file_line", "shrink_file_share", "raise_band"} == keys
+    assert "baseline" in keys and "drop_file_line" in keys
+    assert any(k.startswith("shrink_file_share@") for k in keys)
+    assert any(k.startswith("raise_band@") for k in keys)
 
 
 def test_rescore_without_rollup_errors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

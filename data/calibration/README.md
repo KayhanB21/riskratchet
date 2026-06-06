@@ -3,7 +3,15 @@
 This directory holds the committed inputs and rollups for the empirical
 calibration harness (`bin/calibration/`). The cloned repos and per-revision
 coverage live under `corpus/` and `_cache/` and are **gitignored**; only the
-reproducible rollups and the hand-authored config are committed.
+rollups and the hand-authored config are committed.
+
+The committed rollups are a deliberately-frozen **snapshot**, not reproducible
+from a script alone. Two inputs are not fixed by the harness: `gh pr list`
+returns whatever is merged upstream *now* (so the replayed PR set drifts unless
+the SHAs are pinned in `pr-labels.toml`), and each repo's own test suite can be
+flaky or time-dependent (so regenerated coverage — and therefore scores — can
+shift between runs). Re-running with the same pinned SHAs and a deterministic
+suite reproduces the digests; nothing weaker does.
 
 ## Files
 

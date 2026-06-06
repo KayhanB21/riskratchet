@@ -45,9 +45,13 @@ def test_file_size_regression_is_suppressed_by_candidates(tmp_path: Path) -> Non
     baseline_count = regression_count_under(_candidate("baseline"), base, head, fail_regression_above=4.0)
     assert baseline_count == 1
 
-    for key in ("drop_file_line", "shrink_file_share", "raise_band"):
-        suppressed = regression_count_under(_candidate(key), base, head, fail_regression_above=4.0)
-        assert suppressed == 0, f"{key} should not flag a file-size-only regression"
+    # Every swept candidate dampens the file-line term, so a file-size-only
+    # regression should drop below the threshold under all of them.
+    for cand in CANDIDATES:
+        if cand.key == "baseline":
+            continue
+        suppressed = regression_count_under(cand, base, head, fail_regression_above=4.0)
+        assert suppressed == 0, f"{cand.key} should not flag a file-size-only regression"
 
 
 def test_rescore_only_changes_sprawl_and_score(tmp_path: Path) -> None:

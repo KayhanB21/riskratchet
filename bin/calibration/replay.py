@@ -51,10 +51,14 @@ class OutcomeRecord:
     head_usable_coverage: bool = True
 
     def to_digest(self) -> dict[str, object]:
-        """Stable, churn-resistant view for the committed rollup.
+        """Churn-resistant view for the committed rollup.
 
-        Keyed on short SHAs, floats rounded, lists sorted — so re-running the
-        replay on the same revisions produces a byte-identical record.
+        Keyed on short SHAs, floats rounded, lists sorted. This makes a record
+        byte-identical across re-runs *only when the inputs are fixed*: the same
+        base/head SHAs (so `pr-labels.toml` must pin them — `gh pr list` returns
+        whatever is merged now) and a deterministic test suite (flaky or
+        time-dependent coverage will shift scores). It is not reproducible from
+        the SHAs alone.
         """
         return {
             "repo": self.repo,

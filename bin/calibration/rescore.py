@@ -27,9 +27,12 @@ from riskratchet.scoring import (
     total_risk,
 )
 
-# Candidate (c): "raise the 500/1000 band" so only true god-modules move.
-RAISED_FILE_LINE_FREE = 1000.0
-RAISED_FILE_LINE_SATURATION = 2000.0
+# The two candidate families are swept, not hardcoded to one guessed threshold —
+# the whole point of calibration is to let the data pick the parameter.
+#   (b) shrink the file share: function weight in the blend (file weight = 1 - w).
+#   (c) raise the file-line band: (free, saturation) line counts.
+SHARE_SWEEP: tuple[float, ...] = (0.60, 0.75, 0.90)
+BAND_SWEEP: tuple[tuple[float, float], ...] = ((750.0, 1500.0), (1000.0, 2000.0), (1500.0, 3000.0))
 
 SprawlFn = Callable[[FunctionRisk], float]
 
@@ -53,15 +56,22 @@ def _drop_file_line(fn: FunctionRisk) -> float:
     return _function_term(fn)
 
 
-def _shrink_file_share(fn: FunctionRisk) -> float:
-    # (b) reweight the two halves 0.75 function / 0.25 file (was 0.5 / 0.5).
-    return 0.75 * _function_term(fn) + 0.25 * _file_term(fn)
+def _make_shrink(function_weight: float) -> SprawlFn:
+    # (b) reweight the two halves: function_weight / (1 - function_weight).
+    file_weight = 1.0 - function_weight
+
+    def sprawl(fn: FunctionRisk) -> float:
+        return function_weight * _function_term(fn) + file_weight * _file_term(fn)
+
+    return sprawl
 
 
-def _raise_band(fn: FunctionRisk) -> float:
-    # (c) raise the file-line band so only true god-modules contribute.
-    file_term = _file_term(fn, free=RAISED_FILE_LINE_FREE, saturation=RAISED_FILE_LINE_SATURATION)
-    return (_function_term(fn) + file_term) / 2.0
+def _make_band(free: float, saturation: float) -> SprawlFn:
+    # (c) recompute sprawl with a raised file-line band.
+    def sprawl(fn: FunctionRisk) -> float:
+        return (_function_term(fn) + _file_term(fn, free=free, saturation=saturation)) / 2.0
+
+    return sprawl
 
 
 @dataclass(frozen=True)
@@ -71,12 +81,31 @@ class Candidate:
     sprawl: SprawlFn
 
 
-CANDIDATES: tuple[Candidate, ...] = (
-    Candidate("baseline", "current shipped scoring (control)", _baseline_sprawl),
-    Candidate("drop_file_line", "sprawl = function-length term only", _drop_file_line),
-    Candidate("shrink_file_share", "0.75 function / 0.25 file blend", _shrink_file_share),
-    Candidate("raise_band", "file-line band raised 500/1000 -> 1000/2000", _raise_band),
-)
+def _build_candidates() -> tuple[Candidate, ...]:
+    candidates = [
+        Candidate("baseline", "current shipped scoring (control)", _baseline_sprawl),
+        Candidate("drop_file_line", "sprawl = function-length term only", _drop_file_line),
+    ]
+    for fw in SHARE_SWEEP:
+        candidates.append(
+            Candidate(
+                f"shrink_file_share@{fw:.2f}",
+                f"{fw:.2f} function / {1.0 - fw:.2f} file blend",
+                _make_shrink(fw),
+            )
+        )
+    for free, saturation in BAND_SWEEP:
+        candidates.append(
+            Candidate(
+                f"raise_band@{int(free)}-{int(saturation)}",
+                f"file-line band {int(free)}/{int(saturation)} (shipped is 500/1000)",
+                _make_band(free, saturation),
+            )
+        )
+    return tuple(candidates)
+
+
+CANDIDATES: tuple[Candidate, ...] = _build_candidates()
 
 
 def rescore_report(report: RiskReport, candidate: Candidate) -> RiskReport:

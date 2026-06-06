@@ -195,15 +195,21 @@ def test_repo_slug() -> None:
 
 
 def test_parse_pr_list_skips_rows_without_shas() -> None:
+    # Mirrors the real `gh pr list --json ...,mergeCommit` shape: mergeCommit is
+    # an object {"oid": ...} (or null for squash/rebase merges).
     stdout = json.dumps(
         [
-            {"number": 1, "baseRefOid": "a", "headRefOid": "b", "mergeCommitOid": "m"},
-            {"number": 2, "baseRefOid": "", "headRefOid": "b", "mergeCommitOid": "m"},
-            {"number": 3, "baseRefOid": "a", "headRefOid": None, "mergeCommitOid": "m"},
+            {"number": 1, "baseRefOid": "a", "headRefOid": "b", "mergeCommit": {"oid": "m"}},
+            {"number": 2, "baseRefOid": "", "headRefOid": "b", "mergeCommit": {"oid": "m"}},
+            {"number": 3, "baseRefOid": "a", "headRefOid": None, "mergeCommit": {"oid": "m"}},
+            {"number": 4, "baseRefOid": "a", "headRefOid": "b", "mergeCommit": None},
         ]
     )
     refs = parse_pr_list("demo", stdout)
-    assert refs == [PrRef(repo="demo", number=1, base_sha="a", head_sha="b", merge_commit="m")]
+    assert refs == [
+        PrRef(repo="demo", number=1, base_sha="a", head_sha="b", merge_commit="m"),
+        PrRef(repo="demo", number=4, base_sha="a", head_sha="b", merge_commit=""),
+    ]
 
 
 def test_parse_pr_list_malformed_json_is_empty() -> None:
