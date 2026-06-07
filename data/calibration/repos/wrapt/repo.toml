@@ -1,0 +1,15 @@
+name = "wrapt"
+url = "https://github.com/GrahamDumpleton/wrapt"
+paths = ["src/wrapt"]
+pr_branch = "develop"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=wrapt --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/wrapt"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "bae89785c3f17e46be586b1c40a29e82d15505aa"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

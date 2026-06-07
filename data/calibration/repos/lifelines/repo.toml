@@ -1,0 +1,17 @@
+name = "lifelines"
+url = "https://github.com/CamDavidsonPilon/lifelines"
+paths = ["lifelines"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "scipy", "pandas", "matplotlib", "autograd", "autograd-gamma", "formulaic", "flaky"]
+test_command = "pytest lifelines -q --cov=lifelines --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "lifelines"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "47afb1c1a272b0f03e0c8ca00e63df27eb2a0560"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1500

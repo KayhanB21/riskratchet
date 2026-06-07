@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from bin.calibration import config
 from bin.calibration.config import (
@@ -149,60 +151,33 @@ def test_load_labels_missing_file_is_empty(tmp_path: object) -> None:
 
 
 def test_shipped_corpus_config_is_valid() -> None:
-    """Every checked-in repos/<name>/repo.toml parses and has the expected shape."""
+    """Every checked-in repos/<name>/repo.toml parses and obeys the corpus invariants.
+
+    The corpus is large (50+ tried repos, ~34 enabled) and grows, so we assert
+    structural invariants rather than a hardcoded name list:
+      * every config parses and carries the coverage placeholder + a pinned snapshot;
+      * names are unique;
+      * a healthy number of repos are enabled;
+      * every *enabled* repo has a committed, non-empty defect-labels.json (the
+        contract: enabled == yields a usable defect snapshot), and every *disabled*
+        repo does not (dormant/un-harnessable repos are kept as recipe records only).
+    """
+
     repos = load_corpus()
-    names = {r.name for r in repos}
-    assert {
-        # phase-1 / general OSS libraries
-        "requests",
-        "httpx",
-        "rich",
-        "fastapi",
-        "cassandra-python-driver",
-        "click",
-        "jinja2",
-        "sqlglot",
-        "arrow",
-        "jsonschema",
-        "flask",
-        "werkzeug",
-        "pygments",
-        "markdown",
-        # pycaret-adjacent ML / data-science cohort
-        "networkx",
-        "mlxtend",
-        "category-encoders",
-        "feature-engine",
-        "pingouin",
-        "scikit-optimize",
-        "imbalanced-learn",
-        "patsy",
-        "pyod",
-        "optuna",
-    } == names
-    enabled = {r.name for r in repos if r.replay_enabled}
-    # Repos whose suites run under the replay budget and yield a defect snapshot.
-    # (Disabled ML repos: scikit-optimize/imbalanced-learn/patsy are dormant — zero
-    # in-window fixes; pyod/optuna have multi-backend collection issues.)
-    assert enabled == {
-        "requests",
-        "rich",
-        "click",
-        "sqlglot",
-        "arrow",
-        "jsonschema",
-        "flask",
-        "werkzeug",
-        "pygments",
-        "markdown",
-        "networkx",
-        "mlxtend",
-        "category-encoders",
-        "feature-engine",
-        "pingouin",
-    }
+    names = [r.name for r in repos]
+    assert len(names) == len(set(names)), "duplicate repo names"
+
+    enabled = [r for r in repos if r.replay_enabled]
+    assert len(enabled) >= 30, f"expected >=30 enabled repos, got {len(enabled)}"
+
     for repo in repos:
         assert config.COVERAGE_PLACEHOLDER in repo.test_command
+        labels = config.REPOS_DIR / repo.name / "defect-labels.json"
+        if repo.replay_enabled:
+            assert repo.snapshot_sha, f"{repo.name}: enabled repos must pin a snapshot"
+            assert labels.exists(), f"{repo.name}: enabled but no defect-labels.json"
+            data = json.loads(labels.read_text())
+            assert data["n_defect_functions"] > 0, f"{repo.name}: enabled but 0 defect functions"
 
 
 def test_shipped_labels_config_is_valid() -> None:

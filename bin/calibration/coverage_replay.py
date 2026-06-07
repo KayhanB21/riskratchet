@@ -94,7 +94,12 @@ def _run_suite(
     secs = repo.timeouts.install_seconds
     run(["uv", "venv", "--python", repo.python, str(venv)], worktree, secs)
     install = ["uv", "pip", "install", "--python", str(venv), "-e", f".{extras}"]
-    install += ["coverage", "pytest", "pytest-cov"]
+    # Pin pytest below 9: the snapshots are ~1 year old and many of their suites use
+    # hook signatures (py.path.local args) that pytest 9 *removed* — unpinned "pytest"
+    # resolves to 9.x and dies at plugin registration. 8.x runs both old and new
+    # suites, and coverage of source lines is pytest-version-independent (so this does
+    # not shift committed scores).
+    install += ["coverage", "pytest<9", "pytest-cov"]
     run(install, worktree, secs)
     # Test-only dependencies (trio, attrs, ...) that `.[extras]` does not cover.
     if repo.test_requirements:

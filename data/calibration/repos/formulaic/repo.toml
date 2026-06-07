@@ -1,0 +1,17 @@
+name = "formulaic"
+url = "https://github.com/matthewwardrop/formulaic"
+paths = ["formulaic"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "scipy", "pandas", "interface-meta", "wrapt", "pyarrow"]
+test_command = "pytest tests -q --cov=formulaic --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "formulaic"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "497b2f73752b50b3bd29a8401bcdb2e185b57204"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

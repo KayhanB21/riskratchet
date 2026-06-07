@@ -1,0 +1,44 @@
+{
+  "snapshot_sha": "a801100e9843786a9139bebb97c951603637129c",
+  "head_sha": "f80af6a4007f11ada847218df8c29dc859238290",
+  "window_days": 365,
+  "n_functions": 210,
+  "n_defect_functions": 8,
+  "n_fixes_scanned": 10,
+  "n_fixes_blamed": 10,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "sqlparse/__init__.py::split",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/cli.py::create_parser",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/cli.py::main",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::_group",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::_group_matching",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter._change_splitlevel",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter._reset",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter.process",
+      "defect_count": 3
+    }
+  ]
+}

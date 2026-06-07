@@ -1,0 +1,16 @@
+name = "featuretools"
+url = "https://github.com/alteryx/featuretools"
+paths = ["featuretools"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["pandas", "numpy", "scipy", "scikit-learn", "woodwork", "dask", "distributed", "tqdm", "cloudpickle", "psutil", "setuptools<81", "composeml", "graphviz", "boto3", "pympler", "pytz", "holidays", "smart_open"]
+test_command = "pytest featuretools -o addopts= -q --cov=featuretools --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "featuretools"
+# Disabled: scores 2606 functions but zero in-window bug-fixes mapped to the package — dormant for our window.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

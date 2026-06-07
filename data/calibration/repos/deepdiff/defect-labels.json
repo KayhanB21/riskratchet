@@ -1,0 +1,176 @@
+{
+  "snapshot_sha": "bce634391a30acec7abd13674688592eefbad5ea",
+  "head_sha": "c59636cda63cd3951777208c783285e6bf634159",
+  "window_days": 365,
+  "n_functions": 346,
+  "n_defect_functions": 41,
+  "n_fixes_scanned": 19,
+  "n_fixes_blamed": 18,
+  "n_implications_untracked": 1,
+  "labels": [
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._colorize_json",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__contains__",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__getitem__",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._getitem",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._hash",
+      "defect_count": 2
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_ipranges",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.get",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.get_key",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.items",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.keys",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.__repr__",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_iterable_item_added",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_iterable_opcodes",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_set_or_frozenset_item",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._get_reverse_diff",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._set_new_value",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._simple_set_elem_value",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._sort_comparison",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.to_flat_dicts",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._compare_in_order",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_dict",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_iterable_with_deephash",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_key_for_group_by",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.affected_paths",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.affected_root_keys",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin.__get_item_rough_length",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin._get_rough_distance",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin._precalculate_distance_by_custom_compare_func",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::_get_item_length",
+      "defect_count": 2
+    },
+    {
+      "target": "deepdiff/distance.py::_get_numpy_array_distance",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::_numpy_div",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::logarithmic_distance",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/distance.py::logarithmic_similarity",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/helper.py::add_to_frozen_set",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/helper.py::cartesian_product_of_shape",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/helper.py::detailed__dict__",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/helper.py::type_in_type_group",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/helper.py::type_is_subclass_of_type_group",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/path.py::_get_nested_obj_and_force",
+      "defect_count": 1
+    },
+    {
+      "target": "deepdiff/serialization.py::_RestrictedUnpickler.find_class",
+      "defect_count": 1
+    }
+  ]
+}

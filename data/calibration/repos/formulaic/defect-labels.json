@@ -1,0 +1,20 @@
+{
+  "snapshot_sha": "497b2f73752b50b3bd29a8401bcdb2e185b57204",
+  "head_sha": "8579df0d49638acbae87e7f4171f97bf66d7d1c8",
+  "window_days": 365,
+  "n_functions": 452,
+  "n_defect_functions": 2,
+  "n_fixes_scanned": 3,
+  "n_fixes_blamed": 3,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._is_categorical",
+      "defect_count": 1
+    },
+    {
+      "target": "formulaic/sugar.py::model_matrix",
+      "defect_count": 1
+    }
+  ]
+}

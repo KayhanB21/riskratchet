@@ -1,57 +1,57 @@
 {
   "schema": 1,
   "note": "AUC of the total score and of the sprawl component alone, per sprawl candidate, against the SZZ defect label. total_auc(drop_file_line) > total_auc(baseline) => the file-line term is noise; lower => signal. sprawl_auc ~ 0.5 => the component is non-predictive. Directional until the corpus is pooled; SZZ precision and right-censoring caveats apply (see data/calibration/README.md).",
-  "n_buggy": 64,
-  "n_clean": 7019,
+  "n_buggy": 31,
+  "n_clean": 1696,
   "coverage": "full (snapshot replayed under coverage)",
   "candidates": [
     {
       "candidate": "baseline",
-      "total_auc": 0.3906,
-      "sprawl_auc": 0.5696,
-      "z": -3.0216
+      "total_auc": 0.3754,
+      "sprawl_auc": 0.4892,
+      "z": -2.6037
     },
     {
       "candidate": "drop_file_line",
-      "total_auc": 0.4043,
-      "sprawl_auc": 0.68,
-      "z": -2.6574
+      "total_auc": 0.3864,
+      "sprawl_auc": 0.5492,
+      "z": -2.3882
     },
     {
       "candidate": "shrink_file_share@0.60",
-      "total_auc": 0.3952,
-      "sprawl_auc": 0.58,
-      "z": -2.896
+      "total_auc": 0.3759,
+      "sprawl_auc": 0.4893,
+      "z": -2.5924
     },
     {
       "candidate": "shrink_file_share@0.75",
-      "total_auc": 0.3989,
-      "sprawl_auc": 0.5942,
-      "z": -2.7938
+      "total_auc": 0.3776,
+      "sprawl_auc": 0.4888,
+      "z": -2.5584
     },
     {
       "candidate": "shrink_file_share@0.90",
-      "total_auc": 0.4022,
-      "sprawl_auc": 0.6233,
-      "z": -2.7034
+      "total_auc": 0.3835,
+      "sprawl_auc": 0.4892,
+      "z": -2.4324
     },
     {
       "candidate": "raise_band@750-1500",
-      "total_auc": 0.3912,
-      "sprawl_auc": 0.6205,
-      "z": -3.0111
+      "total_auc": 0.3781,
+      "sprawl_auc": 0.4956,
+      "z": -2.5431
     },
     {
       "candidate": "raise_band@1000-2000",
-      "total_auc": 0.3953,
-      "sprawl_auc": 0.6379,
-      "z": -2.9038
+      "total_auc": 0.3824,
+      "sprawl_auc": 0.5097,
+      "z": -2.4533
     },
     {
       "candidate": "raise_band@1500-3000",
-      "total_auc": 0.3969,
-      "sprawl_auc": 0.657,
-      "z": -2.863
+      "total_auc": 0.3862,
+      "sprawl_auc": 0.4867,
+      "z": -2.3806
     }
   ]
 }

@@ -3,11 +3,15 @@
   "head_sha": "1d07352dfb421dce825eb47e825c3b6124ea4bd3",
   "window_days": 365,
   "n_functions": 2396,
-  "n_defect_functions": 20,
+  "n_defect_functions": 28,
   "n_fixes_scanned": 582,
-  "n_fixes_blamed": 40,
-  "n_implications_untracked": 79,
+  "n_fixes_blamed": 60,
+  "n_implications_untracked": 115,
   "labels": [
+    {
+      "target": "sqlglot/dialects/dialect.py::no_ilike_sql",
+      "defect_count": 1
+    },
     {
       "target": "sqlglot/generator.py::Generator.bytestring_sql",
       "defect_count": 1
@@ -17,7 +21,19 @@
       "defect_count": 1
     },
     {
+      "target": "sqlglot/generator.py::Generator.datatype_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.identifier_sql",
+      "defect_count": 1
+    },
+    {
       "target": "sqlglot/generator.py::Generator.ordered_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.tablealias_sql",
       "defect_count": 1
     },
     {
@@ -34,6 +50,22 @@
     },
     {
       "target": "sqlglot/optimizer/normalize.py::_predicate_lengths",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/pushdown_projections.py::pushdown_projections",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_expand_stars",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_qualify_columns",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_unpivot_columns",
       "defect_count": 1
     },
     {

@@ -1,0 +1,80 @@
+{
+  "snapshot_sha": "569e0ad654a85c77581b318305edc2eb7c4068ae",
+  "head_sha": "64be96ceb2a6e836f76f069f4a96d2394d59fd0c",
+  "window_days": 365,
+  "n_functions": 249,
+  "n_defect_functions": 17,
+  "n_fixes_scanned": 28,
+  "n_fixes_blamed": 25,
+  "n_implications_untracked": 6,
+  "labels": [
+    {
+      "target": "more_itertools/more.py::exactly_n",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::gray_product",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::last",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::locate",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::minmax",
+      "defect_count": 2
+    },
+    {
+      "target": "more_itertools/more.py::nth_combination_with_replacement",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::nth_permutation",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::nth_product",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__getitem__",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__reversed__",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::partial_product",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::product_index",
+      "defect_count": 3
+    },
+    {
+      "target": "more_itertools/more.py::replace",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/more.py::sample",
+      "defect_count": 2
+    },
+    {
+      "target": "more_itertools/more.py::unique_in_window",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/recipes.py::random_product",
+      "defect_count": 1
+    },
+    {
+      "target": "more_itertools/recipes.py::unique_everseen",
+      "defect_count": 1
+    }
+  ]
+}

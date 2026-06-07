@@ -1,0 +1,232 @@
+{
+  "snapshot_sha": "7626184295de82fe859033ddce5dc770231faef0",
+  "head_sha": "e55d70bf2288e25c1ddf850fde703d56888772f2",
+  "window_days": 365,
+  "n_functions": 248,
+  "n_defect_functions": 55,
+  "n_fixes_scanned": 12,
+  "n_fixes_blamed": 9,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/croniter/croniter.py::croniter.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter._calc",
+      "defect_count": 2
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter._expand",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter._get_next",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter._get_next_nearest_diff",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter.expand",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/croniter.py::croniter.timestamp_to_datetime",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testBlockDupRanges",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testBug1",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testBug2",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testBug3",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testBug57",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testDay2",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testDomDowVixieCronBug",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testError",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testGetCurrent",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testHour",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testISOWeekday",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testInitNoStartTime",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testLastDayOfMonth",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testMinute",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testMonth",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testNthWeekDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testOptimizeCronExpressions",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevDayOfMonthWithCrossing",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevLastDayOfMonth",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevMinute",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevNthWeekDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevWeekDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPrevWeekDay2",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPreviousDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPreviousDow",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPreviousHour",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testPreviousMonth",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testRangeWithUppercaseLastDayOfMonth",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testSecond",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testSecondRepeat",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testSecondSec",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testSundayToThursdayWithAlphaConversion",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testTimezone",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testTimezoneDateutil",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testTimezoneSummerTime",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testTimezoneWinterTime",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testWeekDay",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.testWeekDayDayAnd",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_dst_issue90_st31ny",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_dst_iter",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_explicit_year_forward",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_lwom_mixup_all_fri_last_sat",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_nth_as_last_wday_simple",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_nth_wday_simple",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_rangeGenerator",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_revert_issue_90_aka_support_DOW7",
+      "defect_count": 1
+    },
+    {
+      "target": "src/croniter/tests/test_croniter.py::CroniterTest.test_wdom_core_leap_year",
+      "defect_count": 1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+name = "cattrs"
+url = "https://github.com/python-attrs/cattrs"
+paths = ["src/cattrs"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["attrs", "hypothesis", "msgpack", "pyyaml", "tomlkit", "ujson", "cbor2", "immutables", "typing_extensions", "pymongo", "msgspec"]
+test_command = "pytest tests -o addopts= -q --cov=cattrs --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "cattrs"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "98940957f32196c1dc7f40762518451e342dd156"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

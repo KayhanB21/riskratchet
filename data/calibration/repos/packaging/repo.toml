@@ -1,0 +1,16 @@
+name = "packaging"
+url = "https://github.com/pypa/packaging"
+paths = ["src/packaging"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["pretend"]
+test_command = "pytest tests -q --cov=packaging --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/packaging"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "7952e97c650cd70962a45018e11b760d7b1e1325"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

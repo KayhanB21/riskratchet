@@ -1,0 +1,36 @@
+{
+  "snapshot_sha": "bae89785c3f17e46be586b1c40a29e82d15505aa",
+  "head_sha": "fbf2fc1451d7165e969c3fde6a55da5397683f83",
+  "window_days": 365,
+  "n_functions": 192,
+  "n_defect_functions": 6,
+  "n_fixes_scanned": 34,
+  "n_fixes_blamed": 32,
+  "n_implications_untracked": 68,
+  "labels": [
+    {
+      "target": "src/wrapt/arguments.py::formatargspec",
+      "defect_count": 1
+    },
+    {
+      "target": "src/wrapt/importer.py::ImportHookFinder.find_module",
+      "defect_count": 1
+    },
+    {
+      "target": "src/wrapt/importer.py::ImportHookFinder.find_spec",
+      "defect_count": 1
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__itruediv__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_ObjectProxyMetaType.__new__",
+      "defect_count": 1
+    }
+  ]
+}
