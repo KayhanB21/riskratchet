@@ -9,11 +9,13 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [Unreleased]
+## [0.2.10] - 2026-06-07
 
-Targeting `0.2.10` — "supply-chain trust and calibration phase 1". Makes release
+0.2.10 is the "supply-chain trust and calibration" release. It makes release
 provenance inspectable and turns the P24 corpus tooling into a standing empirical
-calibration harness. No native payload field renamed or removed.
+calibration harness — phase 1 (PR replay) plus phase 2 (SZZ defect-linking and a
+predictive-validity study across 34 OSS repositories). No native payload field was
+renamed or removed; scoring is byte-for-byte unchanged from 0.2.9.
 
 ### Added
 
@@ -30,8 +32,8 @@ calibration harness. No native payload field renamed or removed.
 ### Research
 
 - (P21) Empirical calibration harness, phase 1, under `bin/calibration/`. It
-  promotes the P24 corpus tooling into a reusable harness: a 5-repo corpus config
-  (`data/calibration/corpus.toml`), PR replay with per-revision coverage (checkout
+  promotes the P24 corpus tooling into a reusable harness: a per-repo corpus config
+  (`data/calibration/repos/<name>/repo.toml`), PR replay with per-revision coverage (checkout
   + the repo's own suite under coverage, cached per SHA), an in-process regression
   diff (head vs base) reusing the engine's `baseline_from_report` / `diff`, and
   candidate re-scoring of the `sprawl` component against hand-labelled PR outcomes.
@@ -53,8 +55,14 @@ calibration harness. No native payload field renamed or removed.
   the `predict` subcommand reports, per sprawl candidate, the AUC of the score
   against that defect label (AUC derived from the existing `mann_whitney_u`, no new
   stats). The readout answers whether the file-line sprawl term helps or hurts
-  defect prediction. Analysis only — **no scoring change**; committed
-  `defect-labels.json` / `defect-prediction.json` start empty.
+  defect prediction. Analysis only — **no scoring change**. Ships a real,
+  SHA-pinned snapshot: per-function defect labels and per-candidate AUCs for **34
+  enabled repos** (general libraries + a pycaret-adjacent ML cohort), each run twice
+  to confirm reproducibility (labels identical on all 34, scores byte-identical on
+  26). The directional finding — the score is not a reliable defect predictor on the
+  largest repos, and the file-line sprawl term is net-negative on average — is
+  written up in `data/calibration/defect-prediction-findings.md`; it argues *against*
+  a weight change, which is why none ships.
 
 ## [0.2.9] - 2026-06-03
 
