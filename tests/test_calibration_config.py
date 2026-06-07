@@ -153,6 +153,7 @@ def test_shipped_corpus_config_is_valid() -> None:
     repos = load_corpus()
     names = {r.name for r in repos}
     assert {
+        # phase-1 / general OSS libraries
         "requests",
         "httpx",
         "rich",
@@ -167,9 +168,22 @@ def test_shipped_corpus_config_is_valid() -> None:
         "werkzeug",
         "pygments",
         "markdown",
+        # pycaret-adjacent ML / data-science cohort
+        "networkx",
+        "mlxtend",
+        "category-encoders",
+        "feature-engine",
+        "pingouin",
+        "scikit-optimize",
+        "imbalanced-learn",
+        "patsy",
+        "pyod",
+        "optuna",
     } == names
     enabled = {r.name for r in repos if r.replay_enabled}
     # Repos whose suites run under the replay budget and yield a defect snapshot.
+    # (Disabled ML repos: scikit-optimize/imbalanced-learn/patsy are dormant — zero
+    # in-window fixes; pyod/optuna have multi-backend collection issues.)
     assert enabled == {
         "requests",
         "rich",
@@ -181,6 +195,11 @@ def test_shipped_corpus_config_is_valid() -> None:
         "werkzeug",
         "pygments",
         "markdown",
+        "networkx",
+        "mlxtend",
+        "category-encoders",
+        "feature-engine",
+        "pingouin",
     }
     for repo in repos:
         assert config.COVERAGE_PLACEHOLDER in repo.test_command

@@ -104,7 +104,12 @@ def _run_suite(
     if repo.test_deps:
         run(["uv", "pip", "install", "--python", str(venv), *repo.test_deps], worktree, secs)
     command = repo.test_command.format(coverage_out=str(coverage_out))
-    proc = run(["uv", "run", "--python", str(venv), *command.split()], worktree, repo.timeouts.test_seconds)
+    # --no-project is load-bearing: the worktree lives under data/calibration/_cache/,
+    # i.e. *inside* the riskratchet repo, so a bare `uv run` walks up, discovers the
+    # outer project, and runs the suite in riskratchet's own .venv (missing the repo's
+    # deps -> spurious ModuleNotFoundError). --no-project pins it to this worktree venv.
+    argv = ["uv", "run", "--no-project", "--python", str(venv), *command.split()]
+    proc = run(argv, worktree, repo.timeouts.test_seconds)
     failed = _FAILED_RE.search(proc.stdout + proc.stderr)
     return proc.returncode, (int(failed.group(1)) if failed else None)
 

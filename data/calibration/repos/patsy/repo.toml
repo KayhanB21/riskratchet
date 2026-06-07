@@ -1,0 +1,17 @@
+name = "patsy"
+url = "https://github.com/pydata/patsy"
+paths = ["patsy"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["numpy", "scipy", "pandas"]
+test_command = "pytest patsy -q --cov=patsy --cov-report=json:{coverage_out}"
+coverage_prefix = "patsy"
+# Disabled: the snapshot scores fine (573 functions) but patsy is dormant — zero
+# bug-fix commits touched patsy/ in the 365-day window, so there is no defect label
+# to predict (like jinja2). Kept here as a recipe record.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

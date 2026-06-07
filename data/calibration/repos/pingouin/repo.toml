@@ -1,0 +1,20 @@
+name = "pingouin"
+url = "https://github.com/raphaelvallat/pingouin"
+# src-layout: the package lives at src/pingouin and tests at tests/.
+paths = ["src/pingouin"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["numpy", "scipy", "pandas", "matplotlib", "seaborn", "statsmodels", "scikit-learn", "pandas_flavor", "outdated", "tabulate", "mpmath"]
+# -o addopts= drops pingouin's own --maxfail=2, which would abort (and skip the
+# coverage write) on the ~11 numeric-drift failures the year-old suite shows against
+# the current scipy/numpy. Coverage from the 77 passing tests is what we need.
+test_command = "pytest tests -o addopts= -q --cov=pingouin --cov-report=json:{coverage_out}"
+coverage_prefix = "src/pingouin"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "c939d2d4e636f7b83e95ab7844b404a0179910c2"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -103,39 +103,47 @@ threshold are censored/untracked (counted in the label file); a single repo's AU
 is directional — pool the corpus first.
 
 Each `repos/<name>/defect-{labels,prediction}.json` carries a real point-in-time
-snapshot for the **ten enabled repos** whose suites run under the replay budget
-(ordered by n_buggy — the only thing that buys power):
+snapshot for the **15 enabled repos** whose suites run under the replay budget
+(10 general libraries + a 5-repo pycaret-adjacent ML cohort, marked `ml`; ordered by
+n_buggy — the only thing that buys power):
 
-| repo | defect fns | baseline total_auc | baseline sprawl_auc | drop_file_line total_auc | z |
-| --- | --- | --- | --- | --- | --- |
-| click | 28/526 | 0.648 | 0.542 | **0.664** | 2.73 |
-| sqlglot | 20/2396 | 0.771 | 0.541 | **0.785** | 4.22 |
-| rich | 19/901 | 0.614 | 0.640 | 0.624 | 1.71 |
-| requests | 10/240 | 0.632 | 0.520 | 0.615 | 1.41 |
-| pygments | 9/936 | **0.362** | 0.412 | 0.423 | −1.43 |
-| markdown | 8/382 | 0.588 | 0.423 | 0.626 | 0.87 |
-| jsonschema | 5/646 | 0.479 | 0.429 | 0.549 | −0.16 |
-| arrow | 4/175 | 0.501 | 0.559 | 0.614 | 0.01 |
-| werkzeug | 3/1113 | 0.530 | 0.638 | 0.531 | 0.23 |
-| flask | 2/369 | 0.830 | 0.828 | 0.790 | 1.62 |
+| repo | ml | defect fns | baseline total_auc | baseline sprawl_auc | drop_file_line total_auc | z |
+| --- | :-: | --- | --- | --- | --- | --- |
+| networkx | ml | 64/7083 | **0.391** | 0.570 | 0.404 | **−3.02** |
+| click | | 28/526 | 0.648 | 0.542 | **0.664** | 2.73 |
+| sqlglot | | 20/2396 | 0.771 | 0.541 | **0.785** | 4.22 |
+| rich | | 19/901 | 0.614 | 0.640 | 0.624 | 1.71 |
+| requests | | 10/240 | 0.632 | 0.520 | 0.615 | 1.41 |
+| mlxtend | ml | 9/1165 | 0.847 | 0.791 | 0.856 | 3.66 |
+| pygments | | 9/936 | **0.362** | 0.412 | 0.423 | −1.43 |
+| markdown | | 8/382 | 0.588 | 0.423 | 0.626 | 0.87 |
+| jsonschema | | 5/646 | 0.479 | 0.429 | 0.549 | −0.16 |
+| pingouin | ml | 5/159 | 0.846 | 0.760 | 0.835 | 2.65 |
+| arrow | | 4/175 | 0.501 | 0.559 | 0.614 | 0.01 |
+| category-encoders | ml | 4/157 | 0.820 | 0.509 | 0.820 | 2.21 |
+| werkzeug | | 3/1113 | 0.530 | 0.638 | 0.531 | 0.23 |
+| flask | | 2/369 | 0.830 | 0.828 | 0.790 | 1.62 |
+| feature-engine | ml | 1/388 | 0.373 | 0.462 | 0.385 | −0.44 |
 
-**Directional finding (10 repos).** Growing the corpus 4→10 **strengthened** the
+**Directional finding (15 repos).** Each expansion (4→10→15) **strengthened** the
 narrow claim and **weakened** the broad one. Narrow: **dropping the file-line sprawl
-term raises total AUC in 8 of 10 repos** (sign-test p≈0.055), including both
-statistically meaningful ones (click z≈2.7, sqlglot z≈4.2) — consistent with the P24
-suspicion that the file-line term is mostly noise for defect prediction. Broad: the
-overall score is **not** better than chance everywhere — pygments is anti-predictive
-(total_auc 0.36, z≈−1.4) and jsonschema (0.48)/arrow (0.50) sit at/below chance, so
-the "0.61–0.77 everywhere" from the 4-repo sample does not hold. Six of the ten repos
-have n_buggy ≤ 9 and carry little power individually; they are for pooling, not
-per-repo reading. This is a direction to pursue, not a mandate. Full analysis,
-hypotheses, and threats: `defect-prediction-findings.md`. (Snapshots SHA-pinned.)
+term raises total AUC in 12 of 15 repos** (sign-test **p≈0.018**), including both
+significant separators (click z≈2.7, sqlglot z≈4.2) — consistent with the P24 suspicion
+that the file-line term is mostly noise. Broad: the score is **not** a consistent
+predictor — the most-powered repo, **networkx (n=64), is significantly anti-predictive
+(0.39, z≈−3.0)**, and 4 of 15 baselines are at/below chance. The ML cohort also showed
+sprawl predicting *well* in places (mlxtend 0.79, pingouin 0.76). The corpus is
+**heterogeneous** — significant-positive and significant-negative repos coexist — so a
+single global weight change is exactly what this does not license. Full analysis,
+hypotheses, threats, and the `uv run` harness bug found mid-expansion:
+`defect-prediction-findings.md`. (Snapshots SHA-pinned.)
 
-`httpx`, `jinja2`, `fastapi`, `cassandra-python-driver` are disabled (see each
-`repos/<name>/repo.toml`): httpx's suite exceeds the replay budget, jinja2 had zero
-fixes touching its package in the window, and the last two are unvalidated
-scaffolds. Re-running `defects` + `predict` refreshes the dataset (it picks up
-fixes merged since, so numbers drift — expected).
+Disabled repos (see each `repos/<name>/repo.toml`): `httpx` (suite exceeds budget),
+`jinja2`/`patsy`/`scikit-optimize`/`imbalanced-learn` (zero in-window fixes — dormant),
+`pyod`/`optuna` (multi-backend test suites under-collect without the full DL/cloud
+stack), `fastapi`/`cassandra-python-driver` (unvalidated scaffolds). Re-running
+`defects` + `predict` refreshes the dataset (it picks up fixes merged since, so numbers
+drift — expected).
 
 **No product weight change ships from this.** Re-scoring is analysis only; any
 weight change waits on a real outcome label and enough data to be defensible (see

@@ -1,0 +1,19 @@
+name = "pyod"
+url = "https://github.com/yzhao062/pyod"
+paths = ["pyod"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# Several DL detector tests import torch at module scope (collection-time), so it
+# must be present; numba has py3.12 wheels.
+test_deps = ["scikit-learn", "scipy", "numpy", "numba", "combo", "torch"]
+test_command = "pytest pyod -q --cov=pyod --cov-report=json:{coverage_out}"
+coverage_prefix = "pyod"
+# Disabled: pyod's DL detector tests import torch/tensorflow at collection scope and
+# the suite under-collects without the full DL stack; not worth the heavy, brittle
+# dependency set. Kept as a record of the attempt.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

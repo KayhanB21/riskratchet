@@ -1,0 +1,28 @@
+{
+  "snapshot_sha": "9a86233c51d8ed3c2809126bb0ab9523c4c379bd",
+  "head_sha": "b9f9b0a2ce42bd33cdf1760645ca2126f5cb5bee",
+  "window_days": 365,
+  "n_functions": 157,
+  "n_defect_functions": 4,
+  "n_fixes_scanned": 3,
+  "n_fixes_blamed": 3,
+  "n_implications_untracked": 2,
+  "labels": [
+    {
+      "target": "category_encoders/count.py::CountEncoder.combine_min_categories",
+      "defect_count": 1
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder._fit",
+      "defect_count": 1
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.fit",
+      "defect_count": 1
+    }
+  ]
+}

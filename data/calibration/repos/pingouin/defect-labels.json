@@ -1,0 +1,32 @@
+{
+  "snapshot_sha": "c939d2d4e636f7b83e95ab7844b404a0179910c2",
+  "head_sha": "2d906c5fe30a44d3652c0895cea519e17d22a9f1",
+  "window_days": 365,
+  "n_functions": 159,
+  "n_defect_functions": 5,
+  "n_fixes_scanned": 6,
+  "n_fixes_blamed": 6,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/pingouin/bayesian.py::bayesfactor_pearson",
+      "defect_count": 1
+    },
+    {
+      "target": "src/pingouin/correlation.py::partial_corr",
+      "defect_count": 2
+    },
+    {
+      "target": "src/pingouin/correlation.py::pcorr",
+      "defect_count": 1
+    },
+    {
+      "target": "src/pingouin/distribution.py::sphericity",
+      "defect_count": 1
+    },
+    {
+      "target": "src/pingouin/regression.py::logistic_regression",
+      "defect_count": 1
+    }
+  ]
+}
