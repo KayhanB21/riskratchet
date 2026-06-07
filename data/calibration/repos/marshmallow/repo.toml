@@ -1,0 +1,16 @@
+name = "marshmallow"
+url = "https://github.com/marshmallow-code/marshmallow"
+paths = ["src/marshmallow"]
+pr_branch = "dev"
+python = "3.12"
+extras = []
+test_deps = ["pytz", "simplejson"]
+test_command = "pytest tests -q --cov=marshmallow --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "marshmallow"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "7266de0c42e26c521801b7c01417d1f738e8a314"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

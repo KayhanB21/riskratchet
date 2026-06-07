@@ -1,0 +1,20 @@
+{
+  "snapshot_sha": "7bf3be8dfa5832ef03a3fd8f07f6736e770440e4",
+  "head_sha": "36e4a824f340fdee7ed50937ba8e7f6bc7d17f81",
+  "window_days": 365,
+  "n_functions": 369,
+  "n_defect_functions": 2,
+  "n_fixes_scanned": 3,
+  "n_fixes_blamed": 2,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/flask/app.py::Flask.process_response",
+      "defect_count": 1
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.add_url_rule",
+      "defect_count": 1
+    }
+  ]
+}

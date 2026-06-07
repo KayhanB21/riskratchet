@@ -1,0 +1,17 @@
+name = "arrow"
+url = "https://github.com/arrow-py/arrow"
+paths = ["arrow"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# Suite exercises optional serializers / parsers beyond the dateutil runtime dep.
+test_deps = ["pytz", "simplejson", "dateparser"]
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "0fe5f065718e5af3ab47903d1bec82d87d202a63"
+test_command = "pytest tests -q --cov=arrow --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "arrow"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

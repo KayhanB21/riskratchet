@@ -1,0 +1,19 @@
+name = "scikit-optimize"
+url = "https://github.com/scikit-optimize/scikit-optimize"
+paths = ["skopt"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# setuptools restores `distutils` (removed from the stdlib in Python 3.12), which the
+# year-old snapshot's conftest still imports.
+test_deps = ["scikit-learn", "scipy", "numpy", "matplotlib", "setuptools"]
+test_command = "pytest skopt -q --cov=skopt --cov-report=json:{coverage_out}"
+coverage_prefix = "skopt"
+# Disabled: the snapshot scores fine (482 functions) but scikit-optimize is
+# effectively dormant — zero bug-fix commits touched skopt/ in the 365-day window,
+# so there is no defect label. Kept as a recipe record.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -1,0 +1,15 @@
+name = "jsonschema"
+url = "https://github.com/python-jsonschema/jsonschema"
+paths = ["jsonschema"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "60c7b35b629fecfe6757db052e80acc52d71f30c"
+test_command = "pytest jsonschema/tests -q --cov=jsonschema --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "jsonschema"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

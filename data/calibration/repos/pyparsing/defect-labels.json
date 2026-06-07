@@ -1,0 +1,100 @@
+{
+  "snapshot_sha": "15a106e1bfc7679c5cd3a65c84403061a871a9e6",
+  "head_sha": "057a2e6d1b8391dc85abe725d4d12c0987a9ec10",
+  "window_days": 365,
+  "n_functions": 478,
+  "n_defect_functions": 22,
+  "n_fixes_scanned": 15,
+  "n_fixes_blamed": 15,
+  "n_implications_untracked": 8,
+  "labels": [
+    {
+      "target": "pyparsing/actions.py::remove_quotes",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/actions.py::replace_with",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::DelimitedList.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::Keyword.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.run_tests",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::QuotedString.parseImpl",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::Regex.parseImpl",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::Word.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::Word.parseImpl_regex",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/core.py::_MultipleMatch.stopOn",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.found",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/helpers.py::match_previous_expr",
+      "defect_count": 2
+    },
+    {
+      "target": "pyparsing/helpers.py::nested_expr",
+      "defect_count": 2
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.as_list",
+      "defect_count": 2
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.copy",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.extend",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.from_dict",
+      "defect_count": 3
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.get_name",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.TestParseResultsAsserts.assertParseAndCheckDict",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.with_line_numbers",
+      "defect_count": 1
+    },
+    {
+      "target": "pyparsing/util.py::_collapse_string_to_ranges",
+      "defect_count": 1
+    }
+  ]
+}

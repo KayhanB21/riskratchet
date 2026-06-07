@@ -1,0 +1,40 @@
+{
+  "snapshot_sha": "98940957f32196c1dc7f40762518451e342dd156",
+  "head_sha": "fcd732f817b160041e5f3173dd15809b0c2ea916",
+  "window_days": 365,
+  "n_functions": 273,
+  "n_defect_functions": 7,
+  "n_fixes_scanned": 7,
+  "n_fixes_blamed": 7,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/cattrs/cols.py::namedtuple_dict_structure_factory",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_structure_attrs_fromdict",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_unstructure_attrs_fromdict",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_has_subclasses",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_include_subclasses_with_union_strategy",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_make_subclasses_tree",
+      "defect_count": 1
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union",
+      "defect_count": 1
+    }
+  ]
+}

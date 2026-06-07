@@ -1,0 +1,17 @@
+name = "networkx"
+url = "https://github.com/networkx/networkx"
+paths = ["networkx"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# Optional numeric backends; many tests skip without them, coverage is better with.
+test_deps = ["numpy", "scipy", "matplotlib", "pandas"]
+test_command = "pytest networkx -q --cov=networkx --cov-report=json:{coverage_out}"
+coverage_prefix = "networkx"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "15571205e3d2c6327aa5c4294725398ea227e25b"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

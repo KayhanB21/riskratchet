@@ -1,0 +1,16 @@
+name = "tsfresh"
+url = "https://github.com/blue-yonder/tsfresh"
+paths = ["tsfresh"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["pandas", "numpy", "scipy", "statsmodels", "patsy", "scikit-learn", "cloudpickle", "dask", "distributed", "stumpy", "tqdm"]
+test_command = "pytest tests -q --cov=tsfresh --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "tsfresh"
+# Disabled: heavy dask/distributed/stumpy stack fails to install for the year-old snapshot under py3.12.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

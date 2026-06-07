@@ -1,0 +1,17 @@
+name = "arviz"
+url = "https://github.com/arviz-devs/arviz"
+paths = ["arviz"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "scipy", "pandas", "xarray", "matplotlib", "packaging", "h5netcdf", "cloudpickle"]
+test_command = "pytest arviz -q --cov=arviz --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "arviz"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "4743beb7df7b8e1015869edf6f8b8dd7bc3d99ac"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "note": "AUC of the total score and of the sprawl component alone, per sprawl candidate, against the SZZ defect label. total_auc(drop_file_line) > total_auc(baseline) => the file-line term is noise; lower => signal. sprawl_auc ~ 0.5 => the component is non-predictive. Directional until the corpus is pooled; SZZ precision and right-censoring caveats apply (see data/calibration/README.md).",
+  "n_buggy": 4,
+  "n_clean": 171,
+  "coverage": "full (snapshot replayed under coverage)",
+  "candidates": [
+    {
+      "candidate": "baseline",
+      "total_auc": 0.5007,
+      "sprawl_auc": 0.5592,
+      "z": 0.0051
+    },
+    {
+      "candidate": "drop_file_line",
+      "total_auc": 0.614,
+      "sprawl_auc": 0.6045,
+      "z": 0.826
+    },
+    {
+      "candidate": "shrink_file_share@0.60",
+      "total_auc": 0.5,
+      "sprawl_auc": 0.5548,
+      "z": 0.0
+    },
+    {
+      "candidate": "shrink_file_share@0.75",
+      "total_auc": 0.5446,
+      "sprawl_auc": 0.5548,
+      "z": 0.3139
+    },
+    {
+      "candidate": "shrink_file_share@0.90",
+      "total_auc": 0.6184,
+      "sprawl_auc": 0.5519,
+      "z": 0.8301
+    },
+    {
+      "candidate": "raise_band@750-1500",
+      "total_auc": 0.5124,
+      "sprawl_auc": 0.568,
+      "z": 0.0872
+    },
+    {
+      "candidate": "raise_band@1000-2000",
+      "total_auc": 0.4854,
+      "sprawl_auc": 0.4803,
+      "z": -0.1007
+    },
+    {
+      "candidate": "raise_band@1500-3000",
+      "total_auc": 0.5029,
+      "sprawl_auc": 0.4715,
+      "z": 0.0201
+    }
+  ]
+}

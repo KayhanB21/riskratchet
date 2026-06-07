@@ -1,0 +1,16 @@
+name = "loguru"
+url = "https://github.com/Delgan/loguru"
+paths = ["loguru"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["freezegun", "colorama", "exceptiongroup", "mypy"]
+test_command = "pytest tests -q --cov=loguru --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "loguru"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "a69bfc451413f71b81761a238db4b5833cf0a992"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

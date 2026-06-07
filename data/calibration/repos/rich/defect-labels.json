@@ -1,0 +1,88 @@
+{
+  "snapshot_sha": "eaaebe486050c6f1d3b07c83529c49caeb7fccac",
+  "head_sha": "46cebbb032f920eb096efbaf23cdc6fe9dd541f7",
+  "window_days": 365,
+  "n_functions": 901,
+  "n_defect_functions": 19,
+  "n_fixes_scanned": 29,
+  "n_fixes_blamed": 24,
+  "n_implications_untracked": 9,
+  "labels": [
+    {
+      "target": "rich/_inspect.py::Inspect._get_formatted_doc",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/cells.py::get_character_cell_size",
+      "defect_count": 2
+    },
+    {
+      "target": "rich/console.py::Console.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "rich/console.py::Console._caller_frame_info",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/console.py::Console.print",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/console.py::Console.save_html",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/console.py::Console.save_svg",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/console.py::Console.save_text",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/live.py::Live.renderable",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/logging.py::RichHandler.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/markdown.py::TableDataElement.on_text",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/panel.py::Panel.__rich_console__",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.on_validate_error",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/style.py::Style.__hash__",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/table.py::Table._get_padding_width",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/table.py::Table._measure_column",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/text.py::Text.append_text",
+      "defect_count": 1
+    },
+    {
+      "target": "rich/traceback.py::Traceback.extract",
+      "defect_count": 2
+    },
+    {
+      "target": "rich/traceback.py::install",
+      "defect_count": 1
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+name = "requests"
+url = "https://github.com/psf/requests"
+paths = ["src/requests"]
+pr_branch = "main"
+python = "3.12"
+extras = ["socks"]
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "5b4b64c3467fd7a3c03f91ee641aaa348b6bed3b"
+test_command = "pytest tests -q --cov=requests --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/requests"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

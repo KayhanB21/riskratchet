@@ -1,0 +1,24 @@
+{
+  "snapshot_sha": "a6ae894aad9bc09edc7cdad8c416898784ceec9b",
+  "head_sha": "89fae8300f484544c1b7678cea5efe58c551fbb9",
+  "window_days": 365,
+  "n_functions": 202,
+  "n_defect_functions": 3,
+  "n_fixes_scanned": 6,
+  "n_fixes_blamed": 6,
+  "n_implications_untracked": 1,
+  "labels": [
+    {
+      "target": "src/attr/_make.py::_attrs_to_init_script",
+      "defect_count": 1
+    },
+    {
+      "target": "src/attr/_make.py::_transform_attrs",
+      "defect_count": 1
+    },
+    {
+      "target": "src/attr/validators.py::disabled",
+      "defect_count": 1
+    }
+  ]
+}

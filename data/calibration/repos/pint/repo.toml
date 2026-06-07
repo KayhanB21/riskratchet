@@ -1,0 +1,16 @@
+name = "pint"
+url = "https://github.com/hgrecco/pint"
+paths = ["pint"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["pytest-subtests", "matplotlib", "uncertainties"]
+test_command = "pytest pint -q --cov=pint --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "pint"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "db0247017fd9bd2445db13b694d766880b7e3c20"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1500

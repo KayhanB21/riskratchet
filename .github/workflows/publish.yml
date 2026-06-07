@@ -19,10 +19,14 @@ jobs:
   build:
     name: Build distributions
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write       # OIDC identity for build provenance attestation
+      attestations: write   # write the attestation to the GitHub attestation store
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
         with:
           enable-cache: true
       - name: Set up Python 3.12
@@ -91,10 +95,40 @@ jobs:
           /tmp/wheel-env/bin/check-jsonschema \
             --schemafile https://json.schemastore.org/sarif-2.1.0.json \
             /tmp/report.sarif
+      - name: Generate CycloneDX SBOM
+        run: |
+          # Build the SBOM from the *declared* runtime dependency closure
+          # (uv.lock minus dev deps), with riskratchet as the root component.
+          # Scanning an installed venv would wrongly list pip and venv seed
+          # packages as dependencies, so export the locked requirements instead.
+          # Emit outside dist/ so the publish job's packages-dir stays
+          # distribution-only (gh-action-pypi-publish rejects non-dist files).
+          version=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
+          mkdir -p sbom
+          uv export --no-dev --no-emit-project --frozen --format requirements-txt > sbom/requirements.txt
+          uvx --from cyclonedx-bom cyclonedx-py requirements sbom/requirements.txt \
+            --pyproject pyproject.toml \
+            --output-format JSON \
+            --output-reproducible \
+            --output-file "sbom/riskratchet-${version}.cdx.json"
+          rm -f sbom/requirements.txt
+          test -s "sbom/riskratchet-${version}.cdx.json"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32  # v4.1.0
+        with:
+          subject-path: |
+            dist/*.whl
+            dist/*.tar.gz
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: dist
           path: dist/
+          if-no-files-found: error
+      - name: Upload SBOM
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: sbom
+          path: sbom/
           if-no-files-found: error
 
   publish:
@@ -113,3 +147,11 @@ jobs:
           path: dist/
       - name: Publish via OIDC
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+        with:
+          # PEP 740 attestations are already ON BY DEFAULT under Trusted
+          # Publishing; set explicitly so the requirement is visible and survives
+          # a future default change. (The build-provenance attestation in the
+          # build job is the genuinely new control.) The downloaded dist/ holds
+          # only the wheel + sdist — the SBOM ships as a separate "sbom" artifact
+          # — so packages-dir stays distribution-only.
+          attestations: true

@@ -51,6 +51,42 @@ undermine release trust. Keep third-party actions pinned by full SHA, publish vi
 trusted publishing, run release checks against built artifacts, and keep
 dependency and code-scanning automation enabled.
 
+Each tagged release (`publish.yml`) emits three inspectable provenance artifacts.
+Verifying them lets a downstream consumer confirm that the wheel on PyPI was built
+from this repository, at a known commit, with a known dependency closure:
+
+- **CycloneDX SBOM.** The build job generates a CycloneDX SBOM for the wheel's
+  runtime dependency closure (resolved from an isolated install of the built
+  wheel, so it lists shipped runtime dependencies, not dev tooling) and uploads it
+  as a separate `sbom` artifact named `riskratchet-<version>.cdx.json`. Download it
+  from the workflow run's artifacts to see exactly which dependency versions a
+  release pins.
+- **GitHub build provenance attestation (SLSA).** The build job attaches a signed
+  build-provenance attestation to the wheel and sdist via
+  `actions/attest-build-provenance`. After downloading a release artifact, verify
+  it offline against GitHub's attestation store:
+
+  ```bash
+  gh attestation verify riskratchet-<version>-py3-none-any.whl --owner KayhanB21
+  ```
+
+  A pass proves the artifact was produced by this repo's `publish.yml` at the
+  attested commit; a mismatch or missing attestation means do not trust the file.
+- **PyPI publish attestations (PEP 740).** Trusted Publishing already generates
+  these by default; the workflow sets `attestations: true` explicitly so the
+  requirement is visible. They appear on the project's PyPI release files and let
+  `pip`/installers verify that the uploaded distribution came from the expected
+  GitHub publisher. This is not new in 0.2.10 — the **build-provenance
+  attestation above is the control this release adds**; the SBOM and the explicit
+  PyPI line make the existing guarantees inspectable.
+
+Trust boundary (post-0.2.10): the SBOM and both attestation families describe and
+sign **what was built and published**. They do not vouch for the correctness or
+safety of the source itself — only that the artifact you install matches what this
+repository's release workflow produced. Source review, dependency auditing
+(`security.yml` runs `pip-audit` + CodeQL), and the quality gate remain the
+controls for what goes *into* a release.
+
 ### Information leakage
 
 PR comments, SARIF, GitHub annotations, JSON, and Markdown output can reveal

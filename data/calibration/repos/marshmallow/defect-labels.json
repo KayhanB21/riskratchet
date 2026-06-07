@@ -1,0 +1,116 @@
+{
+  "snapshot_sha": "7266de0c42e26c521801b7c01417d1f738e8a314",
+  "head_sha": "a8ee4d719585948376e4504e5d99ee01fb522ac8",
+  "window_days": 365,
+  "n_functions": 235,
+  "n_defect_functions": 26,
+  "n_fixes_scanned": 18,
+  "n_fixes_blamed": 17,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "src/marshmallow/decorators.py::post_dump",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::post_load",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::pre_dump",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::pre_load",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::set_hook",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::validates",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/decorators.py::validates_schema",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Constant.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "src/marshmallow/fields.py::Enum._deserialize",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested.schema",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple._deserialize",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple._serialize",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._bind_field",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._deserialize",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_schema_validators",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.dump",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.dumps",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.load",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.loads",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/validate.py::Email.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/validate.py::OneOf.options",
+      "defect_count": 2
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.RegexMemoizer._regex_generator",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.__init__",
+      "defect_count": 1
+    }
+  ]
+}

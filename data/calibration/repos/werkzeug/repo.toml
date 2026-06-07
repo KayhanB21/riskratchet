@@ -1,0 +1,17 @@
+name = "werkzeug"
+url = "https://github.com/pallets/werkzeug"
+paths = ["src/werkzeug"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# Dev-server / serving tests need these beyond the package's runtime deps.
+test_deps = ["cryptography", "greenlet", "watchdog", "ephemeral-port-reserve", "pytest-timeout"]
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
+coverage_prefix = "src/werkzeug"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "99fc293bc7dccd6a7dc96b96012d4aa849794ba4"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1500

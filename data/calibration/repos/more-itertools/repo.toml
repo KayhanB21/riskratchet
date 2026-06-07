@@ -1,0 +1,15 @@
+name = "more-itertools"
+url = "https://github.com/more-itertools/more-itertools"
+paths = ["more_itertools"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=more_itertools --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "more_itertools"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "569e0ad654a85c77581b318305edc2eb7c4068ae"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

@@ -1,0 +1,16 @@
+name = "hyperopt"
+url = "https://github.com/hyperopt/hyperopt"
+paths = ["hyperopt"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "scipy", "networkx", "cloudpickle", "future", "six", "tqdm"]
+test_command = "pytest hyperopt -q --cov=hyperopt --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "hyperopt"
+# Disabled: tests require optional mongo (bson)/pyspark backends + custom markers; multi-backend rabbit hole.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1200

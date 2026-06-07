@@ -1,0 +1,48 @@
+{
+  "snapshot_sha": "29e2fc4ac70d95a9e65852434f979fac25aaeeea",
+  "head_sha": "c4bc11ed714d2478079f07666d3b3ed594c4e420",
+  "window_days": 365,
+  "n_functions": 1165,
+  "n_defect_functions": 9,
+  "n_fixes_scanned": 7,
+  "n_fixes_blamed": 7,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "mlxtend/classifier/perceptron.py::Perceptron._fit",
+      "defect_count": 2
+    },
+    {
+      "target": "mlxtend/classifier/stacking_cv_classification.py::StackingCVClassifier.fit",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/externals/adjust_text.py::adjust_text",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/frequent_patterns/apriori.py::apriori",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/frequent_patterns/association_rules.py::association_rules",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/frequent_patterns/tests/test_association_rules.py::test_default",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/plotting/decision_regions.py::get_feature_range_mask",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/plotting/decision_regions.py::plot_decision_regions",
+      "defect_count": 1
+    },
+    {
+      "target": "mlxtend/regressor/stacking_cv_regression.py::StackingCVRegressor.fit",
+      "defect_count": 1
+    }
+  ]
+}

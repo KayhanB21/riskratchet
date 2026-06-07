@@ -1,0 +1,28 @@
+{
+  "snapshot_sha": "0fe5f065718e5af3ab47903d1bec82d87d202a63",
+  "head_sha": "2224255c4acc594d734cef0bbc83360452a67983",
+  "window_days": 365,
+  "n_functions": 175,
+  "n_defect_functions": 4,
+  "n_fixes_scanned": 4,
+  "n_fixes_blamed": 4,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "arrow/arrow.py::Arrow.date",
+      "defect_count": 1
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.fromdate",
+      "defect_count": 1
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.humanize",
+      "defect_count": 3
+    },
+    {
+      "target": "arrow/util.py::next_weekday",
+      "defect_count": 1
+    }
+  ]
+}

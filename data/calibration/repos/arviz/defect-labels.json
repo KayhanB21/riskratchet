@@ -1,0 +1,28 @@
+{
+  "snapshot_sha": "4743beb7df7b8e1015869edf6f8b8dd7bc3d99ac",
+  "head_sha": "d685905277867e88aa7b6048d02068102d1d5a43",
+  "window_days": 365,
+  "n_functions": 1430,
+  "n_defect_functions": 4,
+  "n_fixes_scanned": 7,
+  "n_fixes_blamed": 7,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.from_netcdf",
+      "defect_count": 1
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.to_zarr",
+      "defect_count": 1
+    },
+    {
+      "target": "arviz/plots/forestplot.py::plot_forest",
+      "defect_count": 1
+    },
+    {
+      "target": "arviz/stats/stats.py::compare",
+      "defect_count": 2
+    }
+  ]
+}

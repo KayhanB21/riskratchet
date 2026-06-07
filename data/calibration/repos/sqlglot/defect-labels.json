@@ -1,0 +1,124 @@
+{
+  "snapshot_sha": "1d20aa223e1bf277542c1ddc4cbfc8d41e872c82",
+  "head_sha": "1d07352dfb421dce825eb47e825c3b6124ea4bd3",
+  "window_days": 365,
+  "n_functions": 2396,
+  "n_defect_functions": 28,
+  "n_fixes_scanned": 582,
+  "n_fixes_blamed": 60,
+  "n_implications_untracked": 115,
+  "labels": [
+    {
+      "target": "sqlglot/dialects/dialect.py::no_ilike_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.bytestring_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.connector_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.datatype_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.identifier_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.ordered_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/generator.py::Generator.tablealias_sql",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/jsonpath.py::parse",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/canonicalize.py::_coerce_datediff_args",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/normalize.py::_distribute",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/normalize.py::_predicate_lengths",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/pushdown_projections.py::pushdown_projections",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_expand_stars",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_qualify_columns",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/qualify_columns.py::_unpivot_columns",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/optimizer/unnest_subqueries.py::unnest",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._implicit_unnests_to_explicit",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_alter_table_rename",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_cast",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_comment",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_function_call",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_join",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_joins",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_pipe_syntax_aggregate_group_order_by",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_table",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_types",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/parser.py::Parser._parse_wrapped_select",
+      "defect_count": 1
+    },
+    {
+      "target": "sqlglot/serde.py::dump",
+      "defect_count": 1
+    }
+  ]
+}

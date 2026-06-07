@@ -1,0 +1,136 @@
+{
+  "snapshot_sha": "db0247017fd9bd2445db13b694d766880b7e3c20",
+  "head_sha": "92dc7b741794ab9fac24ed9866176b9f739d1286",
+  "window_days": 365,
+  "n_functions": 1727,
+  "n_defect_functions": 31,
+  "n_fixes_scanned": 15,
+  "n_fixes_blamed": 15,
+  "n_implications_untracked": 1,
+  "labels": [
+    {
+      "target": "pint/_typing.py::Handler.__getitem__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/delegates/formatter/_format_helpers.py::pretty_fmt_exponent",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/delegates/formatter/full.py::FullFormatter.get_formatter",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/delegates/txt_defparser/block.py::DirectiveBlock.derive_definition",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/objects.py::Context.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/objects.py::Context.transform",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/objects.py::ContextChain.transform",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/objects.py::Transformation.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/registry.py::GenericContextRegistry.context",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/context/registry.py::GenericContextRegistry.with_context",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/nonmultiplicative/registry.py::GenericNonMultiplicativeRegistry._convert",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::_interp",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::implement_mul_func",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/qto.py::to_compact",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__iadd__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__new__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._helper_dispatch_adder",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__truediv__",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/pint_convert.py::_define_constants",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_00_common.py::test_import",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_compat_downcast.py::test_array_quantity_creation_by_multiplication",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_dask.py::test_compute_persist_equivalent",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_definitions.py::TestDefinition.test_unit_definition",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue2017",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_non_int.py::_TestBasic.test_nan_creation",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_interp_numpy_func",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_both_symbol",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/testsuite/test_util.py::TestParseHelper._test_eval_token",
+      "defect_count": 1
+    },
+    {
+      "target": "pint/util.py::find_shortest_path",
+      "defect_count": 1
+    }
+  ]
+}

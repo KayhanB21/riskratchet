@@ -1,0 +1,16 @@
+{
+  "snapshot_sha": "ead24576946db3d7e9eac9d2946ad4a27a46030e",
+  "head_sha": "329dcb7fc2bfac91f25c458f6e9f9e0cdaf1283c",
+  "window_days": 365,
+  "n_functions": 388,
+  "n_defect_functions": 1,
+  "n_fixes_scanned": 6,
+  "n_fixes_blamed": 6,
+  "n_implications_untracked": 2,
+  "labels": [
+    {
+      "target": "feature_engine/imputation/missing_indicator.py::AddMissingIndicator.transform",
+      "defect_count": 1
+    }
+  ]
+}
