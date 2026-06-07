@@ -53,22 +53,25 @@ packages = ["src/riskratchet"]
 
 # Without this, hatchling's sdist defaults to every VCS-tracked file, which drags
 # in data/ (research data), bin/, docs/, schemas/, and the GH Action — ~6x the
-# wheel. Keep the sdist to source, tests (so downstream can verify), and the
-# metadata needed to build.
+# wheel. Keep the sdist to source plus the metadata needed to build.
+# tests/ is intentionally excluded: the suite's conftest hard-depends on bin/
+# (calibration research tooling) which is not shipped, so a bundled test run
+# could not even collect. A standard sdist is source + metadata.
 [tool.hatch.build.targets.sdist]
 include = [
     "src/riskratchet",
-    "tests",
     "README.md",
     "AGENTS.md",
     "CHANGELOG.md",
     "LICENSE",
     "pyproject.toml",
 ]
-# Hatchling auto-bundles every nested README.md/LICENSE; drop the stray ones.
+# Hatchling auto-bundles every nested README.md/LICENSE/pyproject.toml; drop the
+# stray ones (incl. tests/fixtures/**/pyproject.toml now that tests/ is excluded).
 exclude = [
     "data",
     "riskratchet-action",
+    "tests",
 ]
 
 [dependency-groups]
