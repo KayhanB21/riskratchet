@@ -1,0 +1,16 @@
+name = "emcee"
+url = "https://github.com/dfm/emcee"
+paths = ["src/emcee"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "scipy", "h5py"]
+test_command = "pytest src/emcee -q --cov=emcee --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/emcee"
+# Disabled: scores fine (207 functions) but zero in-window bug-fixes touching the package — dormant.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

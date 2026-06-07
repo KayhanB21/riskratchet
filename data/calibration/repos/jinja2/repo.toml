@@ -1,0 +1,16 @@
+name = "jinja2"
+url = "https://github.com/pallets/jinja"
+paths = ["src/jinja2"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["pytest-timeout"]
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
+coverage_prefix = "src/jinja2"
+# Disabled: recipe works (774 functions scored) but ZERO commits touched src/jinja2
+# in the 365-day window — no fixes to mine, no defect signal.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

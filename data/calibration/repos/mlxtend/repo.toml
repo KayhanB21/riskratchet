@@ -1,0 +1,16 @@
+name = "mlxtend"
+url = "https://github.com/rasbt/mlxtend"
+paths = ["mlxtend"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["scikit-learn", "scipy", "pandas", "matplotlib", "joblib"]
+test_command = "pytest mlxtend -q --cov=mlxtend --cov-report=json:{coverage_out}"
+coverage_prefix = "mlxtend"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "29e2fc4ac70d95a9e65852434f979fac25aaeeea"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

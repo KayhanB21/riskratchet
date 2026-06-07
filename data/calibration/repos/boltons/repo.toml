@@ -1,0 +1,15 @@
+name = "boltons"
+url = "https://github.com/mahmoud/boltons"
+paths = ["boltons"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=boltons --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "boltons"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "0c88f25323de3ff85bcca844b9ce6cd171a80392"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

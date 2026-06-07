@@ -1,0 +1,17 @@
+name = "xarray"
+url = "https://github.com/pydata/xarray"
+paths = ["xarray"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["numpy", "pandas", "packaging", "typing_extensions", "pytz"]
+test_command = "pytest xarray -o addopts= -q --cov=xarray --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "xarray"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "fa01fad6f56f77f8e76857f23bc28da95d145090"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

@@ -1,0 +1,14 @@
+name = "tomlkit"
+url = "https://github.com/sdispater/tomlkit"
+paths = ["tomlkit"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests -q --cov=tomlkit --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "tomlkit"
+# Disabled: test suite depends on the toml-test git submodule (not checked out in worktrees).
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

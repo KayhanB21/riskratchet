@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "n_labeled_prs": 0,
+  "note": "Phase-1 proxy: the accept/reject label is hand-labelled and the rejected class is near-empty in merge history, so the separation below is a smoke test of the machinery, NOT evidence about sprawl. Intended successor: SZZ defect-linking (see data/calibration/README.md). effect/z > 0 means rejected PRs carry more regressions than accepted ones under that candidate.",
+  "candidates": [
+    {
+      "candidate": "baseline",
+      "description": "current shipped scoring (control)",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "drop_file_line",
+      "description": "sprawl = function-length term only",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "shrink_file_share@0.60",
+      "description": "0.60 function / 0.40 file blend",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "shrink_file_share@0.75",
+      "description": "0.75 function / 0.25 file blend",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "shrink_file_share@0.90",
+      "description": "0.90 function / 0.10 file blend",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "raise_band@750-1500",
+      "description": "file-line band 750/1500 (shipped is 500/1000)",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "raise_band@1000-2000",
+      "description": "file-line band 1000/2000 (shipped is 500/1000)",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    },
+    {
+      "candidate": "raise_band@1500-3000",
+      "description": "file-line band 1500/3000 (shipped is 500/1000)",
+      "n_accepted": 0,
+      "n_rejected": 0,
+      "accepted_mean": null,
+      "rejected_mean": null,
+      "accepted_median": null,
+      "rejected_median": null,
+      "separation_effect": null,
+      "separation_z": null
+    }
+  ]
+}

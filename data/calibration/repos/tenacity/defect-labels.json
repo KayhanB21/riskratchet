@@ -1,0 +1,220 @@
+{
+  "snapshot_sha": "077aaa84eaa91051d6a779cd1edb68727d7daebb",
+  "head_sha": "a49e9d6dd4e4611238dc277263d1975e1cada21e",
+  "window_days": 365,
+  "n_functions": 156,
+  "n_defect_functions": 52,
+  "n_fixes_scanned": 19,
+  "n_fixes_blamed": 19,
+  "n_implications_untracked": 8,
+  "labels": [
+    {
+      "target": "tenacity/__init__.py::AttemptManager.__exit__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying._post_stop_check_actions",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.copy",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.statistics",
+      "defect_count": 3
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.wraps",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.seconds_since_start",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.set_exception",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::Retrying.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::_first_set",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/__init__.py::retry",
+      "defect_count": 4
+    },
+    {
+      "target": "tenacity/_utils.py::find_ordinal",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/_utils.py::get_callback_name",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/_utils.py::is_coroutine_callable",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/after.py::after_log",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__anext__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.iter",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.wraps",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::_portable_async_sleep",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__and__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__or__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__rand__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__ror__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_all.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_any.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_exception.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_result.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/before_sleep.py::before_sleep_log",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/nap.py::sleep_using_event.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_all.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_any.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__and__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__or__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__rand__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__ror__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_cause_type.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_message.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_type.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_not_exception_message.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_not_exception_type.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_not_result.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_result.__call__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/retry.py::retry_unless_exception_type.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/tornadoweb.py::TornadoRetrying.__call__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/wait.py::wait_exponential.__init__",
+      "defect_count": 2
+    },
+    {
+      "target": "tenacity/wait.py::wait_exponential_jitter.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/wait.py::wait_incrementing.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "tenacity/wait.py::wait_random.__init__",
+      "defect_count": 1
+    }
+  ]
+}

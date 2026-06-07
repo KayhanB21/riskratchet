@@ -1,0 +1,17 @@
+name = "bayesian-optimization"
+url = "https://github.com/bayesian-optimization/BayesianOptimization"
+paths = ["bayes_opt"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# pycaret-adjacent ML/data-science cohort.
+test_deps = ["scipy", "scikit-learn", "numpy", "colorama", "nbformat", "nbclient", "ipykernel", "nbconvert"]
+test_command = "pytest tests -q --cov=bayes_opt --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "bayes_opt"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "f6cde7f57351f03f3b94df884998ce77501897c0"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

@@ -1,0 +1,17 @@
+name = "flask"
+url = "https://github.com/pallets/flask"
+paths = ["src/flask"]
+pr_branch = "main"
+python = "3.12"
+extras = ["async", "dotenv"]
+# Like click, flask sets [tool.coverage.run] source + filterwarnings=error; bare
+# --cov uses its config so --cov=flask can't raise a CoverageWarning -> error.
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
+coverage_prefix = "src/flask"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "7bf3be8dfa5832ef03a3fd8f07f6736e770440e4"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

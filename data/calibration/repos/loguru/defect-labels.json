@@ -1,0 +1,48 @@
+{
+  "snapshot_sha": "a69bfc451413f71b81761a238db4b5833cf0a992",
+  "head_sha": "9df5c033771a94fd150a42f19dbda69093fd542d",
+  "window_days": 365,
+  "n_functions": 232,
+  "n_defect_functions": 9,
+  "n_fixes_scanned": 12,
+  "n_fixes_blamed": 12,
+  "n_implications_untracked": 1,
+  "labels": [
+    {
+      "target": "loguru/_colorama.py::should_colorize",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_colorizer.py::AnsiParser._get_ansicode",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_colorizer.py::AnsiParser.feed",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_datetime.py::_compile_format",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_handler.py::Handler._protected_lock",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_logger.py::Logger._log",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_logger.py::Logger.add",
+      "defect_count": 2
+    },
+    {
+      "target": "loguru/_logger.py::Logger.reinstall",
+      "defect_count": 1
+    },
+    {
+      "target": "loguru/_string_parsers.py::parse_time",
+      "defect_count": 1
+    }
+  ]
+}

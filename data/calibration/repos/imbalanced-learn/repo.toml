@@ -1,0 +1,19 @@
+name = "imbalanced-learn"
+url = "https://github.com/scikit-learn-contrib/imbalanced-learn"
+paths = ["imblearn"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# The year-old snapshot imports sklearn's private `_is_pandas_df`, dropped in newer
+# sklearn; pin to a version that still exports it so the package imports at all.
+test_deps = ["scikit-learn==1.6.1", "scipy", "pandas"]
+test_command = "pytest imblearn -q --cov=imblearn --cov-report=json:{coverage_out}"
+coverage_prefix = "imblearn"
+# Disabled: scores fine (671 functions, after pinning sklearn==1.6.1 so the package
+# imports) but zero bug-fix commits touched imblearn/ in the 365-day window — no
+# defect label. Kept as a recipe record.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

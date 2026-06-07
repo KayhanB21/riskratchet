@@ -9,6 +9,61 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.10] - 2026-06-07
+
+0.2.10 is the "supply-chain trust and calibration" release. It makes release
+provenance inspectable and turns the P24 corpus tooling into a standing empirical
+calibration harness — phase 1 (PR replay) plus phase 2 (SZZ defect-linking and a
+predictive-validity study across 34 OSS repositories). No native payload field was
+renamed or removed; scoring is byte-for-byte unchanged from 0.2.9.
+
+### Added
+
+- (P14) Release builds now publish supply-chain provenance. The `publish.yml`
+  build job generates a CycloneDX SBOM from the declared runtime dependency
+  closure (uploaded as a separate `sbom` artifact) and — the genuinely new
+  control — attaches a **GitHub build-provenance attestation** to the wheel and
+  sdist (`actions/attest-build-provenance`), verifiable offline with
+  `gh attestation verify`. The PyPI upload's PEP 740 attestations were already
+  on by default under Trusted Publishing; the workflow now sets `attestations:
+  true` explicitly so the requirement is visible and survives a default change.
+  See `docs/threat-model.md` for how to fetch and verify each.
+
+### Research
+
+- (P21) Empirical calibration harness, phase 1, under `bin/calibration/`. It
+  promotes the P24 corpus tooling into a reusable harness: a per-repo corpus config
+  (`data/calibration/repos/<name>/repo.toml`), PR replay with per-revision coverage (checkout
+  + the repo's own suite under coverage, cached per SHA), an in-process regression
+  diff (head vs base) reusing the engine's `baseline_from_report` / `diff`, and
+  candidate re-scoring of the `sprawl` component against hand-labelled PR outcomes.
+  The three candidates from the P24 finding — drop the file-line term, shrink its
+  share, raise the 500/1000 band — are evaluated by **recomputing the component**
+  (not via weight overrides, since the file-line term lives inside the blended
+  sprawl score) and measuring accept/reject separation. Analysis only: **no scoring
+  weight or threshold changes in this release.** Populating the rollups is a
+  human-run step (see `data/calibration/README.md`); the committed rollups start
+  empty.
+
+- (P21) Empirical calibration harness, phase 2 — SZZ defect-linking + predictive
+  validity, under `bin/calibration/` (`szz.py`, `fixes.py`, `defects.py`,
+  `predict.py`, `git_checkout.py`). Replaces phase 1's weak hand-labelled
+  accept/reject proxy with a mined outcome label: the `defects` subcommand scores
+  every function at a historical snapshot, mines bug-fix commits, `git blame`s
+  their deleted lines to the introducing function (reusing riskratchet's diff
+  parsing, `parse_file`, and `match_rename`), and tracks it back to the snapshot;
+  the `predict` subcommand reports, per sprawl candidate, the AUC of the score
+  against that defect label (AUC derived from the existing `mann_whitney_u`, no new
+  stats). The readout answers whether the file-line sprawl term helps or hurts
+  defect prediction. Analysis only — **no scoring change**. Ships a real,
+  SHA-pinned snapshot: per-function defect labels and per-candidate AUCs for **34
+  enabled repos** (general libraries + a pycaret-adjacent ML cohort), each run twice
+  to confirm reproducibility (labels identical on all 34, scores byte-identical on
+  26). The directional finding — the score is not a reliable defect predictor on the
+  largest repos, and the file-line sprawl term is net-negative on average — is
+  written up in `data/calibration/defect-prediction-findings.md`; it argues *against*
+  a weight change, which is why none ships.
+
 ## [0.2.9] - 2026-06-03
 
 0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI

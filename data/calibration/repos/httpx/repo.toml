@@ -1,0 +1,16 @@
+name = "httpx"
+url = "https://github.com/encode/httpx"
+paths = ["httpx"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_requirements = "requirements.txt"
+test_command = "pytest tests -q --cov --cov-report=json:{coverage_out}"
+coverage_prefix = "httpx"
+# Disabled: install recipe is correct, but the full async/network suite exceeds the
+# replay budget; a unit-only subset would bias coverage. Prefer whole-package suites.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

@@ -1,0 +1,908 @@
+{
+  "snapshot_sha": "fa01fad6f56f77f8e76857f23bc28da95d145090",
+  "head_sha": "a1408234d1dc786965bfb6311f8782561ee0e676",
+  "window_days": 365,
+  "n_functions": 7827,
+  "n_defect_functions": 224,
+  "n_fixes_scanned": 79,
+  "n_fixes_blamed": 60,
+  "n_implications_untracked": 28,
+  "labels": [
+    {
+      "target": "xarray/backends/api.py::open_dataarray",
+      "defect_count": 3
+    },
+    {
+      "target": "xarray/backends/api.py::open_dataset",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/backends/api.py::open_datatree",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/api.py::open_groups",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/api.py::open_mfdataset",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/api.py::to_netcdf",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/h5netcdf_.py::H5NetCDFStore.open",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/h5netcdf_.py::H5NetCDFStore.open_store_variable",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/locks.py::CombinedLock.locked",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/netCDF4_.py::NetCDF4BackendEntrypoint.guess_can_open",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/pydap_.py::PydapBackendEntrypoint.guess_can_open",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/scipy_.py::ScipyBackendEntrypoint.guess_can_open",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/scipy_.py::ScipyDataStore.prepare_variable",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/zarr.py::ZarrStore._validate_and_autodetect_region",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/zarr.py::ZarrStore.open_store_variable",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/backends/zarr.py::ZarrStore.set_variables",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/cftime_offsets.py::date_range",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/coding/cftimeindex.py::CFTimeIndex.__add__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/cftimeindex.py::CFTimeIndex.__radd__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/cftimeindex.py::CFTimeIndex.shift",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/times.py::CFTimedeltaCoder.decode",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/times.py::_check_date_for_units_since_refdate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/times.py::_check_timedelta_range",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/coding/times.py::_eagerly_encode_cf_datetime",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/compat/npcompat.py::isdtype",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/computation/apply_ufunc.py::apply_ufunc",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/conventions.py::decode_cf_variables",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/coordinates.py::AbstractCoordinates.to_index",
+      "defect_count": 4
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray._replace_maybe_drop_dims",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.broadcast_equals",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.convert_calendar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.cumulative_integrate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.differentiate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.drop_vars",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.equals",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.head",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.identical",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.integrate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.interp",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.interp_calendar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.interp_like",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.tail",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.to_dataframe",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.to_netcdf",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.to_series",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataarray.py::DataArray.to_zarr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset._copy_listed",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset._to_dataframe",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset._unstack_once",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset._validate_indexers",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.as_numpy",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.coarsen",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.convert_calendar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.cumulative_integrate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.differentiate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.eval",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.from_dataframe",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.from_dict",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.identical",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.integrate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.interp_calendar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.interpolate_na",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.sortby",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.to_dataarray",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.to_netcdf",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dataset.py::Dataset.to_zarr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree.py::DataTree.from_dict",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree.py::DataTree.map_over_datasets",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree.py::DataTree.to_dict",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree.py::DataTree.to_netcdf",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree.py::DataTree.to_zarr",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/datatree_io.py::_datatree_to_zarr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/datatree_mapping.py::map_over_datasets",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dtypes.py::isdtype",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dtypes.py::maybe_promote",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dtypes.py::preprocess_types",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/dtypes.py::result_type",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/duck_array_ops.py::as_shared_dtype",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/duck_array_ops.py::asarray",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/duck_array_ops.py::astype",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/duck_array_ops.py::where",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/extension_array.py::PandasExtensionArray.__array_function__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/extension_array.py::PandasExtensionArray.__getitem__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/extension_array.py::PandasExtensionArray.__len__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/extension_array.py::__extension_duck_array__where",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/extension_array.py::implements",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/formatting.py::diff_array_repr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/formatting.py::diff_dataset_repr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/groupby.py::ComposedGrouper.factorize",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/groupby.py::GroupBy._maybe_reindex",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/groupby.py::_inverse_permutation_indices",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasIndex.isel",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasIndex.join",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.create_variables",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.from_variables",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.from_variables_maybe_expand",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.reorder_levels",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.sel",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::PandasMultiIndex.stack",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::get_indexer_nd",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexes.py::remove_unused_levels_categories",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::CoordinateTransformIndexingAdapter.__getitem__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::CoordinateTransformIndexingAdapter._oindex_get",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::LazilyIndexedArray.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::OuterIndexer.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::_apply_vectorized_indexer_dask_wrapper",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::_decompose_outer_indexer",
+      "defect_count": 2
+    },
+    {
+      "target": "xarray/core/indexing.py::_decompose_vectorized_indexer",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/indexing.py::is_fancy_indexer",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/missing.py::_localize",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/options.py::get_options",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/treenode.py::group_subtrees",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/utils.py::did_you_mean",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/utils.py::equivalent",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/utils.py::is_remote_uri",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/utils.py::maybe_coerce_to_str",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::IndexVariable.level_names",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable._broadcast_indexes",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable._broadcast_indexes_vectorized",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable._replace",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable.encoding",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable.roll",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::Variable.to_dict",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/core/variable.py::as_compatible_data",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/indexes/range_index.py::RangeCoordinateTransform.equals",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/indexes/range_index.py::RangeCoordinateTransform.slice",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/namedarray/dtypes.py::maybe_promote",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/namedarray/parallelcompat.py::ChunkManagerEntrypoint.scan",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/plot/dataarray_plot.py::hist",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/plot/dataset_plot.py::scatter",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/alignment.py::_broadcast_helper",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/combine.py::combine_by_coords",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/combine.py::combine_nested",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/concat.py::concat",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/merge.py::merge",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/structure/merge.py::merge_collected",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/testing/assertions.py::assert_allclose",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/testing/assertions.py::assert_equal",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/testing/assertions.py::maybe_transpose_dims",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/__init__.py::assert_identical",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::DatasetIOBase.test_roundtrip_timedelta_data",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::TestH5NetCDFDataRos3Driver.test_get_variable_list",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::TestH5NetCDFDataRos3Driver.test_get_variable_list_empty_driver_kwds",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::test_netcdf4_entrypoint",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::test_raises_key_error_on_invalid_zarr_store",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends.py::test_write_file_from_np_str",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_backends_datatree.py::TestZarrDatatreeIO.test_zarr_encoding",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coarsen.py::TestCoarsenConstruct.test_coarsen_construct_keeps_all_coords",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coarsen.py::test_coarsen_coords",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coarsen.py::test_coarsen_coords_cftime",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coding_times.py::test_encode_cf_timedelta_via_dask",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_computation.py::test_keep_attrs_strategies_dataarray_variables",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_computation.py::test_keep_attrs_strategies_dataset_variables",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_conventions.py::test_decode_cf_error_includes_variable_name",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coordinates.py::TestCoordinates.test_equals",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_coordinates.py::TestCoordinates.test_identical",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataarray.py::TestDataArray.test_curvefit_helpers",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataarray.py::TestDataArray.test_from_multiindex_series_sparse",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataarray.py::TestDataArray.test_stack_unstack",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataarray.py::TestDataArray.test_to_and_from_dict_with_nan_nat",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataarray.py::TestDataArray.test_to_masked_array",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_extension_array_reindex_same",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_extensionarray_negative_reindex",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_from_dataframe_non_unique_columns",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_full_like",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_rename_multiindex",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_reset_index",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_set_index",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_to_and_from_dataframe",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::TestDataset.test_to_and_from_dict_with_nan_nat",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_dataset.py::test_cumulative_integrate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestInheritance.test_inconsistent_child_indexes",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestInheritance.test_inconsistent_grandchild_indexes",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestSetItem.test_setitem_overwrite_data_in_node_with_none",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestStoreDatasets.test_is_hollow",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestStoreDatasets.test_set_data",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_datatree.py::TestVariablesChildrenNameCollisions.test_assign_when_already_child_with_variables_name",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_distributed.py::test_dask_distributed_netcdf_roundtrip",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_duck_array_ops.py::test_extension_array_attr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_groupby.py::TestDataArrayGroupBy.test_groupby_bins_multidim",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_groupby.py::TestDataArrayResample.test_upsample_interpolate",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_groupby.py::TestDataArrayResample.test_upsample_interpolate_dask",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_groupby.py::test_multiple_groupers_mixed",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_1d",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_1d_methods",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_nd",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_nd_scalar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_scalar",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_interp.py::test_interpolate_vectorize",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_merge.py::TestMergeFunction.test_merge_wrong_input_error",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_merge.py::TestMergeMethod.test_merge_compat",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_merge.py::TestMergeMethod.test_merge_drop_attrs",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_namedarray.py::TestNamedArray.test_duck_array_class",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_parallelcompat.py::DummyChunkManager.compute",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_parallelcompat.py::TestGetChunkedArrayType.test_raise_if_no_matching_chunkmanagers",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestContour.test_colors",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestContour.test_colors_np_levels",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestDatasetScatterPlots.test_legend_labels",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestPlot.test_2d_line_accepts_hue_kw",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestPlot.test_2d_line_accepts_legend_kw",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::TestPlot.test__infer_interval_breaks",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_plot.py::test_plot1d_default_rcparams",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_range_index.py::test_range_index_isel",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_range_index.py::test_range_index_rename",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_range_index.py::test_range_index_sel",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::DuckArray.__array_namespace__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::DuckArray2.__array_namespace__",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::TestXarrayUfuncs.test_ufuncs",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::test_binary",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::test_binary_out",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::test_groupby",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::test_out",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_ufuncs.py::test_xarray_defers_to_unrecognized_type",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_units.py::TestDataArray.test_stacking_reordering",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_units.py::TestDataArray.test_stacking_stacked",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_variable.py::TestAsCompatibleData.test_full_like",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_variable.py::TestAsCompatibleData.test_masked_array",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_bad_dim",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_operations_3D",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_operations_different_shapes",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_operations_keep_attr",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_operations_keep_attr_da_in_ds",
+      "defect_count": 1
+    },
+    {
+      "target": "xarray/tests/test_weighted.py::test_weighted_weights_nan_raises_dask",
+      "defect_count": 1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+name = "rich"
+url = "https://github.com/Textualize/rich"
+paths = ["rich"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# tests import attrs (a poetry dev-dep, not a package extra).
+test_deps = ["attrs"]
+snapshot_sha = "eaaebe486050c6f1d3b07c83529c49caeb7fccac"
+test_command = "pytest tests -q --cov=rich --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "rich"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1800

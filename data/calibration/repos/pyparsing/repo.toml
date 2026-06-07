@@ -1,0 +1,15 @@
+name = "pyparsing"
+url = "https://github.com/pyparsing/pyparsing"
+paths = ["pyparsing"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_command = "pytest tests --ignore=tests/test_diagram.py -q --cov=pyparsing --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "pyparsing"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "15a106e1bfc7679c5cd3a65c84403061a871a9e6"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

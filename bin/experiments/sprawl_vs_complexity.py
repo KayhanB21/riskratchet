@@ -40,8 +40,8 @@ Output: a human summary on stdout and a JSON record at
 
 from __future__ import annotations
 
+import importlib.util
 import json
-import math
 import subprocess
 import sys
 from dataclasses import replace
@@ -72,67 +72,22 @@ CORPUS = {
 
 
 # --- statistics ----------------------------------------------------------
+#
+# Single source of truth: the helpers live in bin/calibration/stats.py. This
+# script is loaded standalone (and by a pinned test) without the repo root on
+# sys.path, so import the module by file path and re-export the helpers under
+# the historical private names the P24 finding + its test refer to.
 
+_stats_path = Path(__file__).resolve().parents[1] / "calibration" / "stats.py"
+_stats_spec = importlib.util.spec_from_file_location("_calibration_stats", _stats_path)
+assert _stats_spec is not None and _stats_spec.loader is not None
+_stats = importlib.util.module_from_spec(_stats_spec)
+_stats_spec.loader.exec_module(_stats)
 
-def _pearson(xs: list[float], ys: list[float]) -> float:
-    n = len(xs)
-    if n < 2:
-        return float("nan")
-    mean_x = sum(xs) / n
-    mean_y = sum(ys) / n
-    cov = sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys, strict=True))
-    var_x = sum((x - mean_x) ** 2 for x in xs)
-    var_y = sum((y - mean_y) ** 2 for y in ys)
-    if var_x == 0 or var_y == 0:
-        return float("nan")
-    return cov / math.sqrt(var_x * var_y)
-
-
-def _rank(values: list[float]) -> list[float]:
-    """Average ranks (1-based), so ties share the mean of their positions."""
-    order = sorted(range(len(values)), key=lambda i: values[i])
-    ranks = [0.0] * len(values)
-    i = 0
-    while i < len(order):
-        j = i
-        while j + 1 < len(order) and values[order[j + 1]] == values[order[i]]:
-            j += 1
-        avg = (i + j) / 2.0 + 1.0
-        for k in range(i, j + 1):
-            ranks[order[k]] = avg
-        i = j + 1
-    return ranks
-
-
-def _spearman(xs: list[float], ys: list[float]) -> float:
-    if len(xs) < 2:
-        return float("nan")
-    return _pearson(_rank(xs), _rank(ys))
-
-
-def _distribution(values: list[float]) -> dict[str, object]:
-    if not values:
-        return {"n": 0}
-    s = sorted(values)
-    n = len(s)
-
-    def q(p: float) -> float:
-        idx = min(n - 1, max(0, round(p * (n - 1))))
-        return round(s[idx], 2)
-
-    hist = [0] * 10
-    for v in values:
-        hist[min(9, max(0, int(v // 10)))] += 1
-    return {
-        "n": n,
-        "min": round(s[0], 2),
-        "p25": q(0.25),
-        "median": q(0.5),
-        "p75": q(0.75),
-        "max": round(s[-1], 2),
-        "zeros_frac": round(sum(1 for v in values if v == 0.0) / n, 3),
-        "hist_0_100_by_10": hist,
-    }
+_pearson = _stats.pearson
+_rank = _stats.rank
+_spearman = _stats.spearman
+_distribution = _stats.distribution
 
 
 # --- sprawl decomposition + split simulation -----------------------------

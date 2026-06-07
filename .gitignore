@@ -230,3 +230,8 @@ __marimo__/
 # bin/experiments/sprawl_vs_complexity.py --clone. The rolled-up results in
 # data/calibration/sprawl-experiment.json are committed; the clones are not.
 /data/calibration/corpus/
+
+# P21 calibration harness cache: per-SHA worktrees, venvs, and regenerated
+# coverage/analyze artifacts from PR replay. The committed rollups
+# (pr-replay-rollup.json, sprawl-candidates.json) are reproducible from these.
+/data/calibration/_cache/

@@ -1,0 +1,22 @@
+name = "optuna"
+url = "https://github.com/optuna/optuna"
+paths = ["optuna"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+# Integration tests (torch/tf/sklearn backends) are skipped when deps are absent;
+# sklearn is the one that several core tests import at module scope.
+test_deps = ["scikit-learn", "scipy", "numpy", "fakeredis"]
+# artifacts_tests import cloud SDKs (boto3, google-cloud-storage) at module scope;
+# ignore that dir so the core suite collects.
+test_command = "pytest tests --ignore=tests/artifacts_tests -q --cov=optuna --cov-report=json:{coverage_out}"
+coverage_prefix = "optuna"
+# Disabled: optuna's test tree has many optional-backend modules (boto3, gcs, torch,
+# tensorflow, redis, ...) that import at collection scope; covering them all is a
+# moving target and ignoring them piecemeal leaves the core suite under-collecting.
+# Not worth the bespoke recipe churn. Kept as a record of the attempt.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

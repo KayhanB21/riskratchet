@@ -1,0 +1,16 @@
+name = "category-encoders"
+url = "https://github.com/scikit-learn-contrib/category_encoders"
+paths = ["category_encoders"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["scikit-learn", "scipy", "pandas", "statsmodels", "patsy"]
+test_command = "pytest tests -q --cov=category_encoders --cov-report=json:{coverage_out}"
+coverage_prefix = "category_encoders"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "9a86233c51d8ed3c2809126bb0ab9523c4c379bd"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

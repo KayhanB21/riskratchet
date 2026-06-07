@@ -1,0 +1,16 @@
+{
+  "snapshot_sha": "0c88f25323de3ff85bcca844b9ce6cd171a80392",
+  "head_sha": "207651ee6055aabd0d9cdeac2e00140cdc208d44",
+  "window_days": 365,
+  "n_functions": 912,
+  "n_defect_functions": 1,
+  "n_fixes_scanned": 4,
+  "n_fixes_blamed": 4,
+  "n_implications_untracked": 2,
+  "labels": [
+    {
+      "target": "boltons/listutils.py::BarrelList.sort",
+      "defect_count": 1
+    }
+  ]
+}

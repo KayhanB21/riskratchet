@@ -1,0 +1,268 @@
+{
+  "snapshot_sha": "15571205e3d2c6327aa5c4294725398ea227e25b",
+  "head_sha": "e836284e648e33c39c465b59e4d66e8a848c40c9",
+  "window_days": 365,
+  "n_functions": 7083,
+  "n_defect_functions": 64,
+  "n_fixes_scanned": 38,
+  "n_fixes_blamed": 38,
+  "n_implications_untracked": 181,
+  "labels": [
+    {
+      "target": "networkx/algorithms/approximation/density.py::_fractional_peeling",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/approximation/dominating_set.py::min_weighted_dominating_set",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/bipartite/matrix.py::from_biadjacency_matrix",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/bipartite/redundancy.py::node_redundancy",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness.py::_rescale",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness.py::_rescale_e",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness.py::betweenness_centrality",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness.py::edge_betweenness_centrality",
+      "defect_count": 2
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness_subset.py::_rescale",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness_subset.py::_rescale_e",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness_subset.py::betweenness_centrality_subset",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/betweenness_subset.py::edge_betweenness_centrality_subset",
+      "defect_count": 2
+    },
+    {
+      "target": "networkx/algorithms/centrality/closeness.py::closeness_centrality",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/current_flow_closeness.py::current_flow_closeness_centrality",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_digraph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_florentine_families_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_k5_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_krackhardt_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_les_miserables_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_p3_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_weighted_closeness",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/centrality/tests/test_closeness_centrality.py::TestClosenessCentrality.test_wf_improved",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/community/leiden.py::leiden_communities",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/community/leiden.py::leiden_partitions",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/community/quality.py::modularity",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/connectivity/kcutsets.py::all_node_cuts",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/cuts.py::cut_size",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/cycles.py::chordless_cycles",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/dag.py::is_aperiodic",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/dag.py::root_to_leaf_paths",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/isolate.py::isolates",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/isomorphism/ismags.py::ISMAGS._map_nodes",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/isomorphism/tests/test_ismags.py::TestWikipediaExample.test_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/link_analysis/hits_alg.py::hits",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/minors/contraction.py::quotient_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/similarity.py::optimize_edit_paths",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_dag.py::test_is_aperiodic_disconnected_raises",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_dag.py::test_is_aperiodic_empty_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_dag.py::test_is_aperiodic_null_graph_raises",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_dag.py::test_is_aperiodic_undirected_raises",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_dag.py::test_is_aperiodic_weakly_connected_raises",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tests/test_distance_measures.py::TestDistance.test_eccentricity",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/traversal/breadth_first_search.py::bfs_edges",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tree/mst.py::SpanningTreeIterator.__iter__",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/algorithms/tree/mst.py::SpanningTreeIterator.__next__",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/classes/graph.py::Graph.copy",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/drawing/layout.py::arf_layout",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/drawing/layout.py::forceatlas2_layout",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/drawing/layout.py::spring_layout",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/drawing/nx_agraph.py::from_agraph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/drawing/tests/test_agraph.py::TestAGraph.test_round_trip_empty_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/community.py::stochastic_block_model",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/degree_seq.py::degree_sequence_tree",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/lattice.py::hexagonal_lattice_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/lattice.py::triangular_lattice_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/random_graphs.py::dual_barabasi_albert_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/random_graphs.py::random_powerlaw_tree_sequence",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/social.py::karate_club_graph",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/generators/tests/test_community.py::test_stochastic_block_model",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/tests/test_all_random_functions.py::run_all_random_functions",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/utils/tests/test_random_sequence.py::test_degree_sequences",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/utils/tests/test_random_sequence.py::test_random_weighted_choice",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/utils/tests/test_random_sequence.py::test_random_weighted_sample",
+      "defect_count": 1
+    },
+    {
+      "target": "networkx/utils/tests/test_random_sequence.py::test_zipf_rv",
+      "defect_count": 1
+    }
+  ]
+}

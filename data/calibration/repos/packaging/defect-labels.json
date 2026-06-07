@@ -1,0 +1,160 @@
+{
+  "snapshot_sha": "7952e97c650cd70962a45018e11b760d7b1e1325",
+  "head_sha": "08bb047794f4e70b157dacef4538b3a6e3492743",
+  "window_days": 365,
+  "n_functions": 225,
+  "n_defect_functions": 37,
+  "n_fixes_scanned": 39,
+  "n_fixes_blamed": 39,
+  "n_implications_untracked": 59,
+  "labels": [
+    {
+      "target": "src/packaging/_structures.py::InfinityType.__eq__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_structures.py::InfinityType.__gt__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_structures.py::InfinityType.__le__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_structures.py::NegativeInfinityType.__eq__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_structures.py::NegativeInfinityType.__ge__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_structures.py::NegativeInfinityType.__lt__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/_tokenizer.py::Tokenizer.enclosing_tokens",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/licenses/__init__.py::canonicalize_license_expression",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::Marker.__hash__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::Marker.__repr__",
+      "defect_count": 2
+    },
+    {
+      "target": "src/packaging/markers.py::Marker.evaluate",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::_eval_op",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::_evaluate_markers",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::_normalize",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/markers.py::_normalize_extra_values",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/metadata.py::_Validator._process_description_content_type",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/requirements.py::Requirement.__hash__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/requirements.py::Requirement.__repr__",
+      "defect_count": 2
+    },
+    {
+      "target": "src/packaging/specifiers.py::Specifier.__contains__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::Specifier._canonical_spec",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::Specifier._compare_greater_than",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::Specifier.contains",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::Specifier.filter",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__and__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__contains__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__eq__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__hash__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__repr__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.__str__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.contains",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/specifiers.py::SpecifierSet.filter",
+      "defect_count": 3
+    },
+    {
+      "target": "src/packaging/tags.py::Tag.__setstate__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/tags.py::_mac_binary_formats",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/tags.py::sys_tags",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/version.py::Version.__repr__",
+      "defect_count": 1
+    },
+    {
+      "target": "src/packaging/version.py::_cmpkey",
+      "defect_count": 1
+    }
+  ]
+}

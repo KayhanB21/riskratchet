@@ -1,0 +1,52 @@
+{
+  "snapshot_sha": "47afb1c1a272b0f03e0c8ca00e63df27eb2a0560",
+  "head_sha": "7a8fc34a013ecd79fa405017b89e1697c1cc6e17",
+  "window_days": 365,
+  "n_functions": 1295,
+  "n_defect_functions": 10,
+  "n_fixes_scanned": 5,
+  "n_fixes_blamed": 4,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricRegressionFitter._fit",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricUnivariateFitter.percentile",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/aalen_additive_fitter.py::AalenAdditiveFitter.fit",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/cox_time_varying_fitter.py::CoxTimeVaryingFitter._compute_cumulative_baseline_hazard",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/cox_time_varying_fitter.py::CoxTimeVaryingFitter.fit",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::SemiParametricPHFitter.fit",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::SemiParametricPHFitter.score",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/plotting.py::add_at_risk_counts",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.print_summary",
+      "defect_count": 1
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.to_ascii",
+      "defect_count": 1
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+name = "feature-engine"
+url = "https://github.com/feature-engine/feature_engine"
+paths = ["feature_engine"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["scikit-learn", "scipy", "pandas", "statsmodels"]
+test_command = "pytest tests -q --cov=feature_engine --cov-report=json:{coverage_out}"
+coverage_prefix = "feature_engine"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "ead24576946db3d7e9eac9d2946ad4a27a46030e"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 900
+test_seconds = 1800

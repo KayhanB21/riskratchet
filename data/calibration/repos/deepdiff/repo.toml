@@ -1,0 +1,16 @@
+name = "deepdiff"
+url = "https://github.com/seperman/deepdiff"
+paths = ["deepdiff"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["orderly-set", "numpy", "pytz", "python-dateutil", "orjson", "tomli"]
+test_command = "pytest tests --ignore=tests/test_command.py -q --cov=deepdiff --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "deepdiff"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "bce634391a30acec7abd13674688592eefbad5ea"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

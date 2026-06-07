@@ -1,0 +1,15 @@
+name = "babel"
+url = "https://github.com/python-babel/babel"
+paths = ["babel"]
+pr_branch = "master"
+python = "3.12"
+extras = []
+test_deps = ["pytz", "freezegun"]
+test_command = "pytest tests -q --cov=babel --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "babel"
+# Disabled: tests need a compiled CLDR locale database (make import-cldr) the plain editable install does not build.
+replay_enabled = false
+
+[timeouts]
+install_seconds = 600
+test_seconds = 1200

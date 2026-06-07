@@ -1,0 +1,16 @@
+name = "tenacity"
+url = "https://github.com/jd/tenacity"
+paths = ["tenacity"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["typeguard", "tornado"]
+test_command = "pytest tests -q --cov=tenacity --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "tenacity"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "077aaa84eaa91051d6a779cd1edb68727d7daebb"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

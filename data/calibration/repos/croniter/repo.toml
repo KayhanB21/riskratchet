@@ -1,0 +1,16 @@
+name = "croniter"
+url = "https://github.com/kiorky/croniter"
+paths = ["src/croniter"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["python-dateutil", "pytz", "natsort"]
+test_command = "pytest src/croniter -q --cov=croniter --cov-config=/dev/null --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/croniter"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "7626184295de82fe859033ddce5dc770231faef0"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900

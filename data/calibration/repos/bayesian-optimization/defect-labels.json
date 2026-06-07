@@ -1,0 +1,84 @@
+{
+  "snapshot_sha": "f6cde7f57351f03f3b94df884998ce77501897c0",
+  "head_sha": "5b8fb730495c8ec04c323c9b17cca4e0e7d8154e",
+  "window_days": 365,
+  "n_functions": 165,
+  "n_defect_functions": 18,
+  "n_fixes_scanned": 5,
+  "n_fixes_blamed": 5,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "bayes_opt/acquisition.py::AcquisitionFunction.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ConstantLiar.get_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ConstantLiar.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ExpectedImprovement.get_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ExpectedImprovement.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::GPHedge.get_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::GPHedge.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ProbabilityOfImprovement.get_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::ProbabilityOfImprovement.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::UpperConfidenceBound.get_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/acquisition.py::UpperConfidenceBound.set_acquisition_params",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/bayesian_optimization.py::BayesianOptimization.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/bayesian_optimization.py::BayesianOptimization.random_sample",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/bayesian_optimization.py::BayesianOptimization.save_state",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/logger.py::ScreenLogger._format_number",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/logger.py::ScreenLogger._print_step",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/target_space.py::TargetSpace.max",
+      "defect_count": 1
+    },
+    {
+      "target": "bayes_opt/target_space.py::TargetSpace.res",
+      "defect_count": 1
+    }
+  ]
+}

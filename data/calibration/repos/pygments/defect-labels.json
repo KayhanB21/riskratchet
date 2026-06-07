@@ -1,0 +1,48 @@
+{
+  "snapshot_sha": "19585c4cb28ebdda84190a36d6b916b7b77c9588",
+  "head_sha": "bccbab60da3962553390d4015c351a01d065720c",
+  "window_days": 365,
+  "n_functions": 936,
+  "n_defect_functions": 9,
+  "n_fixes_scanned": 32,
+  "n_fixes_blamed": 31,
+  "n_implications_untracked": 0,
+  "labels": [
+    {
+      "target": "pygments/formatters/html.py::HtmlFormatter.__init__",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/formatters/terminal256.py::Terminal256Formatter._build_color_table",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/formatters/terminal256.py::Terminal256Formatter._closest_color",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/lexer.py::using",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/lexers/actionscript.py::ActionScript3Lexer.analyse_text",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/lexers/haxe.py::HaxeLexer.analyse_text",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/lexers/oberon.py::ComponentPascalLexer.analyse_text",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/lexers/scripting.py::_luau_make_expression",
+      "defect_count": 1
+    },
+    {
+      "target": "pygments/util.py::guess_decode",
+      "defect_count": 1
+    }
+  ]
+}

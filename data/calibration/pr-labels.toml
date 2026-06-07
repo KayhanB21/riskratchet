@@ -1,0 +1,24 @@
+# Manual accepted/rejected outcome labels for replayed PRs (P21, phase 1).
+#
+# The label is a human judgement the harness cannot infer: did reviewers treat
+# this change's maintainability delta as acceptable? It joins to a replayed PR
+# record on (repo, pr, base_sha, head_sha). Pin the full 40-char SHAs that were
+# replayed — if the upstream PR is later rebased, the SHA mismatch marks the
+# record `unlabeled` (label_stale) rather than silently mislabeling it.
+#
+# label = "accepted"  reviewers merged it and the maintainability change was fine
+# label = "rejected"  the change was reverted / flagged as a maintainability
+#                     regression in review
+#
+# Seed file: populate as PRs are replayed and hand-labeled. Unlabeled PRs are
+# still captured by the harness; they just don't feed the accept/reject
+# separation analysis.
+#
+# Example (commented — replace with real, replayed PRs):
+# [[label]]
+# repo = "requests"
+# pr = 6543
+# base_sha = "0000000000000000000000000000000000000000"
+# head_sha = "1111111111111111111111111111111111111111"
+# label = "accepted"
+# note = "Split client.py; reviewers approved the readability tradeoff."

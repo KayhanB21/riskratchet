@@ -1,0 +1,16 @@
+name = "attrs"
+url = "https://github.com/python-attrs/attrs"
+paths = ["src/attr"]
+pr_branch = "main"
+python = "3.12"
+extras = []
+test_deps = ["hypothesis"]
+test_command = "pytest tests -q --cov=attr --cov-branch --cov-report=json:{coverage_out}"
+coverage_prefix = "src/attr"
+# Pinned so the committed defect snapshot is reproducible.
+snapshot_sha = "a6ae894aad9bc09edc7cdad8c416898784ceec9b"
+replay_enabled = true
+
+[timeouts]
+install_seconds = 600
+test_seconds = 900
