@@ -118,7 +118,9 @@ def past_window_start(
     iso = _commit_date(clone, snapshot_sha, run=run)
     if not iso:
         return None
-    cutoff = (datetime.fromisoformat(iso) - timedelta(days=window_days)).isoformat()
+    # Python 3.10's fromisoformat() rejects a trailing 'Z'; normalize to a numeric
+    # offset so the 3.10 CI job parses git's date the same as 3.11+.
+    cutoff = (datetime.fromisoformat(iso.replace("Z", "+00:00")) - timedelta(days=window_days)).isoformat()
     proc = git(["rev-list", "-1", f"--before={cutoff}", snapshot_sha], clone, run=run)
     return proc.stdout.strip() or None
 
