@@ -113,6 +113,36 @@ def test_unknown_repo_key_warns_not_fails(capsys: pytest.CaptureFixture[str]) ->
     assert "unknown keys: bogus_key" in capsys.readouterr().err
 
 
+def test_coverage_free_repo_needs_no_test_command() -> None:
+    (repo,) = parse_corpus_text(
+        """
+        [[repo]]
+        name = "tiny-tool"
+        url = "https://github.com/x/tiny-tool"
+        paths = ["tiny_tool"]
+        pr_branch = "main"
+        snapshot_sha = "deadbeef"
+        coverage_free = true
+        """
+    )
+    assert repo.coverage_free is True
+    assert repo.test_command == ""  # not required for coverage-free repos
+    assert repo.coverage_prefix == ""
+    assert repo.paths == ("tiny_tool",)
+
+
+def test_non_coverage_free_still_requires_test_command() -> None:
+    with pytest.raises(ConfigError, match="missing required keys: test_command"):
+        parse_corpus_text(
+            """
+            [[repo]]
+            name = "x"
+            url = "u"
+            coverage_prefix = "x"
+            """
+        )
+
+
 def test_label_parsing_and_key() -> None:
     (label,) = parse_labels_text(
         """
@@ -171,7 +201,9 @@ def test_shipped_corpus_config_is_valid() -> None:
     assert len(enabled) >= 30, f"expected >=30 enabled repos, got {len(enabled)}"
 
     for repo in repos:
-        assert config.COVERAGE_PLACEHOLDER in repo.test_command
+        # Coverage-free (phase-4 gradient) repos carry no test recipe.
+        if not repo.coverage_free:
+            assert config.COVERAGE_PLACEHOLDER in repo.test_command
         labels = config.REPOS_DIR / repo.name / "defect-labels.json"
         if repo.replay_enabled:
             assert repo.snapshot_sha, f"{repo.name}: enabled repos must pin a snapshot"

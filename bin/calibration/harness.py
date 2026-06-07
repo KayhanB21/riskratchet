@@ -13,15 +13,23 @@ Subcommands:
             label -> `defect-prediction.json`.
   ablate    Phase 3. Pooled, repo-stratified logistic-regression ablation of the
             file-line sprawl term (the decision-gate model) -> `ablation.json`.
+  proneness Phase 3 (maintainability probe). Coverage-free change-proneness labels
+            from git history (no test suite) -> `change-proneness-labels.json`.
+  proneness-model  Phase 3. Null (past-churn) vs full (structural) model on the
+            change-prone label -> `proneness-ablation.json`.
+  review-flags     Phase 3 anchor. Mine "split this" PR review comments (needs gh)
+            -> `review-flags.json`.
 
 These are human-run local steps: they clone real repos and run their suites under
-coverage (minutes, needs network; `replay` also needs `gh`). None run in CI; the
-test suite exercises the pieces hermetically. `ablate` additionally needs the
-calibration dependency group (scipy/numpy):
+coverage (minutes, needs network; `replay`/`review-flags` also need `gh`). None run
+in CI; the test suite exercises the pieces hermetically. `ablate` /
+`proneness-model` additionally need the calibration dependency group (scipy/numpy):
 
   uv run python -m bin.calibration.harness defects --repos requests --snapshot-days 365
   uv run python -m bin.calibration.harness predict
   uv run --group calibration python -m bin.calibration.harness ablate
+  uv run python -m bin.calibration.harness proneness --repos requests
+  uv run --group calibration python -m bin.calibration.harness proneness-model
 """
 
 from __future__ import annotations
@@ -47,6 +55,7 @@ from riskratchet.models import FunctionId, RiskReport
 ROLLUP_PATH = CALIBRATION_DIR / "pr-replay-rollup.json"
 CANDIDATES_PATH = CALIBRATION_DIR / "sprawl-candidates.json"
 ABLATION_PATH = CALIBRATION_DIR / "ablation.json"
+PRONENESS_MODEL_PATH = CALIBRATION_DIR / "proneness-ablation.json"
 
 
 def defect_labels_path(repo_name: str) -> Path:
@@ -55,6 +64,14 @@ def defect_labels_path(repo_name: str) -> Path:
 
 def defect_prediction_path(repo_name: str) -> Path:
     return REPOS_DIR / repo_name / "defect-prediction.json"
+
+
+def change_proneness_labels_path(repo_name: str) -> Path:
+    return REPOS_DIR / repo_name / "change-proneness-labels.json"
+
+
+def review_flags_path(repo_name: str) -> Path:
+    return REPOS_DIR / repo_name / "review-flags.json"
 
 
 _PREDICTION_NOTE = (
@@ -72,6 +89,15 @@ def _select_repos(repos: list[RepoConfig], only: set[str] | None) -> list[RepoCo
     if only is not None:
         enabled = [r for r in enabled if r.name in only]
     return enabled
+
+
+def _select_proneness_repos(repos: list[RepoConfig], only: set[str] | None) -> list[RepoConfig]:
+    # Coverage-free proneness runs on the defect corpus (re-scored coverage-free) AND
+    # the gradient cohort (coverage_free repos with no test suite).
+    selected = [r for r in repos if r.replay_enabled or r.coverage_free]
+    if only is not None:
+        selected = [r for r in selected if r.name in only]
+    return selected
 
 
 def cmd_replay(args: argparse.Namespace) -> int:
@@ -281,6 +307,38 @@ def cmd_predict(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_proneness(args: argparse.Namespace) -> int:
+    from bin.calibration.proneness import collect_proneness_labels, labels_to_dict
+
+    repos = _select_proneness_repos(load_corpus(), set(args.repos.split(",")) if args.repos else None)
+    if not repos:
+        print("no proneness-eligible repos selected", file=sys.stderr)
+        return 1
+    written = 0
+    for repo in repos:
+        _, labels = collect_proneness_labels(
+            repo,
+            snapshot_sha_override=args.snapshot_sha,
+            snapshot_days=args.snapshot_days,
+            window_days=args.window_days,
+        )
+        if labels is None:
+            print(f"  skip {repo.name}: snapshot unscored / clone failed", file=sys.stderr)
+            continue
+        path = change_proneness_labels_path(repo.name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(labels_to_dict(labels), indent=2) + "\n", encoding="utf-8")
+        written += 1
+        note = " (short past history)" if labels.insufficient_past_history else ""
+        print(
+            f"{repo.name}: {labels.n_change_prone}/{labels.n_functions} change-prone "
+            f"from {labels.n_future_commits} future commits{note}",
+            file=sys.stderr,
+        )
+    print(f"wrote change-proneness-labels.json for {written} repo(s)")
+    return 0
+
+
 def cmd_ablate(args: argparse.Namespace) -> int:
     # Imported lazily so scipy/numpy (the calibration dependency group) are only
     # required on this code path, never for the other subcommands or the test suite.
@@ -317,6 +375,83 @@ def cmd_ablate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_review_flags(args: argparse.Namespace) -> int:
+    from bin.calibration.coverage_free import score_snapshot_coverage_free
+    from bin.calibration.defects import resolve_snapshot
+    from bin.calibration.git_checkout import ensure_clone
+    from bin.calibration.review_comments import flags_to_dict, mine_review_flags
+
+    repos = _select_proneness_repos(load_corpus(), set(args.repos.split(",")) if args.repos else None)
+    if not repos:
+        print("no proneness-eligible repos selected", file=sys.stderr)
+        return 1
+    written = 0
+    for repo in repos:
+        clone = ensure_clone(repo)
+        if clone is None:
+            print(f"  skip {repo.name}: clone failed", file=sys.stderr)
+            continue
+        sha = resolve_snapshot(
+            clone, repo, snapshot_sha_override=args.snapshot_sha, snapshot_days=args.snapshot_days
+        )
+        if sha is None:
+            print(f"  skip {repo.name}: no snapshot", file=sys.stderr)
+            continue
+        snapshot = score_snapshot_coverage_free(repo, sha)
+        if snapshot is None:
+            print(f"  skip {repo.name}: snapshot unscored", file=sys.stderr)
+            continue
+        flags = mine_review_flags(repo, clone, snapshot, max_prs=args.max_prs)
+        review_flags_path(repo.name).write_text(
+            json.dumps(flags_to_dict(flags), indent=2) + "\n", encoding="utf-8"
+        )
+        written += 1
+        print(
+            f"{repo.name}: {len(flags.counts)} flagged functions from "
+            f"{flags.n_maintainability_comments}/{flags.n_comments_scanned} maintainability comments",
+            file=sys.stderr,
+        )
+    print(f"wrote review-flags.json for {written} repo(s)")
+    return 0
+
+
+def cmd_proneness_model(args: argparse.Namespace) -> int:
+    from bin.calibration.coverage_free import ANALYZE_COVERAGE_FREE
+    from bin.calibration.proneness import labels_from_dict
+    from bin.calibration.proneness_model import build_proneness_dataset, run_proneness, to_payload
+
+    label_files = sorted(REPOS_DIR.glob("*/change-proneness-labels.json"))
+    if not label_files:
+        print("no change-proneness-labels.json found; run `proneness` first", file=sys.stderr)
+        return 1
+    tier_of = {r.name: ("messy" if r.coverage_free else "polished") for r in load_corpus()}
+    per_repo = []
+    for label_file in label_files:
+        repo_name = label_file.parent.name
+        raw = json.loads(label_file.read_text(encoding="utf-8"))
+        cache = revision_cache_dir(repo_name, str(raw["snapshot_sha"])) / ANALYZE_COVERAGE_FREE
+        if not cache.exists():
+            print(f"  skip {repo_name}: coverage-free snapshot cache missing", file=sys.stderr)
+            continue
+        report = report_from_dict(json.loads(cache.read_text(encoding="utf-8")))
+        labels = labels_from_dict(repo_name, raw)
+        per_repo.append(
+            (repo_name, SnapshotPopulation(snapshot_sha=labels.snapshot_sha, report=report), labels)
+        )
+    if not per_repo:
+        print("no repos with a cached coverage-free snapshot", file=sys.stderr)
+        return 1
+    tiers = {name: tier_of.get(name, "polished") for name, _, _ in per_repo}
+    dataset = build_proneness_dataset(per_repo)
+    result = run_proneness(dataset, tiers, l2=args.l2, bootstrap_draws=args.bootstrap_draws)
+    PRONENESS_MODEL_PATH.write_text(json.dumps(to_payload(result), indent=2) + "\n", encoding="utf-8")
+    print(
+        f"wrote {PRONENESS_MODEL_PATH.name}: {len(dataset.repos)} repos, "
+        f"{dataset.n_functions} functions, {dataset.n_buggy} change-prone"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="bin.calibration.harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -346,6 +481,15 @@ def build_parser() -> argparse.ArgumentParser:
     predict = sub.add_parser("predict", help="AUC of score vs SZZ defect label per candidate")
     predict.set_defaults(func=cmd_predict)
 
+    proneness = sub.add_parser(
+        "proneness", help="phase 3: change-proneness labels (coverage-free, git-history only)"
+    )
+    proneness.add_argument("--repos", default="", help="comma-separated subset")
+    proneness.add_argument("--snapshot-sha", default="", help="pin snapshot S (else from --snapshot-days)")
+    proneness.add_argument("--snapshot-days", type=int, default=365, help="S = this many days before HEAD")
+    proneness.add_argument("--window-days", type=int, default=365, help="past/future window length")
+    proneness.set_defaults(func=cmd_proneness)
+
     ablate = sub.add_parser(
         "ablate", help="pooled, repo-stratified logistic-regression ablation of the file-line term"
     )
@@ -355,6 +499,24 @@ def build_parser() -> argparse.ArgumentParser:
         "--bootstrap-draws", type=int, default=1000, help="repo-clustered bootstrap draws (default 1000)"
     )
     ablate.set_defaults(func=cmd_ablate)
+
+    pmodel = sub.add_parser(
+        "proneness-model", help="phase 3: structure-beats-activity null-vs-full model on change-proneness"
+    )
+    pmodel.add_argument("--l2", type=float, default=1.0, help="L2 regularization strength (default 1.0)")
+    pmodel.add_argument(
+        "--bootstrap-draws", type=int, default=1000, help="repo-clustered bootstrap draws (default 1000)"
+    )
+    pmodel.set_defaults(func=cmd_proneness_model)
+
+    review = sub.add_parser(
+        "review-flags", help="phase 3 anchor: mine 'split this' PR review comments (needs gh)"
+    )
+    review.add_argument("--repos", default="", help="comma-separated subset")
+    review.add_argument("--snapshot-sha", default="", help="pin snapshot S (else from --snapshot-days)")
+    review.add_argument("--snapshot-days", type=int, default=365, help="S = this many days before HEAD")
+    review.add_argument("--max-prs", type=int, default=100, help="merged PRs to scan per repo")
+    review.set_defaults(func=cmd_review_flags)
     return parser
 
 

@@ -220,6 +220,8 @@ functions can be defect-hotspots. So even a clean "file-line term is noise for
 defects" result does **not** prove it is noise for maintainability — only that it
 does not predict this particular, observable outcome. This is the single biggest
 inferential gap; the document's claims must stay scoped to defect prediction.
+**Phase 4 probes this gap** with a maintainability-flavoured outcome
+(change-proneness) — see [`maintainability-proneness-findings.md`](./maintainability-proneness-findings.md).
 
 ### 6.2 External validity: we are measuring the wrong population
 All 34 repos are **mature, heavily-reviewed, well-tested OSS libraries**.
@@ -229,7 +231,9 @@ population at all. The corpus is **selected for the ability to run a fast, offli
 whole-package test suite under coverage**, which systematically favors small, stable,
 dependency-light libraries and excludes apps, services, async/IO-heavy code (httpx was
 dropped for exactly this), and anything needing a live service. The enabled set is a
-convenience sample, not a representative one.
+convenience sample, not a representative one. **Phase 4 attacks this** with coverage-free
+scoring (no test suite needed, so untested repos are in scope) over a polished→messy
+gradient — see [`maintainability-proneness-findings.md`](./maintainability-proneness-findings.md).
 
 The **pycaret-adjacent ML cohort** (networkx, mlxtend, pingouin, category-encoders,
 feature-engine) was added specifically to push *away* from pristine utility libraries

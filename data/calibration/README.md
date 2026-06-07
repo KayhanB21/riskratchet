@@ -25,6 +25,9 @@ recipe and its phase-2 outputs. `load_corpus()` globs `repos/*/repo.toml`, and a
 | `repos/<name>/defect-labels.json` | yes | SZZ defect-implication labels per function at snapshot S (phase 2) |
 | `repos/<name>/defect-prediction.json` | yes | per-candidate AUC of score vs the SZZ defect label (phase 2) |
 | `ablation.json` | yes | pooled, repo-stratified logistic-regression ablation of the file-line sprawl term (phase 3) |
+| `repos/<name>/change-proneness-labels.json` | yes | coverage-free change-proneness labels + past-churn per function (phase 4) |
+| `repos/<name>/review-flags.json` | yes | "split this" PR review-comment flags per function (phase 4 construct anchor) |
+| `proneness-ablation.json` | yes | null (past-churn) vs full (structural) model on change-proneness (phase 4) |
 | `pr-labels.toml` | yes | manual accepted/rejected PR labels, pinned to SHAs (phase 1) |
 | `pr-replay-rollup.json` | yes | per-PR regression digests from a replay run (phase 1) |
 | `sprawl-candidates.json` | yes | accept/reject separation per sprawl candidate (phase 1) |
@@ -123,6 +126,22 @@ which **supports** a 0.3.0 drop/shrink — but the fitted model also reaches ~0.
 CV-AUC, so the components carry signal even where the shipped blend is anti-predictive.
 **No weight change ships**: the construct and external-validity gaps (§6.1/§6.2) are
 untouched, and the model is fit on the wrong (mature-OSS) population.
+
+**Phase 4 (shipped machinery; human-run data) probes those two gaps.** A different outcome
+— **change-proneness** (future edit frequency, a maintainability proxy) — scored
+**coverage-free** so untested repos are in scope, asking whether the structural signals beat
+a **past-churn null model** across a polished→messy gradient, with a "split this"
+review-comment construct anchor. See `maintainability-proneness-findings.md`.
+
+```bash
+uv run python -m bin.calibration.harness proneness --repos <name|all>        # coverage-free labels
+uv run python -m bin.calibration.harness review-flags --repos <name>         # gh; construct anchor
+uv run --group calibration python -m bin.calibration.harness proneness-model  # null-vs-full model
+# inspect proneness-ablation.json: results.{null,full}.auc_mean, structure_beats_activity, gradient
+```
+
+The gradient cohort is added as `coverage_free = true` repos in `repos/<name>/repo.toml`
+(no test recipe needed). **Still analysis only; no weight change.**
 
 Each `repos/<name>/defect-{labels,prediction}.json` carries a real point-in-time
 snapshot for the **34 enabled repos** whose suites run under the replay budget

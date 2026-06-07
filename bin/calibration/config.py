@@ -51,6 +51,8 @@ _REPO_KNOWN = frozenset(
         "ignore_revs_file",
         "test_requirements",
         "test_deps",
+        # phase-4 coverage-free proneness (no test suite needed)
+        "coverage_free",
     }
 )
 _TIMEOUTS_KNOWN = frozenset({"install_seconds", "test_seconds"})
@@ -92,6 +94,10 @@ class RepoConfig:
     # requirements file and/or an explicit package list (installed into the venv).
     test_requirements: str = ""
     test_deps: tuple[str, ...] = ()
+    # phase-4: scored coverage-free (source + git only, no test suite). When true the
+    # repo needs no test_command/coverage_prefix and is selected by `proneness`, not
+    # `defects`/`replay`.
+    coverage_free: bool = False
 
 
 @dataclass(frozen=True)
@@ -123,11 +129,15 @@ def _require(table: dict[str, object], required: tuple[str, ...], kind: str, ide
 
 def _parse_repo(table: dict[str, object]) -> RepoConfig:
     ident = str(table.get("name", "<unnamed>"))
-    _require(table, _REPO_REQUIRED, "repo", ident)
+    coverage_free = bool(table.get("coverage_free", False))
+    # Coverage-free repos are scored from source + git only, so they carry no test
+    # recipe; only name + url are required and the test_command check is skipped.
+    _require(table, ("name", "url") if coverage_free else _REPO_REQUIRED, "repo", ident)
     _warn_unknown("repo", ident, frozenset(table), _REPO_KNOWN)
 
-    test_command = str(table["test_command"])
-    _validate_test_command(test_command, ident)
+    test_command = str(table.get("test_command", ""))
+    if not coverage_free:
+        _validate_test_command(test_command, ident)
 
     timeouts_raw = table.get("timeouts", {})
     if not isinstance(timeouts_raw, dict):
@@ -142,7 +152,7 @@ def _parse_repo(table: dict[str, object]) -> RepoConfig:
         name=str(table["name"]),
         url=str(table["url"]),
         test_command=test_command,
-        coverage_prefix=str(table["coverage_prefix"]),
+        coverage_prefix=str(table.get("coverage_prefix", "")),
         paths=tuple(str(p) for p in _as_list(table.get("paths", []), ident, "paths")),
         pr_branch=str(table.get("pr_branch", "main")),
         python=str(table.get("python", "3.12")),
@@ -156,6 +166,7 @@ def _parse_repo(table: dict[str, object]) -> RepoConfig:
         ignore_revs_file=str(table.get("ignore_revs_file", "")),
         test_requirements=str(table.get("test_requirements", "")),
         test_deps=tuple(str(d) for d in _as_list(table.get("test_deps", []), ident, "test_deps")),
+        coverage_free=coverage_free,
     )
 
 
