@@ -51,6 +51,26 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/riskratchet"]
 
+# Without this, hatchling's sdist defaults to every VCS-tracked file, which drags
+# in data/ (research data), bin/, docs/, schemas/, and the GH Action — ~6x the
+# wheel. Keep the sdist to source, tests (so downstream can verify), and the
+# metadata needed to build.
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/riskratchet",
+    "tests",
+    "README.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+# Hatchling auto-bundles every nested README.md/LICENSE; drop the stray ones.
+exclude = [
+    "data",
+    "riskratchet-action",
+]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
