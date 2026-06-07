@@ -24,6 +24,7 @@ recipe and its phase-2 outputs. `load_corpus()` globs `repos/*/repo.toml`, and a
 | `repos/<name>/repo.toml` | yes | that repo's recipe (url, paths, test_command, test_deps, snapshot_sha, replay_enabled, ...) |
 | `repos/<name>/defect-labels.json` | yes | SZZ defect-implication labels per function at snapshot S (phase 2) |
 | `repos/<name>/defect-prediction.json` | yes | per-candidate AUC of score vs the SZZ defect label (phase 2) |
+| `ablation.json` | yes | pooled, repo-stratified logistic-regression ablation of the file-line sprawl term (phase 3) |
 | `pr-labels.toml` | yes | manual accepted/rejected PR labels, pinned to SHAs (phase 1) |
 | `pr-replay-rollup.json` | yes | per-PR regression digests from a replay run (phase 1) |
 | `sprawl-candidates.json` | yes | accept/reject separation per sprawl candidate (phase 1) |
@@ -101,6 +102,27 @@ is non-predictive regardless of blend. Caveats that bound any conclusion: SZZ
 fix-detection is heuristic; functions added after `S` or refactored past the rename
 threshold are censored/untracked (counted in the label file); a single repo's AUC
 is directional — pool the corpus first.
+
+**Phase 3 (shipped, 0.2.10) pools the corpus into one model.** `predict`'s per-repo
+AUCs disagree on sign, so a naïve pooled number is meaningless. The `ablate`
+subcommand fits the pooled, repo-stratified logistic regression that
+`defect-prediction-findings.md` §6.6/§7 named as the decision-gate: an L2 logit with
+one regularized intercept per repo, validated leave-one-repo-out, with `sprawl` split
+into its two halves so the file-line term gets its own coefficient. It needs the
+`calibration` dependency group (scipy/numpy):
+
+```bash
+uv run --group calibration python -m bin.calibration.harness ablate
+# inspect ablation.json: results.{full,drop_file_line}.auc_mean, file_line_coefficient.ci95, verdict
+```
+
+Read `ablation.json` as: if `drop_file_line` AUC ≥ `full` and `file_line_coefficient.ci95`
+spans zero, the file-line term carries no defensible independent signal. On the committed
+34-repo run it does (Δ = −0.009, sign-test p = 0.024, coefficient 95% CI [−0.094, 0.248]),
+which **supports** a 0.3.0 drop/shrink — but the fitted model also reaches ~0.69 within-repo
+CV-AUC, so the components carry signal even where the shipped blend is anti-predictive.
+**No weight change ships**: the construct and external-validity gaps (§6.1/§6.2) are
+untouched, and the model is fit on the wrong (mature-OSS) population.
 
 Each `repos/<name>/defect-{labels,prediction}.json` carries a real point-in-time
 snapshot for the **34 enabled repos** whose suites run under the replay budget

@@ -1,0 +1,441 @@
+{
+  "schema": 1,
+  "note": "Pooled, repo-stratified L2 logistic regression (one regularized intercept per repo absorbs the heterogeneity), validated leave-one-repo-out. Compares the full six-component score (sprawl split into its function-length and file-line halves) against dropping the file-line half; reports the file-line coefficient with a repo-clustered bootstrap CI. This is the decision-gate model promised in defect-prediction-findings.md \u00a76.6/\u00a77. Within-repo AUC is intercept-invariant, which is why LORO is valid; log-loss is a secondary, intercept-dependent check. Analysis only; no weight change.",
+  "snapshot": {
+    "n_repos": 34,
+    "n_functions": 33490,
+    "n_buggy": 812,
+    "repos": [
+      "arrow",
+      "arviz",
+      "attrs",
+      "bayesian-optimization",
+      "boltons",
+      "category-encoders",
+      "cattrs",
+      "click",
+      "croniter",
+      "deepdiff",
+      "feature-engine",
+      "flask",
+      "formulaic",
+      "jsonschema",
+      "lifelines",
+      "loguru",
+      "markdown",
+      "marshmallow",
+      "mlxtend",
+      "more-itertools",
+      "networkx",
+      "packaging",
+      "pingouin",
+      "pint",
+      "pygments",
+      "pyparsing",
+      "requests",
+      "rich",
+      "sqlglot",
+      "sqlparse",
+      "tenacity",
+      "werkzeug",
+      "wrapt",
+      "xarray"
+    ]
+  },
+  "model": {
+    "engine": "scipy L-BFGS-B, L2 logistic regression",
+    "l2": 1.0,
+    "standardized": true,
+    "fixed_effects": "repo",
+    "cv": "leave-one-repo-out",
+    "predictors_full": [
+      "coverage_gap",
+      "structural_complexity",
+      "branch_gap",
+      "churn",
+      "public_surface",
+      "sprawl_function_term",
+      "sprawl_file_term"
+    ],
+    "predictors_drop": [
+      "coverage_gap",
+      "structural_complexity",
+      "branch_gap",
+      "churn",
+      "public_surface",
+      "sprawl_function_term"
+    ]
+  },
+  "results": {
+    "full": {
+      "auc_mean": 0.6854,
+      "auc_weighted": 0.6464,
+      "logloss": 0.1116,
+      "per_repo_auc": [
+        {
+          "repo": "arrow",
+          "n_buggy": 4,
+          "auc": 0.6111
+        },
+        {
+          "repo": "arviz",
+          "n_buggy": 4,
+          "auc": 0.939
+        },
+        {
+          "repo": "attrs",
+          "n_buggy": 3,
+          "auc": 0.7111
+        },
+        {
+          "repo": "bayesian-optimization",
+          "n_buggy": 18,
+          "auc": 0.6653
+        },
+        {
+          "repo": "boltons",
+          "n_buggy": 1,
+          "auc": 0.663
+        },
+        {
+          "repo": "category-encoders",
+          "n_buggy": 4,
+          "auc": 0.933
+        },
+        {
+          "repo": "cattrs",
+          "n_buggy": 7,
+          "auc": 0.7868
+        },
+        {
+          "repo": "click",
+          "n_buggy": 30,
+          "auc": 0.7284
+        },
+        {
+          "repo": "croniter",
+          "n_buggy": 55,
+          "auc": 0.2878
+        },
+        {
+          "repo": "deepdiff",
+          "n_buggy": 41,
+          "auc": 0.5787
+        },
+        {
+          "repo": "feature-engine",
+          "n_buggy": 1,
+          "auc": 0.438
+        },
+        {
+          "repo": "flask",
+          "n_buggy": 2,
+          "auc": 0.936
+        },
+        {
+          "repo": "formulaic",
+          "n_buggy": 2,
+          "auc": 0.4978
+        },
+        {
+          "repo": "jsonschema",
+          "n_buggy": 5,
+          "auc": 0.4713
+        },
+        {
+          "repo": "lifelines",
+          "n_buggy": 10,
+          "auc": 0.7898
+        },
+        {
+          "repo": "loguru",
+          "n_buggy": 9,
+          "auc": 0.8149
+        },
+        {
+          "repo": "markdown",
+          "n_buggy": 8,
+          "auc": 0.6721
+        },
+        {
+          "repo": "marshmallow",
+          "n_buggy": 26,
+          "auc": 0.5963
+        },
+        {
+          "repo": "mlxtend",
+          "n_buggy": 9,
+          "auc": 0.8506
+        },
+        {
+          "repo": "more-itertools",
+          "n_buggy": 17,
+          "auc": 0.7681
+        },
+        {
+          "repo": "networkx",
+          "n_buggy": 64,
+          "auc": 0.7148
+        },
+        {
+          "repo": "packaging",
+          "n_buggy": 37,
+          "auc": 0.5829
+        },
+        {
+          "repo": "pingouin",
+          "n_buggy": 5,
+          "auc": 0.7143
+        },
+        {
+          "repo": "pint",
+          "n_buggy": 37,
+          "auc": 0.5782
+        },
+        {
+          "repo": "pygments",
+          "n_buggy": 9,
+          "auc": 0.5965
+        },
+        {
+          "repo": "pyparsing",
+          "n_buggy": 22,
+          "auc": 0.7036
+        },
+        {
+          "repo": "requests",
+          "n_buggy": 10,
+          "auc": 0.6674
+        },
+        {
+          "repo": "rich",
+          "n_buggy": 19,
+          "auc": 0.705
+        },
+        {
+          "repo": "sqlglot",
+          "n_buggy": 28,
+          "auc": 0.7744
+        },
+        {
+          "repo": "sqlparse",
+          "n_buggy": 8,
+          "auc": 0.8017
+        },
+        {
+          "repo": "tenacity",
+          "n_buggy": 54,
+          "auc": 0.5929
+        },
+        {
+          "repo": "werkzeug",
+          "n_buggy": 5,
+          "auc": 0.6896
+        },
+        {
+          "repo": "wrapt",
+          "n_buggy": 6,
+          "auc": 0.772
+        },
+        {
+          "repo": "xarray",
+          "n_buggy": 252,
+          "auc": 0.672
+        }
+      ]
+    },
+    "drop_file_line": {
+      "auc_mean": 0.6942,
+      "auc_weighted": 0.6577,
+      "logloss": 0.1118,
+      "per_repo_auc": [
+        {
+          "repo": "arrow",
+          "n_buggy": 4,
+          "auc": 0.6192
+        },
+        {
+          "repo": "arviz",
+          "n_buggy": 4,
+          "auc": 0.9373
+        },
+        {
+          "repo": "attrs",
+          "n_buggy": 3,
+          "auc": 0.727
+        },
+        {
+          "repo": "bayesian-optimization",
+          "n_buggy": 18,
+          "auc": 0.576
+        },
+        {
+          "repo": "boltons",
+          "n_buggy": 1,
+          "auc": 0.7135
+        },
+        {
+          "repo": "category-encoders",
+          "n_buggy": 4,
+          "auc": 0.9322
+        },
+        {
+          "repo": "cattrs",
+          "n_buggy": 7,
+          "auc": 0.7975
+        },
+        {
+          "repo": "click",
+          "n_buggy": 30,
+          "auc": 0.726
+        },
+        {
+          "repo": "croniter",
+          "n_buggy": 55,
+          "auc": 0.3869
+        },
+        {
+          "repo": "deepdiff",
+          "n_buggy": 41,
+          "auc": 0.5816
+        },
+        {
+          "repo": "feature-engine",
+          "n_buggy": 1,
+          "auc": 0.4393
+        },
+        {
+          "repo": "flask",
+          "n_buggy": 2,
+          "auc": 0.9244
+        },
+        {
+          "repo": "formulaic",
+          "n_buggy": 2,
+          "auc": 0.5467
+        },
+        {
+          "repo": "jsonschema",
+          "n_buggy": 5,
+          "auc": 0.5646
+        },
+        {
+          "repo": "lifelines",
+          "n_buggy": 10,
+          "auc": 0.8033
+        },
+        {
+          "repo": "loguru",
+          "n_buggy": 9,
+          "auc": 0.8174
+        },
+        {
+          "repo": "markdown",
+          "n_buggy": 8,
+          "auc": 0.677
+        },
+        {
+          "repo": "marshmallow",
+          "n_buggy": 26,
+          "auc": 0.5938
+        },
+        {
+          "repo": "mlxtend",
+          "n_buggy": 9,
+          "auc": 0.8509
+        },
+        {
+          "repo": "more-itertools",
+          "n_buggy": 17,
+          "auc": 0.7695
+        },
+        {
+          "repo": "networkx",
+          "n_buggy": 64,
+          "auc": 0.7196
+        },
+        {
+          "repo": "packaging",
+          "n_buggy": 37,
+          "auc": 0.5783
+        },
+        {
+          "repo": "pingouin",
+          "n_buggy": 5,
+          "auc": 0.7169
+        },
+        {
+          "repo": "pint",
+          "n_buggy": 37,
+          "auc": 0.5926
+        },
+        {
+          "repo": "pygments",
+          "n_buggy": 9,
+          "auc": 0.6017
+        },
+        {
+          "repo": "pyparsing",
+          "n_buggy": 22,
+          "auc": 0.7232
+        },
+        {
+          "repo": "requests",
+          "n_buggy": 10,
+          "auc": 0.6696
+        },
+        {
+          "repo": "rich",
+          "n_buggy": 19,
+          "auc": 0.6907
+        },
+        {
+          "repo": "sqlglot",
+          "n_buggy": 28,
+          "auc": 0.7885
+        },
+        {
+          "repo": "sqlparse",
+          "n_buggy": 8,
+          "auc": 0.8063
+        },
+        {
+          "repo": "tenacity",
+          "n_buggy": 54,
+          "auc": 0.6084
+        },
+        {
+          "repo": "werkzeug",
+          "n_buggy": 5,
+          "auc": 0.6818
+        },
+        {
+          "repo": "wrapt",
+          "n_buggy": 6,
+          "auc": 0.7616
+        },
+        {
+          "repo": "xarray",
+          "n_buggy": 252,
+          "auc": 0.6814
+        }
+      ]
+    }
+  },
+  "ablation": {
+    "delta_auc_full_minus_drop_mean": -0.0088,
+    "delta_auc_weighted": -0.0114,
+    "n_repos_full_better": "10/34",
+    "sign_test_p": 0.0243
+  },
+  "file_line_coefficient": {
+    "standardized": 0.0391,
+    "sign": "positive",
+    "ci95": [
+      -0.0936,
+      0.2476
+    ],
+    "method": "repo-clustered bootstrap, seed 0, 1000 draws"
+  },
+  "verdict": "The file-line sprawl term carries no defensible independent signal: dropping it does not reduce pooled leave-one-repo-out AUC (\u0394=-0.009) and its coefficient's 95% CI [-0.094, 0.248] spans zero. Consistent with the 0.3.0 candidate to drop or shrink it. Analysis only: no scoring or weight change ships here; any weight change stays a 0.3.0 breaking change, and the construct gap (defects \u2260 maintainability) and external-validity gap (mature OSS \u2260 the target population) remain open."
+}

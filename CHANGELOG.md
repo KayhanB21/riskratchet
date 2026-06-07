@@ -64,6 +64,24 @@ renamed or removed; scoring is byte-for-byte unchanged from 0.2.9.
   written up in `data/calibration/defect-prediction-findings.md`; it argues *against*
   a weight change, which is why none ships.
 
+- (P21) Empirical calibration harness, phase 3 — the pooled, repo-stratified
+  logistic-regression ablation that phase 2's write-up (§6.6/§7) named as the
+  decision-gate, under `bin/calibration/ablation.py` (`harness ablate` →
+  `data/calibration/ablation.json`). An L2 logit with one regularized intercept per
+  repo (absorbing the per-repo heterogeneity that makes a naïve pooled AUC
+  meaningless), validated leave-one-repo-out, with `sprawl` split into its
+  function-length and file-line halves so the file-line term gets its own coefficient.
+  On the committed 34-repo / 33,490-function snapshot it **confirms the file-line
+  sprawl term carries no defensible independent signal** (dropping it does not reduce
+  pooled CV-AUC; sign-test p=0.024; coefficient 95% CI [−0.094, 0.248] spans zero) and
+  reframes the headline: the *fitted* six-component model reaches ~0.69 within-repo
+  CV-AUC even where the shipped fixed-weight score is anti-predictive, so the
+  components carry signal that the current blend does not. Analysis only — **still no
+  scoring change**; a 0.3.0 drop/shrink of the file-line term is now the
+  model-supported front-runner, gated on the open construct / external-validity gaps.
+  Uses scipy/numpy via a new **`calibration` dependency-group** — dev/research-only,
+  **not** a runtime dependency (the published wheel's dependencies are unchanged).
+
 ## [0.2.9] - 2026-06-03
 
 0.2.9 is the "structured diagnostics and privacy controls" release. It makes CI

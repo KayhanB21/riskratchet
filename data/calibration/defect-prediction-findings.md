@@ -25,6 +25,18 @@ is in [`repro-verification.json`](repro-verification.json).
 > global weight change. See §4 (F1–F5), §6.2, §6.10, §7. (Two harness bugs found during
 > the expansion — a wrong-virtualenv `uv run` and an unpinned pytest resolving to a
 > backward-incompatible 9.x — are in §6.9; neither corrupted a committed snapshot.)
+>
+> **Update (0.2.10 — the pooled model the doc kept promising).** §6.6's "needs a real
+> model" is now built and run (`bin/calibration/ablation.py` → `ablation.json`): a
+> repo-stratified L2 logistic regression, leave-one-repo-out. It (1) **confirms the
+> file-line sprawl term is net-noise** — dropping it slightly *raises* pooled CV-AUC
+> (sign-test p=0.024) and its coefficient's 95% CI [−0.094, 0.248] spans zero — and (2)
+> reframes the headline: the **fitted** six-component model reaches ~0.69 within-repo
+> CV-AUC even on the repos where the *shipped* score is anti-predictive, so the
+> components carry signal and it is riskratchet's *fixed blend* that fails. Net: a 0.3.0
+> drop/shrink of the file-line term is now the model-supported front-runner, but **still
+> no weight change ships** — the construct (§6.1) and external-validity (§6.2) gaps are
+> untouched. See §6.6, §7.
 
 ---
 
@@ -262,13 +274,41 @@ high-power repo (networkx) and a lot of low-power breadth; neither substitutes f
 pooled, repo-stratified model in §6.6 — if anything the new heterogeneity makes that
 model *more* necessary, not less.
 
-### 6.6 The ablation is crude
-`total_auc(drop_file_line) − total_auc(baseline)` is a single-feature ablation on a
-fixed 6-component blend. It does not control for interactions, is not a proper
-model-comparison (no cross-validation, no regression with the feature in/out), and
-AUC deltas are not additive across components. A defensible weight decision needs a
-real model (e.g. logistic regression with/without the term, pooled, cross-validated)
-— see §7.
+### 6.6 The crude ablation, now replaced by a pooled model (shipped 0.2.10)
+The §4 readout `total_auc(drop_file_line) − total_auc(baseline)` is a single-feature
+ablation on a *fixed* 6-component blend: no cross-validation, no control for
+interactions, AUC deltas not additive across components. It is suggestive, not a
+decision. **0.2.10 ships the real model** the old text called for
+(`bin/calibration/ablation.py`, `harness ablate` → `data/calibration/ablation.json`):
+an L2 logistic regression with **one regularized intercept per repo** (absorbing the
+F5 heterogeneity), validated **leave-one-repo-out**, with `sprawl` split into its
+function-length and file-line halves so the file-line term gets its own coefficient
+*controlling for* everything else. Within-repo AUC is intercept-invariant, so LORO is
+valid; the 34-repo / 33,490-function / 812-buggy snapshot is `ablation.json`. Two
+results:
+
+- **The file-line term is confirmed net-noise.** Dropping it does not reduce — it
+  slightly *raises* — pooled CV-AUC (mean 0.685 → 0.694; n_buggy-weighted 0.646 →
+  0.658; Δ = −0.009 mean, full better in only **10/34** repos, **sign-test p = 0.024**
+  in favour of dropping). Its standardized coefficient in the single pooled model is
+  **0.039 with a 95% CI of [−0.094, 0.248] that spans zero** (repo-clustered bootstrap,
+  1000 draws). This upgrades H1 from a sign-test on a fixed blend to a proper
+  model-comparison — same direction, now defensible.
+- **A nuance the descriptive AUC hid: the *ingredients* carry signal even though the
+  shipped *blend* does not.** The fitted six-component model reaches ~0.69 mean
+  within-repo CV-AUC — including on the repos where the hand-weighted score is
+  *anti*-predictive (xarray 0.67, networkx 0.71, pint 0.58 under the model, vs 0.46 /
+  0.39 / 0.38 for the shipped score in §4). So F1's "the score does not predict
+  defects" is really "**riskratchet's fixed weighting blends informative components
+  badly**," not "the components are uninformative." That is a stronger argument for
+  *re-weighting work being worthwhile* — and a stronger argument for not shipping a
+  hand-tweak now — than the descriptive study alone could make.
+
+Caveats that still bound even this model: `l2` is fixed (not inner-CV-tuned); per-repo
+`n_buggy` is small (the mean-over-repos AUC weights tiny repos equally with xarray);
+and the model inherits §6.1 (defects ≠ maintainability) and §6.2 (mature OSS ≠ the
+target population) unchanged — a better-fit model on the wrong construct/population is
+still the wrong construct/population. See §7 for what it does and does not license.
 
 ### 6.7 Coverage is "now", not "at risk-time"
 The snapshot is scored with coverage regenerated from the **current** test suite run
@@ -357,15 +397,28 @@ defect predictor" premise has gone from eroding to *inverted on the strongest ev
 The honest summary is **heterogeneity with an anti-predictive center of mass** (F1/F5) —
 which is a stronger argument for leaving the weights alone, not a weaker one.
 
-**Decision rule (what would justify a 0.3.0 weight change):** *only* if a proper pooled
-logistic-regression ablation (§6.6), **with repo as a random/stratifying effect to
-absorb the F5 heterogeneity**, shows removing or shrinking the file-line term yields a
-non-trivial, cross-validated improvement (or clearly no loss) — **and** the
+**Decision rule (what would justify a 0.3.0 weight change) — the model has now run.**
+The rule was: *only* if a proper pooled logistic-regression ablation (§6.6), **with repo
+as a stratifying effect**, shows removing or shrinking the file-line term yields a
+non-trivial cross-validated improvement (or clearly no loss) — **and** the
 maintainability-vs-defect construct gap (§6.1) is addressed or explicitly accepted.
-The 25/34 sign result is suggestive but is *not* that model; with repos disagreeing on
-sign and the biggest repos (xarray, networkx) anti-predictive, a naive pooled AUC would
-be dominated by them. Absent the stratified model, keep the shipped weights — and note
-the 34-repo evidence makes the case for *any* change weaker, not stronger.
+
+That model shipped in 0.2.10 (`ablation.json`). On the *file-line* half it returns a
+clear "**clearly no loss**": dropping it does not reduce pooled LORO CV-AUC (Δ = −0.009,
+sign-test p = 0.024 in favour of dropping) and its coefficient's 95% CI spans zero. So
+the **first** clause of the rule is now **met** — the 0.3.0 candidate to drop or shrink
+the file-line sprawl term is supported by a proper model, not just a sign test. The
+**second** clause is **not**: the construct gap (§6.1) and external-validity gap (§6.2,
+mature OSS ≠ the AI-side-project target) are untouched, and the model is fit on exactly
+that wrong population. A better-fitting model does not close those gaps.
+
+**Therefore the standing decision is unchanged for 0.2.x: ship no weight change.** What
+*has* changed is that a 0.3.0 drop/shrink of the file-line term is now the
+model-supported front-runner (record it as such), gated only on addressing or explicitly
+accepting the construct/external-validity gaps — ideally against a corpus that resembles
+the target population. The model also reframes the headline: the components carry
+real signal (~0.69 fitted CV-AUC, §6.6), so the open work is *re-weighting on the right
+population*, not abandoning the score.
 
 **What adding repos did *not* fix:** the construct gap (§6.1) and the external-validity
 gap (§6.2). The ML cohort narrowed §6.2 but could not close it — these are still

@@ -62,6 +62,16 @@ dev = [
     "jsonschema>=4.21",
     "syrupy>=4",
 ]
+# Dev-only, calibration-research-only. NOT a runtime dependency: the published
+# wheel keeps the five deps above. Used solely by the `ablate` subcommand and its
+# test (bin/calibration/ablation.py). The < 3.14 marker keeps the `uv sync` for the
+# CI test matrix from failing if scipy lacks a wheel on the newest interpreter;
+# the model test `importorskip`s scipy, so it simply skips there. Run with:
+#   uv run --group calibration python -m bin.calibration.harness ablate
+calibration = [
+    "scipy>=1.13; python_version < '3.14'",
+    "numpy>=1.26; python_version < '3.14'",
+]
 
 [tool.ruff]
 line-length = 110
@@ -91,7 +101,7 @@ warn_unused_ignores = true
 exclude = ["tests/fixtures/"]
 
 [[tool.mypy.overrides]]
-module = ["radon.*"]
+module = ["radon.*", "scipy.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

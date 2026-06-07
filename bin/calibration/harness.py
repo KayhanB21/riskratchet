@@ -11,13 +11,17 @@ Subcommands:
             back to S) -> `defect-labels.json`.
   predict   Phase 2. Per sprawl candidate, AUC of the score vs the SZZ defect
             label -> `defect-prediction.json`.
+  ablate    Phase 3. Pooled, repo-stratified logistic-regression ablation of the
+            file-line sprawl term (the decision-gate model) -> `ablation.json`.
 
 These are human-run local steps: they clone real repos and run their suites under
 coverage (minutes, needs network; `replay` also needs `gh`). None run in CI; the
-test suite exercises the pieces hermetically.
+test suite exercises the pieces hermetically. `ablate` additionally needs the
+calibration dependency group (scipy/numpy):
 
   uv run python -m bin.calibration.harness defects --repos requests --snapshot-days 365
   uv run python -m bin.calibration.harness predict
+  uv run --group calibration python -m bin.calibration.harness ablate
 """
 
 from __future__ import annotations
@@ -42,6 +46,7 @@ from riskratchet.models import FunctionId, RiskReport
 
 ROLLUP_PATH = CALIBRATION_DIR / "pr-replay-rollup.json"
 CANDIDATES_PATH = CALIBRATION_DIR / "sprawl-candidates.json"
+ABLATION_PATH = CALIBRATION_DIR / "ablation.json"
 
 
 def defect_labels_path(repo_name: str) -> Path:
@@ -276,6 +281,42 @@ def cmd_predict(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ablate(args: argparse.Namespace) -> int:
+    # Imported lazily so scipy/numpy (the calibration dependency group) are only
+    # required on this code path, never for the other subcommands or the test suite.
+    from bin.calibration.ablation import build_dataset, run_ablation, to_payload
+
+    label_files = sorted(REPOS_DIR.glob("*/defect-labels.json"))
+    only = set(args.repos.split(",")) if args.repos else None
+    per_repo: list[tuple[str, RiskReport, set[FunctionId]]] = []
+    skipped = 0
+    for label_file in label_files:
+        repo_name = label_file.parent.name
+        if only is not None and repo_name not in only:
+            continue
+        raw = json.loads(label_file.read_text(encoding="utf-8"))
+        report = _load_cached_report(repo_name, str(raw["snapshot_sha"]))
+        if report is None:
+            print(f"  skip {repo_name}: snapshot analyze cache missing", file=sys.stderr)
+            skipped += 1
+            continue
+        labels = _labels_from_dict(repo_name, raw)
+        per_repo.append((repo_name, report, set(labels.counts)))
+    if not per_repo:
+        print("no repos with a cached snapshot; run `defects` first", file=sys.stderr)
+        return 1
+    dataset = build_dataset(per_repo)
+    result = run_ablation(dataset, l2=args.l2, bootstrap_draws=args.bootstrap_draws)
+    payload = to_payload(result)
+    ABLATION_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(
+        f"wrote {ABLATION_PATH.name}: {len(dataset.repos)} repos, "
+        f"{dataset.n_functions} functions, {dataset.n_buggy} buggy "
+        f"({skipped} repo(s) skipped for missing cache)"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="bin.calibration.harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -304,6 +345,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     predict = sub.add_parser("predict", help="AUC of score vs SZZ defect label per candidate")
     predict.set_defaults(func=cmd_predict)
+
+    ablate = sub.add_parser(
+        "ablate", help="pooled, repo-stratified logistic-regression ablation of the file-line term"
+    )
+    ablate.add_argument("--repos", default="", help="comma-separated subset of enabled repos")
+    ablate.add_argument("--l2", type=float, default=1.0, help="L2 regularization strength (default 1.0)")
+    ablate.add_argument(
+        "--bootstrap-draws", type=int, default=1000, help="repo-clustered bootstrap draws (default 1000)"
+    )
+    ablate.set_defaults(func=cmd_ablate)
     return parser
 
 
