@@ -1,0 +1,955 @@
+{
+  "snapshot_sha": "ead24576946db3d7e9eac9d2946ad4a27a46030e",
+  "head_sha": "329dcb7fc2bfac91f25c458f6e9f9e0cdaf1283c",
+  "window_days": 365,
+  "n_functions": 388,
+  "n_change_prone": 24,
+  "n_future_commits": 19,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "feature_engine/_base_transformers/base_numerical.py::BaseNumericalTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/_prediction/base_predictor.py::BaseTargetMeanEstimator.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/_prediction/target_mean_classifier.py::TargetMeanClassifier.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/base_creation.py::BaseCreation.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures._create_variable_combinations",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures._get_new_features_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures._make_decision_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures._more_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/creation/decision_tree_features.py::DecisionTreeFeatures.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 479,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/dataframe_checks.py::check_X",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/dataframe_checks.py::check_y",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/datetime/datetime.py::DatetimeFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/datetime/datetime.py::DatetimeFeatures._more_tags",
+      "future_commits": 1,
+      "future_lines": 253,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/discretisation/arbitrary.py::ArbitraryDiscretiser.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/discretisation/decision_tree.py::DecisionTreeDiscretiser.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/discretisation/decision_tree.py::DecisionTreeDiscretiser.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/discretisation/decision_tree.py::DecisionTreeDiscretiser.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/discretisation/decision_tree.py::DecisionTreeDiscretiser.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/_helper_functions.py::check_parameter_unseen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/base_encoder.py::CategoricalMethodsMixin.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/decision_tree.py::DecisionTreeEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/decision_tree.py::DecisionTreeEncoder.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/decision_tree.py::DecisionTreeEncoder.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/mean_encoding.py::MeanEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/mean_encoding.py::MeanEncoder.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/ordinal.py::OrdinalEncoder.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/rare_label.py::RareLabelEncoder.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/similarity_encoder.py::StringSimilarityEncoder.fit",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/encoding/similarity_encoder.py::StringSimilarityEncoder.transform",
+      "future_commits": 1,
+      "future_lines": 22,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/encoding/woe.py::WoE._calculate_woe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/woe.py::WoEEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/encoding/woe.py::WoEEncoder._more_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/imputation/base_imputer.py::BaseImputer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/imputation/base_imputer.py::BaseImputer.transform",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/imputation/categorical.py::CategoricalImputer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/imputation/drop_missing_data.py::DropMissingData.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/imputation/missing_indicator.py::AddMissingIndicator.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/imputation/missing_indicator.py::AddMissingIndicator.transform",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/imputation/random_sample.py::RandomSampleImputer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/artbitrary.py::ArbitraryOutlierCapper.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::BaseOutlier.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::WinsorizerBase.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::WinsorizerBase.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::WinsorizerBase._calculate_fold",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::WinsorizerBase._more_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/base_outlier.py::WinsorizerBase.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/outliers/winsorizer.py::Winsorizer.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/preprocessing/match_categories.py::MatchCategories.transform",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/preprocessing/match_columns.py::MatchVariables.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/preprocessing/match_columns.py::MatchVariables.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/preprocessing/match_columns.py::MatchVariables.transform",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/scaling/mean_normalization.py::MeanNormalizationScaler.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 181,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/scaling/mean_normalization.py::MeanNormalizationScaler.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 181,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/scaling/mean_normalization.py::MeanNormalizationScaler.inverse_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 181,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/scaling/mean_normalization.py::MeanNormalizationScaler.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 181,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_recursive_selector.py::BaseRecursiveSelector.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_recursive_selector.py::BaseRecursiveSelector.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_recursive_selector.py::BaseRecursiveSelector.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_selection_functions.py::find_feature_importance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_selection_functions.py::single_feature_performance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 89,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/base_selector.py::BaseSelector.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/drop_constant_features.py::DropConstantFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/drop_duplicate_features.py::DropDuplicateFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/drop_features.py::DropFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/drop_psi_features.py::DropHighPSIFeatures.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR._calculate_mrmr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR._calculate_redundance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR._calculate_relevance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR._more_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/mrmr.py::MRMR.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/probe_feature_selection.py::ProbeFeatureSelection.__init__",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 3,
+      "past_lines": 40,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/selection/probe_feature_selection.py::ProbeFeatureSelection.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/probe_feature_selection.py::ProbeFeatureSelection._generate_probe_features",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/probe_feature_selection.py::ProbeFeatureSelection._get_features_to_drop",
+      "future_commits": 1,
+      "future_lines": 20,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/selection/probe_feature_selection.py::ProbeFeatureSelection.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/recursive_feature_addition.py::RecursiveFeatureAddition.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/recursive_feature_elimination.py::RecursiveFeatureElimination.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/shuffle_features.py::SelectByShuffling.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/shuffle_features.py::SelectByShuffling.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/single_feature_performance.py::SelectBySingleFeaturePerformance.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/single_feature_performance.py::SelectBySingleFeaturePerformance.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/single_feature_performance.py::SelectBySingleFeaturePerformance.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/smart_correlation_selection.py::SmartCorrelatedSelection.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/smart_correlation_selection.py::SmartCorrelatedSelection.fit",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 4,
+      "past_lines": 25,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/selection/target_mean_selection.py::SelectByTargetMeanPerformance.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/target_mean_selection.py::SelectByTargetMeanPerformance.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/selection/target_mean_selection.py::SelectByTargetMeanPerformance.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/tags.py::_return_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/timeseries/forecasting/base_forecast_transformers.py::BaseForecastTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/timeseries/forecasting/lag_features.py::LagFeatures.transform",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/timeseries/forecasting/window_features.py::WindowFeatures.transform",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/transformation/arcsin.py::ArcsinTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/boxcox.py::BoxCoxTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/log.py::LogCpTransformer.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/transformation/log.py::LogCpTransformer.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/log.py::LogCpTransformer.inverse_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/log.py::LogCpTransformer.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/log.py::LogTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/power.py::PowerTransformer.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/reciprocal.py::ReciprocalTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/reciprocal.py::ReciprocalTransformer.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/yeojohnson.py::YeoJohnsonTransformer.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/transformation/yeojohnson.py::YeoJohnsonTransformer._inverse_transform_series",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/variable_handling/_variable_type_checks.py::_is_categorical_and_is_datetime",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/_variable_type_checks.py::_is_categorical_and_is_not_datetime",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/_variable_type_checks.py::_is_convertible_to_dt",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/check_variables.py::check_datetime_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "feature_engine/variable_handling/find_variables.py::find_all_variables",
+      "future_commits": 1,
+      "future_lines": 20,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/find_variables.py::find_categorical_and_numerical_variables",
+      "future_commits": 2,
+      "future_lines": 66,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/find_variables.py::find_categorical_variables",
+      "future_commits": 2,
+      "future_lines": 23,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/find_variables.py::find_datetime_variables",
+      "future_commits": 1,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/variable_handling/find_variables.py::find_numerical_variables",
+      "future_commits": 1,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "feature_engine/wrappers/wrappers.py::SklearnTransformerWrapper.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    }
+  ]
+}

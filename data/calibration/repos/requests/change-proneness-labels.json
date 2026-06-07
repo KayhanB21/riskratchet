@@ -1,0 +1,1923 @@
+{
+  "snapshot_sha": "5b4b64c3467fd7a3c03f91ee641aaa348b6bed3b",
+  "head_sha": "1190afd14fca74292946d62c4c8169880a47ff67",
+  "window_days": 365,
+  "n_functions": 240,
+  "n_change_prone": 60,
+  "n_future_commits": 40,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/requests/__init__.py::_check_cryptography",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/__init__.py::check_compatibility",
+      "future_commits": 4,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/_internal_utils.py::to_native_string",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/_internal_utils.py::unicode_is_ascii",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::BaseAdapter.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::BaseAdapter.close",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::BaseAdapter.send",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.__getstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.__init__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.__setstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.add_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.build_connection_pool_key_attributes",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.build_response",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.cert_verify",
+      "future_commits": 3,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.close",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.get_connection",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.get_connection_with_tls_context",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.init_poolmanager",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.proxy_headers",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.proxy_manager_for",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.request_url",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::HTTPAdapter.send",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/adapters.py::SOCKSProxyManager",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/adapters.py::_urllib3_request_context",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/api.py::delete",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::get",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::head",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::options",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::patch",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::post",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/api.py::put",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/api.py::request",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::AuthBase.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPBasicAuth.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPBasicAuth.__eq__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPBasicAuth.__init__",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPBasicAuth.__ne__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.__call__",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.__eq__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.__init__",
+      "future_commits": 1,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.__ne__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.build_digest_header",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.build_digest_header.md5_utf8",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.build_digest_header.sha256_utf8",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.build_digest_header.sha512_utf8",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.build_digest_header.sha_utf8",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.handle_401",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.handle_redirect",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPDigestAuth.init_per_thread_state",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::HTTPProxyAuth.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/auth.py::_basic_auth_str",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/compat.py::_resolve_char_detection",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.__init__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.add_header",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.add_unredirected_header",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_full_url",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_header",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_host",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_new_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_origin_req_host",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.get_type",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.has_header",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.host",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.is_unverifiable",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.origin_req_host",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockRequest.unverifiable",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockResponse.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockResponse.getheaders",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::MockResponse.info",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__contains__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__delitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__getitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__getstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__setitem__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.__setstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar._find",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar._find_no_duplicates",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.get",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.get_dict",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.get_policy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.items",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.iteritems",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.iterkeys",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.itervalues",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.keys",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.list_domains",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.list_paths",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.multiple_domains",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.set",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.set_cookie",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.update",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::RequestsCookieJar.values",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::_copy_cookie_jar",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::cookiejar_from_dict",
+      "future_commits": 1,
+      "future_lines": 72,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/cookies.py::create_cookie",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::extract_cookies_to_jar",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::get_cookie_header",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::merge_cookies",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/cookies.py::morsel_to_cookie",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/cookies.py::remove_cookie_by_name",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/exceptions.py::JSONDecodeError.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/exceptions.py::JSONDecodeError.__reduce__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/exceptions.py::RequestException.__init__",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/help.py::_implementation",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/help.py::info",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/hooks.py::default_hooks",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/hooks.py::dispatch_hook",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.__init__",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest._get_idna_encoded_host",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.copy",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_auth",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_body",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_content_length",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_cookies",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_hooks",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_method",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::PreparedRequest.prepare_url",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Request.__init__",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Request.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Request.prepare",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::RequestEncodingMixin._encode_files",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::RequestEncodingMixin._encode_params",
+      "future_commits": 1,
+      "future_lines": 57,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::RequestEncodingMixin.path_url",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::RequestHooksMixin.deregister_hook",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::RequestHooksMixin.register_hook",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Response.__bool__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__enter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__exit__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__getstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__init__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Response.__iter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__nonzero__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.__setstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.apparent_encoding",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.close",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.content",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.is_permanent_redirect",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.is_redirect",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.iter_content",
+      "future_commits": 2,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Response.iter_content.generate",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.iter_lines",
+      "future_commits": 3,
+      "future_lines": 65,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/models.py::Response.json",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.links",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.next",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.ok",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.raise_for_status",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/models.py::Response.text",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.__enter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.__exit__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.__getstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.__init__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.__setstate__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.close",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.delete",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.get",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.get_adapter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.head",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.merge_environment_settings",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.mount",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.options",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.patch",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.post",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.prepare_request",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.put",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::Session.request",
+      "future_commits": 4,
+      "future_lines": 25,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::Session.send",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.get_redirect_target",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.rebuild_auth",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.rebuild_method",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.rebuild_proxies",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.resolve_redirects",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/sessions.py::SessionRedirectMixin.should_strip_auth",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::merge_hooks",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::merge_setting",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/sessions.py::session",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/status_codes.py::_init",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/status_codes.py::_init.doc",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__delitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__eq__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__getitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__init__",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__iter__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__len__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.__setitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::CaseInsensitiveDict.lower_items",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::LookupDict.__getitem__",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/structures.py::LookupDict.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::LookupDict.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/structures.py::LookupDict.get",
+      "future_commits": 1,
+      "future_lines": 21,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::_parse_content_type_header",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::_validate_header_part",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::add_dict_to_cookiejar",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::address_in_network",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::atomic_open",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::check_header_validity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::default_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::default_user_agent",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::dict_from_cookiejar",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::dict_to_sequence",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::dotted_netmask",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::extract_zipped_paths",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::from_key_val_list",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::get_auth_from_url",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::get_encoding_from_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::get_encodings_from_content",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::get_environ_proxies",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::get_netrc_auth",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::get_unicode_from_response",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::guess_filename",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::guess_json_utf",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::is_ipv4_address",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::is_valid_cidr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::iter_slices",
+      "future_commits": 1,
+      "future_lines": 33,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::parse_dict_header",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::parse_header_links",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::parse_list_header",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::prepend_scheme_if_needed",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::proxy_bypass",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::proxy_bypass_registry",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::requote_uri",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::resolve_proxies",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::rewind_body",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::select_proxy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::set_environ",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::should_bypass_proxies",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::should_bypass_proxies.get_proxy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::stream_decode_response_unicode",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::super_len",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::to_key_val_list",
+      "future_commits": 2,
+      "future_lines": 31,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/requests/utils.py::unquote_header_value",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::unquote_unreserved",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/requests/utils.py::urldefragauth",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    }
+  ]
+}

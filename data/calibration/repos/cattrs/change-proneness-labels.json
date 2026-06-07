@@ -1,0 +1,1059 @@
+{
+  "snapshot_sha": "98940957f32196c1dc7f40762518451e342dd156",
+  "head_sha": "fcd732f817b160041e5f3173dd15809b0c2ea916",
+  "window_days": 365,
+  "n_functions": 273,
+  "n_change_prone": 49,
+  "n_future_commits": 32,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/cattrs/_compat.py::adapted_fields",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::fields_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::get_full_type_hints",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::get_newtype_base",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/_compat.py::get_notrequired_base",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_counter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_frozenset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_generic",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_literal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_optional",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_sequence",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_typeddict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/_compat.py::is_union_type",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/_generics.py::deep_copy_with",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/cols.py::_namedtuple_to_attrs",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 105,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/cols.py::defaultdict_structure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/cols.py::is_defaultdict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/cols.py::namedtuple_dict_structure_factory",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 105,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/cols.py::namedtuple_dict_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 105,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/cols.py::namedtuple_structure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 109,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/cols.py::namedtuple_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.__init__",
+      "future_commits": 6,
+      "future_lines": 16,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._gen_structure_generic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._get_dis_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._structure_enum_literal",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._structure_optional",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._structure_simple_literal",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._structure_tuple",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter._unstructure_enum",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.copy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.register_structure_hook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.register_structure_hook_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.register_unstructure_hook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::BaseConverter.register_unstructure_hook_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.__init__",
+      "future_commits": 3,
+      "future_lines": 18,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.copy",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_structure_attrs_fromdict",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_structure_counter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_structure_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_structure_typeddict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_unstructure_attrs_fromdict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_unstructure_iterable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.gen_unstructure_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.register_structure_hook_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 152,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/converters.py::Converter.register_unstructure_hook_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 152,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/disambiguators.py::is_supported_union",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::AttributeValidationNote.__getnewargs__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::AttributeValidationNote.__new__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/errors.py::BaseValidationError.__new__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/errors.py::BaseValidationError.derive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::ClassValidationError.group_exceptions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::ForbiddenExtraKeysError.__init__",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/errors.py::IterableValidationError.group_exceptions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::IterableValidationNote.__getnewargs__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/errors.py::IterableValidationNote.__new__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/errors.py::StructureHandlerNotFoundError.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/fns.py::raise_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::iterable_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::iterable_unstructure_factory.unstructure_iterable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::make_dict_structure_fn",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 2,
+      "past_lines": 89,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::make_dict_structure_fn_from_attrs",
+      "future_commits": 4,
+      "future_lines": 35,
+      "past_commits": 3,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::make_dict_unstructure_fn",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 74,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::make_dict_unstructure_fn_from_attrs",
+      "future_commits": 5,
+      "future_lines": 48,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::mapping_structure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/__init__.py::mapping_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/_generics.py::generate_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/_lc.py::generate_unique_filename",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/_shared.py::find_structure_handler",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/typeddicts.py::_required_keys",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/gen/typeddicts.py::get_annots",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/typeddicts.py::make_dict_structure_fn",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 3,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/gen/typeddicts.py::make_dict_unstructure_fn",
+      "future_commits": 1,
+      "future_lines": 28,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/literals.py::is_literal_containing_enums",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/__init__.py::is_primitive_enum",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/__init__.py::literals_with_enums_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/__init__.py::validate_datetime",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/bson.py::BsonConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/bson.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/bson.py::configure_converter.gen_structure_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/bson.py::configure_converter.gen_unstructure_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/bson.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/cbor2.py::Cbor2Converter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/cbor2.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/cbor2.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/json.py::JsonConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/json.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/json.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/msgpack.py::MsgpackConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/msgpack.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/msgpack.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/msgspec.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/msgspec.py::configure_passthroughs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/msgspec.py::msgspec_attrs_unstructure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/orjson.py::OrjsonConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/orjson.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/orjson.py::configure_converter.unstructure_mapping_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/orjson.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/pyyaml.py::PyyamlConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/pyyaml.py::configure_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/pyyaml.py::validate_date",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/tomlkit.py::TomlkitConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/tomlkit.py::configure_converter",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/tomlkit.py::configure_converter.gen_unstructure_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/tomlkit.py::configure_converter.gen_unstructure_mapping.key_handler",
+      "future_commits": 1,
+      "future_lines": 94,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/tomlkit.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/ujson.py::UjsonConverter.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/preconf/ujson.py::configure_converter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/preconf/ujson.py::make_converter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/strategies/_class_methods.py::use_class_methods",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/strategies/_class_methods.py::use_class_methods.make_class_method_structure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/strategies/_class_methods.py::use_class_methods.make_class_method_unstructure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_has_subclasses",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_include_subclasses_with_union_strategy",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_include_subclasses_without_union_strategy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::_make_subclasses_tree",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_subclasses.py::include_subclasses",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union",
+      "future_commits": 1,
+      "future_lines": 45,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union.structure_tagged_union",
+      "future_commits": 1,
+      "future_lines": 52,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union.structure_union_member",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union.unstructure_tagged_union",
+      "future_commits": 1,
+      "future_lines": 26,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_tagged_union.unstructure_union_member",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_union_passthrough",
+      "future_commits": 3,
+      "future_lines": 35,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_union_passthrough.contains_native_union",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::configure_union_passthrough.make_structure_native_union",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/cattrs/strategies/_unions.py::default_tag_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/typealiases.py::get_type_alias_base",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/typealiases.py::is_type_alias",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 114,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/typealiases.py::type_alias_structure_factory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/types.py::SimpleStructureHook.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "src/cattrs/v.py::transform_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    }
+  ]
+}

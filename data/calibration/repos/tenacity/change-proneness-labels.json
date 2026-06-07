@@ -1,0 +1,643 @@
+{
+  "snapshot_sha": "077aaa84eaa91051d6a779cd1edb68727d7daebb",
+  "head_sha": "a49e9d6dd4e4611238dc277263d1975e1cada21e",
+  "window_days": 365,
+  "n_functions": 156,
+  "n_change_prone": 37,
+  "n_future_commits": 38,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "tenacity/__init__.py::AttemptManager.__exit__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.__init__",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.__repr__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying._begin_iter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying._post_stop_check_actions",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying._post_stop_check_actions.exc_check",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.begin",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.copy",
+      "future_commits": 4,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.iter",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.iter_state",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.statistics",
+      "future_commits": 4,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.wraps",
+      "future_commits": 4,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.wraps.retry_with",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::BaseRetrying.wraps.wrapped_f",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.seconds_since_start",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::RetryCallState.set_exception",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::RetryError.reraise",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::Retrying.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::_first_set",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/__init__.py::retry",
+      "future_commits": 5,
+      "future_lines": 72,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/__init__.py::retry.wrap",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/_utils.py::find_ordinal",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/_utils.py::get_callback_name",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/_utils.py::is_coroutine_callable",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/_utils.py::wrap_to_async_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/_utils.py::wrap_to_async_func.inner",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/after.py::after_log",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/after.py::after_log.log_it",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__anext__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__call__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.__init__",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 2,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying._add_action_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying._run_retry",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying._run_stop",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying._run_wait",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.iter",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.wraps",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::AsyncRetrying.wraps.async_wrapped",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/__init__.py::_portable_async_sleep",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__and__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__or__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__rand__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::async_retry_base.__ror__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_all.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_all.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_any.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_any.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_exception.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_exception.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_result.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/asyncio/retry.py::retry_if_result.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/before.py::before_log",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/before.py::before_log.log_it",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/before_sleep.py::before_sleep_log",
+      "future_commits": 3,
+      "future_lines": 12,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/before_sleep.py::before_sleep_log.log_it",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/before_sleep.py::before_sleep_nothing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/nap.py::sleep_using_event.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/retry.py::retry_all.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/retry.py::retry_any.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__and__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__or__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__rand__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_base.__ror__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_cause_type.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_message.__init__",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_exception_type.__init__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_not_exception_message.__init__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_if_not_exception_type.__init__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/retry.py::retry_unless_exception_type.__init__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/tornadoweb.py::TornadoRetrying.__call__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/wait.py::wait_base.__radd__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/wait.py::wait_exponential.__init__",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/wait.py::wait_exponential_jitter.__call__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/wait.py::wait_exponential_jitter.__init__",
+      "future_commits": 3,
+      "future_lines": 22,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "tenacity/wait.py::wait_incrementing.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/wait.py::wait_random.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "tenacity/wait.py::wait_random_exponential.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    }
+  ]
+}

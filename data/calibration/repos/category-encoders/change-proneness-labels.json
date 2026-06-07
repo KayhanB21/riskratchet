@@ -1,0 +1,1147 @@
+{
+  "snapshot_sha": "9a86233c51d8ed3c2809126bb0ab9523c4c379bd",
+  "head_sha": "b9f9b0a2ce42bd33cdf1760645ca2126f5cb5bee",
+  "window_days": 365,
+  "n_functions": 157,
+  "n_change_prone": 21,
+  "n_future_commits": 12,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "category_encoders/backward_difference.py::BackwardDifferenceEncoder.get_contrast_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/base_contrast_encoder.py::BaseContrastEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/base_contrast_encoder.py::BaseContrastEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/base_contrast_encoder.py::BaseContrastEncoder.fit_contrast_coding",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/base_contrast_encoder.py::BaseContrastEncoder.get_contrast_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/base_contrast_encoder.py::BaseContrastEncoder.transform_contrast_coding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.basen_to_integer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.calc_required_digits",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.col_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.fit_base_n_encoding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.inverse_transform",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/basen.py::BaseNEncoder.number_to_base",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/cat_boost.py::CatBoostEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/cat_boost.py::CatBoostEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/cat_boost.py::CatBoostEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 34,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder._check_set_create_attrs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder._check_set_create_dict_attrs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder._fit_count_encode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/count.py::CountEncoder.combine_min_categories",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/datasets/_base.py::load_compass",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/datasets/_base.py::load_postcodes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder._rename_and_merge",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder._score",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/glmm.py::GLMMEncoder._train",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/gray.py::GrayEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/gray.py::GrayEncoder.gray_code",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/hashing.py::HashingEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/hashing.py::HashingEncoder.hash_chunk",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/hashing.py::HashingEncoder.hashing_trick",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/hashing.py::HashingEncoder.hashing_trick_with_np_no_parallel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/hashing.py::HashingEncoder.hashing_trick_with_np_parallel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/helmert.py::HelmertEncoder.get_contrast_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._score",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._train_independent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._train_log_odds_ratio",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._train_log_odds_ratio.get_best_sigma",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/james_stein.py::JamesSteinEncoder._train_pooled",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder._fit_column_map",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder.fit_leave_one_out",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/leave_one_out.py::LeaveOneOutEncoder.transform_leave_one_out",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/m_estimate.py::MEstimateEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/m_estimate.py::MEstimateEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/m_estimate.py::MEstimateEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/m_estimate.py::MEstimateEncoder._score",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.category_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.generate_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.get_dummies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.inverse_transform",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/one_hot.py::OneHotEncoder.reverse_dummies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder._fit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder._transform",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder._validate_supplied_mapping",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder.category_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder.inverse_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/ordinal.py::OrdinalEncoder.ordinal_encoding",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 3,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/polynomial.py::PolynomialEncoder.get_contrast_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::QuantileEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::QuantileEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::QuantileEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::QuantileEncoder.fit_quantile_encoding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::QuantileEncoder.quantile_encode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder._get_col_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.fit",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.fit_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.get_feature_names",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.get_feature_names_in",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.get_feature_names_out",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/quantile_encoder.py::SummaryEncoder.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder._create_dataframe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder._transform.apply_coding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder.generate_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/rankhot.py::RankHotEncoder.inverse_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/sum_coding.py::SumEncoder.get_contrast_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder._check_dict_key_tuples",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder._fit",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder._weighting",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder.fit_target_encoding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/target_encoder.py::TargetEncoder.target_encode",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder._check_fit_inputs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder._check_transform_inputs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder._determine_fit_columns",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder._drop_invariants",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.fit",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.get_feature_names",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.get_feature_names_in",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::BaseEncoder.get_feature_names_out",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::EncoderTags.from_sk_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::SupervisedTransformerMixin.__sklearn_tags__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::SupervisedTransformerMixin._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::SupervisedTransformerMixin.fit_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::SupervisedTransformerMixin.transform",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::UnsupervisedTransformerMixin._transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::UnsupervisedTransformerMixin.transform",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "category_encoders/utils.py::convert_cols_to_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::convert_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::convert_input_vector",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::convert_input_vector.flatten",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::convert_inputs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::flatten_reverse_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::get_categorical_cols",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::get_docstring_output_shape",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::get_generated_cols",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/utils.py::is_category",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/woe.py::WOEEncoder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/woe.py::WOEEncoder._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/woe.py::WOEEncoder._score",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/woe.py::WOEEncoder._train",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::NestedCVWrapper.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::NestedCVWrapper.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::NestedCVWrapper.fit_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::NestedCVWrapper.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::PolynomialWrapper.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::PolynomialWrapper.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::PolynomialWrapper.fit_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "category_encoders/wrapper.py::PolynomialWrapper.transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    }
+  ]
+}

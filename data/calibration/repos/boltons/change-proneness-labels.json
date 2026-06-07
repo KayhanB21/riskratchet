@@ -1,0 +1,1835 @@
+{
+  "snapshot_sha": "0c88f25323de3ff85bcca844b9ce6cd171a80392",
+  "head_sha": "207651ee6055aabd0d9cdeac2e00140cdc208d44",
+  "window_days": 365,
+  "n_functions": 912,
+  "n_change_prone": 4,
+  "n_future_commits": 11,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "boltons/cacheutils.py::CachedFunction.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::CachedMethod.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.__delitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.pop",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::LRI.popitem",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::ThresholdCounter.add",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::ThresholdCounter.most_common",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::ThresholdCounter.update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::_HashedKey.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/cacheutils.py::cachedproperty.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/debugutils.py::trace_print_hook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/debugutils.py::wrap_trace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/debugutils.py::wrap_trace.wrap_method",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/debugutils.py::wrap_trace.wrap_method.wrapped",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/deprutils.py::DeprecatableModule.__getattribute__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/deprutils.py::DeprecatableModule.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::FrozenDict.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::ManyToMany.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OneToOne.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OneToOne.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__delitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__new__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__reversed__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.add",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.addlist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.counts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.getlist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.popall",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.poplast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.setdefault",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.sortedvalues",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/dictutils.py::OrderedMultiDict.todict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ecoutils.py::get_profile",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/excutils.py::ExceptionCauseMixin.__new__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/excutils.py::ExceptionCauseMixin.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/excutils.py::ExceptionCauseMixin._get_trace_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/excutils.py::_DeferredLine.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/excutils.py::_TBItem.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::AtomicSaver.__exit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::AtomicSaver.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::AtomicSaver._open_part_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::FilePerms._FilePermProperty.__set__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::FilePerms._FilePermProperty.__set__.sort_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::copy_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::iter_find_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::path_to_unicode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::replace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::rotate_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/fileutils.py::set_cloexec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/formatutils.py::BaseFormatField.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/formatutils.py::DeferredValue.__unicode__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/formatutils.py::infer_positional_format_args",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::CachedInstancePartial.__get__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::CachedInstancePartial.__partialmethod__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::CachedInstancePartial._partialmethod",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::FunctionBuilder._argspec_to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::FunctionBuilder.add_arg",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::FunctionBuilder.from_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::FunctionBuilder.get_invocation_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::FunctionBuilder.remove_arg",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::InstancePartial.__get__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::InstancePartial.__partialmethod__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::InstancePartial._partialmethod",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::_parse_wraps_expected",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::format_invocation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::format_nonexp_repr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::get_module_callables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/funcutils.py::update_wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::MultiFileReader.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledBytesIO.write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledIOBase.truncate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledStringIO.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledStringIO.readlines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledStringIO.seek",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::SpooledStringIO.write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/ioutils.py::is_text_fileobj",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::GUIDerator.reseed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::PathAccessError.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::SequentialGUIDerator.reseed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::bucketize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::bucketize.key_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::bucketize.value_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::chunk_ranges",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::chunked_iter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::chunked_iter.postprocess",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::default_enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::flatten_iter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::frange",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::get_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::is_collection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::is_scalar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::partition",
+      "future_commits": 1,
+      "future_lines": 38,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "boltons/iterutils.py::redundant",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::redundant.key_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::remap",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "boltons/iterutils.py::research",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "boltons/iterutils.py::research._enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::rstrip_iter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::soft_sorted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::split_iter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::split_iter.sep_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::unique_iter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::unique_iter.key_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/iterutils.py::untyped_sorted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/jsonutils.py::reverse_iter_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/listutils.py::BarrelList.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/listutils.py::BarrelList.index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/listutils.py::BarrelList.sort",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "boltons/mathutils.py::Bits.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/mathutils.py::Bits.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/mathutils.py::Bits.as_bin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/mathutils.py::Bits.as_hex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/namedutils.py::namedlist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/namedutils.py::namedtuple",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/setutils.py::IndexedSet.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/setutils.py::IndexedSet.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/setutils.py::IndexedSet.index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/setutils.py::_ComplementSet.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/socketutils.py::BufferedSocket.recv_size",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/socketutils.py::MessageTooLong.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/socketutils.py::NetstringInvalidSize.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/socketutils.py::NetstringMessageTooLong.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/socketutils.py::Timeout.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/statsutils.py::Stats.describe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/statsutils.py::Stats.get_histogram_counts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/statsutils.py::format_histogram_counts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::DeaccenterDict.__missing__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::HTMLTextExtractor.get_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::HTMLTextExtractor.handle_charref",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::HTMLTextExtractor.handle_entityref",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::MultiReplace.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::a10n",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::asciify",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::format_int_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::is_ascii",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::multi_replace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::ordinalize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::removeprefix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::strip_ansi",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/strutils.py::unit_len",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tableutils.py::Table.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tableutils.py::Table.to_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tableutils.py::to_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::Callpoint.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::Callpoint.tb_frame_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ContextualCallpoint.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ContextualCallpoint._populate_context_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ContextualCallpoint.from_frame",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ContextualCallpoint.from_tb",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ContextualCallpoint.to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ExceptionInfo.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ExceptionInfo.from_exc_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ExceptionInfo.get_formatted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ExceptionInfo.get_formatted_exception_only",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ParsedException.from_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::ParsedException.to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::TracebackInfo.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::_format_final_exc_line",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::fix_print_exception",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/tbutils.py::format_exception_only",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::ConstantTZInfo.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::ConstantTZInfo.utcoffset_hours",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::decimal_relative_time",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::dt_to_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::isoparse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/timeutils.py::relative_time",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/typeutils.py::make_sentinel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/typeutils.py::make_sentinel.Sentinel.__bool__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/typeutils.py::make_sentinel.Sentinel.__copy__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/typeutils.py::make_sentinel.Sentinel.__deepcopy__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/typeutils.py::make_sentinel.Sentinel.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__delitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__getstate__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__ior__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__new__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__reversed__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.__setstate__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.add",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.addlist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.counts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.getlist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.popall",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.poplast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.setdefault",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.sorted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.sortedvalues",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.todict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::OrderedMultiDict.update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::QueryParamDict.to_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.from_parts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.get_authority",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.navigate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::URL.to_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::_make_quote_map",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::cachedproperty.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::find_all_links",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::find_all_links._add_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::inet_pton",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::parse_host",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::parse_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::quote_fragment_part",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::quote_path_part",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::quote_query_part",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::quote_userinfo_part",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::resolve_path_parts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::to_unicode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "boltons/urlutils.py::unquote_to_bytes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    }
+  ]
+}

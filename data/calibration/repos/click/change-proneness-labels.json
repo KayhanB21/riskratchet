@@ -1,0 +1,1651 @@
+{
+  "snapshot_sha": "7b4f1ce2923399deb7331b02d05a2fcff2074f2b",
+  "head_sha": "4fc0e90e1c19faf82bc18f8551eb1ed78dc738ac",
+  "window_days": 365,
+  "n_functions": 526,
+  "n_change_prone": 120,
+  "n_future_commits": 160,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/click/_compat.py::_FixupStream.writable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_compat.py::auto_wrap_for_ansi",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_compat.py::auto_wrap_for_ansi._safe_write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_compat.py::should_strip_ansi",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::Editor.edit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::Editor.edit_files",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::Editor.get_editor",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::ProgressBar.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_termui_impl.py::ProgressBar.format_eta",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::ProgressBar.generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_termui_impl.py::ProgressBar.render_finish",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_termui_impl.py::ProgressBar.render_progress",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::_nullpager",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::_pipepager",
+      "future_commits": 5,
+      "future_lines": 42,
+      "past_commits": 3,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::_tempfilepager",
+      "future_commits": 4,
+      "future_lines": 36,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::getchar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_termui_impl.py::open_url",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 46,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_termui_impl.py::pager",
+      "future_commits": 3,
+      "future_lines": 24,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_textwrap.py::TextWrapper._handle_long_word",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_winconsole.py::ConsoleStream.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleRawIOBase.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleRawIOBase.isatty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleReader.readable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleReader.readinto",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleWriter._get_error_message",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleWriter.writable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_WindowsConsoleWriter.write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::_get_windows_console_stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/_winconsole.py::get_buffer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Argument.__init__",
+      "future_commits": 2,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Argument._parse_decls",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Argument.get_error_hint",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Argument.get_usage_pieces",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Argument.human_readable_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Argument.make_metavar",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.__init__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.format_help",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.format_help_text",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.format_options",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.get_help_option",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 42,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.get_params",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Command.get_short_help_str",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.invoke",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.main",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.parse_args",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Command.shell_complete",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.__exit__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.__init__",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.close",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.exit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Context.find_object",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Context.get_parameter_source",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.invoke",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.lookup_default",
+      "future_commits": 3,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Context.scope",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Group.__init__",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Group.command",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Group.get_command",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Group.group",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Group.parse_args",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Group.resolve_command",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Group.result_callback",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.__init__",
+      "future_commits": 16,
+      "future_lines": 123,
+      "past_commits": 3,
+      "past_lines": 20,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option._parse_decls",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.consume_value",
+      "future_commits": 6,
+      "future_lines": 49,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.get_default",
+      "future_commits": 6,
+      "future_lines": 85,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.get_error_hint",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.get_help_extra",
+      "future_commits": 5,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.get_help_record",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Option.get_help_record._write_opts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Option.prompt_for_value",
+      "future_commits": 5,
+      "future_lines": 30,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.resolve_envvar_value",
+      "future_commits": 5,
+      "future_lines": 36,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.to_info_dict",
+      "future_commits": 4,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Option.value_from_envvar",
+      "future_commits": 5,
+      "future_lines": 50,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.__init__",
+      "future_commits": 6,
+      "future_lines": 21,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter._parse_decls",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.add_to_parser",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.consume_value",
+      "future_commits": 8,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.get_default",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.get_error_hint",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.get_help_record",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Parameter.handle_parse_result",
+      "future_commits": 10,
+      "future_lines": 112,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.human_readable_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Parameter.make_metavar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Parameter.process_value",
+      "future_commits": 7,
+      "future_lines": 70,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.resolve_envvar_value",
+      "future_commits": 6,
+      "future_lines": 57,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.shell_complete",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::Parameter.to_info_dict",
+      "future_commits": 4,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.type_cast_value",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.value_from_envvar",
+      "future_commits": 6,
+      "future_lines": 24,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::Parameter.value_is_missing",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/core.py::batch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/core.py::iter_params_for_processing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/decorators.py::confirmation_option",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/decorators.py::help_option",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/decorators.py::make_pass_decorator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/decorators.py::pass_meta_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::BadParameter.__init__",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/exceptions.py::BadParameter.format_message",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::ClickException.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::ClickException.show",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::Exit.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::FileError.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::MissingParameter.__init__",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/exceptions.py::MissingParameter.format_message",
+      "future_commits": 4,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/exceptions.py::NoArgsIsHelpError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::NoArgsIsHelpError.show",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::NoSuchOption.__init__",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/exceptions.py::NoSuchOption.format_message",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::UsageError.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/exceptions.py::UsageError.show",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/formatting.py::HelpFormatter.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/formatting.py::HelpFormatter.indentation",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/formatting.py::HelpFormatter.section",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/formatting.py::HelpFormatter.write_dl",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/formatting.py::HelpFormatter.write_usage",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/formatting.py::join_options",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/formatting.py::wrap_text",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_Argument.process",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_Option.__init__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_OptionParser._get_value_from_state",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_OptionParser._match_long_opt",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_OptionParser._match_short_opt",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_unpack_args",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/parser.py::_unpack_args._fetch",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/shell_completion.py::BashComplete._check_version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/shell_completion.py::FishComplete.format_completion",
+      "future_commits": 5,
+      "future_lines": 34,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/shell_completion.py::FishComplete.get_completion_args",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/shell_completion.py::ZshComplete.format_completion",
+      "future_commits": 3,
+      "future_lines": 31,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/shell_completion.py::_is_incomplete_option",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/shell_completion.py::_resolve_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/shell_completion.py::shell_complete",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::_build_prompt",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::confirm",
+      "future_commits": 5,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::echo_via_pager",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::edit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 82,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/termui.py::progressbar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 93,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/termui.py::prompt",
+      "future_commits": 9,
+      "future_lines": 38,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::prompt.prompt_func",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/termui.py::style",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::BytesIOCopy.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::BytesIOCopy.flush",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::BytesIOCopy.write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.__init__",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.invoke",
+      "future_commits": 1,
+      "future_lines": 32,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.isolated_filesystem",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.isolation",
+      "future_commits": 4,
+      "future_lines": 71,
+      "past_commits": 4,
+      "past_lines": 21,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.isolation.hidden_input",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::CliRunner.isolation.visible_input",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::Result.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::Result.output",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::Result.stderr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::StreamMixer.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::_NamedTextIOWrapper.__init__",
+      "future_commits": 3,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/testing.py::_NamedTextIOWrapper.__next__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/testing.py::_pause_echo",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::BoolParamType.convert",
+      "future_commits": 1,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::Choice.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice._normalized_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.get_invalid_choice_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.get_metavar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.get_missing_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.normalize_choice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.shell_complete",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Choice.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::CompositeParamType.arity",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::DateTime.convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::DateTime.get_metavar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::DateTime.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::File.convert",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::File.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::FloatRange._clamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::FuncParamType.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::FuncParamType.convert",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::FuncParamType.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::IntRange._clamp",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::ParamType.__call__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::ParamType.convert",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::ParamType.get_metavar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::ParamType.get_missing_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::ParamType.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Path.convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Path.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::StringParamType.convert",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::Tuple.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::Tuple.arity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Tuple.convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Tuple.name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::Tuple.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::UUIDParameterType.convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::_NumberParamTypeBase.convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/types.py::_NumberRangeBase._clamp",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::_NumberRangeBase.convert",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::_NumberRangeBase.to_info_dict",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/types.py::convert_type",
+      "future_commits": 2,
+      "future_lines": 134,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/utils.py::KeepOpenFile.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/utils.py::LazyFile.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/utils.py::echo",
+      "future_commits": 3,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/utils.py::format_filename",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/utils.py::get_binary_stream",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/utils.py::get_text_stream",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/click/utils.py::make_default_short_help",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/click/utils.py::open_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    }
+  ]
+}

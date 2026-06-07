@@ -1,0 +1,2035 @@
+{
+  "snapshot_sha": "bce634391a30acec7abd13674688592eefbad5ea",
+  "head_sha": "c59636cda63cd3951777208c783285e6bf634159",
+  "window_days": 365,
+  "n_functions": 346,
+  "n_change_prone": 87,
+  "n_future_commits": 86,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "deepdiff/base.py::Base.get_ignore_types_in_groups",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/base.py::Base.get_significant_digits",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 128,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView.__iter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 124,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._collect_diff_paths",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 137,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._colorize_json",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 136,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._format_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 124,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._get_path_removed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 124,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/colored_view.py::ColoredView._has_differences",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/commands.py::diff",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__bool__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__contains__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__eq__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__getitem__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__init__",
+      "future_commits": 3,
+      "future_lines": 42,
+      "past_commits": 4,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.__str__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._get_objects_to_hashes_dict",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._getitem",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._hash",
+      "future_commits": 4,
+      "future_lines": 20,
+      "past_commits": 6,
+      "past_lines": 37,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._hash.gen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 34,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_bool",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_date",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_datetime",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_ipranges",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_iterable",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_number",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_obj",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_path",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._prep_tuple",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash._skip_this",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.get",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.get_key",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.items",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.keys",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::DeepHash.values",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::combine_hashes_lists",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::prepare_string_for_hashing",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/deephash.py::sha1hex",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/deephash.py::sha256hex",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.__add__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_ignore_order",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_item_added",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_item_removed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_iterable_item_added",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_iterable_opcodes",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_pre_process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_set_or_frozenset_item",
+      "future_commits": 2,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._do_values_or_type_changed",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._from_flat_dicts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._get_elem_and_compare_to_old_value",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._get_elements_and_details",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._get_reverse_diff",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._set_new_value",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._simple_set_elem_value",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta._sort_comparison",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.to_flat_dicts",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/delta.py::Delta.to_flat_rows",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.__init__",
+      "future_commits": 7,
+      "future_lines": 321,
+      "past_commits": 9,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.__init__._group_by_sort_key",
+      "future_commits": 1,
+      "future_lines": 242,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.__str__",
+      "future_commits": 1,
+      "future_lines": 138,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._add_hash",
+      "future_commits": 1,
+      "future_lines": 69,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._all_values_basic_hashable",
+      "future_commits": 2,
+      "future_lines": 237,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._auto_off_cache",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._auto_tune_cache",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._compare_in_order",
+      "future_commits": 2,
+      "future_lines": 68,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._count_diff",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._create_hashtable",
+      "future_commits": 2,
+      "future_lines": 94,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._dict_from_slots",
+      "future_commits": 2,
+      "future_lines": 72,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._dict_from_slots.unmangle",
+      "future_commits": 2,
+      "future_lines": 41,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff",
+      "future_commits": 3,
+      "future_lines": 127,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_booleans",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_by_forming_pairs_and_comparing_one_by_one",
+      "future_commits": 1,
+      "future_lines": 236,
+      "past_commits": 4,
+      "past_lines": 28,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_datetime",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_dict",
+      "future_commits": 3,
+      "future_lines": 131,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_enum",
+      "future_commits": 2,
+      "future_lines": 32,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_ipranges",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_iterable",
+      "future_commits": 2,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_iterable_in_order",
+      "future_commits": 1,
+      "future_lines": 236,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_iterable_with_deephash",
+      "future_commits": 3,
+      "future_lines": 474,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_iterable_with_deephash.get_other_pair",
+      "future_commits": 1,
+      "future_lines": 100,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_numbers",
+      "future_commits": 2,
+      "future_lines": 228,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_numpy_array",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_obj",
+      "future_commits": 2,
+      "future_lines": 190,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_ordered_iterable_by_difflib",
+      "future_commits": 1,
+      "future_lines": 236,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_set",
+      "future_commits": 2,
+      "future_lines": 166,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_str",
+      "future_commits": 2,
+      "future_lines": 256,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_time",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_tuple",
+      "future_commits": 1,
+      "future_lines": 69,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_types",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._diff_uuids",
+      "future_commits": 1,
+      "future_lines": 226,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_clean_to_keys_mapping",
+      "future_commits": 5,
+      "future_lines": 171,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_deephash_params",
+      "future_commits": 1,
+      "future_lines": 39,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_distance_cache_key",
+      "future_commits": 1,
+      "future_lines": 39,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_key_for_group_by",
+      "future_commits": 3,
+      "future_lines": 60,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_matching_pairs",
+      "future_commits": 1,
+      "future_lines": 73,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_most_in_common_pairs_in_iterables",
+      "future_commits": 3,
+      "future_lines": 127,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_most_in_common_pairs_in_iterables.defaultdict_orderedset",
+      "future_commits": 1,
+      "future_lines": 96,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_rough_distance_of_hashed_objs",
+      "future_commits": 2,
+      "future_lines": 44,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._get_view_results",
+      "future_commits": 2,
+      "future_lines": 25,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._group_iterable_to_dict",
+      "future_commits": 2,
+      "future_lines": 148,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._iterables_subscriptable",
+      "future_commits": 2,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._report_result",
+      "future_commits": 1,
+      "future_lines": 34,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._skip_this",
+      "future_commits": 2,
+      "future_lines": 156,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._skip_this_key",
+      "future_commits": 2,
+      "future_lines": 156,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff._use_custom_operator",
+      "future_commits": 1,
+      "future_lines": 227,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.affected_paths",
+      "future_commits": 3,
+      "future_lines": 145,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.affected_root_keys",
+      "future_commits": 3,
+      "future_lines": 145,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.custom_report_result",
+      "future_commits": 2,
+      "future_lines": 60,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::DeepDiff.get_stats",
+      "future_commits": 1,
+      "future_lines": 138,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/diff.py::_report_progress",
+      "future_commits": 2,
+      "future_lines": 57,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin.__calculate_item_deephash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin.__get_item_rough_length",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin._get_rough_distance",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin._precalculate_distance_by_custom_compare_func",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceMixin._precalculate_numpy_arrays_distance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceProtocol.__calculate_item_deephash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceProtocol.__get_item_rough_length",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::DistanceProtocol._to_delta_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::_get_item_length",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/distance.py::_get_numbers_distance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::_get_numpy_array_distance",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::_numpy_div",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/distance.py::logarithmic_distance",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/distance.py::logarithmic_similarity",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::EnumBase.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::EnumBase.__str__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::NotPresent.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::OtherTypes.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::RepeatedTimer.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::RepeatedTimer._get_duration_sec",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::RepeatedTimer._run",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::RepeatedTimer.start",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::RepeatedTimer.stop",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::SetOrdered.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_NotFound.__eq__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_NotFound.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_eval_date",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_eval_datetime",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_eval_decimal",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::_int_or_zero",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::add_root_to_paths",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::add_to_frozen_set",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::cartesian_product",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::cartesian_product_numpy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::cartesian_product_of_shape",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::convert_item_or_items_into_compiled_regexes_else_none",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::convert_item_or_items_into_set_else_none",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::datetime_normalize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::detailed__dict__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::diff_numpy_array",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_doc",
+      "future_commits": 4,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::get_homogeneous_numpy_compatible_type_of_seq",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_id",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_numpy_ndarray_rows",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_semvar_as_integer",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_truncate_datetime",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::get_type",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::has_timezone",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::literal_eval_extended",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::named_tuple_repr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::number_to_string",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::numpy_dtype_string_to_type",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::short_repr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::time_to_seconds",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/helper.py::type_in_type_group",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/helper.py::type_is_subclass_of_type_group",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/lfucache.py::CacheNode.free_myself",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/lfucache.py::FreqNode.append_cache_to_tail",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/lfucache.py::FreqNode.pop_head_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/lfucache.py::LFUCache.dump_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ChildRelationship.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ChildRelationship.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ChildRelationship.create",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ChildRelationship.get_param_repr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ChildRelationship.stringify_param",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DeltaResult.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DeltaResult._from_tree_iterable_item_moved",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.__init__",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.__iter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.__setattr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel._format_result",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.all_down",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.all_up",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.auto_generate_child_rel",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.branch_deeper",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.create_deeper",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.get_root_key",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.path",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::DiffLevel.repetition",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::NonSubscriptableIterableRelationship.get_param_repr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::ResultDict.remove_empty_keys",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult.__set_or_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult._from_tree_default",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult._from_tree_iterable_item_moved",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult._from_tree_results",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TextResult._from_tree_set_item_added_or_removed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TreeResult.__getitem__",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TreeResult.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TreeResult.__len__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/model.py::TreeResult.mutual_add_removes_to_become_value_changes",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/operator.py::BaseOperator.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/operator.py::BaseOperatorPlus.give_up_diffing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 30,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/operator.py::BaseOperatorPlus.match",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/operator.py::BaseOperatorPlus.normalize_value_for_hashing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/path.py::_add_to_elements",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/path.py::_get_nested_obj",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/path.py::_get_nested_obj_and_force",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::_guess_type",
+      "future_commits": 1,
+      "future_lines": 122,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::_path_to_elements",
+      "future_commits": 1,
+      "future_lines": 122,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::extract",
+      "future_commits": 1,
+      "future_lines": 143,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::parse_path",
+      "future_commits": 1,
+      "future_lines": 143,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::stringify_element",
+      "future_commits": 1,
+      "future_lines": 143,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/path.py::stringify_path",
+      "future_commits": 1,
+      "future_lines": 31,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__init__",
+      "future_commits": 2,
+      "future_lines": 28,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__report",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_dict",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_iterable",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_numbers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_obj",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_str",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__search_tuple",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__set_or_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::DeepSearch.__skip_this",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "deepdiff/search.py::grep.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/search.py::grep.__ror__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::JSONDecoder.object_hook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin._to_delta_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin.from_json_pickle",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin.pretty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin.to_dict",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin.to_json",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::SerializationMixin.to_json_pickle",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::_RestrictedUnpickler.find_class",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::_RestrictedUnpickler.persistent_load",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::_save_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::json_convertor_default",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::json_convertor_default._convertor",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::json_dumps",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 4,
+      "past_lines": 128,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/serialization.py::load_path_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/summarize.py::_truncate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 421,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/summarize.py::calculate_weights",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/summarize.py::greedy_tree_summarization_balanced",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/summarize.py::shrink_tree_balanced",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "deepdiff/summarize.py::summarize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 202,
+      "change_prone": false
+    }
+  ]
+}

@@ -1,0 +1,1315 @@
+{
+  "snapshot_sha": "eaaebe486050c6f1d3b07c83529c49caeb7fccac",
+  "head_sha": "46cebbb032f920eb096efbaf23cdc6fe9dd541f7",
+  "window_days": 365,
+  "n_functions": 901,
+  "n_change_prone": 81,
+  "n_future_commits": 121,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "rich/__init__.py::inspect",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/_emoji_replace.py::_emoji_replace",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/_inspect.py::Inspect._get_formatted_doc",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/_inspect.py::Inspect._get_signature",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/_null_file.py::NullFile.__enter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/_win32_console.py::LegacyWindowsTerm.cursor_position",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/_win32_console.py::LegacyWindowsTerm.screen_size",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/ansi.py::AnsiDecoder.decode",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/cells.py::cached_cell_len",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "rich/cells.py::cell_len",
+      "future_commits": 4,
+      "future_lines": 62,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "rich/cells.py::chop_cells",
+      "future_commits": 1,
+      "future_lines": 31,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/cells.py::get_character_cell_size",
+      "future_commits": 6,
+      "future_lines": 67,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/cells.py::set_cell_size",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.__init__",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console._caller_frame_info",
+      "future_commits": 4,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console._check_buffer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console._collect_renderables",
+      "future_commits": 4,
+      "future_lines": 18,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console._write_buffer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console.clear_live",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.export_html",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.export_svg",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.input",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.is_terminal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console.log",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.on_broken_pipe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console.options",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.print",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.render",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.render_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console.render_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::Console.save_html",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.save_svg",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.save_text",
+      "future_commits": 4,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.set_live",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/console.py::Console.size",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::group",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/console.py::group.decorator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/diagnose.py::report",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "rich/emoji.py::Emoji.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/filesize.py::_to_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/jupyter.py::display",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/live.py::Live.__enter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/live.py::Live.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/live.py::Live.refresh",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "rich/live.py::Live.renderable",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/live.py::Live.start",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/live.py::Live.stop",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/logging.py::RichHandler.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "rich/logging.py::RichHandler.emit",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "rich/logging.py::RichHandler.render",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/logging.py::RichHandler.render_message",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::BlockQuote.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::CodeBlock.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Heading.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::Heading.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Heading.on_enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::HorizontalRule.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::ImageItem.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ImageItem.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ImageItem.on_enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Link.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ListElement.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ListElement.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ListElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::ListItem.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Markdown.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Markdown.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::MarkdownContext.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownContext.enter_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.__rich_console__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.on_enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.on_leave",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::MarkdownElement.on_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::Paragraph.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableBodyElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableDataElement.create",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableDataElement.on_text",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::TableElement.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/markdown.py::TableElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableHeaderElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableRowElement.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TableRowElement.on_child_close",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TextElement.on_enter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TextElement.on_leave",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/markdown.py::TextElement.on_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/padding.py::Padding.unpack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/panel.py::Panel.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "rich/panel.py::Panel.__rich_console__.align_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/pretty.py::_get_braces_for_deque",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "rich/pretty.py::_is_dataclass_repr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/pretty.py::install",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "rich/pretty.py::install.RichFormatter.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/pretty.py::traverse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/pretty.py::traverse._traverse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::Progress.__enter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::Progress.open",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::Progress.reset",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/progress.py::Progress.stop",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/progress.py::Progress.track",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "rich/progress.py::_Reader.writelines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::_TrackThread.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::_TrackThread.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/progress.py::track",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "rich/progress_bar.py::ProgressBar._get_pulse_segments",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.ask",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.check_choice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.on_validate_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/prompt.py::PromptBase.process_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "rich/protocol.py::rich_cast",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/repr.py::auto",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/repr.py::auto.do_replace",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/repr.py::auto.do_replace.auto_rich_repr",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/scope.py::render_scope",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/segment.py::Segment._split_cells",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "rich/segment.py::Segment.divide",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/segment.py::Segment.split_cells",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/style.py::Style.__hash__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/style.py::Style.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/style.py::Style.clear_meta_and_links",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/style.py::Style.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/style.py::Style.from_meta",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/style.py::Style.parse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/style.py::Style.update_link",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/style.py::Style.without_color",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/syntax.py::Syntax.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/syntax.py::Syntax.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/syntax.py::Syntax.__rich_measure__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/syntax.py::Syntax._apply_stylized_ranges",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "rich/syntax.py::Syntax._get_syntax",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/syntax.py::Syntax.stylize_range",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "rich/table.py::Table.__rich_console__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/table.py::Table._calculate_column_widths",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/table.py::Table._get_padding_width",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/table.py::Table._render",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "rich/table.py::Table.add_column",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/table.py::Table.add_row",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/text.py::Text.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/text.py::Text.append",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/text.py::Text.append_text",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "rich/text.py::Text.append_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/text.py::Text.highlight_regex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "rich/text.py::Text.wrap",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/theme.py::Theme.from_file",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/theme.py::Theme.read",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::Traceback.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::Traceback.__rich_console__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::Traceback.__rich_console__.render_stack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::Traceback._render_stack",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 7,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::Traceback._render_stack.render_locals",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::Traceback.extract",
+      "future_commits": 5,
+      "future_lines": 26,
+      "past_commits": 9,
+      "past_lines": 72,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::Traceback.extract.get_locals",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::Traceback.from_exception",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::_iter_syntax_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::bar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "rich/traceback.py::install",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::install.excepthook",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::install.ipy_excepthook_closure",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/traceback.py::install.ipy_excepthook_closure.ipy_display_traceback",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "rich/tree.py::Tree.__rich_console__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "rich/tree.py::Tree.__rich_console__.make_guide",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    }
+  ]
+}

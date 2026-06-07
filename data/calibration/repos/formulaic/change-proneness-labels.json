@@ -1,0 +1,2203 @@
+{
+  "snapshot_sha": "497b2f73752b50b3bd29a8401bcdb2e185b57204",
+  "head_sha": "8579df0d49638acbae87e7f4171f97bf66d7d1c8",
+  "window_days": 365,
+  "n_functions": 452,
+  "n_change_prone": 31,
+  "n_future_commits": 13,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "formulaic/formula.py::Formula.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::Formula.differentiate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::Formula.get_model_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::Formula.required_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 66,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__delitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 117,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__len__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.__validate_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._flatten",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._has_root",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._has_structure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._map",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 211,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._reorder",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._simplify",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 209,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula._update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.differentiate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 67,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.get_model_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.insert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.required_variables",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/formula.py::SimpleFormula.root",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 208,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula.__getstate__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 214,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula._prepare_item",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 209,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula.differentiate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula.get_model_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 209,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::StructuredFormula.required_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 210,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::_FormulaMeta.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 60,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/formula.py::_FormulaMeta.from_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 102,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer.SUPPORTS_INPUT",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._build_model_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 910,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._check_for_nulls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 914,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._cluster_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._combine_columns",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_categorical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_constant",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_evaled_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 899,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_evaled_factor.map_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_evaled_factor.map_dict.wrapped",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._encode_numerical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._enforce_structure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 906,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._evaluate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._evaluate_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 896,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._extract_columns_for_encoding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._flatten_encoded_evaled_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._get_columns_for_term",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 905,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._get_scoped_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._get_scoped_terms_spanned_by_evaled_factors",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 896,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._init",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._is_categorical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._lookup",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._prepare_factor_evaluation_model_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._prepare_factor_evaluation_model_spec.update_pooled_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._prepare_model_specs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._prepare_model_specs.prepare_model_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 893,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer._simplify_scoped_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 1809,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer.data_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer.get_model_matrix",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 4,
+      "past_lines": 899,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializer.nrows",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializerMeta.__register_implementation__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 1807,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializerMeta.for_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 919,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/base.py::FormulaMaterializerMeta.for_materializer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 894,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer.SUPPORTS_INPUT",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._combine_columns",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._encode_categorical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._encode_constant",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._encode_numerical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._get_columns_for_term",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._init",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer._is_categorical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/narwhals.py::NarwhalsMaterializer.data_context",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 207,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._combine_columns",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._encode_categorical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._encode_constant",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._encode_numerical",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._get_columns_for_term",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._init",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/pandas.py::PandasMaterializer._is_categorical",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/materializers/types/factor_values.py::FactorValues.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/types/factor_values.py::FactorValues.__reduce_ex__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/types/factor_values.py::FactorValuesMetadata.get_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/types/scoped_term.py::ScopedTerm.rehydrate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/materializers/types/scoped_term.py::ScopedTerm.variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_matrix.py::ModelMatrix.__reduce_ex__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.__get_restricted_formula",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.__getstate__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.__post_init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.__structure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.column_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.column_names",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.differentiate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.factor_contrasts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.factor_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.factor_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 89,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.factors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.from_spec",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.from_spec.prepare_model_spec",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_column_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_materializer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_model_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_slice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_term_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.get_variable_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.required_variables",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.subset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.term_factors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.term_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.term_slices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.term_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.variable_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.variable_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpec.variables_by_source",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpecs.get_model_matrix",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpecs.required_variables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpecs.subset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/model_spec.py::ModelSpecs.subset.map_formula_structure_onto_model_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 34,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/algos/sanitize_tokens.py::sanitize_python_code",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/algos/sanitize_tokens.py::sanitize_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/algos/tokenize.py::tokenize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/algos/tokens_to_ast.py::tokens_to_ast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 58,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/algos/tokens_to_ast.py::tokens_to_ast.operate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.FeatureFlags.from_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.__post_init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.get_terms_from_ast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.get_terms_from_ast.check_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.get_tokens_from_formula",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.get_tokens_from_formula.find_rhs_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultFormulaParser.set_feature_flags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.__post_init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.operators",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.operators.formula_part_expansion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.operators.insert_unused_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.operators.multistage_formula",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.operators.multistage_formula.get_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.resolve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/parser.py::DefaultOperatorResolver.set_feature_flags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/ast_node.py::ASTNode.__generate_evaluation_graph",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/ast_node.py::ASTNode.flatten",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/ast_node.py::ASTNode.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/factor.py::Factor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/factor.py::Factor.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/parser/types/factor.py::Factor.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_ast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_ast_from_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_terms_from_ast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.get_tokens_from_formula",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/formula_parser.py::FormulaParser.parse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 273,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator.py::Operator.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator.py::Operator.accepts_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator.py::Operator.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator_resolver.py::OperatorResolver.__getstate__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator_resolver.py::OperatorResolver._resolve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator_resolver.py::OperatorResolver.operator_table",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator_resolver.py::OperatorResolver.operators",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/operator_resolver.py::OperatorResolver.resolve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/term.py::Term.__eq__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/term.py::Term.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/term.py::Term.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/term.py::Term.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.required_variables",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.source_loc",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.split",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.split.get_next_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/types/token.py::Token.update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::__get_token_for_ast",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::__get_tokens_for_gap",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::exc_for_missing_operator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::exc_for_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::insert_tokens_after",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/parser/utils.py::merge_operator_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/sugar.py::model_matrix",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/basis_spline.py::basis_spline",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 41,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::C",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::C.encoder",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::Contrasts.apply",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::Contrasts.get_coefficient_row_names",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::Contrasts.get_factor_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::ContrastsState.get_coding_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::ContrastsState.get_coefficient_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::CustomContrasts.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::SASContrasts._find_base_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::SASContrasts.get_drop_field",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::SumContrasts._get_coding_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::TreatmentContrasts._find_base_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::TreatmentContrasts.get_drop_field",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/contrasts.py::encode_contrasts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_absorb_constraints",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_compute_base_functions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_find_knots_lower_bounds",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_all_sorted_knots",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_centering_constraint_from_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_cubic_spline_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_cyclic_f",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_free_cubic_spline_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_get_natural_f",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::_map_cyclic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::cubic_spline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/cubic_spline.py::parse_bounds",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 605,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/hashed.py::hashed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/hashed.py::hashed.encoder",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/hashed.py::md5_to_int",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/lag.py::_",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 100,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/lag.py::lag",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/patsy_compat.py::Treatment",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/patsy_compat.py::standardize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/transforms/poly.py::poly",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/transforms/scale.py::_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/calculus.py::_differentiate_factors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/calculus.py::_factor_symbols",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/cast.py::_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/cast.py::propagate_metadata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/cast.py::propagate_metadata.wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/code.py::format_expr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/code.py::sanitize_variable_name",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/code.py::sanitize_variable_names",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.add_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.div_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.join_tuples",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.mul_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.negate_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintOperatorResolver.operators.sub_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::ConstraintToken.to_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::LinearConstraintParser.get_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::LinearConstraintParser.get_terms",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::LinearConstraints.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/constraints.py::LinearConstraints.from_spec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/context.py::capture_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/deprecations.py::deprecated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/deprecations.py::deprecated.wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/iterators.py::peekable_iter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/layered_mapping.py::LayeredMapping.__filter_layers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/layered_mapping.py::LayeredMapping.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/layered_mapping.py::LayeredMapping.get_with_layer_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/layered_mapping.py::LayeredMapping.named_layers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/null_handling.py::_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/null_handling.py::_drop_nulls_scalar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/null_handling.py::find_nulls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/sentinels.py::Sentinel.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/sparse.py::categorical_encode_series_to_sparse_csc_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/stateful_transforms.py::_is_stateful_transform",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/stateful_transforms.py::stateful_eval",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/stateful_transforms.py::stateful_transform",
+      "future_commits": 1,
+      "future_lines": 24,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__dir__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__iter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__lookup_path",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__prepare_item",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._flatten",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._map",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._map.apply_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._merge",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._prepare_item",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._simplify",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._simplify.simplify_obj",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/structured.py::Structured._update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/variables.py::Variable.union",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "formulaic/utils/variables.py::_get_ast_node_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/variables.py::_get_ast_node_variables",
+      "future_commits": 1,
+      "future_lines": 24,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "formulaic/utils/variables.py::get_expression_variables",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    }
+  ]
+}

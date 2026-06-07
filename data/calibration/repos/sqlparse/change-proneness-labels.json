@@ -1,0 +1,395 @@
+{
+  "snapshot_sha": "a801100e9843786a9139bebb97c951603637129c",
+  "head_sha": "f80af6a4007f11ada847218df8c29dc859238290",
+  "window_days": 365,
+  "n_functions": 210,
+  "n_change_prone": 22,
+  "n_future_commits": 26,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "sqlparse/__init__.py::format",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/__init__.py::parse",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/__init__.py::parsestream",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/__init__.py::split",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/cli.py::_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/cli.py::create_parser",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/cli.py::main",
+      "future_commits": 1,
+      "future_lines": 22,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/filter_stack.py::FilterStack.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::_group",
+      "future_commits": 2,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::_group_matching",
+      "future_commits": 2,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_comments",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_comparison",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_comparison.valid",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_functions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_over",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_period",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_period.match",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/grouping.py::group_period.post",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter._change_splitlevel",
+      "future_commits": 4,
+      "future_lines": 98,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter._reset",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/engine/statement_splitter.py::StatementSplitter.process",
+      "future_commits": 4,
+      "future_lines": 26,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/filters/aligned_indent.py::AlignedIndentFilter._process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/others.py::StripCommentsFilter._process",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/filters/others.py::StripCommentsFilter._process.get_next_comment",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/others.py::StripWhitespaceFilter._stripws",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/others.py::StripWhitespaceFilter._stripws_parenthesis",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/output.py::OutputFilter.process",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/filters/reindent.py::ReindentFilter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/reindent.py::ReindentFilter._process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/reindent.py::ReindentFilter._process_case",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/filters/right_margin.py::RightMarginFilter._process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/formatter.py::build_filter_stack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/formatter.py::validate_options",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/lexer.py::Lexer.default_initialization",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/lexer.py::Lexer.get_default_instance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/lexer.py::Lexer.get_tokens",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/sql.py::Case.get_cases",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/sql.py::Function.get_parameters",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/sql.py::Function.get_window",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/sql.py::Token.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/sql.py::Token.match",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/sql.py::TokenList.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/sql.py::TokenList._pprint_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/sql.py::TokenList.flatten",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "sqlparse/sql.py::TokenList.group_tokens",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/sql.py::TokenList.token_not_matching",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "sqlparse/utils.py::imt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    }
+  ]
+}

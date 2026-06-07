@@ -1,0 +1,1179 @@
+{
+  "snapshot_sha": "4743beb7df7b8e1015869edf6f8b8dd7bc3d99ac",
+  "head_sha": "d685905277867e88aa7b6048d02068102d1d5a43",
+  "window_days": 365,
+  "n_functions": 1430,
+  "n_change_prone": 18,
+  "n_future_commits": 18,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "arviz/data/base.py::_yield_flat_up_to",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/base.py::dict_to_dataset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/base.py::generate_dims_coords",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/converters.py::convert_to_inference_data",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.add_groups",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.extend",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.from_datatree",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.from_netcdf",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.from_zarr",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.to_datatree",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/inference_data.py::InferenceData.to_zarr",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/io_cmdstan.py::_process_configuration",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_datatree.py::from_datatree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_datatree.py::to_datatree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::NumPyroConverter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::NumPyroConverter.infer_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::NumPyroConverter.infer_pred_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::NumPyroConverter.sample_stats_to_xarray",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::_add_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::from_numpyro",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::infer_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::infer_dims._get_dist_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_numpyro.py::infer_dims.get_trace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/data/io_pyjags.py::_convert_arviz_dict_to_pyjags_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/autocorrplot.py::plot_autocorr",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/bpvplot.py::plot_bpv",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/densityplot.py::_d_helper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/dotplot.py::plot_dot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/ecdfplot.py::plot_ecdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/essplot.py::plot_ess",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/forestplot.py::PlotHandler.forestplot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/forestplot.py::PlotHandler.plot_neff",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/forestplot.py::PlotHandler.plot_rhat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/hdiplot.py::plot_hdi",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/khatplot.py::plot_khat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/lmplot.py::plot_lm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/mcseplot.py::plot_mcse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/pairplot.py::plot_pair",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/ppcplot.py::plot_ppc",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/rankplot.py::plot_rank",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/traceplot.py::_plot_chains_bokeh",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/bokeh/violinplot.py::plot_violin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/matplotlib/bpvplot.py::plot_bpv",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/matplotlib/ecdfplot.py::plot_ecdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/matplotlib/khatplot.py::plot_khat",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/backends/matplotlib/lmplot.py::plot_lm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/backends/matplotlib/pairplot.py::plot_pair",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/bfplot.py::plot_bf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/bpvplot.py::plot_bpv",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/compareplot.py::plot_compare",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/densityplot.py::plot_density",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/dotplot.py::plot_dot",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/ecdfplot.py::plot_ecdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 206,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/forestplot.py::plot_forest",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/hdiplot.py::plot_hdi",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/kdeplot.py::plot_kde",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/khatplot.py::plot_khat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/lmplot.py::plot_lm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/loopitplot.py::plot_loo_pit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/pairplot.py::plot_pair",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/plot_utils.py::format_coords_as_labels",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/plot_utils.py::plot_point_interval",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/plot_utils.py::set_bokeh_circular_ticks_labels",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/posteriorplot.py::plot_posterior",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/plots/ppcplot.py::plot_ppc",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/plots/violinplot.py::plot_violin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/rcparams.py::RcParams.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/rcparams.py::RcParams.__setitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/density_utils.py::_kde_circular",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/diagnostics.py::_ess_sd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/diagnostics.py::_mcse_sd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/diagnostics.py::_multichain_statistics",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/diagnostics.py::rhat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_binom_pmf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_call_rvs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_ecdf_band_interior_probability",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_ecdf_band_interior_probability_numba",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_ecdf_band_optimization_objective",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_optimize_simultaneous_ecdf_band_probability",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_simulate_ecdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_simulate_simultaneous_ecdf_band_probability",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_update_ecdf_band_interior_probabilities",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::_update_ecdf_band_interior_probabilities_numba",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::ecdf_confidence_band",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::jit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/ecdf_utils.py::vectorize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::_psislw",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::bayes_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 84,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::compare",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/stats/stats.py::compare.gradient",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/stats/stats.py::compare.log_score",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/stats/stats.py::hdi",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::loo",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::psislw",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::summary",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats.py::waic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/stats/stats_utils.py::ELPDData.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_data.py::TestInferenceData.test_add_groups_warning",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_data.py::TestInferenceData.test_extend_errors_warnings",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_data.py::TestInferenceData.test_setitem",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_data.py::test_inference_data_other_groups",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_data.py::test_numpy_to_data_array_with_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_diagnostics.py::TestDiagnostics.test_deterministic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_helpers.py::test_importorskip_ci",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_helpers.py::test_importorskip_local",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_bokeh.py::generate_lm_1d_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_bokeh.py::generate_lm_2d_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_bokeh.py::test_plot_lm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_bokeh.py::test_plot_lm_1d",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::generate_lm_1d_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::generate_lm_2d_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_autocorr_coords",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_bf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_ecdf_confidence_bands",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_ecdf_deprecations",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_ecdf_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_ecdf_eval_points",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_hdi_string_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_lm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_plots_matplotlib.py::test_plot_lm_1d",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_rcparams.py::test_deprecated_param",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_stats.py::test_bayes_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_stats.py::test_compare_same",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_stats.py::test_compare_sorting_consistency",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/base_tests/test_stats_ecdf_utils.py::test_ecdf_confidence_band",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.get_inference_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_inference_data_namedtuple",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_event_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_event_dims.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_extra_event_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_extra_event_dims.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_dims.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_dims_no_coords",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_dims_no_coords.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_unsorted_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_infer_unsorted_dims.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_inferred_dims_univariate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_inferred_dims_univariate.model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/external_tests/test_data_numpyro.py::TestDataNumPyro.test_mcmc_predictions_infer_dims",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/helpers.py::does_not_warn",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/tests/helpers.py::importorskip",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/wrappers/base.py::SamplingWrapper.check_implemented_methods",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arviz/wrappers/wrap_stan.py::StanSamplingWrapper.sel_observations",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    }
+  ]
+}

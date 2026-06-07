@@ -1,0 +1,363 @@
+{
+  "snapshot_sha": "64a3c0fbc00327fbfee1fd6b44da0e5453287fe4",
+  "head_sha": "ddead47873e7918829e1d8b0eaee6ab725793cc9",
+  "window_days": 365,
+  "n_functions": 382,
+  "n_change_prone": 24,
+  "n_future_commits": 23,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "markdown/__main__.py::parse_options",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/core.py::Markdown.convert",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/core.py::Markdown.convertFile",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/core.py::markdown",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/core.py::markdownFromFile",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrBlockprocessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrExtension.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrExtension.extendMarkdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrExtension.load_glossary",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrExtension.reset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrExtension.reset_glossary",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrTreeprocessor.create_element",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrTreeprocessor.iter_element",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/abbr.py::AbbrTreeprocessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteBlockProcessor.run",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteExtension.__init__",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteExtension.extendMarkdown",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteExtension.makeFootnotesDiv",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteExtension.reset",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/footnotes.py::FootnoteInlineProcessor.handleMatch",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.handle_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.handle_empty_tag",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.handle_endtag",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.handle_starttag",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.parse_html_declaration",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::HTMLExtractorExtra.reset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::MarkdownInHtmlProcessor.parse_element_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/md_in_html.py::MarkdownInHtmlProcessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/smarty.py::SmartyExtension.educateQuotes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/extensions/toc.py::TocTreeprocessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.__init__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.handle_comment",
+      "future_commits": 4,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.parse_html_declaration",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.parse_starttag",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/htmlparser.py::HTMLExtractor.reset",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::BacktickInlineProcessor.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::BacktickInlineProcessor.handleMatch",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::HtmlInlineProcessor.unescape",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::HtmlInlineProcessor.unescape.get_stash",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::ReferenceInlineProcessor.makeTag",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/inlinepatterns.py::build_inlinepatterns",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "markdown/postprocessors.py::RawHtmlPostprocessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/postprocessors.py::RawHtmlPostprocessor.run.substitute_match",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "markdown/treeprocessors.py::InlineProcessor.run",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

@@ -1,0 +1,883 @@
+{
+  "snapshot_sha": "7bf3be8dfa5832ef03a3fd8f07f6736e770440e4",
+  "head_sha": "36e4a824f340fdee7ed50937ba8e7f6bc7d17f81",
+  "window_days": 365,
+  "n_functions": 369,
+  "n_change_prone": 79,
+  "n_future_commits": 37,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/flask/__init__.py::__getattr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/app.py::Flask.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.app_context",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.create_url_adapter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/app.py::Flask.dispatch_request",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.do_teardown_appcontext",
+      "future_commits": 3,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.do_teardown_request",
+      "future_commits": 3,
+      "future_lines": 24,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.finalize_request",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.full_dispatch_request",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.get_send_file_max_age",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.handle_exception",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.handle_http_exception",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.handle_user_exception",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.log_exception",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.make_default_options_response",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.make_response",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.open_instance_resource",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/app.py::Flask.open_resource",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/app.py::Flask.preprocess_request",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.process_response",
+      "future_commits": 4,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.request_context",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.test_request_context",
+      "future_commits": 1,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.update_template_context",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.url_for",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/app.py::Flask.wsgi_app",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/blueprints.py::Blueprint.open_resource",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::CertParamType.convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/cli.py::FlaskGroup.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::FlaskGroup._load_plugin_commands",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/cli.py::FlaskGroup.get_command",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/cli.py::FlaskGroup.make_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::FlaskGroup.parse_args",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::ScriptInfo.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::ScriptInfo.load_app",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::_env_file_callback",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::_set_debug",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/cli.py::load_dotenv",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/cli.py::run_command",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/config.py::Config.from_prefixed_env",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/ctx.py::AppContext.__enter__",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::AppContext.__exit__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::AppContext.__init__",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::AppContext.pop",
+      "future_commits": 3,
+      "future_lines": 56,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::AppContext.push",
+      "future_commits": 2,
+      "future_lines": 23,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::RequestContext.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::RequestContext.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::RequestContext.push",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::after_this_request",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::copy_current_request_context",
+      "future_commits": 4,
+      "future_lines": 48,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::copy_current_request_context.wrapper",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::has_app_context",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/ctx.py::has_request_context",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/debughelpers.py::explain_template_loading_attempts",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::_prepare_send_file_kwargs",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::abort",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::flash",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::get_flashed_messages",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::get_root_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/helpers.py::redirect",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::send_file",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::send_from_directory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/helpers.py::stream_with_context",
+      "future_commits": 3,
+      "future_lines": 56,
+      "past_commits": 2,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/helpers.py::stream_with_context.generator",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/json/__init__.py::jsonify",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/json/provider.py::_default",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.add_template_filter",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.add_template_global",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.add_template_test",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.add_url_rule",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.create_global_jinja_loader",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.redirect",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.select_jinja_autoescape",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.teardown_appcontext",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.template_filter",
+      "future_commits": 2,
+      "future_lines": 44,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.template_global",
+      "future_commits": 2,
+      "future_lines": 43,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/app.py::App.template_test",
+      "future_commits": 2,
+      "future_lines": 49,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.add_app_template_filter",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.add_app_template_global",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.add_app_template_test",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.app_template_filter",
+      "future_commits": 2,
+      "future_lines": 38,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.app_template_global",
+      "future_commits": 2,
+      "future_lines": 38,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/blueprints.py::Blueprint.app_template_test",
+      "future_commits": 2,
+      "future_lines": 39,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/scaffold.py::Scaffold.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/scaffold.py::Scaffold.teardown_request",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sansio/scaffold.py::_find_package_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sansio/scaffold.py::find_package",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sessions.py::SecureCookieSession.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/sessions.py::SecureCookieSessionInterface.get_signing_serializer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sessions.py::SecureCookieSessionInterface.save_session",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sessions.py::SessionInterface.get_cookie_partitioned",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/sessions.py::SessionMixin.permanent",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::_default_template_ctx_processor",
+      "future_commits": 3,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::_render",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::_stream",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::render_template",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::render_template_string",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::stream_template",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/templating.py::stream_template_string",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/testing.py::EnvironBuilder.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/testing.py::EnvironBuilder.json_dumps",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/testing.py::FlaskCliRunner.invoke",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/testing.py::FlaskClient.open",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/flask/views.py::View.as_view",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/wrappers.py::Request.max_content_length",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 84,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/wrappers.py::Request.max_form_memory_size",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/wrappers.py::Request.max_form_parts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "src/flask/wrappers.py::Request.on_json_loading_failed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    }
+  ]
+}

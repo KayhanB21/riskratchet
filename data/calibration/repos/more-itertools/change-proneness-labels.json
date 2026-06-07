@@ -1,0 +1,1107 @@
+{
+  "snapshot_sha": "569e0ad654a85c77581b318305edc2eb7c4068ae",
+  "head_sha": "64be96ceb2a6e836f76f069f4a96d2394d59fd0c",
+  "window_days": 365,
+  "n_functions": 249,
+  "n_change_prone": 63,
+  "n_future_commits": 202,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "more_itertools/more.py::SequenceView.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_complex_sumprod",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::_fsumprod",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_ichunk",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_ichunk.generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_islice_helper",
+      "future_commits": 7,
+      "future_lines": 36,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::_nth_prime_ub",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::_sample_counted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_sample_counted.feed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 34,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_sample_unweighted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::_sample_weighted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::argmax",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::argmin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::bucket.__iter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::callback_iter.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::callback_iter.result",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::chunked",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::chunked_even",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::circular_shifts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::consecutive_groups",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::count_cycle",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::countable.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::countable.__next__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::derangements",
+      "future_commits": 4,
+      "future_lines": 32,
+      "past_commits": 14,
+      "past_lines": 231,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::dft",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::difference",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::distinct_permutations",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 13,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::distinct_permutations.permuted_items",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::dl_mul",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::dl_split",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::exactly_n",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::first",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::gray_product",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::groupby_transform",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::ichunked",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::idft",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::iequals",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::ilen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::interleave_longest",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::is_sorted",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::islice_extended.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::islice_extended.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::islice_extended.__next__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::iterate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::last",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::locate",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::longest_common_prefix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::map_if",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::map_reduce",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::mark_ends",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::minmax",
+      "future_commits": 4,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::nth_combination_with_replacement",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::nth_permutation",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::nth_prime",
+      "future_commits": 7,
+      "future_lines": 36,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::nth_product",
+      "future_commits": 6,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__getitem__",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.__reversed__",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::numeric_range.index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::one",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::only",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::outer_product",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::padded",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::padded.slice_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::partial_product",
+      "future_commits": 4,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::powerset_of_sets",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::product_index",
+      "future_commits": 7,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::replace",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::rlocate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::run_length.decode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::sample",
+      "future_commits": 4,
+      "future_lines": 31,
+      "past_commits": 6,
+      "past_lines": 89,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::seekable.relative_seek",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::set_partitions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::sliced",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::sort_together",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::split_before",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::split_into",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::split_when",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::spy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::strictly_n",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::substrings",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::time_limited.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::time_limited.__next__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/more.py::unique_in_window",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::unzip",
+      "future_commits": 3,
+      "future_lines": 23,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::value_chain",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::windowed",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::with_iter",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::zip_broadcast",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/more.py::zip_equal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_batched",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_factor_pollard",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_shift_to_odd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 67,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_sliding_window_deque",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_sliding_window_islice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::_strong_probable_prime",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 72,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::all_equal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::before_and_after",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::convolve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::dotproduct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 9,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::first_true",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::flatten",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::grouper",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::is_prime",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 10,
+      "past_lines": 113,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::iter_except",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::iter_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::loops",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::matmul",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::multinomial",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::nth_combination",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::pairwise",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::partition",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::polynomial_derivative",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::polynomial_eval",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::polynomial_from_roots",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 5,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::prepend",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::quantify",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::random_combination",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::random_combination_with_replacement",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::random_product",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::repeatfunc",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::reshape",
+      "future_commits": 2,
+      "future_lines": 57,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::roundrobin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::sieve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::sliding_window",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::subslices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::sum_of_squares",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::tail",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::take",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::totient",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::transpose",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::triplewise",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::unique",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "more_itertools/recipes.py::unique_everseen",
+      "future_commits": 2,
+      "future_lines": 24,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "more_itertools/recipes.py::unique_justseen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    }
+  ]
+}

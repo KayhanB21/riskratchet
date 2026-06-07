@@ -1,0 +1,667 @@
+{
+  "snapshot_sha": "bae89785c3f17e46be586b1c40a29e82d15505aa",
+  "head_sha": "fbf2fc1451d7165e969c3fde6a55da5397683f83",
+  "window_days": 365,
+  "n_functions": 192,
+  "n_change_prone": 48,
+  "n_future_commits": 246,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/wrapt/arguments.py::formatargspec",
+      "future_commits": 2,
+      "future_lines": 32,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::AdapterWrapper.__init__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::DelegatedAdapterFactory.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_AdapterFunctionCode.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_AdapterFunctionSurrogate.__code__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_AdapterFunctionSurrogate.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_AdapterFunctionSurrogate.__signature__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_BoundAdapterWrapper.__func__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::_BoundAdapterWrapper.__signature__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::decorator",
+      "future_commits": 8,
+      "future_lines": 41,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::decorator._build",
+      "future_commits": 5,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::decorator._wrapper",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::decorator._wrapper._capture",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized",
+      "future_commits": 3,
+      "future_lines": 78,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._FinalDecorator.__enter__",
+      "future_commits": 1,
+      "future_lines": 376,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._FinalDecorator.__exit__",
+      "future_commits": 1,
+      "future_lines": 376,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._PartialDecorator.__enter__",
+      "future_commits": 1,
+      "future_lines": 376,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._PartialDecorator.__exit__",
+      "future_commits": 1,
+      "future_lines": 376,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._synchronized",
+      "future_commits": 2,
+      "future_lines": 394,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._synchronized_lock",
+      "future_commits": 2,
+      "future_lines": 379,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/decorators.py::synchronized._synchronized_wrapper",
+      "future_commits": 1,
+      "future_lines": 376,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::ImportHookFinder.find_module",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/importer.py::ImportHookFinder.find_spec",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/importer.py::_ImportHookChainedLoader.__init__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::_ImportHookChainedLoader._self_set_loader",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::_create_import_hook_from_entrypoint",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::_create_import_hook_from_entrypoint.import_hook",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/importer.py::_create_import_hook_from_string",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/importer.py::_create_import_hook_from_string.import_hook",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/importer.py::discover_post_import_hooks",
+      "future_commits": 3,
+      "future_lines": 19,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::notify_module_loaded",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::register_post_import_hook",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/importer.py::when_imported",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::apply_patch",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::function_wrapper",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::patch_function_wrapper",
+      "future_commits": 4,
+      "future_lines": 46,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::patch_function_wrapper._wrapper",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::resolve_path",
+      "future_commits": 4,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::transient_function_wrapper",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::transient_function_wrapper._decorator",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::transient_function_wrapper._decorator._wrapper",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::transient_function_wrapper._decorator._wrapper._execute",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/patches.py::wrap_function_wrapper",
+      "future_commits": 2,
+      "future_lines": 34,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::wrap_object",
+      "future_commits": 4,
+      "future_lines": 21,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/patches.py::wrap_object_attribute",
+      "future_commits": 3,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/weakrefs.py::WeakFunctionProxy.__call__",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/weakrefs.py::WeakFunctionProxy.__init__",
+      "future_commits": 3,
+      "future_lines": 26,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::BoundFunctionWrapper.__call__",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::CallableObjectProxy.__call__",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::FunctionWrapper.__init__",
+      "future_commits": 6,
+      "future_lines": 34,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__copy__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__deepcopy__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__delattr__",
+      "future_commits": 5,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__format__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__getattr__",
+      "future_commits": 7,
+      "future_lines": 47,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__iadd__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__iand__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__ifloordiv__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__ilshift__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__imod__",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__imul__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__init__",
+      "future_commits": 5,
+      "future_lines": 37,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__ior__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__ipow__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__irshift__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__isub__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__iter__",
+      "future_commits": 3,
+      "future_lines": 203,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__itruediv__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__ixor__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__mro_entries__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__reduce__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__reduce_ex__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__repr__",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__round__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::ObjectProxy.__setattr__",
+      "future_commits": 3,
+      "future_lines": 30,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::PartialCallableObjectProxy.__init__",
+      "future_commits": 3,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_FunctionWrapperBase.__call__",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_FunctionWrapperBase.__get__",
+      "future_commits": 2,
+      "future_lines": 28,
+      "past_commits": 2,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_FunctionWrapperBase.__init__",
+      "future_commits": 2,
+      "future_lines": 28,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_FunctionWrapperBase.__instancecheck__",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_FunctionWrapperBase.__subclasscheck__",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/wrapt/wrappers.py::_ObjectProxyMetaType.__new__",
+      "future_commits": 2,
+      "future_lines": 31,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

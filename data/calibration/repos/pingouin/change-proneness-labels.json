@@ -1,0 +1,699 @@
+{
+  "snapshot_sha": "c939d2d4e636f7b83e95ab7844b404a0179910c2",
+  "head_sha": "2d906c5fe30a44d3652c0895cea519e17d22a9f1",
+  "window_days": 365,
+  "n_functions": 159,
+  "n_change_prone": 35,
+  "n_future_commits": 17,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/pingouin/bayesian.py::_format_bf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/bayesian.py::bayesfactor_pearson",
+      "future_commits": 2,
+      "future_lines": 51,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/bayesian.py::bayesfactor_ttest",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/circular.py::circ_axial",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/circular.py::circ_corrcl",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/circular.py::circ_rayleigh",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/circular.py::circ_vtest",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/config.py::set_default_options",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/contingency.py::_dichotomize_series",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/contingency.py::_dichotomize_series.convert_elem",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/contingency.py::chi2_mcnemar",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/contingency.py::dichotomous_crosstab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/correlation.py::_correl_pvalue",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/correlation.py::corr",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/correlation.py::partial_corr",
+      "future_commits": 3,
+      "future_lines": 59,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/correlation.py::pcorr",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/correlation.py::rcorr",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/correlation.py::rm_corr",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/correlation.py::skipped",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/distribution.py::_check_multilevel_rm",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/distribution.py::epsilon",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/distribution.py::homoscedasticity",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/distribution.py::normality",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/distribution.py::sphericity",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/effsize.py::compute_bootci",
+      "future_commits": 2,
+      "future_lines": 88,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/effsize.py::compute_bootci.func",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/effsize.py::compute_effsize",
+      "future_commits": 2,
+      "future_lines": 51,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/effsize.py::compute_effsize_from_t",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/effsize.py::compute_esci",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/effsize.py::convert_effsize",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/equivalence.py::tost",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multicomp.py::bonf",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multicomp.py::fdr",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multicomp.py::holm",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multicomp.py::multicomp",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multicomp.py::sidak",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multivariate.py::box_m",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/multivariate.py::multivariate_normality",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/multivariate.py::multivariate_ttest",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::cochran",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::friedman",
+      "future_commits": 2,
+      "future_lines": 22,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::harrelldavis",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::kruskal",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::mad",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::madmedianrule",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::mwu",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 25,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/nonparametric.py::wilcoxon",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/pairwise.py::pairwise_corr",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 2,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/pairwise.py::pairwise_gameshowell",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/pairwise.py::pairwise_tests",
+      "future_commits": 2,
+      "future_lines": 23,
+      "past_commits": 3,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/pairwise.py::pairwise_tukey",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/pairwise.py::ptests",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/parametric.py::ancova",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/parametric.py::anova",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/parametric.py::anova2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/parametric.py::anovan",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/parametric.py::mixed_anova",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/parametric.py::rm_anova",
+      "future_commits": 1,
+      "future_lines": 17,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/parametric.py::rm_anova2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/parametric.py::ttest",
+      "future_commits": 2,
+      "future_lines": 21,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/parametric.py::welch_anova",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/plotting.py::plot_blandaltman",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/plotting.py::plot_circmean",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/plotting.py::plot_paired",
+      "future_commits": 1,
+      "future_lines": 20,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/plotting.py::plot_rm_corr",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/plotting.py::plot_shift",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/plotting.py::qqplot",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/power.py::power_anova",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/power.py::power_chi2",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/power.py::power_corr",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/power.py::power_rm_anova",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/power.py::power_ttest",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/power.py::power_ttest.func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/power.py::power_ttest2n",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/power.py::power_ttest2n.func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/regression.py::linear_regression",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/regression.py::logistic_regression",
+      "future_commits": 2,
+      "future_lines": 44,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/regression.py::mediation_analysis",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/reliability.py::cronbach_alpha",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/reliability.py::intraclass_corr",
+      "future_commits": 2,
+      "future_lines": 106,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/pingouin/utils.py::_check_eftype",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/utils.py::_flatten_list",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/utils.py::_is_mpmath_installed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/utils.py::_is_sklearn_installed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/utils.py::_is_statsmodels_installed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/pingouin/utils.py::_postprocess_dataframe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    }
+  ]
+}

@@ -1,0 +1,1291 @@
+{
+  "snapshot_sha": "7266de0c42e26c521801b7c01417d1f738e8a314",
+  "head_sha": "a8ee4d719585948376e4504e5d99ee01fb522ac8",
+  "window_days": 365,
+  "n_functions": 235,
+  "n_change_prone": 47,
+  "n_future_commits": 37,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/marshmallow/class_registry.py::get_class",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 30,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/class_registry.py::register",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/constants.py::_Missing.__bool__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/constants.py::_Missing.__copy__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/constants.py::_Missing.__deepcopy__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/constants.py::_Missing.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/decorators.py::post_dump",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 5,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::post_load",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 6,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::pre_dump",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 5,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::pre_load",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 6,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::set_hook",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 4,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::validates",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/decorators.py::validates_schema",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 8,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/error_store.py::ErrorStore.store_error",
+      "future_commits": 4,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/error_store.py::merge_errors",
+      "future_commits": 2,
+      "future_lines": 28,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/exceptions.py::ValidationError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/experimental/context.py::Context.__enter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/experimental/context.py::Context.__exit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/experimental/context.py::Context.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/experimental/context.py::Context.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::AwareDateTime.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::AwareDateTime._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Boolean.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Boolean._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Constant.__init__",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Constant._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Constant._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Decimal.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Decimal._to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Decimal._validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Email.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Enum.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Enum._deserialize",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Enum._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field.__init__",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 6,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._validate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._validate_all",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field._validate_missing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field.deserialize",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 3,
+      "past_lines": 34,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field.get_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Field.serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Float.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Float._validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Function.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Function._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Function._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::IP.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::IP._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::IPInterface.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::IPInterface._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Integer.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Integer._validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::List.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::List._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::List._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::List._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Mapping.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Mapping._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Mapping._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Mapping._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Method.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Method._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::NaiveDateTime.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::NaiveDateTime._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested.__init__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 7,
+      "past_lines": 19,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested._deserialize",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested._load",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested._test_collection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Nested.schema",
+      "future_commits": 4,
+      "future_lines": 12,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number._format_num",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number._to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Number._validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Pluck.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Pluck._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Pluck._field_data_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::String._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::TimeDelta.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::TimeDelta._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::TimeDelta._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 6,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple._deserialize",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::Tuple._serialize",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::UUID._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::UUID._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::UUID._validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::Url.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/fields.py::_TemporalField.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::_TemporalField._bind_to_schema",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::_TemporalField._deserialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::_TemporalField._make_object_from_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::_TemporalField._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/fields.py::_resolve_field_instance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/orderedset.py::OrderedSet.discard",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._bind_field",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._call_and_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._deserialize",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._do_load",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._init_fields",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_dump_processors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_field_validators",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_load_processors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_processors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._invoke_schema_validators",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._run_validator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema._serialize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.dump",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.dumps",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.from_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.load",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.loads",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.on_bind_field",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::Schema.validate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::SchemaMeta.__new__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::SchemaMeta.get_declared_fields",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::SchemaMeta.resolve_hooks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::SchemaOpts.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::_get_fields",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/schema.py::_get_fields_by_mro",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/types.py::RenderModule.dumps",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/types.py::RenderModule.loads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/types.py::SchemaValidator.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/utils.py::from_timestamp_ms",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/utils.py::is_collection",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/utils.py::is_generator",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/utils.py::is_iterable_but_not_string",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/utils.py::is_sequence_but_not_string",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/utils.py::set_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/utils.py::timedelta_to_microseconds",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::And.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::And.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::ContainsNoneOf._format_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::ContainsOnly._format_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::Email.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Equal.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Length.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Length.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Length._format_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::NoneOf.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::NoneOf._format_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::OneOf.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::OneOf._format_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::OneOf.options",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::Predicate.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Predicate.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "src/marshmallow/validate.py::Range.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::Regexp.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.RegexMemoizer.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.RegexMemoizer.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.RegexMemoizer._regex_generator",
+      "future_commits": 3,
+      "future_lines": 33,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.__call__",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "src/marshmallow/validate.py::URL._format_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

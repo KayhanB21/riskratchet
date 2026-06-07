@@ -1,0 +1,579 @@
+{
+  "snapshot_sha": "47afb1c1a272b0f03e0c8ca00e63df27eb2a0560",
+  "head_sha": "7a8fc34a013ecd79fa405017b89e1697c1cc6e17",
+  "window_days": 365,
+  "n_functions": 1295,
+  "n_change_prone": 12,
+  "n_future_commits": 15,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "lifelines/datasets/__init__.py::load_multicenter_aids_cohort_study",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricRegressionFitter._fit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricRegressionFitter._fit_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricRegressionFitter._log_likelihood_right_censoring",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricRegressionFitter.predict_expectation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricUnivariateFitter._fit_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricUnivariateFitter.fit_interval_censoring",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricUnivariateFitter.percentile",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/__init__.py::ParametricUnivariateFitter.percentile._find_root",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/aalen_additive_fitter.py::AalenAdditiveFitter.fit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/aalen_additive_fitter.py::AalenAdditiveFitter.predict_expectation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/aalen_johansen_fitter.py::AalenJohansenFitter._bounds",
+      "future_commits": 1,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/breslow_fleming_harrington_fitter.py::BreslowFlemingHarringtonFitter.fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/cox_time_varying_fitter.py::CoxTimeVaryingFitter._compute_cumulative_baseline_hazard",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/cox_time_varying_fitter.py::CoxTimeVaryingFitter.fit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::ParametricPiecewiseBaselinePHFitter._strata_labeler",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::ParametricPiecewiseBaselinePHFitter.predict_cumulative_hazard",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::ParametricSplinePHFitter._strata_labeler",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::SemiParametricPHFitter.fit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::SemiParametricPHFitter.predict_expectation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/coxph_fitter.py::SemiParametricPHFitter.score",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/fitters/generalized_gamma_fitter.py::GeneralizedGammaFitter._create_initial_point",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/kaplan_meier_fitter.py::KaplanMeierFitter._fit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/mixins.py::ProportionalHazardMixin.check_assumptions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/nelson_aalen_fitter.py::NelsonAalenFitter._variance_f_discrete",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/nelson_aalen_fitter.py::NelsonAalenFitter.smoothed_hazard_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/npmle.py::reconstruct_survival_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/fitters/piecewise_exponential_regression_fitter.py::PiecewiseExponentialRegressionFitter._add_penalty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/generate_datasets.py::constant_coefficients",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/generate_datasets.py::cumulative_integral",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/generate_datasets.py::generate_hazard_rates",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/generate_datasets.py::generate_random_lifetimes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/generate_datasets.py::time_varying_coefficients",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/plotting.py::add_at_risk_counts",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult._ascii_print",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult._html_print",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult._latex_print",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult._print_specific_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.print_summary",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.to_ascii",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.to_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/statistics.py::StatisticalResult.to_latex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_check_assumptions_throws_if_raise_on_fail_enabled",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_formulas_handles_categories_at_inference",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_less_trivial_float_weights_with_no_ties_is_the_same_as_R",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_non_trivial_float_weights_with_no_ties_is_the_same_as_R",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_robust_errors_with_less_trivial_weights_is_the_same_as_R",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_strata_estimation_is_same_if_using_trivial_strata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_trivial_entry_col",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_trivial_entry_col_with_strata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter.test_trivial_float_weights_with_no_ties_is_the_same_as_R",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter_SemiParametric.test_baseline_prediction_with_extreme_means",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxPHFitter_SemiParametric.test_baseline_prediction_with_extreme_scaling",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestCoxTimeVaryingFitter.test_fitter_is_okay_with_trivial_df",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestNelsonAalenFitter.test_variance_calculation_does_not_overflow",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestRegressionFitters.test_fit_will_accept_object_dtype_as_event_col",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestUnivariateFitters.test_cumulative_density_ci_is_ordered_correctly",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_estimation.py::TestUnivariateFitters.test_lists_and_tuples_as_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/test_plotting.py::TestPlotting.test_naf_plot_cumulative_hazard_bandwidth_1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/utils/test_utils.py::test_rmst_exactly_with_known_solution",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/utils/test_utils.py::test_rmst_works_with_return_variance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/utils/test_utils.py::test_survival_table_from_events_at_risk_column",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/tests/utils/test_utils.py::test_survival_table_from_events_with_future_bins",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::_additive_estimate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::_expected_value_of_survival_squared_up_to_t",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::_expected_value_of_survival_up_to_t",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::_group_event_table_by_intervals",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::add_covariate_to_timeline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::covariates_from_event_matrix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::datetimes_to_durations",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "lifelines/utils/__init__.py::to_long_format",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

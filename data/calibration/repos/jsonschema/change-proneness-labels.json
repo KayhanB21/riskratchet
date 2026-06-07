@@ -1,0 +1,411 @@
+{
+  "snapshot_sha": "60c7b35b629fecfe6757db052e80acc52d71f30c",
+  "head_sha": "ac10ea747895d53633daa05128d0677032760ced",
+  "window_days": 365,
+  "n_functions": 646,
+  "n_change_prone": 25,
+  "n_future_commits": 25,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "jsonschema/_format.py::is_css21_color",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/_format.py::is_iri",
+      "future_commits": 1,
+      "future_lines": 25,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/_format.py::is_iri_reference",
+      "future_commits": 1,
+      "future_lines": 25,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/_legacy_keywords.py::find_evaluated_property_keys_by_schema",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/_utils.py::find_additional_properties",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/_utils.py::find_evaluated_property_keys_by_schema",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/_utils.py::is_valid",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/_utils.py::uniq",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/exceptions.py::UndefinedTypeCheck.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::UndefinedTypeCheck.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::UnknownType.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error._matches_type",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error._set",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.absolute_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.absolute_schema_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.create_from",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_Error.json_path",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/exceptions.py::_RefResolutionError.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::_pretty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::best_match",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/exceptions.py::by_relevance",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/exceptions.py::by_relevance.relevance",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/protocols.py::Validator.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/_suite.py::Suite.version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/_suite.py::remotes_in",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 30,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_cli.py::TestCLI.test_successful_validation_via_explicit_base_uri",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_cli.py::TestCLI.test_unsuccessful_validation_via_explicit_base_uri",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_cli.py::TestCLIIntegration.test_license",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_deprecations.py::TestDeprecations.test_RefResolver",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_exceptions.py::TestBestMatch.test_one_error",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_exceptions.py::TestErrorInitReprStr.test_does_not_reorder_dicts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_jsonschema_test_suite.py::complex_email_validation",
+      "future_commits": 1,
+      "future_lines": 74,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_jsonschema_test_suite.py::ecmascript_regex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestRefResolver.test_it_retrieves_unstored_refs_via_urlopen",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_anyOf",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_boolean_schema_False",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_contains_none",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_contains_too_few",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_contains_too_many",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_if_else",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_if_then",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_multiple_nesting",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_propertyNames",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/tests/test_validators.py::TestValidationErrorDetails.test_type",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/validators.py::_RefResolver.resolve_remote",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/validators.py::create",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "jsonschema/validators.py::validator_for",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    }
+  ]
+}

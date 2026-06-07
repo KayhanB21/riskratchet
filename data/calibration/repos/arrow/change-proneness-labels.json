@@ -1,0 +1,283 @@
+{
+  "snapshot_sha": "0fe5f065718e5af3ab47903d1bec82d87d202a63",
+  "head_sha": "2224255c4acc594d734cef0bbc83360452a67983",
+  "window_days": 365,
+  "n_functions": 175,
+  "n_change_prone": 21,
+  "n_future_commits": 10,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "arrow/api.py::get",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.__getattr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow._get_tzinfo",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow._is_last_day_of_month",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.ceil",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.date",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.dehumanize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.floor",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.fromdate",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.fromdatetime",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.fromtimestamp",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.humanize",
+      "future_commits": 4,
+      "future_lines": 54,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.now",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.range",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.shift",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.span",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.utcfromtimestamp",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/arrow.py::Arrow.utcnow",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/factory.py::ArrowFactory.get",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/factory.py::ArrowFactory.now",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/formatter.py::DateTimeFormatter._format_token",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/locales.py::KoreanLocale._ordinal_number",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser._build_datetime",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser._generate_choice_re",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser._generate_pattern_re",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser._parse_multiformat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser._parse_token",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser.parse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::DateTimeParser.parse_iso",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "arrow/parser.py::TzinfoParser.parse",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "arrow/util.py::next_weekday",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+{
+  "schema": 1,
+  "note": "Pooled, repo-stratified L2 logistic regression (repo fixed-effects), leave-one-repo-out. Null model uses past activity only; the full model adds the coverage-free structural signals. Delta AUC (full - null) with a repo-clustered bootstrap tests whether structure predicts future change-proneness beyond prior activity. Gradient buckets per-repo delta by tier. Analysis only; change-proneness is a maintainability proxy, not maintainability.",
+  "snapshot": {
+    "n_repos": 34,
+    "n_functions": 33490,
+    "n_change_prone": 4515,
+    "repos": [
+      "arrow",
+      "arviz",
+      "attrs",
+      "bayesian-optimization",
+      "boltons",
+      "category-encoders",
+      "cattrs",
+      "click",
+      "croniter",
+      "deepdiff",
+      "feature-engine",
+      "flask",
+      "formulaic",
+      "jsonschema",
+      "lifelines",
+      "loguru",
+      "markdown",
+      "marshmallow",
+      "mlxtend",
+      "more-itertools",
+      "networkx",
+      "packaging",
+      "pingouin",
+      "pint",
+      "pygments",
+      "pyparsing",
+      "requests",
+      "rich",
+      "sqlglot",
+      "sqlparse",
+      "tenacity",
+      "werkzeug",
+      "wrapt",
+      "xarray"
+    ]
+  },
+  "model": {
+    "engine": "scipy L-BFGS-B, L2 logistic regression",
+    "l2": 1.0,
+    "standardized": true,
+    "fixed_effects": "repo",
+    "cv": "leave-one-repo-out",
+    "features_full": [
+      "past_churn",
+      "structural_complexity",
+      "sprawl_function_term",
+      "sprawl_file_term",
+      "public_surface"
+    ],
+    "features_null": [
+      "past_churn"
+    ]
+  },
+  "results": {
+    "null": {
+      "auc_mean": 0.5744,
+      "auc_weighted": 0.5815,
+      "logloss": 0.385,
+      "per_repo_auc": [
+        {
+          "repo": "arrow",
+          "n_prone": 35,
+          "auc": 0.5964
+        },
+        {
+          "repo": "arviz",
+          "n_prone": 18,
+          "auc": 0.7353
+        },
+        {
+          "repo": "attrs",
+          "n_prone": 29,
+          "auc": 0.7108
+        },
+        {
+          "repo": "bayesian-optimization",
+          "n_prone": 26,
+          "auc": 0.4437
+        },
+        {
+          "repo": "boltons",
+          "n_prone": 4,
+          "auc": 0.5986
+        },
+        {
+          "repo": "category-encoders",
+          "n_prone": 21,
+          "auc": 0.6199
+        },
+        {
+          "repo": "cattrs",
+          "n_prone": 55,
+          "auc": 0.5864
+        },
+        {
+          "repo": "click",
+          "n_prone": 132,
+          "auc": 0.5713
+        },
+        {
+          "repo": "croniter",
+          "n_prone": 62,
+          "auc": 0.6932
+        },
+        {
+          "repo": "deepdiff",
+          "n_prone": 87,
+          "auc": 0.5097
+        },
+        {
+          "repo": "feature-engine",
+          "n_prone": 24,
+          "auc": 0.5834
+        },
+        {
+          "repo": "flask",
+          "n_prone": 82,
+          "auc": 0.4939
+        },
+        {
+          "repo": "formulaic",
+          "n_prone": 32,
+          "auc": 0.59
+        },
+        {
+          "repo": "jsonschema",
+          "n_prone": 25,
+          "auc": 0.5204
+        },
+        {
+          "repo": "lifelines",
+          "n_prone": 12,
+          "auc": 0.5613
+        },
+        {
+          "repo": "loguru",
+          "n_prone": 52,
+          "auc": 0.49
+        },
+        {
+          "repo": "markdown",
+          "n_prone": 24,
+          "auc": 0.4928
+        },
+        {
+          "repo": "marshmallow",
+          "n_prone": 49,
+          "auc": 0.6364
+        },
+        {
+          "repo": "mlxtend",
+          "n_prone": 118,
+          "auc": 0.5123
+        },
+        {
+          "repo": "more-itertools",
+          "n_prone": 63,
+          "auc": 0.5058
+        },
+        {
+          "repo": "networkx",
+          "n_prone": 607,
+          "auc": 0.6209
+        },
+        {
+          "repo": "packaging",
+          "n_prone": 57,
+          "auc": 0.6169
+        },
+        {
+          "repo": "pingouin",
+          "n_prone": 40,
+          "auc": 0.6639
+        },
+        {
+          "repo": "pint",
+          "n_prone": 138,
+          "auc": 0.538
+        },
+        {
+          "repo": "pygments",
+          "n_prone": 16,
+          "auc": 0.4935
+        },
+        {
+          "repo": "pyparsing",
+          "n_prone": 120,
+          "auc": 0.5589
+        },
+        {
+          "repo": "requests",
+          "n_prone": 60,
+          "auc": 0.5027
+        },
+        {
+          "repo": "rich",
+          "n_prone": 83,
+          "auc": 0.6256
+        },
+        {
+          "repo": "sqlglot",
+          "n_prone": 599,
+          "auc": 0.5902
+        },
+        {
+          "repo": "sqlparse",
+          "n_prone": 22,
+          "auc": 0.5944
+        },
+        {
+          "repo": "tenacity",
+          "n_prone": 39,
+          "auc": 0.6849
+        },
+        {
+          "repo": "werkzeug",
+          "n_prone": 212,
+          "auc": 0.4592
+        },
+        {
+          "repo": "wrapt",
+          "n_prone": 48,
+          "auc": 0.5315
+        },
+        {
+          "repo": "xarray",
+          "n_prone": 1524,
+          "auc": 0.5963
+        }
+      ]
+    },
+    "full": {
+      "auc_mean": 0.6608,
+      "auc_weighted": 0.652,
+      "logloss": 0.3801,
+      "per_repo_auc": [
+        {
+          "repo": "arrow",
+          "n_prone": 35,
+          "auc": 0.5122
+        },
+        {
+          "repo": "arviz",
+          "n_prone": 18,
+          "auc": 0.8158
+        },
+        {
+          "repo": "attrs",
+          "n_prone": 29,
+          "auc": 0.7675
+        },
+        {
+          "repo": "bayesian-optimization",
+          "n_prone": 26,
+          "auc": 0.5888
+        },
+        {
+          "repo": "boltons",
+          "n_prone": 4,
+          "auc": 0.6419
+        },
+        {
+          "repo": "category-encoders",
+          "n_prone": 21,
+          "auc": 0.7383
+        },
+        {
+          "repo": "cattrs",
+          "n_prone": 55,
+          "auc": 0.6375
+        },
+        {
+          "repo": "click",
+          "n_prone": 132,
+          "auc": 0.7166
+        },
+        {
+          "repo": "croniter",
+          "n_prone": 62,
+          "auc": 0.6894
+        },
+        {
+          "repo": "deepdiff",
+          "n_prone": 87,
+          "auc": 0.626
+        },
+        {
+          "repo": "feature-engine",
+          "n_prone": 24,
+          "auc": 0.7166
+        },
+        {
+          "repo": "flask",
+          "n_prone": 82,
+          "auc": 0.5546
+        },
+        {
+          "repo": "formulaic",
+          "n_prone": 32,
+          "auc": 0.6696
+        },
+        {
+          "repo": "jsonschema",
+          "n_prone": 25,
+          "auc": 0.6501
+        },
+        {
+          "repo": "lifelines",
+          "n_prone": 12,
+          "auc": 0.7943
+        },
+        {
+          "repo": "loguru",
+          "n_prone": 52,
+          "auc": 0.4487
+        },
+        {
+          "repo": "markdown",
+          "n_prone": 24,
+          "auc": 0.5811
+        },
+        {
+          "repo": "marshmallow",
+          "n_prone": 49,
+          "auc": 0.6257
+        },
+        {
+          "repo": "mlxtend",
+          "n_prone": 118,
+          "auc": 0.7225
+        },
+        {
+          "repo": "more-itertools",
+          "n_prone": 63,
+          "auc": 0.5899
+        },
+        {
+          "repo": "networkx",
+          "n_prone": 607,
+          "auc": 0.7109
+        },
+        {
+          "repo": "packaging",
+          "n_prone": 57,
+          "auc": 0.6789
+        },
+        {
+          "repo": "pingouin",
+          "n_prone": 40,
+          "auc": 0.8231
+        },
+        {
+          "repo": "pint",
+          "n_prone": 138,
+          "auc": 0.5485
+        },
+        {
+          "repo": "pygments",
+          "n_prone": 16,
+          "auc": 0.6254
+        },
+        {
+          "repo": "pyparsing",
+          "n_prone": 120,
+          "auc": 0.631
+        },
+        {
+          "repo": "requests",
+          "n_prone": 60,
+          "auc": 0.6857
+        },
+        {
+          "repo": "rich",
+          "n_prone": 83,
+          "auc": 0.754
+        },
+        {
+          "repo": "sqlglot",
+          "n_prone": 599,
+          "auc": 0.6372
+        },
+        {
+          "repo": "sqlparse",
+          "n_prone": 22,
+          "auc": 0.7353
+        },
+        {
+          "repo": "tenacity",
+          "n_prone": 39,
+          "auc": 0.7331
+        },
+        {
+          "repo": "werkzeug",
+          "n_prone": 212,
+          "auc": 0.5633
+        },
+        {
+          "repo": "wrapt",
+          "n_prone": 48,
+          "auc": 0.6063
+        },
+        {
+          "repo": "xarray",
+          "n_prone": 1524,
+          "auc": 0.6464
+        }
+      ]
+    }
+  },
+  "structure_beats_activity": {
+    "delta_auc_full_minus_null_mean": 0.0864,
+    "delta_auc_weighted": 0.0705,
+    "n_repos_full_better": "30/34",
+    "sign_test_p": 0.0
+  },
+  "file_line_coefficient": {
+    "standardized": 0.0387,
+    "sign": "positive",
+    "ci95": [
+      -0.046,
+      0.1624
+    ],
+    "method": "repo-clustered bootstrap, seed 0, 1000 draws"
+  },
+  "gradient": {
+    "polished": {
+      "n_repos": 34,
+      "mean_delta_auc_full_minus_null": 0.0864
+    },
+    "messy": {
+      "n_repos": 0,
+      "mean_delta_auc_full_minus_null": null
+    }
+  },
+  "verdict": "Structural signals beat the past-churn null: keeping complexity/sprawl/public raises pooled leave-one-repo-out AUC by \u0394=+0.086 over activity alone. They carry maintenance-burden signal beyond 'active code stays active.' The file-line sprawl half remains net-noise under this outcome (coef +0.039, 95% CI [-0.046, 0.162]). Analysis only; no weight change. Change-proneness is a proxy (got-edited, not was-painful), the corpus is a gradient toward \u2014 not at \u2014 the AI-side-project target, and the construct gap (edits != maintainability) is anchored, not closed, by the review-comment check."
+}

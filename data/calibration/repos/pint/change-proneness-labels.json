@@ -1,0 +1,1947 @@
+{
+  "snapshot_sha": "db0247017fd9bd2445db13b694d766880b7e3c20",
+  "head_sha": "92dc7b741794ab9fac24ed9866176b9f739d1286",
+  "window_days": 365,
+  "n_functions": 1727,
+  "n_change_prone": 132,
+  "n_future_commits": 51,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "pint/_typing.py::Handler.__getitem__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/compat.py::_test_array_function_protocol",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 213,
+      "change_prone": false
+    },
+    {
+      "target": "pint/compat.py::_test_array_function_protocol.FakeArray.__array_function__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 213,
+      "change_prone": false
+    },
+    {
+      "target": "pint/compat.py::_to_magnitude",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 426,
+      "change_prone": false
+    },
+    {
+      "target": "pint/definitions.py::Definition.from_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::extract2",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::localize_display_exponent_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::localize_per",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::partition",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::prepare_compount_unit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::to_name_exponent_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_compound_unit_helpers.py::to_symbol_exponent_name",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_format_helpers.py::formatter",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_format_helpers.py::join_mu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/_format_helpers.py::pretty_fmt_exponent",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_spec_helpers.py::_split_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/_spec_helpers.py::extract_custom_flags",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_spec_helpers.py::remove_custom_flags",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_spec_helpers.py::split_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/_to_register.py::register_unit_format",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_to_register.py::register_unit_format.wrapper",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_to_register.py::register_unit_format.wrapper.NewFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/_to_register.py::register_unit_format.wrapper.NewFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/full.py::FullFormatter.format_quantity",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/full.py::FullFormatter.format_quantity_babel",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/full.py::FullFormatter.get_formatter",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/html.py::HTMLFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/html.py::HTMLFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/latex.py::LatexFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/latex.py::LatexFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/latex.py::SIunitxFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/latex.py::siunitx_format_unit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/latex.py::siunitx_format_unit._tothe",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::CompactFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::CompactFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::DefaultFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::DefaultFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::PrettyFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::PrettyFormatter.format_unit",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/formatter/plain.py::RawFormatter.format_quantity",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/txt_defparser/block.py::DirectiveBlock.derive_definition",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/delegates/txt_defparser/common.py::DefinitionSyntaxError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/delegates/txt_defparser/context.py::_from_string_and_context_sep",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/errors.py::DefinitionError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::DefinitionError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::DefinitionSyntaxError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::DefinitionSyntaxError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::DimensionalityError.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "pint/errors.py::DimensionalityError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::LogarithmicUnitCalculusError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::LogarithmicUnitCalculusError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::OffsetUnitCalculusError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::OffsetUnitCalculusError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::RedefinitionError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::RedefinitionError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UndefinedBehavior.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UndefinedBehavior.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UndefinedUnitError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UndefinedUnitError.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UndefinedUnitError.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UnitStrippedWarning.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/errors.py::UnitStrippedWarning.__reduce__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/context/objects.py::Context.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/objects.py::Context.transform",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/objects.py::ContextChain.transform",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/objects.py::Transformation.__call__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/registry.py::GenericContextRegistry._convert",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/registry.py::GenericContextRegistry.context",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/context/registry.py::GenericContextRegistry.with_context",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/group/definitions.py::GroupDefinition.from_lines",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/group/objects.py::Group.iter_used_groups",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/measurement/objects.py::Measurement.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/nonmultiplicative/registry.py::GenericNonMultiplicativeRegistry._add_ref_of_log_or_offset_unit",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/nonmultiplicative/registry.py::GenericNonMultiplicativeRegistry._convert",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/nonmultiplicative/registry.py::GenericNonMultiplicativeRegistry._is_multiplicative",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::_correlate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::_interp",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::_is_sequence_with_quantity_elements",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::_trapz",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::get_op_output_unit",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::implement_func",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::implement_func.implementation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::implement_mul_func",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/numpy/numpy_func.py::implement_mul_func.implementation",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/qto.py::_get_preferred",
+      "future_commits": 1,
+      "future_lines": 47,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/qto.py::ito_preferred",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/qto.py::to_compact",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/qto.py::to_preferred",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__abs__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__complex__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__copy__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__deepcopy__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__float__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__iadd__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__int__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__iter__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__neg__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__new__",
+      "future_commits": 3,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__pos__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.__round__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity._add_sub",
+      "future_commits": 2,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity._convert_magnitude",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity._convert_magnitude_not_inplace",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity._iadd_sub",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.from_tuple",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.ito_base_units",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.m_as",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.ndim",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.to",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.to_base_units",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::PlainQuantity.to_tuple",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::check_implemented",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/quantity.py::check_implemented.wrapped",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.__deepcopy__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.__getattr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._convert",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._get_dimensionality_recurse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._get_root_units",
+      "future_commits": 3,
+      "future_lines": 55,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._get_root_units_recurse",
+      "future_commits": 2,
+      "future_lines": 29,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._helper_dispatch_adder",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._register_adder",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry._yield_unit_triplets",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.convert",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.get_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/facets/plain/registry.py::GenericPlainRegistry.parse_expression",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__eq__",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__mul__",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/plain/unit.py::PlainUnit.__truediv__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/system/definitions.py::SystemDefinition.from_lines",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/system/objects.py::System.from_definition",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/facets/system/objects.py::System.from_lines",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/formatting.py::formatter",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/pint_convert.py::_define_constants",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 96,
+      "change_prone": true
+    },
+    {
+      "target": "pint/pint_convert.py::_set",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::EvalTreeNode.evaluate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::IteratorLookAhead.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::IteratorLookAhead.__next__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::IteratorLookAhead.lookahead",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::_ufloat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::plain_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::uncertainty_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::uncertainty_tokenizer._apply_e_notation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::uncertainty_tokenizer._finalize_e",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::uncertainty_tokenizer._get_possible_e",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/pint_eval.py::uncertainty_tokenizer._number_or_nan",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pint/registry_helpers.py::check",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testing.py::assert_allclose",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testing.py::assert_equal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_00_common.py::test_import",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_01_eval.py::_tok",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_01_eval.py::test_pint_eval",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_10_registry.py::no_benchmark",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/benchmarks/test_30_numpy.py::float_range",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/helpers.py::requires_babel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_babel.py::test_no_babel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_babel.py::test_unit_format_babel",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_compat_downcast.py::test_array_quantity_creation_by_multiplication",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_dask.py::test_compute_persist_equivalent",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_definitions.py::TestDefinition.test_unit_definition",
+      "future_commits": 2,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_errors.py::TestErrors.test_dimensionality_error_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_formatting.py::test_register_unit_format",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_formatting.py::test_register_unit_format.format_custom",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_alternative_angstrom_definition",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_issue1674",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_issue1963",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_liter_creation_U2113",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_micro_creation_mc",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::TestIssues.test_micro_creation_mu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue1505",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue1772",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue1949",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue2007",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue2017",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue2017._test_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue2044",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issue_1845",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issues_1841",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_issues.py::test_issues_1841_xfail",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_log_units.py::TestLogarithmicQuantity.test_log_convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_measurement.py::TestMeasurement.test_simple",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_measurement.py::TestMeasurement.test_tokenization",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_non_int.py::_TestBasic.test_nan_creation",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyArrayManipulation.test_roll",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyMathematicalFunctions.test_trapezoid",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyMathematicalFunctions.test_trapz",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_copyto",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_interp_numpy_func",
+      "future_commits": 1,
+      "future_lines": 45,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_ptp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_std",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_std_numpy_func",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_var",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy.py::TestNumpyUnclassified.test_var_numpy_func",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_correlate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_op_output_unit_variance",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_trapezoid",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_trapezoid_no_autoconvert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_trapz",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_numpy_func.py::TestNumPyFuncUtils.test_trapz_no_autoconvert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_pint_eval.py::_pre",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_pint_eval.py::test_build_eval_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_pint_eval.py::test_preprocessed_eval_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_pint_eval.py::test_uncertainty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestCompareNeutral.test_types",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_both_symbol",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_formatting_override_default_magnitude",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_formatting_override_default_units",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_quantity_creation",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_quantity_repr",
+      "future_commits": 1,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantity.test_round",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_quantity.py::TestQuantityToCompact.test_nonnumeric_magnitudes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestConvertWithOffset.test_prefix_offset_units",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestRegistry.test_default_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_ipython",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_latex_escaping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_unit_default_formatting",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_unit_formatting_defaults_warning",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_unit_formatting_snake_case",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/testsuite/test_unit.py::TestUnit.test_unit_repr",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_util.py::TestGraph.test_shortest_path_densely_connected_2146",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_util.py::TestParseHelper._test_eval_token",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_util.py::TestParseHelper.test_basic",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/testsuite/test_util.py::TestUnitsContainer.test_unitcontainer_repr",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::ParserHelper.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::SharedRegistryObject._check",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.__repr__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.__truediv__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pint/util.py::UnitsContainer._normalize_nonfloat_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.add",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.remove",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::UnitsContainer.rename",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::_noop",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::create_class_with_registry",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::find_connected_nodes",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::find_shortest_path",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::solve_dependencies",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pint/util.py::udict.copy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

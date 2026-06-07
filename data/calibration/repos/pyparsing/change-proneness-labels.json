@@ -1,0 +1,2627 @@
+{
+  "snapshot_sha": "15a106e1bfc7679c5cd3a65c84403061a871a9e6",
+  "head_sha": "057a2e6d1b8391dc85abe725d4d12c0987a9ec10",
+  "window_days": 365,
+  "n_functions": 478,
+  "n_change_prone": 117,
+  "n_future_commits": 93,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "pyparsing/__init__.py::version_info.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/__init__.py::version_info.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/__init__.py::version_info.__version__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::OnlyOnce.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::OnlyOnce.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::match_only_at_col",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::match_only_at_col.verify_col",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::remove_quotes",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/actions.py::replace_with",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/actions.py::with_attribute",
+      "future_commits": 2,
+      "future_lines": 24,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/actions.py::with_attribute.pa",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/actions.py::with_class",
+      "future_commits": 1,
+      "future_lines": 25,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/common.py::pyparsing_common.convert_to_date",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/common.py::pyparsing_common.convert_to_datetime",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/common.py::pyparsing_common.strip_html_tags",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::And._ErrorStop.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::And.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::And.parseImpl",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::And.streamline",
+      "future_commits": 1,
+      "future_lines": 19,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::AtLineStart.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::AtLineStart.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::AtStringStart.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::AtStringStart.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::CaselessKeyword.__init__",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::CaselessLiteral.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::CaselessLiteral.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Char.__init__",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::CharsNotIn.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::CharsNotIn.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::CloseMatch.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::CloseMatch.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Combine.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Combine.ignore",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::DelimitedList.__init__",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Dict.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Each.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Each.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Each.streamline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Empty.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Empty.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::FollowedBy.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::FollowedBy.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward.__del__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward.__ilshift__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward.__lshift__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Forward.__or__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward._generateDefaultName",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward._setResultsName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Forward.copy",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Forward.ignore_whitespace",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Forward.leave_whitespace",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Forward.parseImpl",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Forward.validate",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::GoToColumn.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::GoToColumn.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Group.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Group.postParse",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::IndentedBlock._Indent.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::IndentedBlock._IndentGreater.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::IndentedBlock.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::IndentedBlock.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Keyword.__init__",
+      "future_commits": 3,
+      "future_lines": 10,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Keyword.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::LineEnd.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::LineEnd.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::LineStart.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::LineStart.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Literal.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Literal.__new__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Literal.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Located.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::MatchFirst.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::MatchFirst._setResultsName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::MatchFirst.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::MatchFirst.streamline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::NoMatch.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::NoMatch.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::NotAny.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::NotAny.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Opt.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Opt.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Or.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Or._setResultsName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Or.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Or.streamline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.__init__",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.ignore",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.ignore_whitespace",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.leave_whitespace",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.recurse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseElementEnhance.validate",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression._setResultsName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.append",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.copy",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.ignore",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.ignore_whitespace",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.recurse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.streamline",
+      "future_commits": 1,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParseExpression.validate",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.NullCache.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.NullCache.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.NullCache.set",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._CacheType.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._CacheType.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._CacheType.set",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__add__",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__and__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__call__",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__getitem__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__init__",
+      "future_commits": 3,
+      "future_lines": 15,
+      "past_commits": 6,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__invert__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__mul__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__or__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__radd__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__rand__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__rmul__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__ror__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__rsub__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__rxor__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__sub__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.__xor__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._parseCache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._parseNoCache",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._setResultsName",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement._skipIgnorables",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.add_condition",
+      "future_commits": 3,
+      "future_lines": 19,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.add_parse_action",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.copy",
+      "future_commits": 3,
+      "future_lines": 23,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.create_diagram",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.disable_memoization",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.enable_left_recursion",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.enable_packrat",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.ignore",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.ignore_whitespace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.inline_literals_using",
+      "future_commits": 1,
+      "future_lines": 25,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.leave_whitespace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.matches",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.mayReturnEmpty",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.name",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.parse_file",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.parse_string",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.parse_with_tabs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.recurse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.reset_cache",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.run_tests",
+      "future_commits": 2,
+      "future_lines": 47,
+      "past_commits": 5,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.scan_string",
+      "future_commits": 4,
+      "future_lines": 14,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.search_string",
+      "future_commits": 3,
+      "future_lines": 24,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_break",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_break.breaker",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_debug",
+      "future_commits": 2,
+      "future_lines": 29,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_debug_actions",
+      "future_commits": 2,
+      "future_lines": 25,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_default_whitespace_chars",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_fail_action",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_name",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_parse_action",
+      "future_commits": 3,
+      "future_lines": 55,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_results_name",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.set_whitespace_chars",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.split",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.streamline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.suppress",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.suppress_warning",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.transform_string",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.try_parse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.using_each",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ParserElement.validate",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::PositionToken.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::PrecededBy.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::PrecededBy.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::QuotedString.__init__",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 5,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::QuotedString.parseImpl",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::QuotedString.parseImpl.convert_escaped_numerics",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.__init__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 4,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Regex._generateDefaultName",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.mayReturnEmpty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.parseImpl",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.parseImplAsGroupList",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.parseImplAsMatch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.re",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 6,
+      "past_lines": 19,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Regex.re_match",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Regex.sub",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::SkipTo.__init__",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::SkipTo.ignore",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::SkipTo.parseImpl",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::StringEnd.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::StringEnd.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::StringStart.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::StringStart.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Suppress.__add__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Suppress.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Suppress.__sub__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Tag.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Tag._add_tag",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Tag._generateDefaultName",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Token.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::TokenConverter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::White.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::White.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Word.__init__",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::Word._generateDefaultName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Word._generateDefaultName.charsAsStr",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Word.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::Word.parseImpl_regex",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::WordEnd.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::WordEnd.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::WordStart.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::WordStart.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::ZeroOrMore.__init__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::ZeroOrMore.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_MultipleMatch.__init__",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::_MultipleMatch._setResultsName",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_MultipleMatch.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_MultipleMatch.stopOn",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_ParseActionIndexError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_PendingSkip.__add__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_PendingSkip.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_PendingSkip.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_SingleCharLiteral.parseImpl",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_default_exception_debug_action",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_default_start_debug_action",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_default_success_debug_action",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_trim_arity",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::_trim_arity.wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::autoname_elements",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::condition_as_parse_action",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::srange",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::srange._expanded",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/core.py::trace_parse_action",
+      "future_commits": 2,
+      "future_lines": 21,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/core.py::trace_parse_action.z",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::AnnotatedItem.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::ConverterState.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::ConverterState.extract_into_diagram",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::ConverterState.generate_index",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::ConverterState.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::EachItem.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::EditablePartial.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::EditablePartial.from_call",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::ElementState.mark_for_extraction",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::NamedDiagram.bookmark",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_apply_diagram_item_enhancements",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_apply_diagram_item_enhancements._inner",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_collapse_verbose_regex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_make_bookmark",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_to_diagram_element",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 12,
+      "past_lines": 76,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::_visible_exprs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::railroad_to_html",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::resolve_partial",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/diagram/__init__.py::to_railroad",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.__str__",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException._from_exception",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.copy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.explain",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.explain_exception",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.formatted_message",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.found",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.mark_input_line",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/exceptions.py::ParseBaseException.parserElement",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/exceptions.py::RecursiveGrammarException.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/helpers.py::_makeTags",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/helpers.py::counted_array",
+      "future_commits": 3,
+      "future_lines": 39,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::delimited_list",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::dict_of",
+      "future_commits": 1,
+      "future_lines": 31,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::indentedBlock",
+      "future_commits": 4,
+      "future_lines": 23,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::infix_notation",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 6,
+      "past_lines": 55,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::locatedExpr",
+      "future_commits": 5,
+      "future_lines": 22,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::make_html_tags",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::make_xml_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/helpers.py::match_previous_expr",
+      "future_commits": 6,
+      "future_lines": 17,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::match_previous_expr.copy_token_to_repeater",
+      "future_commits": 4,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::match_previous_literal",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::nested_expr",
+      "future_commits": 6,
+      "future_lines": 33,
+      "past_commits": 3,
+      "past_lines": 27,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::one_of",
+      "future_commits": 5,
+      "future_lines": 26,
+      "past_commits": 6,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/helpers.py::original_text_for",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__add__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__delitem__",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__getitem__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__iadd__",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__init__",
+      "future_commits": 3,
+      "future_lines": 12,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__radd__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.__setitem__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.append",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.as_dict",
+      "future_commits": 1,
+      "future_lines": 27,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.as_list",
+      "future_commits": 4,
+      "future_lines": 24,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.as_list.flattened",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.copy",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.deepcopy",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.dump",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.extend",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.from_dict",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.get",
+      "future_commits": 1,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.get_name",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.insert",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.pop",
+      "future_commits": 1,
+      "future_lines": 26,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::ParseResults.pprint",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/results.py::_ParseResultsWithOffset.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/results.py::_ParseResultsWithOffset.__setstate__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.TestParseResultsAsserts.assertParseAndCheckDict",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.TestParseResultsAsserts.assertParseAndCheckList",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.TestParseResultsAsserts.assertRunTestResults",
+      "future_commits": 1,
+      "future_lines": 14,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.reset_pyparsing_context.restore",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/testing.py::pyparsing_test.with_line_numbers",
+      "future_commits": 6,
+      "future_lines": 32,
+      "past_commits": 3,
+      "past_lines": 34,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/tools/cvt_pyparsing_pep8_names.py::camel_to_snake",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 72,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/tools/cvt_pyparsing_pep8_names.py::show_diffs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/unicode.py::unicode_set._chars_for_ranges",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/unicode.py::unicode_set.identbodychars",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::LRUMemo.__delitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::LRUMemo.__getitem__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::LRUMemo.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_FifoCache.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_FifoCache.__init__.set_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_GroupConsecutive.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_GroupConsecutive.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::__config_flags._set",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_collapse_string_to_ranges",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 4,
+      "past_lines": 70,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/util.py::_collapse_string_to_ranges.escape_re_range_char",
+      "future_commits": 1,
+      "future_lines": 17,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/util.py::_collapse_string_to_ranges.no_escape_re_range_char",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::_flatten",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/util.py::col",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::lineno",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::make_compressed_re",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 115,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::make_compressed_re.get_suffixes_from_common_prefixes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "pyparsing/util.py::replaced_by_pep8",
+      "future_commits": 5,
+      "future_lines": 20,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "pyparsing/util.py::replaced_by_pep8._inner",
+      "future_commits": 4,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}
