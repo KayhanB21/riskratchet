@@ -10,6 +10,15 @@ worked examples for the cases named in
 No scoring or discovery runs over these yet. When slice 2 lands, the "expected
 discovery" notes below become real assertions.
 
+> **Caveat — these are pre-parser predictions, not verified facts.** The
+> expected-function counts below were authored *before* a parser was chosen by
+> evidence, so they encode what a backend *should* find, not what one *does*. Slice 2
+> reconciles them against what the real tree actually yields — the exact node and
+> qualname taxonomy for constructors, getters, and inline callbacks may differ (e.g.
+> whether tree-sitter labels a constructor `Account.constructor` at all). The green
+> gate proves only that these files are *ignored* by the suite, never that the
+> predictions are *correct*.
+
 ## Files and expected discovery
 
 | File | Demonstrates | Expected functions |
