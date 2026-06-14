@@ -931,6 +931,7 @@
         "churn_commits": 0,
         "is_public": true,
         "group": null,
+        "language": "python",
         "lines": {
           "start": 15,
           "end": 46
@@ -956,6 +957,7 @@
         "churn_commits": 0,
         "is_public": true,
         "group": null,
+        "language": "python",
         "lines": {
           "start": 5,
           "end": 12
@@ -981,6 +983,7 @@
         "churn_commits": 0,
         "is_public": true,
         "group": null,
+        "language": "python",
         "lines": {
           "start": 1,
           "end": 2

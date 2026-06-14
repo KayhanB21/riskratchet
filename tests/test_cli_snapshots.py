@@ -71,6 +71,7 @@ REQUIRED_FUNCTION = {
     "churn_commits",
     "is_public",
     "group",
+    "language",
     "lines",
     "components",
 }

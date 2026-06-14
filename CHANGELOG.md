@@ -9,6 +9,38 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.11] - unreleased
+
+0.2.11 is the "TypeScript groundwork" release (P19). It opens the first seam for a
+future TypeScript backend — a language-backend contract, a parser-strategy
+decision, a static TSX fixture corpus, and one additive JSON field — **without
+shipping any TypeScript scoring**. Python remains the only stable backend;
+Python-only installs are unchanged (no Node dependency, same runtime dependency
+closure as 0.2.10). Scoring, weights, and thresholds are byte-for-byte unchanged.
+
+### Added
+
+- (P19) Additive `function.language` field in `scan --json` and `explain --json`,
+  always `"python"` today (declared as `{ "const": "python" }` in
+  `schemas/report.schema.json` and `schemas/explain.schema.json`). It future-proofs
+  the per-function payload for a `"typescript"` value; existing consumers are
+  unaffected. The baseline file, SARIF, and the check/diff payloads do **not** carry
+  it yet — they gain it only when TypeScript scoring ships.
+
+### Docs
+
+- (P19) `docs/language-backend-contract.md` — the language-neutral contract a backend
+  must fill (function discovery, coverage mapping, complexity, public surface,
+  function identity), with the Python implementation as the reference and the
+  TypeScript open questions per area.
+- (P19) `docs/typescript-parser-decision.md` — parser strategy: **tree-sitter** as an
+  optional `riskratchet[typescript]` extra (no Node runtime for Python-only users),
+  with the Node-backed and regex alternatives rejected and the rationale recorded.
+- (P19) TSX fixture corpus under `tests/fixtures/typescript/` (top-level functions,
+  class/interface methods, arrow functions, React components with hooks, default
+  exports, generated-code exclusion). Checked in as a static spec for the future
+  discovery slice; not exercised by gate tests.
+
 ## [0.2.10] - 2026-06-07
 
 0.2.10 is the "supply-chain trust and calibration" release. It makes release

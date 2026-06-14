@@ -87,6 +87,7 @@
         "churn_commits",
         "is_public",
         "group",
+        "language",
         "lines",
         "components"
       ],
@@ -107,6 +108,10 @@
         "churn_commits": { "type": "integer", "minimum": 0 },
         "is_public": { "type": "boolean" },
         "group": { "type": ["string", "null"] },
+        "language": {
+          "const": "python",
+          "description": "Analyzer backend language (P19, since 0.2.11). Additive; future TypeScript support will emit \"typescript\". Always \"python\" today."
+        },
         "lines": {
           "type": "object",
           "required": ["start", "end"],

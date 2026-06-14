@@ -145,6 +145,7 @@ def _function_payload(fn: FunctionRisk, *, links: SourceLinks | None = None) -> 
         "churn_commits": fn.churn.commits,
         "is_public": fn.is_public,
         "group": fn.group,
+        "language": fn.language,
         "lines": {"start": fn.span.start_line, "end": fn.span.end_line},
         "components": {
             "coverage_gap": fn.components.coverage_gap,
