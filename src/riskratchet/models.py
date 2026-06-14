@@ -124,6 +124,7 @@ class FunctionRisk:
     fingerprint: str | None = None
     signature: str | None = None
     group: str | None = None
+    language: str = "python"
 
 
 @dataclass(frozen=True, slots=True)
