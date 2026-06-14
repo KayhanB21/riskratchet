@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.2.11] - unreleased
+## [0.2.11] - 2026-06-13
 
 0.2.11 is the "TypeScript groundwork" release (P19). It opens the first seam for a
 future TypeScript backend — a language-backend contract, a parser-strategy
