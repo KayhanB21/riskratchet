@@ -15,9 +15,16 @@ strategy.
 
 ## The seam
 
-`engine.analyze()` (`src/riskratchet/engine.py`) is the single entry point. It
-asks the backend for five things per file, then hands pure data to the
-language-neutral pipeline. A backend supplies:
+**This seam does not exist in the code yet.** Discovery is currently hard-coded to
+Python — `analysis.py` calls `ast` directly; there is no backend interface to
+implement against. Slice 2 (`0.2.13`) must first *carve* this seam out of
+`analysis.py` (a refactor that extracts a backend protocol) before a TypeScript
+backend can be plugged in. This document describes the contract that refactor should
+expose, using today's Python code as the worked reference.
+
+`engine.analyze()` (`src/riskratchet/engine.py`) is the single entry point. Once the
+seam exists, a backend supplies five things per file and the engine hands pure data
+to the downstream pipeline. A backend supplies:
 
 1. **Function discovery** — which spans are functions, and their identity.
 2. **Coverage mapping** — line/branch coverage per function span.
@@ -129,8 +136,10 @@ stable across the TS formatter's whitespace/quote choices.
 
 ## Output seam
 
-The pipeline after discovery is shared and already language-neutral. The first
-additive multi-language hook shipped in `0.2.11`:
+The pipeline downstream of discovery operates on plain data (`FunctionRisk`, not an
+AST), so it is **structurally ready** to be language-neutral once discovery is
+abstracted — that abstraction is the slice-2 refactor above, not something that
+exists today. The first additive multi-language hook shipped in `0.2.11`:
 
 - `FunctionRisk.language` (`src/riskratchet/models.py`) — defaults to `"python"`.
 - Emitted as `function.language` in `scan --json` and `explain --json` via the

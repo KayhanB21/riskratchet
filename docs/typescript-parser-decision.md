@@ -1,13 +1,20 @@
 # TypeScript parser decision
 
-Groundwork decision (P19, `0.2.11`) for how a future TypeScript backend will
-parse `.ts` / `.tsx`. No parser ships in `0.2.11`; this records the chosen
+Groundwork recommendation (P19, `0.2.11`) for how a future TypeScript backend will
+parse `.ts` / `.tsx`. No parser ships in `0.2.11`; this records the recommended
 strategy and the rejected alternatives so slice 2 (`0.2.13`) starts from a
-settled position. The constraint that drives the decision: **Python-only installs
-must stay unchanged** — no new runtime dependency, and absolutely no Node runtime
-forced on users who only scan Python.
+considered position. The constraint that drives the recommendation: **Python-only
+installs must stay unchanged** — no new runtime dependency, and absolutely no Node
+runtime forced on users who only scan Python.
 
-## Decision
+## Recommended default (pending a slice-2 spike)
+
+**This is a paper recommendation, not validated by a prototype or benchmark.** The
+trade-offs below are reasoned, not measured. Slice 2 (`0.2.13`) must run a spike that
+confirms `tree-sitter-typescript`'s Python bindings can actually express the five
+contract areas — a token-stable signature fingerprint, `export`-based public surface,
+and the cyclomatic node set — before this recommendation hardens into a commitment. If
+the spike finds a gap tree-sitter can't cover, the Node-backed fallback reopens.
 
 Use **tree-sitter** (`tree-sitter` + `tree-sitter-typescript` Python bindings),
 shipped as an **optional extra** — `pip install riskratchet[typescript]`. The
@@ -31,7 +38,7 @@ Why tree-sitter:
 
 | Option | Accuracy | Packaging | Python-only impact | TSX/JSX | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| **tree-sitter** (chosen) | High (structural) | Native wheel, optional extra | None (lazy, opt-in) | Yes (`tsx` grammar) | **Chosen** |
+| **tree-sitter** (recommended) | High (structural) | Native wheel, optional extra | None (lazy, opt-in) | Yes (`tsx` grammar) | **Recommended** (pending spike) |
 | Node-backed (TS compiler API) | Highest (full type info) | Requires Node runtime | Heavy — Node on every TS user | Yes | Rejected; fallback only |
 | Regex / heuristic | Low | None | None | Fragile | Rejected |
 
