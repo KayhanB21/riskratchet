@@ -225,6 +225,18 @@ instead add `riskratchet config validate` (exit 2 on unknown keys / malformed
 config / invalid values) as a one-line strict gate ahead of `riskratchet
 check` — the deliberate complement to the warn-by-default behavior.
 
+**Regenerating `.riskratchet.json`: do it in CI, not locally.** Risk scores
+depend on environment-sensitive inputs — `churn` uses a wall-clock `git log
+--since` window, and a few functions' coverage depends on the filesystem (e.g.
+`doctor.py::_find_newer_py` compares file mtimes). A baseline regenerated on a
+dev machine (especially macOS) therefore diverges from what the Linux regression
+gate recomputes and trips it. Use the **`regenerate-baseline`** workflow
+(Actions tab → Run workflow), which regenerates in the gate's own environment
+and opens a PR; or, for a surgical add of a new module without disturbing
+existing entries, edit only the added/removed entries by hand. Whichever path,
+the regression gate (and dogfood) check out with `fetch-depth: 0` so churn sees
+full history — a shallow clone silently zeroes it.
+
 ## Developing on this repo
 
 ```bash

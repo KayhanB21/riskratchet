@@ -1,0 +1,82 @@
+name: regenerate-baseline
+
+# Regenerate .riskratchet.json IN CI, then open a PR with the result.
+#
+# Why this exists: risk scores depend on environment-sensitive inputs — churn
+# uses a wall-clock `git log --since` window, and some functions' coverage
+# depends on the filesystem (e.g. doctor.py::_find_newer_py compares file
+# mtimes). A baseline regenerated locally (especially on macOS) therefore
+# diverges from what the Linux regression gate recomputes, and trips it. This
+# workflow regenerates the baseline in the SAME environment the gate runs in, so
+# the committed baseline is the gate's fixed point. Always refresh the full
+# baseline here rather than running `riskratchet baseline` locally.
+#
+# Trigger manually: Actions tab -> regenerate-baseline -> Run workflow.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          fetch-depth: 0  # full history for churn signals
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+      - name: Sync dependencies
+        # --all-extras so the typescript discovery tests run and typescript.py
+        # gets honest coverage (parity with the regression gate).
+        run: uv sync --all-extras --dev
+      - name: Generate coverage.json
+        run: uv run pytest --cov=src/riskratchet/ --cov-branch --cov-report=json:coverage.json -q
+      - name: Regenerate baseline
+        run: uv run riskratchet baseline src --coverage coverage.json --output .riskratchet.json
+      - name: Show diff in job summary
+        if: always()
+        run: |
+          {
+            echo '### Baseline diff'
+            echo '```diff'
+            git --no-pager diff -- .riskratchet.json || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload regenerated baseline (fallback)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: riskratchet-baseline
+          path: .riskratchet.json
+      - name: Open PR if the baseline changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .riskratchet.json; then
+            echo "Baseline unchanged — nothing to do."
+            exit 0
+          fi
+          branch="chore/regen-baseline-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add .riskratchet.json
+          # [riskratchet-baseline-bypass] satisfies the baseline-rationale gate: a
+          # CI regen IS the canonical baseline, there is no human bump to justify.
+          git commit -m "chore: regenerate riskratchet baseline (CI) [riskratchet-baseline-bypass]"
+          git push origin "$branch"
+          {
+            printf '%s\n\n' "Automated baseline regeneration from the regenerate-baseline workflow, run on Linux CI so it matches the regression gate's environment (wall-clock --since churn and filesystem-mtime coverage diverge from a local, especially macOS, regen). Review the diff before merging."
+            printf '%s\n' "Note: opened with GITHUB_TOKEN, so other workflows may not start automatically on this PR. If the regression gate does not appear, push an empty commit (git commit --allow-empty) or re-run CI to validate. The baseline is generated in CI, so the gate is expected to pass trivially."
+          } > pr-body.md
+          gh pr create --base master --head "$branch" \
+            --title "chore: regenerate riskratchet baseline (CI)" \
+            --body-file pr-body.md
+          echo "Opened PR on branch $branch"
