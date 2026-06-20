@@ -237,6 +237,31 @@ existing entries, edit only the added/removed entries by hand. Whichever path,
 the regression gate (and dogfood) check out with `fetch-depth: 0` so churn sees
 full history — a shallow clone silently zeroes it.
 
+## Cutting a release
+
+Releases are cut separately from feature PRs (version bumps never ride a feature
+PR — see "Do not"). The release commit lands on `master` and bumps, in lockstep:
+
+- `pyproject.toml` `version` and `uv.lock` (run `uv lock` after the bump);
+- the literal pin in `tests/test_release_integrity.py`;
+- `ACTION_REF` in `src/riskratchet/init.py` and the `KayhanB21/riskratchet@vX.Y.Z`
+  pins in `README.md` (the Action `uses:` block and the pre-commit `rev:`);
+- the `## [X.Y.Z]` date in `CHANGELOG.md`.
+
+`tests/test_release_integrity.py` enforces that `ACTION_REF` and the README pins
+equal the package version, so a forgotten bump fails CI instead of shipping a stale
+ref (the wrapper sat at `v0.2.8` for four releases before this guard existed). Tag
+`vX.Y.Z` on `master`; `publish.yml` builds and publishes to PyPI via Trusted
+Publishing — there is no manual upload step.
+
+**Cross-repo tail — the Marketplace wrapper.** `KayhanB21/riskratchet-action` is a
+*separate* repo whose `action.yml` delegates to `KayhanB21/riskratchet@vX.Y.Z`. After
+the PyPI release: bump that `uses:` ref to the new tag, commit to its `master`, tag a
+new `v1.0.N`, and **force-move the floating `v1` tag** to it — the Marketplace serves
+the `v1` tag, not `master`, so `@v1` consumers stay on the old release until `v1`
+moves. The wrapper's `check-delegated-ref` workflow turns CI red within a week if this
+is skipped, but do it same-day.
+
 ## Developing on this repo
 
 ```bash
