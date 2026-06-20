@@ -154,6 +154,56 @@ def test_doctor_warns_when_coverage_is_stale(tmp_path: Path, monkeypatch: pytest
     assert "pytest --cov" in (cov["remediation"] or "")
 
 
+def test_find_newer_py_covers_all_branches(tmp_path: Path) -> None:
+    # `_find_newer_py` compares `st_mtime`, so its branch coverage is otherwise
+    # environment-dependent (which source files happen to be newer than coverage.json
+    # during a full test run differs Mac↔Linux) — that made the risk baseline
+    # non-reproducible across machines. Exercise every branch with explicitly set mtimes
+    # so its coverage is identical everywhere.
+    import os
+
+    from riskratchet.doctor import _find_newer_py
+
+    cov_mtime = 1_000_000.0
+
+    # non-existent path is skipped → None
+    assert _find_newer_py([tmp_path / "nope.py"], cov_mtime) is None
+
+    # a file that is not .py is skipped
+    other = tmp_path / "data.txt"
+    other.write_text("x\n", encoding="utf-8")
+    os.utime(other, (cov_mtime + 100, cov_mtime + 100))
+    assert _find_newer_py([other], cov_mtime) is None
+
+    # a .py file newer than cov_mtime is returned
+    newer = tmp_path / "newer.py"
+    newer.write_text("a = 1\n", encoding="utf-8")
+    os.utime(newer, (cov_mtime + 100, cov_mtime + 100))
+    assert _find_newer_py([newer], cov_mtime) == str(newer)
+
+    # a .py file older than cov_mtime is not returned
+    older = tmp_path / "older.py"
+    older.write_text("b = 1\n", encoding="utf-8")
+    os.utime(older, (cov_mtime - 100, cov_mtime - 100))
+    assert _find_newer_py([older], cov_mtime) is None
+
+    # a directory containing a newer .py returns that file
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    nested = pkg / "mod.py"
+    nested.write_text("c = 1\n", encoding="utf-8")
+    os.utime(nested, (cov_mtime + 100, cov_mtime + 100))
+    assert _find_newer_py([pkg], cov_mtime) == str(nested)
+
+    # a directory whose .py files are all older → None
+    olddir = tmp_path / "olddir"
+    olddir.mkdir()
+    oldnested = olddir / "old.py"
+    oldnested.write_text("d = 1\n", encoding="utf-8")
+    os.utime(oldnested, (cov_mtime - 100, cov_mtime - 100))
+    assert _find_newer_py([olddir], cov_mtime) is None
+
+
 def test_doctor_warns_when_config_unknown_keys(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     _project(tmp_path)

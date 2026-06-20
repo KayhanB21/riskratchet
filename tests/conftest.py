@@ -45,6 +45,33 @@ _register_bin_package()
 
 
 @pytest.fixture(autouse=True)
+def hermetic_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Scrub ambient CI/host environment so coverage is identical on a laptop and in CI.
+
+    Some code branches on the environment — e.g. ``cli._auto_salt`` returns
+    ``f"{GITHUB_REPOSITORY}@{GITHUB_SHA}"`` when those are set (they are in GitHub
+    Actions, but not on a dev box). The test suite then covers different lines depending
+    on where it runs, which makes the risk baseline (`.riskratchet.json`) non-reproducible
+    across environments and trips the regression gate after a local `riskratchet baseline`.
+    Removing these vars makes every run behave like a clean checkout. Tests that need a
+    var set do so explicitly via ``monkeypatch.setenv`` (which runs after this fixture).
+    """
+    for var in (
+        "CI",
+        "GITHUB_ACTIONS",
+        "GITHUB_REPOSITORY",
+        "GITHUB_SHA",
+        "GITHUB_REF",
+        "GITHUB_REF_NAME",
+        "GITHUB_HEAD_REF",
+        "GITHUB_BASE_REF",
+        "GITHUB_RUN_ID",
+        "GITHUB_SERVER_URL",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+
+@pytest.fixture(autouse=True)
 def block_auto_coverage_runner(monkeypatch: pytest.MonkeyPatch) -> None:
     def refuse(command: str, cwd: Path) -> int:
         raise AssertionError(
