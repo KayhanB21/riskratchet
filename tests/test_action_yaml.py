@@ -1,7 +1,7 @@
 """Structural validation of the root `action.yml` (P27).
 
 The composite action lets users adopt riskratchet with
-`uses: KayhanB21/riskratchet@v0.2.8` instead of copy-pasting the
+`uses: KayhanB21/riskratchet@<release-tag>` instead of copy-pasting the
 ci.yml pattern. These tests catch shape regressions (missing inputs,
 broken step ordering, lost sticky-comment marker) without spinning up
 a runner.

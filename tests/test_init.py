@@ -143,8 +143,10 @@ def test_detect_runner_unknown_when_no_signals(tmp_path: Path) -> None:
 
 
 def test_render_ci_snippet_pins_action_to_release_tag() -> None:
-    snippet = render_ci_snippet("v0.2.8")
-    assert "KayhanB21/riskratchet@v0.2.8" in snippet
+    # An explicitly-passed ref is honored verbatim (a deliberately-fake sample, so this
+    # never goes stale); the default-ref case is test_render_ci_snippet_defaults_to_action_ref_constant.
+    snippet = render_ci_snippet("v9.9.9")
+    assert "KayhanB21/riskratchet@v9.9.9" in snippet
     assert "coverage: coverage.json" in snippet
 
 
