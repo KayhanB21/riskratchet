@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.2.12] - unreleased
+## [0.2.12] - 2026-06-20
 
 0.2.12 is the "experimental TypeScript discovery + contract docs" release. It pulls
 TypeScript slice 2 (P20) forward — the first capability to actually look at TypeScript —
