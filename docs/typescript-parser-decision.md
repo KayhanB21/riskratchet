@@ -7,14 +7,34 @@ considered position. The constraint that drives the recommendation: **Python-onl
 installs must stay unchanged** — no new runtime dependency, and absolutely no Node
 runtime forced on users who only scan Python.
 
-## Recommended default (pending a slice-2 spike)
+## Decision: tree-sitter (spike confirmed, 0.2.12)
 
-**This is a paper recommendation, not validated by a prototype or benchmark.** The
-trade-offs below are reasoned, not measured. Slice 2 (`0.2.13`) must run a spike that
-confirms `tree-sitter-typescript`'s Python bindings can actually express the five
-contract areas — a token-stable signature fingerprint, `export`-based public surface,
-and the cyclomatic node set — before this recommendation hardens into a commitment. If
-the spike finds a gap tree-sitter can't cover, the Node-backed fallback reopens.
+**The slice-2 spike ran and tree-sitter passed.** In `0.2.12` (slice 2 was pulled forward
+from `0.2.13`), `tree-sitter-typescript` was run against the full
+`tests/fixtures/typescript/` corpus and expressed every discovery contract area cleanly —
+so the paper recommendation below is now the committed choice. What the spike confirmed:
+
+- **Function nodes + spans.** `function_declaration`, `method_definition` (incl.
+  constructors and getters), and `arrow_function`/`function_expression` all parse with
+  exact line spans; all six fixtures parse with `has_error = False`.
+- **Qualnames.** Built by walking ancestor scopes (`class_declaration` /
+  `function_declaration` names and function-valued `variable_declarator` names), yielding
+  `Account.deposit`, `makeCounter.increment`, `Counter.handleClick`.
+- **`export`-based public surface.** Exported declarations sit under an `export_statement`
+  ancestor; non-exported ones don't — a clean public/internal signal without naming
+  conventions.
+- **Exclusions.** Anonymous inline callbacks surface as `arrow_function` with a non-binding
+  parent (`arguments`), object-literal methods as `method_definition` under `object` (vs
+  `class_body`), and interface method *signatures* as non-function `method_signature` nodes
+  — each cleanly filterable. Generated files are caught by `@generated` header / `*.pb.ts`
+  name.
+
+The only contract areas **not** exercised yet (deferred to later slices, not blockers for
+discovery): coverage mapping (slice 3), cyclomatic complexity (slice 4), and the
+token-stable signature fingerprint for rename matching (only needed once TS enters the
+baseline). No Node-backed fallback was required.
+
+The recommendation, now committed:
 
 Use **tree-sitter** (`tree-sitter` + `tree-sitter-typescript` Python bindings),
 shipped as an **optional extra** — `pip install riskratchet[typescript]`. The

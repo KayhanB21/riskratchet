@@ -277,6 +277,14 @@ def scan(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    experimental_typescript: Annotated[
+        bool,
+        typer.Option(
+            "--experimental-typescript",
+            help="EXPERIMENTAL: also list discovered TypeScript functions (informational only; "
+            "no scoring or gating; needs `pip install 'riskratchet[typescript]'`). Output may change.",
+        ),
+    ] = False,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg, config_dir = _discover_config(config)
@@ -367,6 +375,13 @@ def scan(
     if effective_format == "table" and not quiet and not summary and output is None:
         baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
         _emit_scan_next_step_footer(filtered, baseline_file=baseline_file, config_present=bool(cfg))
+    if experimental_typescript:
+        _emit_typescript_discovery(
+            resolved_paths,
+            root=config_dir,
+            include=resolved_include,
+            exclude=resolved_exclude,
+        )
     _emit_diagnostics(
         diag,
         verbose=verbose,
@@ -1574,6 +1589,44 @@ def _write(rendered: str, output: Path | None) -> None:
         return
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(rendered, encoding="utf-8")
+
+
+def _emit_typescript_discovery(
+    paths: list[Path],
+    *,
+    root: Path,
+    include: list[str],
+    exclude: list[str],
+) -> None:
+    """EXPERIMENTAL (P20, slice 2, since 0.2.12): list discovered TypeScript functions.
+
+    Informational only — no scoring, no coverage, no baseline, no gating; does not affect
+    the exit code. The listing goes to stdout, an experimental banner to stderr. JSON/SARIF
+    integration is deferred to a later slice. tree-sitter is imported lazily, so a default
+    Python-only install never touches it.
+    """
+    from . import typescript as ts
+
+    typer.secho(
+        "experimental: TypeScript discovery is informational and its output may change.",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+    files = ts.iter_typescript_files(paths, root=root, include=include, exclude=exclude)
+    functions: list[ts.TsFunction] = []
+    try:
+        for path in files:
+            functions.extend(ts.discover_typescript(path, root=root))
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+
+    functions.sort(key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
+    lines = [f"typescript: {len(functions)} function(s) in {len(files)} file(s)"]
+    for fn in functions:
+        visibility = "public" if fn.is_public else "internal"
+        lines.append(f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})")
+    typer.echo("\n".join(lines))
 
 
 def _validate_format(format: str) -> None:

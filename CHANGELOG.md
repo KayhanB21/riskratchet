@@ -9,6 +9,40 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.12] - unreleased
+
+0.2.12 is the "experimental TypeScript discovery + contract docs" release. It pulls
+TypeScript slice 2 (P20) forward — the first capability to actually look at TypeScript —
+and closes the remaining SARIF/config contract-doc gaps (P17/P18). Python-only installs
+are unchanged: tree-sitter ships only in the new optional `typescript` extra, the Python
+analyzer and scoring are byte-for-byte unchanged, and no weight or threshold moved.
+
+### Added
+
+- (P20) **Experimental TypeScript function discovery** behind `scan
+  --experimental-typescript` — informational only (no scoring, no coverage, no baseline,
+  no gating; does not affect the exit code). It lists discovered `.ts`/`.tsx` functions
+  (top-level functions, class methods, named arrow/function expressions; React components
+  fall out as exported functions/arrows) with their qualname, public/internal surface, and
+  line span. Anonymous inline callbacks, object-literal methods, interface/abstract method
+  signatures, and generated files (`@generated` header or `*.pb.ts`/`*.gen.ts` name) are
+  skipped; generator functions and async iterators are not yet supported. Output format may
+  change; JSON/SARIF integration is deferred to a later slice.
+- (P20) Optional `typescript` extra: `pip install 'riskratchet[typescript]'` pulls in
+  `tree-sitter` + `tree-sitter-typescript`. A default Python-only install resolves exactly
+  as before — tree-sitter is imported lazily, only on the experimental path, with a clear
+  install hint if absent.
+
+### Docs
+
+- (P17) Documented the SARIF output contract divergence from cargo-crap explicitly:
+  riskratchet always emits a schema-valid SARIF 2.1.0 document (empty `results` when the
+  gate is green) rather than rejecting `baseline + sarif`. Added a `diff --format sarif`
+  clean-baseline empty-results test for parity with the existing `check` test.
+- (P18) Documented `riskratchet config validate` as a one-line opt-in CI strict gate (exit
+  2 on unknown keys / malformed config) in the README and AGENTS.md, complementing the
+  warn-by-default behavior.
+
 ## [0.2.11] - 2026-06-13
 
 0.2.11 is the "TypeScript groundwork" release (P19). It opens the first seam for a

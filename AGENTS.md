@@ -219,6 +219,12 @@ GitHub Actions runs the canonical check set. If you are unsure whether a
 change is safe, run the same commands the workflow runs (see the README
 Local development section) rather than inventing a local approximation.
 
+The scanning commands only *warn* on unknown `[tool.riskratchet]` keys so a
+config written for a newer version still runs. Teams that want a typo to fail
+instead add `riskratchet config validate` (exit 2 on unknown keys / malformed
+config / invalid values) as a one-line strict gate ahead of `riskratchet
+check` — the deliberate complement to the warn-by-default behavior.
+
 ## Developing on this repo
 
 ```bash

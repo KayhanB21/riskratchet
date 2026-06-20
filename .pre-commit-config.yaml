@@ -60,7 +60,9 @@ repos:
 
       - id: pytest-cov
         name: pytest --cov (produces coverage.json for riskratchet)
-        entry: uv run pytest --cov=src/riskratchet --cov-branch --cov-report=json:coverage.json -q
+        # --all-extras installs the optional `typescript` extra so the experimental
+        # tree-sitter discovery tests run (and cover typescript.py) locally, mirroring CI.
+        entry: uv run --all-extras pytest --cov=src/riskratchet --cov-branch --cov-report=json:coverage.json -q
         language: system
         pass_filenames: false
         always_run: true

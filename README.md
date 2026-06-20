@@ -606,7 +606,10 @@ SARIF intentionally has a narrower contract than native JSON: `scan --format
 sarif` emits current findings after the same score filter used for
 annotations, while `check --format sarif` and `diff --format sarif` emit only
 failing regressions. A clean baseline still produces valid SARIF with an
-empty `results` array.
+empty `results` array. This is a deliberate divergence from cargo-crap, which
+rejects combining a baseline with SARIF output; riskratchet instead always
+emits a schema-valid SARIF 2.1.0 document (empty when there is nothing to
+report), so a code-scanning upload never fails just because the gate is green.
 
 Native JSON output (truncated):
 
@@ -707,7 +710,13 @@ positional path arguments, and the no-argument default all stay relative to
 your current directory. The scanning commands only *warn* on an unknown
 `[tool.riskratchet]` key (and on a `pyproject.toml` that fails to parse during
 the walk), so a config written for a newer version still runs; reach for
-`config validate` when you want that typo to fail (exit `2`) in CI.
+`config validate` when you want that typo to fail (exit `2`) in CI. Wire it in
+as a one-line strict gate ahead of the ratchet check:
+
+```yaml
+- run: riskratchet config validate   # exit 2 on unknown keys / malformed config
+- run: riskratchet check --baseline .riskratchet.json
+```
 
 Roll function-level results up by package or workspace area with
 `[tool.riskratchet.groups]`. Each function is assigned to the longest
@@ -741,6 +750,35 @@ One repo-level baseline (recommended for tight coupling) is global; one
 baseline per package is useful when packages release independently. Every
 command prints a diagnostic banner to stderr summarizing the resolved root,
 scan paths, and coverage source.
+
+## Experimental: TypeScript discovery
+
+riskratchet scores Python. As the first step toward TypeScript support, `scan
+--experimental-typescript` will *discover and list* the functions in your
+`.ts`/`.tsx` files — nothing more. It is **informational only**: no scoring, no
+coverage, no baseline, no gating, and it never changes the exit code. The output
+format may change.
+
+```bash
+pip install 'riskratchet[typescript]'   # opt-in extra (tree-sitter); Python-only installs are unaffected
+riskratchet scan src --experimental-typescript
+# typescript: 3 function(s) in 1 file(s)
+#   src/math.ts::add  [public]  (4-6)
+#   src/math.ts::greet  [internal]  (8-13)
+#   src/math.ts::parseConfig  [public]  (15-21)
+```
+
+It discovers top-level functions, class methods, and named (const/let-assigned)
+arrow and function expressions; React function components fall out as exported
+functions/arrows. Public vs internal is decided by `export` / `export default`,
+not naming. Deliberately **skipped**: anonymous inline callbacks
+(`xs.map(x => …)`), object-literal methods, interface/abstract method
+*signatures* (no body), and generated files (`@generated` header or
+`*.pb.ts` / `*.gen.ts` name). **Not yet supported** (silently skipped):
+generator functions and async iterators. The parser is tree-sitter; the
+rationale and the contract a future backend must fill live in
+[`docs/typescript-parser-decision.md`](docs/typescript-parser-decision.md) and
+[`docs/language-backend-contract.md`](docs/language-backend-contract.md).
 
 ## Sample output on real libraries
 

@@ -30,6 +30,17 @@ dependencies = [
     "tomli>=2.0; python_version < '3.11'",
 ]
 
+# Opt-in only. EXPERIMENTAL TypeScript discovery (P20, since 0.2.12). Pulled in by
+# `pip install riskratchet[typescript]`; gated behind `extra == "typescript"` markers so
+# a default Python-only install resolves exactly as before (no tree-sitter, no Node).
+# The `--experimental-typescript` scan path lazily imports these and errors with an
+# install hint if absent.
+[project.optional-dependencies]
+typescript = [
+    "tree-sitter>=0.23",
+    "tree-sitter-typescript>=0.23",
+]
+
 [project.scripts]
 riskratchet = "riskratchet.cli:app"
 
@@ -124,7 +135,7 @@ warn_unused_ignores = true
 exclude = ["tests/fixtures/"]
 
 [[tool.mypy.overrides]]
-module = ["radon.*", "scipy.*", "numpy.*"]
+module = ["radon.*", "scipy.*", "numpy.*", "tree_sitter.*", "tree_sitter_typescript.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
