@@ -17,8 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write  # push the regen branch; the maintainer opens the PR from the printed link
 
 jobs:
   regen:
@@ -54,13 +53,17 @@ jobs:
         with:
           name: riskratchet-baseline
           path: .riskratchet.json
-      - name: Open PR if the baseline changed
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Push branch and link to a PR
+        # Push the regenerated baseline to a branch and print the PR-compare link
+        # in the job summary. We deliberately do NOT call `gh pr create`: many orgs
+        # disable "Allow GitHub Actions to create and approve pull requests", and a
+        # GITHUB_TOKEN-opened PR wouldn't trigger the CI gates anyway. Opening the
+        # PR from the printed link uses the maintainer's identity, so the
+        # regression gate runs normally and validates the CI-generated baseline.
         run: |
           set -euo pipefail
           if git diff --quiet -- .riskratchet.json; then
-            echo "Baseline unchanged — nothing to do."
+            echo "Baseline unchanged — nothing to do." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           branch="chore/regen-baseline-${GITHUB_RUN_ID}"
@@ -72,11 +75,12 @@ jobs:
           # CI regen IS the canonical baseline, there is no human bump to justify.
           git commit -m "chore: regenerate riskratchet baseline (CI) [riskratchet-baseline-bypass]"
           git push origin "$branch"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/master...${branch}?expand=1"
           {
-            printf '%s\n\n' "Automated baseline regeneration from the regenerate-baseline workflow, run on Linux CI so it matches the regression gate's environment (wall-clock --since churn and filesystem-mtime coverage diverge from a local, especially macOS, regen). Review the diff before merging."
-            printf '%s\n' "Note: opened with GITHUB_TOKEN, so other workflows may not start automatically on this PR. If the regression gate does not appear, push an empty commit (git commit --allow-empty) or re-run CI to validate. The baseline is generated in CI, so the gate is expected to pass trivially."
-          } > pr-body.md
-          gh pr create --base master --head "$branch" \
-            --title "chore: regenerate riskratchet baseline (CI)" \
-            --body-file pr-body.md
-          echo "Opened PR on branch $branch"
+            echo "### Baseline regenerated"
+            echo ""
+            echo "Pushed branch \`${branch}\`. Open the PR (under your identity, so CI runs):"
+            echo ""
+            echo "${url}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Pushed ${branch}; open: ${url}"
