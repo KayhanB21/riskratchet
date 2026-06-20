@@ -46,7 +46,12 @@ jobs:
       - name: Generate coverage.json
         run: |
           set -euo pipefail
-          uv sync --locked
+          # --all-extras is load-bearing: without the `typescript` extra the discovery
+          # tests skip, leaving src/riskratchet/typescript.py uncovered. The action's
+          # `riskratchet check` step would then score its functions as uncovered,
+          # baseline-absent "new" functions above the gate threshold and fail. Mirrors
+          # ci.yml's regression-gate job and the pre-commit pytest-cov hook.
+          uv sync --locked --all-extras --dev
           uv run pytest --cov --cov-branch --cov-report=json:coverage.json -q
 
       - name: Run riskratchet action against itself
