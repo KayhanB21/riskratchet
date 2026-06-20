@@ -7,14 +7,43 @@ considered position. The constraint that drives the recommendation: **Python-onl
 installs must stay unchanged** — no new runtime dependency, and absolutely no Node
 runtime forced on users who only scan Python.
 
-## Recommended default (pending a slice-2 spike)
+## Decision: tree-sitter (spike confirmed, 0.2.12)
 
-**This is a paper recommendation, not validated by a prototype or benchmark.** The
-trade-offs below are reasoned, not measured. Slice 2 (`0.2.13`) must run a spike that
-confirms `tree-sitter-typescript`'s Python bindings can actually express the five
-contract areas — a token-stable signature fingerprint, `export`-based public surface,
-and the cyclomatic node set — before this recommendation hardens into a commitment. If
-the spike finds a gap tree-sitter can't cover, the Node-backed fallback reopens.
+**The slice-2 spike ran and tree-sitter passed.** In `0.2.12` (slice 2 was pulled forward
+from `0.2.13`), `tree-sitter-typescript` was run against the full
+`tests/fixtures/typescript/` corpus and expressed every discovery contract area cleanly —
+so the paper recommendation below is now the committed choice. What the spike confirmed:
+
+- **Function nodes + spans.** `function_declaration`, `method_definition` (incl.
+  constructors and getters), and `arrow_function`/`function_expression` all parse with
+  exact line spans; all six fixtures parse with `has_error = False`.
+- **Qualnames.** Built by walking ancestor scopes — `class_declaration`,
+  `abstract_class_declaration`, anonymous class *expressions* (`class`),
+  `function_declaration`, function-valued `variable_declarator`, and `namespace`/`module`
+  blocks (`internal_module` / `module`) — yielding `Account.deposit`, `makeCounter.increment`,
+  `Counter.handleClick`, and `Foo.bar` for namespaced members (which therefore do not collide
+  with a top-level `bar`). Anonymous default-export classes contribute a `default` segment so
+  their methods (`default.m`) don't silently merge into the file's top level.
+- **`export`-based public surface.** Exported declarations sit under an `export_statement`
+  ancestor; non-exported ones don't — a clean public/internal signal without naming
+  conventions. Reachability also covers separate `export { name }` / `export { name as default }`
+  clauses, not only inline `export`, so a class exported after its declaration (and its
+  methods) reads as public.
+- **Error tolerance, surfaced.** tree-sitter returns a usable tree on broken input, but a tree
+  with `root_node.has_error` is skipped whole (with a warning), matching the Python backend's
+  skip-unparseable-files behaviour — partial/garbage results are never emitted.
+- **Exclusions.** Anonymous inline callbacks surface as `arrow_function` with a non-binding
+  parent (`arguments`), object-literal methods as `method_definition` under `object` (vs
+  `class_body`), and interface method *signatures* as non-function `method_signature` nodes
+  — each cleanly filterable. Generated files are caught by `@generated` header / `*.pb.ts`
+  name.
+
+The only contract areas **not** exercised yet (deferred to later slices, not blockers for
+discovery): coverage mapping (slice 3), cyclomatic complexity (slice 4), and the
+token-stable signature fingerprint for rename matching (only needed once TS enters the
+baseline). No Node-backed fallback was required.
+
+The recommendation, now committed:
 
 Use **tree-sitter** (`tree-sitter` + `tree-sitter-typescript` Python bindings),
 shipped as an **optional extra** — `pip install riskratchet[typescript]`. The
@@ -68,7 +97,12 @@ unacceptable for a baseline-gating tool. Rejected.
 
 ## Packaging note
 
-The extra is declared as `[project.optional-dependencies].typescript` when slice
-2 lands. Until then, no dependency is added — `0.2.11` ships docs and fixtures
-only. The wheel built in `0.2.11` has the same runtime dependency set as
-`0.2.10`; `uv build --clear` confirms it.
+The extra is declared as `[project.optional-dependencies].typescript` (landed in
+`0.2.12`): `tree-sitter>=0.23,<0.26` and `tree-sitter-typescript>=0.23,<0.24`. The
+upper bounds are deliberate — discovery asserts against the grammar's exact node
+taxonomy, so a major `tree-sitter-typescript` bump could rename/restructure nodes and
+silently break the suite via an unrelated `uv lock` refresh; the ceiling forces a
+deliberate, test-gated upgrade. The `0.2.11` wheel had the same runtime dependency set
+as `0.2.10`; the `0.2.12` wheel keeps tree-sitter behind the `extra == "typescript"`
+marker, so a Python-only install still resolves unchanged (`uv export --no-dev` shows no
+tree-sitter; `uv build --clear` confirms the `Requires-Dist` gating).

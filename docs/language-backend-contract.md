@@ -15,12 +15,18 @@ strategy.
 
 ## The seam
 
-**This seam does not exist in the code yet.** Discovery is currently hard-coded to
-Python — `analysis.py` calls `ast` directly; there is no backend interface to
-implement against. Slice 2 (`0.2.13`) must first *carve* this seam out of
-`analysis.py` (a refactor that extracts a backend protocol) before a TypeScript
-backend can be plugged in. This document describes the contract that refactor should
-expose, using today's Python code as the worked reference.
+**There is no shared backend protocol yet.** Python discovery is hard-coded in
+`analysis.py` (it calls `ast` directly), and as of slice 2 (`0.2.12`) TypeScript
+discovery lives in a *separate* module, `typescript.py` (tree-sitter), reached only
+through `scan --experimental-typescript`. The two paths share the language-neutral
+`FunctionId`/`FunctionSpan` data shapes and the shared path helpers in
+`riskratchet._paths` (`relative_posix`, `has_hidden_parent`, `any_match`), but **not** a
+common interface — TS discovery returns its own `TsFunction`, not the Python
+`DiscoveredFunction`. Unifying those two discovered-function shapes behind one backend
+protocol (so the engine scores either language through the same seam) is the refactor a
+later slice still owes — tracked as `TODO(slice-3)` on `TsFunction`; this document
+describes the contract that protocol should expose, using today's Python code as the
+worked reference and the TS module as the second concrete data point.
 
 `engine.analyze()` (`src/riskratchet/engine.py`) is the single entry point. Once the
 seam exists, a backend supplies five things per file and the engine hands pure data
@@ -109,9 +115,13 @@ segment that is private keeps the whole function private.
 
 **TypeScript notes / open questions.** The signal is `export` / `export default`
 rather than naming convention; un-exported declarations are internal. React
-components are public by convention *only if exported*. Re-exports and barrel
-files (`index.ts`) complicate "what is the surface" — an open question for slice
-4.
+components are public by convention *only if exported*. As of the slice-2 discovery
+module this is **export reachability**: a declaration is public if inline-exported *or*
+named in a top-level `export { name }` / `export { name as default }` clause, and a
+method inherits its (possibly clause-exported) class's surface unless it is
+`private`/`protected`/`#name`. It stays purely syntactic — re-exports through barrel
+files (`index.ts`) and cross-module re-export resolution need the type checker and remain
+an open question for slice 4.
 
 ## 5. Function identity
 

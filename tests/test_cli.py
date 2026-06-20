@@ -91,6 +91,41 @@ def test_scan_sarif_output_is_valid(tmp_path: Path) -> None:
     assert not location["artifactLocation"]["uri"].startswith("/")
 
 
+def test_scan_experimental_typescript_lists_functions(tmp_path: Path) -> None:
+    # Experimental, informational TS discovery (P20 slice 2). Skips without the extra.
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    (tmp_path / "a.ts").write_text(
+        "export function add(a: number, b: number) { return a + b; }\nfunction helper() { return 1; }\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app, ["scan", str(tmp_path), "--experimental-typescript", "--no-git", "--no-auto-cov"]
+    )
+    assert result.exit_code == 0
+    # The listing is an experimental diagnostic on stderr, never stdout.
+    assert "typescript: 2 function(s) in 1 file(s)" in result.stderr
+    assert "::add  [public]" in result.stderr
+    assert "::helper  [internal]" in result.stderr
+    assert "typescript:" not in result.stdout
+
+
+def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) -> None:
+    # Regression: the TS listing must not corrupt machine-readable stdout. With the flag on,
+    # `--json` stdout must still parse cleanly (listing is routed to stderr).
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    (tmp_path / "a.ts").write_text("export function add(a: number) { return a; }\n", encoding="utf-8")
+    result = runner.invoke(
+        app,
+        ["scan", str(tmp_path), "--experimental-typescript", "--json", "--no-git", "--no-auto-cov"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)  # raises if stdout was polluted by the listing
+    assert "functions" in payload
+    assert "typescript:" in result.stderr  # the listing still happened, just on stderr
+
+
 def test_baseline_writes_file(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"
@@ -241,6 +276,44 @@ def test_check_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_pa
     )
     assert result.exit_code == 0, result.stdout
     payload = json.loads(result.stdout)
+    assert payload["runs"][0]["results"] == []
+
+
+def test_diff_sarif_against_clean_baseline_exits_zero_with_empty_results(tmp_path: Path) -> None:
+    # Parity with the check test above: a clean baseline must still yield a valid SARIF
+    # 2.1.0 document with an empty results set (the cargo-crap divergence we document).
+    src = _project(tmp_path)
+    baseline_path = tmp_path / "baseline.json"
+    runner.invoke(
+        app,
+        [
+            "baseline",
+            str(src),
+            "--output",
+            str(baseline_path),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    result = runner.invoke(
+        app,
+        [
+            "diff",
+            str(src),
+            "--baseline",
+            str(baseline_path),
+            "--format",
+            "sarif",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["version"] == "2.1.0"
+    assert payload["runs"][0]["tool"]["driver"]["name"] == "riskratchet"
     assert payload["runs"][0]["results"] == []
 
 
