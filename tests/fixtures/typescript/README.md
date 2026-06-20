@@ -21,6 +21,14 @@ The table below is now **verified output**, not prediction — it is exactly wha
 | `arrows.ts` | arrow functions, const-assigned, nested | `double` [pub], `clamp` [pub], `makeCounter` [pub], `makeCounter.increment` [int], `scaleAll` [pub]; inline `.map` callback **excluded** |
 | `components.tsx` | React function components, hooks, JSX | `Greeting` [pub], `Counter` [pub], `Counter.handleClick` [int]; `useEffect`/`setState` callbacks **excluded** |
 | `default_export.ts` | default export + internal helper | `createClient` [pub] (default export), `buildHeaders` [int]; object-literal `get` **excluded** |
+| `namespaces.ts` | namespace members don't collide with top-level | `Foo.bar` [pub], `bar` [int] |
+| `abstract.ts` | abstract class: concrete method kept, signature excluded | `Shape.concrete` [pub]; `abstract area()` **excluded** (no body) |
+| `anonymous_default.ts` | anonymous `export default class` keeps a class segment | `default.m` [pub] |
+| `reexport.ts` | export reachability via `export { … }` clauses | `Svc.run` [pub], `helper` [pub] (`as default`), `hidden` [int] |
+| `async_variants.ts` | `is_async` across declaration / arrow / method | `loadOne`, `loadAll`, `Repo.deposit` — all [pub, async] |
+| `internal_class.ts` | non-exported class method + `function_expression` | `Internal.helper` [int], `legacy` [int] (kind `function`) |
+| `mts_module.mts` | `.mts` discovered like `.ts` | `fromMjs` [pub] |
+| `broken.ts` | syntax error → skipped whole (warned), not partially listed | none — file skipped (`has_error`) |
 | `generated.pb.ts` | generated code that must be **excluded** | none — file skipped (`@generated` header + `*.pb.ts` name) |
 
 ## Resolved decisions (were "open questions" in 0.2.11)
@@ -32,8 +40,17 @@ The table below is now **verified output**, not prediction — it is exactly wha
   only `method_definition`s whose structural parent is a `class_body` count.
 - **Interface/abstract method signatures**: **excluded** — they parse as `method_signature`,
   not function nodes, so they fall out naturally.
-- **Generated-code detection**: an `@generated` header marker **or** a `*.pb.ts` / `*.gen.ts`
-  filename excludes the whole file.
+- **Generated-code detection**: a **comment-anchored** `@generated` header marker (`//`,
+  `/*`, or a `*` continuation line — not `@generated` in a string or trailing code) **or** a
+  `*.pb.ts` / `*.gen.ts` filename (incl. `.mts`/`.cts`) excludes the whole file.
+- **Qualname scopes**: classes (named, `abstract`, and anonymous default-export), functions,
+  and `namespace`/`module` blocks all contribute segments, so `Foo.bar` ≠ top-level `bar` and
+  an anonymous default class's methods read as `default.m`.
+- **Public surface**: export reachability — inline `export`/`export default` **and** separate
+  `export { name }` / `export { name as default }` clauses; methods inherit their class.
+- **Broken files**: a tree with `has_error` is skipped whole and reported, never partially
+  listed.
+- **Extensions**: `.ts`, `.tsx`, `.mts`, `.cts` are all discovered.
 
 Still unsupported (silently skipped, documented for later slices): generator functions and
 async iterators.

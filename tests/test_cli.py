@@ -103,9 +103,27 @@ def test_scan_experimental_typescript_lists_functions(tmp_path: Path) -> None:
         app, ["scan", str(tmp_path), "--experimental-typescript", "--no-git", "--no-auto-cov"]
     )
     assert result.exit_code == 0
-    assert "typescript: 2 function(s) in 1 file(s)" in result.stdout
-    assert "::add  [public]" in result.stdout
-    assert "::helper  [internal]" in result.stdout
+    # The listing is an experimental diagnostic on stderr, never stdout.
+    assert "typescript: 2 function(s) in 1 file(s)" in result.stderr
+    assert "::add  [public]" in result.stderr
+    assert "::helper  [internal]" in result.stderr
+    assert "typescript:" not in result.stdout
+
+
+def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) -> None:
+    # Regression: the TS listing must not corrupt machine-readable stdout. With the flag on,
+    # `--json` stdout must still parse cleanly (listing is routed to stderr).
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    (tmp_path / "a.ts").write_text("export function add(a: number) { return a; }\n", encoding="utf-8")
+    result = runner.invoke(
+        app,
+        ["scan", str(tmp_path), "--experimental-typescript", "--json", "--no-git", "--no-auto-cov"],
+    )
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)  # raises if stdout was polluted by the listing
+    assert "functions" in payload
+    assert "typescript:" in result.stderr  # the listing still happened, just on stderr
 
 
 def test_baseline_writes_file(tmp_path: Path) -> None:

@@ -755,28 +755,35 @@ scan paths, and coverage source.
 
 riskratchet scores Python. As the first step toward TypeScript support, `scan
 --experimental-typescript` will *discover and list* the functions in your
-`.ts`/`.tsx` files — nothing more. It is **informational only**: no scoring, no
-coverage, no baseline, no gating, and it never changes the exit code. The output
-format may change.
+`.ts`/`.tsx`/`.mts`/`.cts` files — nothing more. It is **informational only**: no
+scoring, no coverage, no baseline, no gating, and it never changes the exit code.
+The listing prints to **stderr** (it is an experimental diagnostic, not part of the
+machine-readable contract), so `--json` / `--format sarif` / `--output` stay valid
+with the flag on. The output format may change.
 
 ```bash
 pip install 'riskratchet[typescript]'   # opt-in extra (tree-sitter); Python-only installs are unaffected
 riskratchet scan src --experimental-typescript
+# (on stderr:)
 # typescript: 3 function(s) in 1 file(s)
 #   src/math.ts::add  [public]  (4-6)
 #   src/math.ts::greet  [internal]  (8-13)
 #   src/math.ts::parseConfig  [public]  (15-21)
 ```
 
-It discovers top-level functions, class methods, and named (const/let-assigned)
-arrow and function expressions; React function components fall out as exported
-functions/arrows. Public vs internal is decided by `export` / `export default`,
-not naming. Deliberately **skipped**: anonymous inline callbacks
-(`xs.map(x => …)`), object-literal methods, interface/abstract method
-*signatures* (no body), and generated files (`@generated` header or
-`*.pb.ts` / `*.gen.ts` name). **Not yet supported** (silently skipped):
-generator functions and async iterators. The parser is tree-sitter; the
-rationale and the contract a future backend must fill live in
+It discovers top-level functions, class methods (including on abstract and
+anonymous default-export classes), and named (const/let-assigned) arrow and
+function expressions; React function components fall out as exported
+functions/arrows. Qualnames reflect nesting through classes, functions, and
+`namespace`/`module` blocks, so a namespaced `Foo.bar` never collides with a
+top-level `bar`. Public vs internal is **export reachability** — inline `export` /
+`export default` *and* separate `export { name }` clauses — not naming. Files with
+syntax errors are skipped with a warning (never partially listed). Deliberately
+**skipped**: anonymous inline callbacks (`xs.map(x => …)`), object-literal methods,
+interface/abstract method *signatures* (no body), and generated files (a
+comment-anchored `@generated` header or `*.pb.ts` / `*.gen.ts` name). **Not yet
+supported** (silently skipped): generator functions and async iterators. The parser
+is tree-sitter; the rationale and the contract a future backend must fill live in
 [`docs/typescript-parser-decision.md`](docs/typescript-parser-decision.md) and
 [`docs/language-backend-contract.md`](docs/language-backend-contract.md).
 

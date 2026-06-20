@@ -21,17 +21,26 @@ analyzer and scoring are byte-for-byte unchanged, and no weight or threshold mov
 
 - (P20) **Experimental TypeScript function discovery** behind `scan
   --experimental-typescript` — informational only (no scoring, no coverage, no baseline,
-  no gating; does not affect the exit code). It lists discovered `.ts`/`.tsx` functions
-  (top-level functions, class methods, named arrow/function expressions; React components
-  fall out as exported functions/arrows) with their qualname, public/internal surface, and
-  line span. Anonymous inline callbacks, object-literal methods, interface/abstract method
-  signatures, and generated files (`@generated` header or `*.pb.ts`/`*.gen.ts` name) are
-  skipped; generator functions and async iterators are not yet supported. Output format may
-  change; JSON/SARIF integration is deferred to a later slice.
+  no gating; does not affect the exit code). It lists discovered `.ts`/`.tsx`/`.mts`/`.cts`
+  functions (top-level functions, class methods — including on abstract and anonymous
+  default-export classes — and named arrow/function expressions; React components fall out
+  as exported functions/arrows) with their qualname, public/internal surface, and line span.
+  Qualnames reflect nesting through classes, functions, and `namespace`/`module` blocks, so
+  a namespaced `Foo.bar` does not collide with a top-level `bar`. Public/internal is export
+  reachability — inline `export`/`export default` **and** separate `export { name }` clauses.
+  Files with syntax errors are skipped with a warning (never partially listed). Anonymous
+  inline callbacks, object-literal methods, interface/abstract method signatures, and
+  generated files (a comment-anchored `@generated` header or `*.pb.ts`/`*.gen.ts` name) are
+  skipped; generator functions and async iterators are not yet supported. The listing prints
+  to **stderr** (an experimental diagnostic), so `--json`/`--format sarif`/`--output` stay
+  valid with the flag on; output format may change and JSON/SARIF integration is deferred to
+  a later slice.
 - (P20) Optional `typescript` extra: `pip install 'riskratchet[typescript]'` pulls in
-  `tree-sitter` + `tree-sitter-typescript`. A default Python-only install resolves exactly
-  as before — tree-sitter is imported lazily, only on the experimental path, with a clear
-  install hint if absent.
+  `tree-sitter` + `tree-sitter-typescript` (version-capped — `tree-sitter-typescript<0.24` —
+  so a transitive lock refresh can't silently swap in a grammar whose node taxonomy the
+  discovery tests assert against). A default Python-only install resolves exactly as before —
+  tree-sitter is imported lazily, only on the experimental path, with a clear install hint if
+  absent.
 
 ### Docs
 

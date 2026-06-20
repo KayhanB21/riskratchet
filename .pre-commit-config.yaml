@@ -60,8 +60,13 @@ repos:
 
       - id: pytest-cov
         name: pytest --cov (produces coverage.json for riskratchet)
-        # --all-extras installs the optional `typescript` extra so the experimental
-        # tree-sitter discovery tests run (and cover typescript.py) locally, mirroring CI.
+        # --all-extras is load-bearing, not cosmetic. Measured: without the `typescript`
+        # extra the discovery/CLI tests skip, so typescript.py drops from 89% to 15%
+        # coverage. The next hook (`riskratchet check src`) then scores its functions as
+        # uncovered, baseline-absent "new" functions (e.g. _walk_typescript at 50.2 >
+        # fail_new_above 50) and flags a cli.py::scan branch_gap component regression —
+        # the dogfood gate fails locally. Keeping --all-extras mirrors CI
+        # (`uv sync --all-extras`), under which the baseline was recorded.
         entry: uv run --all-extras pytest --cov=src/riskratchet --cov-branch --cov-report=json:coverage.json -q
         language: system
         pass_filenames: false

@@ -13,6 +13,9 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
+from riskratchet._paths import any_match as _any_match
+from riskratchet._paths import has_hidden_parent as _has_hidden_parent
+from riskratchet._paths import relative_posix as _relative_posix
 from riskratchet.matching import signature_fingerprint
 from riskratchet.models import FileStats, FunctionId, FunctionSpan
 
@@ -76,14 +79,6 @@ def parse_file(path: Path, *, root: Path) -> ParsedFile | ParseError:
         file_stats=file_stats,
         functions=functions,
     )
-
-
-def _relative_posix(path: Path, root: Path) -> str:
-    try:
-        rel = path.resolve().relative_to(root.resolve())
-    except ValueError:
-        rel = path
-    return rel.as_posix()
 
 
 def _count_lines(source: str) -> int:
@@ -248,16 +243,6 @@ def _walk_python(entry: Path) -> list[Path]:
     if not entry.is_dir():
         return []
     return [p for p in entry.rglob("*.py") if not _has_hidden_parent(p, entry)]
-
-
-def _has_hidden_parent(path: Path, root: Path) -> bool:
-    return any(part.startswith(".") for part in path.relative_to(root).parts[:-1])
-
-
-def _any_match(value: str, patterns: list[str]) -> bool:
-    from fnmatch import fnmatch
-
-    return any(fnmatch(value, pattern) for pattern in patterns)
 
 
 def function_fingerprint(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
