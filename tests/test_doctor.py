@@ -204,6 +204,42 @@ def test_find_newer_py_covers_all_branches(tmp_path: Path) -> None:
     assert _find_newer_py([olddir], cov_mtime) is None
 
 
+def test_check_coverage_covers_all_branches(tmp_path: Path) -> None:
+    # `_check_coverage` compares coverage.json's mtime to source mtimes (via `_find_newer_py`),
+    # so its fresh-vs-stale branch is otherwise environment-dependent: whether the coverage file
+    # happens to be newer than the sources during a full test run differs run to run, so the
+    # fresh→PASS branch was only covered *incidentally*. That left `doctor.py::_check_coverage`'s
+    # branch coverage flaky (~1 run in 3 dropped it), which moved its risk score and could
+    # intermittently red the dogfood/publish gate. Drive every branch with explicit mtimes so its
+    # coverage is identical everywhere (mirrors `test_find_newer_py_covers_all_branches`).
+    import os
+
+    from riskratchet.doctor import _check_coverage
+
+    src_dir = tmp_path / "src"
+    src_dir.mkdir()
+    src_file = src_dir / "m.py"
+    src_file.write_text("def f():\n    return 1\n", encoding="utf-8")
+    cov = tmp_path / "coverage.json"
+    cov.write_text('{"files": {}}', encoding="utf-8")
+    base = 1_000_000.0
+
+    # 1. no coverage configured → WARN
+    assert _check_coverage(None, source_paths=[src_dir]).status is CheckStatus.WARN
+    # 2. configured but the file doesn't exist → FAIL
+    assert _check_coverage(tmp_path / "absent.json", source_paths=[src_dir]).status is CheckStatus.FAIL
+    # 3. coverage older than a source file → WARN (stale)
+    os.utime(cov, (base, base))
+    os.utime(src_file, (base + 100, base + 100))
+    assert _check_coverage(cov, source_paths=[src_dir]).status is CheckStatus.WARN
+    # 4. coverage newer than every source file → PASS (fresh) — the previously-flaky branch
+    os.utime(src_file, (base - 100, base - 100))
+    os.utime(cov, (base, base))
+    fresh = _check_coverage(cov, source_paths=[src_dir])
+    assert fresh.status is CheckStatus.PASS
+    assert "fresh" in fresh.summary
+
+
 def test_doctor_warns_when_config_unknown_keys(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     _project(tmp_path)
