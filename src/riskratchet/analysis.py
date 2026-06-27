@@ -22,6 +22,13 @@ from riskratchet.models import FileStats, FunctionId, FunctionSpan
 
 @dataclass(frozen=True, slots=True)
 class DiscoveredFunction:
+    """A function discovered by the Python (AST) backend.
+
+    Conforms to `models.DiscoveredFunctionLike` (the shared backend protocol), and adds the
+    Python-only identity the scoring/baseline pipeline needs: `fingerprint`/`signature` for
+    rename-aware matching and the raw `node` for complexity. TypeScript's `TsFunction` shares
+    the protocol surface but not this identity half yet (see the protocol docstring)."""
+
     id: FunctionId
     span: FunctionSpan
     is_public: bool
@@ -175,6 +182,12 @@ class _FunctionCollector(ast.NodeVisitor):
         self._record(node)
 
     def _record(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+        if _is_ellipsis_stub(node):
+            # A function whose body is only `...` (optionally after a docstring) is a
+            # declaration, not an implementation — Protocol members, `@overload`/`@abstractmethod`
+            # stubs, `.pyi`-style signatures. There is nothing to test or maintain, so it is not
+            # a scoreable function (the TypeScript backend likewise excludes bodyless signatures).
+            return
         qualname = ".".join([*self._stack, node.name])
         span = FunctionSpan(
             start_line=node.lineno,
@@ -196,6 +209,28 @@ class _FunctionCollector(ast.NodeVisitor):
             self.generic_visit(node)
         finally:
             self._stack.pop()
+
+
+def _is_ellipsis_stub(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
+    """True when the body is only `...` (optionally preceded by a docstring) — a signature-only
+    declaration with no implementation (Protocol member, `@overload`, `@abstractmethod` stub).
+
+    Deliberately narrow: a `pass`-only or docstring-only function is a real (empty) function the
+    author wrote and is still scored; only the `...` ellipsis idiom is treated as a stub."""
+    body = node.body
+    if (
+        body
+        and isinstance(body[0], ast.Expr)
+        and isinstance(body[0].value, ast.Constant)
+        and isinstance(body[0].value.value, str)
+    ):
+        body = body[1:]  # drop a leading docstring
+    return (
+        len(body) == 1
+        and isinstance(body[0], ast.Expr)
+        and isinstance(body[0].value, ast.Constant)
+        and body[0].value.value is Ellipsis
+    )
 
 
 def _discover_functions(tree: ast.Module, relative_path: str) -> tuple[DiscoveredFunction, ...]:

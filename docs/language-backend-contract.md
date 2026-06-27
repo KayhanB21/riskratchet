@@ -15,18 +15,26 @@ strategy.
 
 ## The seam
 
-**There is no shared backend protocol yet.** Python discovery is hard-coded in
-`analysis.py` (it calls `ast` directly), and as of slice 2 (`0.2.12`) TypeScript
-discovery lives in a *separate* module, `typescript.py` (tree-sitter), reached only
-through `scan --experimental-typescript`. The two paths share the language-neutral
-`FunctionId`/`FunctionSpan` data shapes and the shared path helpers in
-`riskratchet._paths` (`relative_posix`, `has_hidden_parent`, `any_match`), but **not** a
-common interface — TS discovery returns its own `TsFunction`, not the Python
-`DiscoveredFunction`. Unifying those two discovered-function shapes behind one backend
-protocol (so the engine scores either language through the same seam) is the refactor a
-later slice still owes — tracked as `TODO(slice-3)` on `TsFunction`; this document
-describes the contract that protocol should expose, using today's Python code as the
-worked reference and the TS module as the second concrete data point.
+**The discovered-function shapes are now unified behind one protocol;
+identity is the remaining gap.** Python discovery is in `analysis.py` (it calls `ast`
+directly) and TypeScript discovery in a *separate* module, `typescript.py` (tree-sitter),
+reached only through `scan --experimental-typescript`. They share the language-neutral
+`FunctionId`/`FunctionSpan` data shapes and the path helpers in `riskratchet._paths`
+(`relative_posix`, `has_hidden_parent`, `any_match`), and **now a common protocol**:
+`models.DiscoveredFunctionLike` (`id`, `span`, `is_public`, `is_async`). Both
+`analysis.DiscoveredFunction` and `typescript.TsFunction` conform to it — checked statically
+(mypy) and at runtime in `tests/test_backend_protocol.py`, so the two can't silently drift on
+the common surface. Backend-agnostic code can be written against the protocol instead of a
+concrete type.
+
+What the protocol deliberately omits is **identity** — a token-stable body/signature
+fingerprint for rename-aware baseline matching. Python supplies it on `DiscoveredFunction`;
+tree-sitter discovery does not yet produce it. So while the engine *could* score either
+language through the seam on the common surface, TypeScript cannot enter the
+scoring/**baseline** pipeline until that identity half lands (the remaining slice-5 work,
+tracked on `TsFunction`). The rest of this document describes the rest of the contract
+(coverage, complexity, public surface, identity), using today's Python code as the worked
+reference and the TS module as the second concrete data point.
 
 `engine.analyze()` (`src/riskratchet/engine.py`) is the single entry point. Once the
 seam exists, a backend supplies five things per file and the engine hands pure data

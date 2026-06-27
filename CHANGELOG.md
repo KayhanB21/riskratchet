@@ -38,6 +38,13 @@ TypeScript track moving while the work and fixtures were fresh.)
   — the file is warned and its coverage omitted, rather than showing confidently-wrong numbers.
   A file simply absent from the report is reported explicitly (`N file(s) had no coverage
   entry`), not silently dropped.
+- **Shared backend protocol** `riskratchet.models.DiscoveredFunctionLike` (`id`, `span`,
+  `is_public`, `is_async`) — the structural unification of the Python
+  `analysis.DiscoveredFunction` and the TypeScript `typescript.TsFunction` behind one type,
+  conformance-checked statically and at runtime (`tests/test_backend_protocol.py`). Identity
+  (body/signature fingerprint for rename-aware baseline matching) stays Python-only until
+  TypeScript has a token-stable fingerprint — that identity half, not the shape, is what still
+  blocks TS from the scoring/baseline pipeline.
 - New `riskratchet.typescript_coverage` module (`load_istanbul_coverage`,
   `load_istanbul_coverage_files`, `coverage_for_ts_span`, `spans_cover_any_statement`).
   `TsFunction` gains an additive `coverage: CoverageStats | None` field, and `CoverageStats`

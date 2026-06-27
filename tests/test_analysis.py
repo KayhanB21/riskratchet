@@ -21,6 +21,44 @@ def _write(tmp_path: Path, name: str, source: str) -> Path:
     return path
 
 
+def test_ellipsis_stub_functions_are_not_discovered(tmp_path: Path) -> None:
+    # `...`-body declarations (Protocol members, @overload, @abstractmethod stubs) have no
+    # implementation to test or maintain, so they are not scoreable functions. Real functions
+    # — including `pass`-only and docstring-only ones — are still discovered.
+    path = _write(
+        tmp_path,
+        "m.py",
+        '''
+        from typing import Protocol, overload
+
+        class Shape(Protocol):
+            def area(self) -> float: ...
+            @property
+            def name(self) -> str: ...
+
+        @overload
+        def f(x: int) -> int: ...
+        @overload
+        def f(x: str) -> str: ...
+        def f(x):
+            return x
+
+        def empty():
+            pass
+
+        def doc_only():
+            """just a docstring"""
+    ''',
+    )
+    parsed = parse_file(path, root=tmp_path)
+    assert not isinstance(parsed, ParseError)
+    names = {fn.id.qualname for fn in parsed.functions}
+    # Stubs excluded; the real `f` implementation, the `pass`, and the docstring-only kept.
+    assert "Shape.area" not in names
+    assert "Shape.name" not in names
+    assert names == {"f", "empty", "doc_only"}
+
+
 def test_discovers_module_level_functions(tmp_path: Path) -> None:
     path = _write(
         tmp_path,

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Protocol, runtime_checkable
 
 
 class Severity(str, Enum):
@@ -238,3 +239,34 @@ class DiffReport:
 
     def ambiguous_renames(self) -> tuple[DiffEntry, ...]:
         return self.by_status(DiffStatus.AMBIGUOUS_RENAME)
+
+
+@runtime_checkable
+class DiscoveredFunctionLike(Protocol):
+    """The one backend-neutral shape every language's discovered function exposes.
+
+    This is the shared "backend protocol" the language-backend contract called for (see
+    `docs/language-backend-contract.md` §"The seam"). Both the Python
+    `analysis.DiscoveredFunction` and the TypeScript `typescript.TsFunction` conform to it
+    structurally, so code that only needs a function's identity, location, and visibility can
+    be written against the protocol instead of a concrete backend type.
+
+    What is deliberately **not** here: rename-aware **identity** (a body/signature
+    fingerprint). Python supplies that on `DiscoveredFunction`; TypeScript cannot until it
+    has a token-stable serialization, which is the remaining work before TS can enter the
+    scoring/baseline pipeline. The structural shapes are unified now; identity stays a
+    Python-only capability until that lands.
+
+    Members are read-only `@property` declarations (not bare annotations) because the backend
+    types are *frozen* dataclasses, whose attributes are read-only — a Protocol with mutable
+    attributes would (per mypy variance) reject them.
+    """
+
+    @property
+    def id(self) -> FunctionId: ...
+    @property
+    def span(self) -> FunctionSpan: ...
+    @property
+    def is_public(self) -> bool: ...
+    @property
+    def is_async(self) -> bool: ...

@@ -80,9 +80,13 @@ class TsFunction:
     informational). `coverage` is None until enriched from an Istanbul report
     (`typescript_coverage.coverage_for_ts_span`); discovery itself never sets it.
 
-    TODO(slice-5): unify `TsFunction` with `DiscoveredFunction` behind one backend
-    protocol once TypeScript enters the scoring/baseline pipeline, rather than carrying
-    two divergent discovered-function shapes (see `docs/language-backend-contract.md`)."""
+    Conforms to `models.DiscoveredFunctionLike` — the shared backend protocol it satisfies
+    alongside the Python `analysis.DiscoveredFunction` (proven in
+    `tests/test_backend_protocol.py`). The structural shapes are now unified behind that one
+    protocol. What is still missing before TypeScript can enter the scoring/baseline pipeline
+    is **identity**: a token-stable body/signature fingerprint for rename-aware matching, which
+    Python carries on `DiscoveredFunction` but tree-sitter discovery does not yet produce. That
+    identity work — not the shape — is the remaining slice-5 dependency."""
 
     id: FunctionId
     span: FunctionSpan
