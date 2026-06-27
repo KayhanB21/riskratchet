@@ -286,12 +286,13 @@ def scan(
         ),
     ] = False,
     ts_coverage: Annotated[
-        Path | None,
+        list[Path] | None,
         typer.Option(
             "--ts-coverage",
             help="EXPERIMENTAL: Istanbul/nyc coverage-final.json to annotate discovered "
-            "TypeScript functions with line/branch coverage. Only used with "
-            "--experimental-typescript; separate from --coverage (which is Python).",
+            "TypeScript functions with line/branch coverage. Repeatable (pass one per package "
+            "in a monorepo). Only used with --experimental-typescript; separate from "
+            "--coverage (which is Python).",
         ),
     ] = None,
 ) -> None:
@@ -390,9 +391,9 @@ def scan(
             root=config_dir,
             include=resolved_include,
             exclude=resolved_exclude,
-            ts_coverage=ts_coverage,
+            ts_coverage=ts_coverage or [],
         )
-    elif ts_coverage is not None:
+    elif ts_coverage:
         typer.secho(
             "typescript: --ts-coverage has no effect without --experimental-typescript.",
             fg=typer.colors.YELLOW,
@@ -1613,7 +1614,7 @@ def _emit_typescript_discovery(
     root: Path,
     include: list[str],
     exclude: list[str],
-    ts_coverage: Path | None = None,
+    ts_coverage: list[Path] | None = None,
 ) -> None:
     """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13): list
     discovered TypeScript functions, optionally annotated with Istanbul coverage.
@@ -1629,6 +1630,8 @@ def _emit_typescript_discovery(
     from . import typescript_coverage as tscov
     from ._paths import relative_posix
 
+    ts_coverage = ts_coverage or []
+
     typer.secho(
         "experimental: TypeScript discovery is informational and its output may change.",
         fg=typer.colors.YELLOW,
@@ -1643,69 +1646,97 @@ def _emit_typescript_discovery(
             err=True,
         )
 
+    def _warn(message: str) -> None:
+        typer.secho(f"typescript: {message}", fg=typer.colors.YELLOW, err=True)
+
     coverage = tscov.empty_istanbul_coverage()
-    if ts_coverage is not None:
-        try:
-            coverage = tscov.load_istanbul_coverage(ts_coverage)
-        except FileNotFoundError:
-            typer.secho(
-                f"typescript: --ts-coverage file not found: {ts_coverage} (listing without coverage).",
-                fg=typer.colors.YELLOW,
-                err=True,
-            )
-        except ValueError as exc:
-            typer.secho(
-                f"typescript: could not read --ts-coverage: {exc} (listing without coverage).",
-                fg=typer.colors.YELLOW,
-                err=True,
-            )
+    if ts_coverage:
+        coverage = tscov.load_istanbul_coverage_files(
+            ts_coverage,
+            on_error=lambda path, msg: _warn(f"--ts-coverage {path}: {msg} (skipped)"),
+        )
 
     def _warn_skip(path: Path, message: str) -> None:
         typer.secho(f"skipping {relative_posix(path, root)}: {message}", fg=typer.colors.YELLOW, err=True)
 
-    functions: list[ts.TsFunction] = []
     try:
-        for path in files:
-            found = ts.discover_typescript(path, root=root, on_error=_warn_skip)
-            functions.extend(_attach_ts_coverage(found, coverage, ts_coverage is not None))
+        functions, unmeasured_files = _collect_ts_functions(
+            files,
+            root=root,
+            coverage=coverage,
+            has_coverage=bool(ts_coverage),
+            warn=_warn,
+            on_error=_warn_skip,
+        )
     except ImportError as exc:
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
 
+    if unmeasured_files:
+        _warn(f"{unmeasured_files} file(s) had no coverage entry (shown without coverage)")
+    typer.echo("\n".join(_render_ts_functions(functions, len(files))), err=True)
+
+
+def _collect_ts_functions(
+    files: list[Path],
+    *,
+    root: Path,
+    coverage: Any,
+    has_coverage: bool,
+    warn: Any,
+    on_error: Any,
+) -> tuple[list[Any], int]:
+    """Discover functions in each file and (when coverage is supplied) attach it per file,
+    counting files that had no coverage entry. Returns (functions, unmeasured_file_count)."""
+    from . import typescript as ts
+    from ._paths import relative_posix
+
+    functions: list[Any] = []
+    unmeasured = 0
+    for path in files:
+        found = ts.discover_typescript(path, root=root, on_error=on_error)
+        if not has_coverage:
+            functions.extend(found)
+            continue
+        rel = relative_posix(path, root)
+        file_cov = coverage.lookup(rel)
+        if file_cov is None and found:
+            unmeasured += 1
+        functions.extend(_enrich_ts_file(found, file_cov, rel, warn))
+    return functions, unmeasured
+
+
+def _render_ts_functions(functions: list[Any], file_count: int) -> list[str]:
+    """Render the stderr listing: one header line plus one line per function (sorted)."""
     functions.sort(key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
-    lines = [f"typescript: {len(functions)} function(s) in {len(files)} file(s)"]
+    lines = [f"typescript: {len(functions)} function(s) in {file_count} file(s)"]
     for fn in functions:
         visibility = "public" if fn.is_public else "internal"
         line = f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})"
-        line += _format_ts_coverage(fn.coverage)
-        lines.append(line)
-    typer.echo("\n".join(lines), err=True)
+        lines.append(line + _format_ts_coverage(fn.coverage))
+    return lines
 
 
-def _attach_ts_coverage(
-    functions: list[Any],
-    coverage: Any,
-    has_coverage: bool,
-) -> list[Any]:
-    """Enrich each discovered TsFunction with `CoverageStats` from the Istanbul report.
+def _enrich_ts_file(found: list[Any], file_cov: Any, rel: str, warn: Any) -> list[Any]:
+    """Attach Istanbul coverage to one file's discovered functions.
 
-    Uses the SKIP missing-file policy: this is an informational listing, so a file the
-    coverage run never measured renders with no coverage tag rather than a misleading 0%.
-    Returns the functions unchanged when no --ts-coverage was given.
+    Returns `coverage=None` when the file is absent from the report, or when its line numbers
+    don't intersect any discovered span — the signature of coverage collected on compiled JS
+    without source-map remapping, which is warned so wrong numbers are never shown.
     """
-    if not has_coverage:
-        return functions
     from dataclasses import replace
 
-    from .coverage import MissingCoveragePolicy
-    from .typescript_coverage import coverage_for_ts_span
+    from . import typescript_coverage as tscov
 
-    out = []
-    for fn in functions:
-        file_cov = coverage.lookup(fn.id.path)
-        stats = coverage_for_ts_span(file_cov, fn.span, missing_policy=MissingCoveragePolicy.SKIP)
-        out.append(replace(fn, coverage=stats if file_cov is not None else None))
-    return out
+    if file_cov is None:
+        return [replace(fn, coverage=None) for fn in found]
+    if found and not tscov.spans_cover_any_statement(file_cov, [fn.span for fn in found]):
+        warn(
+            f"{rel}: coverage line numbers don't intersect any discovered function "
+            "— likely measured on compiled JS, not source (source maps?); coverage omitted"
+        )
+        return [replace(fn, coverage=None) for fn in found]
+    return [replace(fn, coverage=tscov.coverage_for_ts_span(file_cov, fn.span)) for fn in found]
 
 
 def _format_ts_coverage(coverage: Any) -> str:

@@ -75,7 +75,12 @@ class CoverageStats:
     line_coverage: float
     branch_coverage: float | None
     missing_lines: tuple[int, ...] = ()
+    # `(src_line, dst_line)` arcs, filled by the Python (coverage.py) backend.
     missing_branches: tuple[tuple[int, int], ...] = ()
+    # TypeScript/Istanbul analog: `(branch_line, arm_index)` pairs (no src→dst arc exists).
+    # A separate field, not a reuse of `missing_branches`, so an arm index is never read as
+    # a destination line. Filled only by `typescript_coverage`.
+    missing_branch_arms: tuple[tuple[int, int], ...] = ()
 
     @classmethod
     def uncovered(cls) -> CoverageStats:

@@ -25,6 +25,8 @@ from riskratchet.typescript_coverage import (
     coverage_for_ts_span,
     empty_istanbul_coverage,
     load_istanbul_coverage,
+    load_istanbul_coverage_files,
+    spans_cover_any_statement,
 )
 
 APP = Path(__file__).parent / "fixtures" / "typescript" / "app"
@@ -50,6 +52,8 @@ def test_fully_covered_function_is_100_percent_no_branch() -> None:
     # No branch falls inside covered()'s span → branch coverage not measured.
     assert stats.branch_coverage is None
     assert stats.missing_lines == ()
+    # TS arms live in the TS-specific field; the Python `missing_branches` stays empty.
+    assert stats.missing_branch_arms == ()
     assert stats.missing_branches == ()
 
 
@@ -60,16 +64,27 @@ def test_partial_function_reports_missing_line_and_uncovered_branch() -> None:
     assert stats.missing_lines == (11,)
     # if-branch: then-arm taken, else-arm not → 1 of 2 arms covered, else-arm at index 1.
     assert stats.branch_coverage == pytest.approx(0.5)
-    assert stats.missing_branches == ((8, 1),)
+    assert stats.missing_branch_arms == ((8, 1),)
+    assert stats.missing_branches == ()  # never the Python field
 
 
-def test_line_coverage_keys_on_statement_start_line_only() -> None:
-    # statement id 3 spans lines 8-12 but only contributes to its start line (8); the
-    # multi-line statement must not mark lines 9-12 as measured by itself.
-    stats = coverage_for_ts_span(_file_cov(), PARTIAL_SPAN)
-    # 5 distinct measured start-lines, not 8 (would be the case if we expanded spans).
-    measured = len(stats.missing_lines) + round(stats.line_coverage * 5)
-    assert measured == 5
+def test_line_coverage_measures_statement_start_lines_not_spanned_lines() -> None:
+    # A multi-line statement (start 8, end 12) must contribute ONLY to its start line.
+    # Lines 9 and 11 carry their own statements; lines 10 and 12 carry none. So the measured
+    # set is exactly {8, 9, 11} — directly proving start-line keying, not span expansion.
+    file_cov = {
+        "statementMap": {
+            "0": {"start": {"line": 8, "column": 2}, "end": {"line": 12, "column": 3}},  # multi-line
+            "1": {"start": {"line": 9, "column": 4}, "end": {"line": 9, "column": 10}},  # executed
+            "2": {"start": {"line": 11, "column": 4}, "end": {"line": 11, "column": 10}},  # missing
+        },
+        "s": {"0": 1, "1": 1, "2": 0},
+    }
+    stats = coverage_for_ts_span(file_cov, FunctionSpan(start_line=6, end_line=14))
+    # measured = {8, 9, 11}; line 11 not executed. Lines 10 and 12 are NOT measured (no
+    # statement starts there) even though statement 0 spans across them.
+    assert stats.missing_lines == (11,)
+    assert stats.line_coverage == pytest.approx(2 / 3)
 
 
 def test_missing_file_pessimistic_is_uncovered() -> None:
@@ -129,6 +144,120 @@ def test_fixture_payload_shape_is_istanbul() -> None:
     entry = raw["src/app/sample.ts"]
     assert set(entry) >= {"statementMap", "branchMap", "fnMap", "s", "b", "f"}
     assert entry["b"]["0"] == [1, 0]
+
+
+# ---- branch logic across shapes (was only ever one `if`) -------------------------------
+
+
+def _branch_file_cov(branch_map: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
+    # Minimal file entry with one trivial executed statement so the line side is well-defined.
+    return {
+        "statementMap": {"0": {"start": {"line": 2, "column": 0}, "end": {"line": 2, "column": 1}}},
+        "s": {"0": 1},
+        "branchMap": branch_map,
+        "b": b,
+    }
+
+
+def test_branch_switch_three_arms_one_uncovered() -> None:
+    file_cov = _branch_file_cov(
+        {
+            "0": {
+                "type": "switch",
+                "loc": {"start": {"line": 3, "column": 2}, "end": {"line": 9, "column": 3}},
+                "locations": [{"start": {"line": 4}}, {"start": {"line": 6}}, {"start": {"line": 8}}],
+            }
+        },
+        {"0": [1, 0, 2]},  # arm 1 (the middle case) never taken
+    )
+    stats = coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=10))
+    assert stats.branch_coverage == pytest.approx(2 / 3)
+    assert stats.missing_branch_arms == ((3, 1),)
+
+
+def test_branch_logical_and_plus_second_branch_same_span() -> None:
+    file_cov = _branch_file_cov(
+        {
+            "0": {  # a && b on line 3
+                "type": "binary-expr",
+                "loc": {"start": {"line": 3, "column": 2}, "end": {"line": 3, "column": 20}},
+                "locations": [{"start": {"line": 3}}, {"start": {"line": 3}}],
+            },
+            "1": {  # an if on line 5
+                "type": "if",
+                "loc": {"start": {"line": 5, "column": 2}, "end": {"line": 7, "column": 3}},
+                "locations": [{"start": {"line": 5}}, {"start": {"line": 6}}],
+            },
+        },
+        {"0": [1, 0], "1": [1, 1]},  # one operand short-circuited; the if fully covered
+    )
+    stats = coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=10))
+    # 4 arms total, 3 covered.
+    assert stats.branch_coverage == pytest.approx(3 / 4)
+    assert stats.missing_branch_arms == ((3, 1),)
+
+
+def test_branch_outside_span_is_excluded() -> None:
+    file_cov = _branch_file_cov(
+        {
+            "0": {
+                "type": "if",
+                "loc": {"start": {"line": 40, "column": 2}, "end": {"line": 42, "column": 3}},
+                "locations": [{"start": {"line": 40}}, {"start": {"line": 41}}],
+            }
+        },
+        {"0": [1, 0]},
+    )
+    # The branch is on line 40, well outside the span → not counted at all.
+    stats = coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=10))
+    assert stats.branch_coverage is None
+    assert stats.missing_branch_arms == ()
+
+
+# ---- R1 source-map misalignment detection ---------------------------------------------
+
+
+def test_spans_cover_any_statement_true_when_aligned() -> None:
+    file_cov = _file_cov()
+    assert spans_cover_any_statement(file_cov, [COVERED_SPAN, PARTIAL_SPAN]) is True
+
+
+def test_spans_cover_any_statement_false_when_misaligned() -> None:
+    # Statements live on lines 2-13, but the "discovered" spans are far away (as if the
+    # report measured compiled JS at different line numbers).
+    file_cov = _file_cov()
+    shifted = [FunctionSpan(start_line=200, end_line=210)]
+    assert spans_cover_any_statement(file_cov, shifted) is False
+
+
+def test_spans_cover_any_statement_true_when_no_statements() -> None:
+    # No statements at all → nothing to misalign; not flagged.
+    assert spans_cover_any_statement({"statementMap": {}, "s": {}}, [COVERED_SPAN]) is True
+
+
+# ---- R8 repeatable / merged reports ---------------------------------------------------
+
+
+def test_load_multiple_reports_merges_disjoint_packages(tmp_path: Path) -> None:
+    a = tmp_path / "a.json"
+    b = tmp_path / "b.json"
+    a.write_text(json.dumps({"pkg-a/x.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8")
+    b.write_text(json.dumps({"pkg-b/y.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8")
+    data = load_istanbul_coverage_files([a, b])
+    assert data.lookup("x.ts") is not None
+    assert data.lookup("y.ts") is not None
+
+
+def test_load_multiple_reports_skips_bad_shard_with_callback(tmp_path: Path) -> None:
+    good = tmp_path / "good.json"
+    good.write_text(json.dumps({"pkg/x.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8")
+    errors: list[str] = []
+    data = load_istanbul_coverage_files(
+        [tmp_path / "absent.json", good],
+        on_error=lambda path, msg: errors.append(str(path)),
+    )
+    assert data.lookup("x.ts") is not None  # good shard still loaded
+    assert any("absent.json" in e for e in errors)
 
 
 # ---- end-to-end discovery + enrichment (needs the typescript extra) --------------------
@@ -221,3 +350,75 @@ def test_scan_ts_coverage_without_experimental_flag_warns(
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "--ts-coverage has no effect without --experimental-typescript" in result.stderr
+
+
+def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:
+    from typer.testing import CliRunner
+
+    from riskratchet.cli import app
+
+    monkeypatch.chdir(app_dir)
+    return CliRunner().invoke(app, ["scan", ".", "--experimental-typescript", "--no-auto-cov", *extra])
+
+
+def test_scan_warns_and_omits_coverage_when_line_numbers_misaligned(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """R1: a report whose line numbers describe compiled JS (no statement lands in any
+    discovered span) must warn and show NO coverage, not confidently-wrong numbers."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "app"
+    app_dir.mkdir()
+    (app_dir / "sample.ts").write_text((APP / "sample.ts").read_text(encoding="utf-8"), encoding="utf-8")
+    # Same shape as the real fixture but every statement/branch line shoved to 200+, as if the
+    # coverage was collected on compiled output.
+    raw = json.loads((APP / "coverage-final.json").read_text(encoding="utf-8"))
+    entry = raw["src/app/sample.ts"]
+    for sid in entry["statementMap"]:
+        for end in ("start", "end"):
+            entry["statementMap"][sid][end]["line"] += 200
+    for bid in entry["branchMap"]:
+        entry["branchMap"][bid]["loc"]["start"]["line"] += 200
+    (app_dir / "shifted.json").write_text(json.dumps(raw), encoding="utf-8")
+
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "shifted.json")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "don't intersect any discovered function" in result.stderr
+    assert "% line" not in result.stderr  # no coverage annotation was emitted at all
+
+
+def test_scan_hints_when_file_has_no_coverage_entry(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R4: a discovered file absent from the report is reported explicitly, not silently."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "app"
+    app_dir.mkdir()
+    (app_dir / "other.ts").write_text("export function f(): number {\n  return 1;\n}\n", encoding="utf-8")
+    # A report that measures some unrelated file, so other.ts has no entry.
+    (app_dir / "cov.json").write_text(
+        json.dumps({"pkg/unrelated.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8"
+    )
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "cov.json")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "1 file(s) had no coverage entry" in result.stderr
+
+
+def test_scan_accepts_multiple_ts_coverage_files(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """R8: two reports (one per package) merge; the function gets coverage from whichever
+    report measured its file."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "app"
+    app_dir.mkdir()
+    (app_dir / "sample.ts").write_text((APP / "sample.ts").read_text(encoding="utf-8"), encoding="utf-8")
+    # One report measures sample.ts; an unrelated second report is also passed.
+    (app_dir / "a.json").write_text(
+        (APP / "coverage-final.json").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (app_dir / "b.json").write_text(
+        json.dumps({"pkg-b/other.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8"
+    )
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "a.json", "--ts-coverage", "b.json")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "cov 100% line" in result.stderr  # sample.ts::covered resolved via report a

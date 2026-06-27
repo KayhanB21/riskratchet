@@ -91,9 +91,27 @@ positionally aligned to `branchMap[id].locations`), and `missing_branches` reuse
 `tuple[(int, int), …]` field as `(branch_line, arm_index)` — a TS-specific shape, since
 Istanbul has no `(src_line, dst_line)` analog. Paths are matched basename + longest-suffix
 (Istanbul keys are absolute). It is reached only through `scan
---experimental-typescript --ts-coverage` and stays informational (no scoring/gating).
-**LCOV is intentionally deferred** — it is line/branch oriented and closer to the
-existing shape, and folds in later if demand appears.
+--experimental-typescript --ts-coverage` (repeatable — one report per package in a
+monorepo, merged; Istanbul keys are absolute, so no prefix map is needed) and stays
+informational (no scoring/gating). **LCOV is intentionally deferred** — it is line/branch
+oriented and closer to the existing shape, and folds in later if demand appears.
+
+**Semantics are not identical across backends — do not treat the percentages as
+interchangeable.** TS `line_coverage` is *statement-start-derived* (a line counts as
+measured iff an Istanbul statement starts on it); the Python backend's is *line-level*
+(coverage.py's executable-line set). A TS function and a Python function both at "80%" are
+not the same denominator, so this output is **not** consumable unchanged by a future
+cross-language scoring blend — it must be recalibrated first. Likewise TS branch arms go in
+`CoverageStats.missing_branch_arms` (`(line, arm_index)`), never the Python `missing_branches`
+(`(src_line, dst_line)`).
+
+**Source-map alignment is the load-bearing assumption.** The mapping trusts the report's
+line numbers. If coverage was collected on *compiled JS* (c8/V8, or nyc instrumenting built
+output without `babel-plugin-istanbul`) and not remapped back to `.ts`, those numbers describe
+JS, not the source we parse. `spans_cover_any_statement` detects the gross case (a file whose
+statements land in *no* discovered span) so the CLI warns and omits coverage for that file
+rather than emitting wrong numbers; subtler partial misalignment is still possible and is why
+this stays informational.
 
 ## 3. Complexity
 
