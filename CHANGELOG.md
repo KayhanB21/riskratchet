@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [Unreleased]
+## [0.2.13] - 2026-06-27
 
 0.2.13 is the "TypeScript coverage mapping" release — slice 3 of the experimental TypeScript
 track. It teaches `scan --experimental-typescript` to annotate each discovered TypeScript
