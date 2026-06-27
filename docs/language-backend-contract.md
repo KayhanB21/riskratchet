@@ -80,11 +80,20 @@ from the coverage report.
 file's executed/missing line and branch sets. The format is already
 language-agnostic JSON; only the *producer* is Python-specific.
 
-**TypeScript notes / open questions.** Map Istanbul/nyc/LCOV output to discovered
-spans. Istanbul reports per-statement and per-branch coverage keyed by byte/line
-ranges; the work is translating those ranges onto function spans and deriving the
-same line/branch fractions. LCOV is line/branch oriented and closer to the
-existing shape. This lands in slice 3 (`0.2.14`).
+**TypeScript status — slice 3 (`0.2.13`) landed for Istanbul JSON.**
+`src/riskratchet/typescript_coverage.py` maps an Istanbul/nyc `coverage-final.json`
+onto the spans `typescript.py` discovers, returning the same `CoverageStats`.
+Algorithm: **line coverage** keys on each statement's `start.line` only (not its
+end line), collapsing statements that share a line with `max` hit count — exactly
+`istanbul-lib-coverage.getLineCoverage`; **branch coverage** counts the arms of each
+branch whose `loc.start.line` falls in the span (`b[id]` is a per-arm hit-count array
+positionally aligned to `branchMap[id].locations`), and `missing_branches` reuses the
+`tuple[(int, int), …]` field as `(branch_line, arm_index)` — a TS-specific shape, since
+Istanbul has no `(src_line, dst_line)` analog. Paths are matched basename + longest-suffix
+(Istanbul keys are absolute). It is reached only through `scan
+--experimental-typescript --ts-coverage` and stays informational (no scoring/gating).
+**LCOV is intentionally deferred** — it is line/branch oriented and closer to the
+existing shape, and folds in later if demand appears.
 
 ## 3. Complexity
 

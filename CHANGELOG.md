@@ -9,6 +9,33 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+0.2.13 is the "TypeScript coverage mapping" release — slice 3 of the experimental TypeScript
+track. It teaches `scan --experimental-typescript` to annotate each discovered TypeScript
+function with line/branch coverage read from an Istanbul/nyc `coverage-final.json`. Still
+**informational only**: no scoring, no baseline, no gating, exit code unchanged. Python-only
+installs are untouched — the new mapping is pure JSON (no tree-sitter), and the Python analyzer
+and scoring are byte-for-byte unchanged. (This slice ships ahead of an external-demand signal —
+the demand-gate clock from 0.2.12 had barely started — by maintainer choice, to keep the
+TypeScript track moving while the work and fixtures were fresh.)
+
+### Added
+
+- (P20, slice 3) **Experimental TypeScript coverage mapping**: `scan
+  --experimental-typescript --ts-coverage <coverage-final.json>` annotates the discovered-
+  function listing (on **stderr**) with per-function line coverage, branch coverage, and
+  missing lines, mapped from an **Istanbul/nyc** report (`nyc`/`c8`/Jest `--coverage`). Line
+  coverage keys on each statement's start line (collapsing shared lines by max hit count, like
+  `istanbul-lib-coverage`); branch coverage counts the arms of each branch inside a function's
+  span. A file the report never measured shows no coverage tag (rather than a misleading 0%).
+  `--ts-coverage` is separate from Python `--coverage` and has no effect without
+  `--experimental-typescript` (warned). `--json`/`--format sarif`/`--output` stay valid with
+  the flags on. **LCOV is intentionally deferred** (Istanbul JSON only this slice).
+- New `riskratchet.typescript_coverage` module (`load_istanbul_coverage`,
+  `coverage_for_ts_span`) returning the same language-neutral `CoverageStats` the Python
+  backend produces; `TsFunction` gains an additive `coverage: CoverageStats | None` field.
+
 ## [0.2.12] - 2026-06-20
 
 0.2.12 is the "experimental TypeScript discovery + contract docs" release. It pulls

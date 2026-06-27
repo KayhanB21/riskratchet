@@ -753,10 +753,11 @@ scan paths, and coverage source.
 
 ## Experimental: TypeScript discovery
 
-riskratchet scores Python. As the first step toward TypeScript support, `scan
+riskratchet scores Python. As the first steps toward TypeScript support, `scan
 --experimental-typescript` will *discover and list* the functions in your
-`.ts`/`.tsx`/`.mts`/`.cts` files — nothing more. It is **informational only**: no
-scoring, no coverage, no baseline, no gating, and it never changes the exit code.
+`.ts`/`.tsx`/`.mts`/`.cts` files, optionally annotated with per-function coverage. It is
+**informational only**: no scoring, no baseline, no gating, and it never changes the exit
+code.
 The listing prints to **stderr** (it is an experimental diagnostic, not part of the
 machine-readable contract), so `--json` / `--format sarif` / `--output` stay valid
 with the flag on. The output format may change.
@@ -769,6 +770,19 @@ riskratchet scan src --experimental-typescript
 #   src/math.ts::add  [public]  (4-6)
 #   src/math.ts::greet  [internal]  (8-13)
 #   src/math.ts::parseConfig  [public]  (15-21)
+```
+
+Add `--ts-coverage` to annotate each function with line/branch coverage from an
+Istanbul/nyc `coverage-final.json` (what `nyc`, `c8`, or Jest `--coverage` write). It is
+separate from Python `--coverage`, and a file the report never measured simply shows no
+coverage tag. **Istanbul JSON only** for now; LCOV is deferred.
+
+```bash
+riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-final.json
+# (on stderr:)
+# typescript: 2 function(s) in 1 file(s)
+#   src/math.ts::add  [public]  (4-6)  cov 100% line
+#   src/math.ts::parseConfig  [public]  (15-21)  cov 80% line / 50% branch  miss-lines 18
 ```
 
 It discovers top-level functions, class methods (including on abstract and

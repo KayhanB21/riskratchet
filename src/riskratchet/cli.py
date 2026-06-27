@@ -285,6 +285,15 @@ def scan(
             "no scoring or gating; needs `pip install 'riskratchet[typescript]'`). Output may change.",
         ),
     ] = False,
+    ts_coverage: Annotated[
+        Path | None,
+        typer.Option(
+            "--ts-coverage",
+            help="EXPERIMENTAL: Istanbul/nyc coverage-final.json to annotate discovered "
+            "TypeScript functions with line/branch coverage. Only used with "
+            "--experimental-typescript; separate from --coverage (which is Python).",
+        ),
+    ] = None,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg, config_dir = _discover_config(config)
@@ -381,6 +390,13 @@ def scan(
             root=config_dir,
             include=resolved_include,
             exclude=resolved_exclude,
+            ts_coverage=ts_coverage,
+        )
+    elif ts_coverage is not None:
+        typer.secho(
+            "typescript: --ts-coverage has no effect without --experimental-typescript.",
+            fg=typer.colors.YELLOW,
+            err=True,
         )
     _emit_diagnostics(
         diag,
@@ -1597,17 +1613,20 @@ def _emit_typescript_discovery(
     root: Path,
     include: list[str],
     exclude: list[str],
+    ts_coverage: Path | None = None,
 ) -> None:
-    """EXPERIMENTAL (P20, slice 2, since 0.2.12): list discovered TypeScript functions.
+    """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13): list
+    discovered TypeScript functions, optionally annotated with Istanbul coverage.
 
-    Informational only — no scoring, no coverage, no baseline, no gating; does not affect
-    the exit code. The whole listing (banner, skip warnings, and the function list) goes to
-    STDERR: it is an experimental diagnostic, not part of the machine-readable contract, so
-    `--json` / `--format sarif` / `--output` keep emitting valid output on stdout. JSON/SARIF
-    integration is deferred to a later slice. tree-sitter is imported lazily, so a default
-    Python-only install never touches it.
+    Informational only — no scoring, no baseline, no gating; does not affect the exit code.
+    The whole listing (banner, skip warnings, and the function list) goes to STDERR: it is an
+    experimental diagnostic, not part of the machine-readable contract, so `--json` /
+    `--format sarif` / `--output` keep emitting valid output on stdout. JSON/SARIF integration
+    is deferred to a later slice. tree-sitter is imported lazily, so a default Python-only
+    install never touches it.
     """
     from . import typescript as ts
+    from . import typescript_coverage as tscov
     from ._paths import relative_posix
 
     typer.secho(
@@ -1624,13 +1643,31 @@ def _emit_typescript_discovery(
             err=True,
         )
 
+    coverage = tscov.empty_istanbul_coverage()
+    if ts_coverage is not None:
+        try:
+            coverage = tscov.load_istanbul_coverage(ts_coverage)
+        except FileNotFoundError:
+            typer.secho(
+                f"typescript: --ts-coverage file not found: {ts_coverage} (listing without coverage).",
+                fg=typer.colors.YELLOW,
+                err=True,
+            )
+        except ValueError as exc:
+            typer.secho(
+                f"typescript: could not read --ts-coverage: {exc} (listing without coverage).",
+                fg=typer.colors.YELLOW,
+                err=True,
+            )
+
     def _warn_skip(path: Path, message: str) -> None:
         typer.secho(f"skipping {relative_posix(path, root)}: {message}", fg=typer.colors.YELLOW, err=True)
 
     functions: list[ts.TsFunction] = []
     try:
         for path in files:
-            functions.extend(ts.discover_typescript(path, root=root, on_error=_warn_skip))
+            found = ts.discover_typescript(path, root=root, on_error=_warn_skip)
+            functions.extend(_attach_ts_coverage(found, coverage, ts_coverage is not None))
     except ImportError as exc:
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
@@ -1639,8 +1676,50 @@ def _emit_typescript_discovery(
     lines = [f"typescript: {len(functions)} function(s) in {len(files)} file(s)"]
     for fn in functions:
         visibility = "public" if fn.is_public else "internal"
-        lines.append(f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})")
+        line = f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})"
+        line += _format_ts_coverage(fn.coverage)
+        lines.append(line)
     typer.echo("\n".join(lines), err=True)
+
+
+def _attach_ts_coverage(
+    functions: list[Any],
+    coverage: Any,
+    has_coverage: bool,
+) -> list[Any]:
+    """Enrich each discovered TsFunction with `CoverageStats` from the Istanbul report.
+
+    Uses the SKIP missing-file policy: this is an informational listing, so a file the
+    coverage run never measured renders with no coverage tag rather than a misleading 0%.
+    Returns the functions unchanged when no --ts-coverage was given.
+    """
+    if not has_coverage:
+        return functions
+    from dataclasses import replace
+
+    from .coverage import MissingCoveragePolicy
+    from .typescript_coverage import coverage_for_ts_span
+
+    out = []
+    for fn in functions:
+        file_cov = coverage.lookup(fn.id.path)
+        stats = coverage_for_ts_span(file_cov, fn.span, missing_policy=MissingCoveragePolicy.SKIP)
+        out.append(replace(fn, coverage=stats if file_cov is not None else None))
+    return out
+
+
+def _format_ts_coverage(coverage: Any) -> str:
+    """Render the coverage annotation appended to a function's listing line, or '' when the
+    function's file had no coverage entry."""
+    if coverage is None:
+        return ""
+    parts = [f"cov {round(coverage.line_coverage * 100)}% line"]
+    if coverage.branch_coverage is not None:
+        parts.append(f"{round(coverage.branch_coverage * 100)}% branch")
+    annotation = "  " + " / ".join(parts)
+    if coverage.missing_lines:
+        annotation += "  miss-lines " + ",".join(str(line) for line in coverage.missing_lines)
+    return annotation
 
 
 def _validate_format(format: str) -> None:
