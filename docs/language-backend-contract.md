@@ -15,18 +15,26 @@ strategy.
 
 ## The seam
 
-**There is no shared backend protocol yet.** Python discovery is hard-coded in
-`analysis.py` (it calls `ast` directly), and as of slice 2 (`0.2.12`) TypeScript
-discovery lives in a *separate* module, `typescript.py` (tree-sitter), reached only
-through `scan --experimental-typescript`. The two paths share the language-neutral
-`FunctionId`/`FunctionSpan` data shapes and the shared path helpers in
-`riskratchet._paths` (`relative_posix`, `has_hidden_parent`, `any_match`), but **not** a
-common interface — TS discovery returns its own `TsFunction`, not the Python
-`DiscoveredFunction`. Unifying those two discovered-function shapes behind one backend
-protocol (so the engine scores either language through the same seam) is the refactor a
-later slice still owes — tracked as `TODO(slice-3)` on `TsFunction`; this document
-describes the contract that protocol should expose, using today's Python code as the
-worked reference and the TS module as the second concrete data point.
+**The discovered-function shapes are now unified behind one protocol;
+identity is the remaining gap.** Python discovery is in `analysis.py` (it calls `ast`
+directly) and TypeScript discovery in a *separate* module, `typescript.py` (tree-sitter),
+reached only through `scan --experimental-typescript`. They share the language-neutral
+`FunctionId`/`FunctionSpan` data shapes and the path helpers in `riskratchet._paths`
+(`relative_posix`, `has_hidden_parent`, `any_match`), and **now a common protocol**:
+`models.DiscoveredFunctionLike` (`id`, `span`, `is_public`, `is_async`). Both
+`analysis.DiscoveredFunction` and `typescript.TsFunction` conform to it — checked statically
+(mypy) and at runtime in `tests/test_backend_protocol.py`, so the two can't silently drift on
+the common surface. Backend-agnostic code can be written against the protocol instead of a
+concrete type.
+
+What the protocol deliberately omits is **identity** — a token-stable body/signature
+fingerprint for rename-aware baseline matching. Python supplies it on `DiscoveredFunction`;
+tree-sitter discovery does not yet produce it. So while the engine *could* score either
+language through the seam on the common surface, TypeScript cannot enter the
+scoring/**baseline** pipeline until that identity half lands (the remaining slice-5 work,
+tracked on `TsFunction`). The rest of this document describes the rest of the contract
+(coverage, complexity, public surface, identity), using today's Python code as the worked
+reference and the TS module as the second concrete data point.
 
 `engine.analyze()` (`src/riskratchet/engine.py`) is the single entry point. Once the
 seam exists, a backend supplies five things per file and the engine hands pure data
@@ -80,11 +88,38 @@ from the coverage report.
 file's executed/missing line and branch sets. The format is already
 language-agnostic JSON; only the *producer* is Python-specific.
 
-**TypeScript notes / open questions.** Map Istanbul/nyc/LCOV output to discovered
-spans. Istanbul reports per-statement and per-branch coverage keyed by byte/line
-ranges; the work is translating those ranges onto function spans and deriving the
-same line/branch fractions. LCOV is line/branch oriented and closer to the
-existing shape. This lands in slice 3 (`0.2.14`).
+**TypeScript status — slice 3 (`0.2.13`) landed for Istanbul JSON.**
+`src/riskratchet/typescript_coverage.py` maps an Istanbul/nyc `coverage-final.json`
+onto the spans `typescript.py` discovers, returning the same `CoverageStats`.
+Algorithm: **line coverage** keys on each statement's `start.line` only (not its
+end line), collapsing statements that share a line with `max` hit count — exactly
+`istanbul-lib-coverage.getLineCoverage`; **branch coverage** counts the arms of each
+branch whose `loc.start.line` falls in the span (`b[id]` is a per-arm hit-count array
+positionally aligned to `branchMap[id].locations`), and `missing_branches` reuses the
+`tuple[(int, int), …]` field as `(branch_line, arm_index)` — a TS-specific shape, since
+Istanbul has no `(src_line, dst_line)` analog. Paths are matched basename + longest-suffix
+(Istanbul keys are absolute). It is reached only through `scan
+--experimental-typescript --ts-coverage` (repeatable — one report per package in a
+monorepo, merged; Istanbul keys are absolute, so no prefix map is needed) and stays
+informational (no scoring/gating). **LCOV is intentionally deferred** — it is line/branch
+oriented and closer to the existing shape, and folds in later if demand appears.
+
+**Semantics are not identical across backends — do not treat the percentages as
+interchangeable.** TS `line_coverage` is *statement-start-derived* (a line counts as
+measured iff an Istanbul statement starts on it); the Python backend's is *line-level*
+(coverage.py's executable-line set). A TS function and a Python function both at "80%" are
+not the same denominator, so this output is **not** consumable unchanged by a future
+cross-language scoring blend — it must be recalibrated first. Likewise TS branch arms go in
+`CoverageStats.missing_branch_arms` (`(line, arm_index)`), never the Python `missing_branches`
+(`(src_line, dst_line)`).
+
+**Source-map alignment is the load-bearing assumption.** The mapping trusts the report's
+line numbers. If coverage was collected on *compiled JS* (c8/V8, or nyc instrumenting built
+output without `babel-plugin-istanbul`) and not remapped back to `.ts`, those numbers describe
+JS, not the source we parse. `spans_cover_any_statement` detects the gross case (a file whose
+statements land in *no* discovered span) so the CLI warns and omits coverage for that file
+rather than emitting wrong numbers; subtler partial misalignment is still possible and is why
+this stays informational.
 
 ## 3. Complexity
 

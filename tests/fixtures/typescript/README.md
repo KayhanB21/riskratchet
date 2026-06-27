@@ -30,6 +30,7 @@ The table below is now **verified output**, not prediction — it is exactly wha
 | `mts_module.mts` | `.mts` discovered like `.ts` | `fromMjs` [pub] |
 | `broken.ts` | syntax error → skipped whole (warned), not partially listed | none — file skipped (`has_error`) |
 | `generated.pb.ts` | generated code that must be **excluded** | none — file skipped (`@generated` header + `*.pb.ts` name) |
+| `app/sample.ts` + `app/coverage-final.json` | slice-3 coverage mapping: discovered spans annotated from a **hand-authored** Istanbul report (no nyc run, so the suite stays hermetic) | `covered` 100% line / no branch; `partial` 80% line, 50% branch, miss-line 11 |
 
 ## Resolved decisions (were "open questions" in 0.2.11)
 

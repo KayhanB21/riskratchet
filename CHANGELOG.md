@@ -9,6 +9,51 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+0.2.13 is the "TypeScript coverage mapping" release — slice 3 of the experimental TypeScript
+track. It teaches `scan --experimental-typescript` to annotate each discovered TypeScript
+function with line/branch coverage read from an Istanbul/nyc `coverage-final.json`. Still
+**informational only**: no scoring, no baseline, no gating, exit code unchanged. Python-only
+installs are untouched — the new mapping is pure JSON (no tree-sitter), and the Python analyzer
+and scoring are byte-for-byte unchanged. (This slice ships ahead of an external-demand signal —
+the demand-gate clock from 0.2.12 had barely started — by maintainer choice, to keep the
+TypeScript track moving while the work and fixtures were fresh.)
+
+### Added
+
+- (P20, slice 3) **Experimental TypeScript coverage mapping**: `scan
+  --experimental-typescript --ts-coverage <coverage-final.json>` annotates the discovered-
+  function listing (on **stderr**) with per-function line coverage, branch coverage, and
+  missing lines, mapped from an **Istanbul/nyc** report (`nyc`/`c8`/Jest `--coverage`). Line
+  coverage keys on each statement's start line (collapsing shared lines by max hit count, like
+  `istanbul-lib-coverage`); branch coverage counts the arms (`if`/`switch`/`&&`/ternary/
+  default-arg) of each branch inside a function's span. `--ts-coverage` is separate from Python
+  `--coverage` and has no effect without `--experimental-typescript` (warned). It is
+  **repeatable** — pass one report per package in a monorepo and they merge. `--json`/`--format
+  sarif`/`--output` stay valid with the flags on. **LCOV is intentionally deferred** (Istanbul
+  JSON only this slice).
+- **Misalignment guard**: when a report's line numbers don't intersect any discovered function
+  in a file — the signature of coverage collected on *compiled JS* without source-map remapping
+  — the file is warned and its coverage omitted, rather than showing confidently-wrong numbers.
+  A file simply absent from the report is reported explicitly (`N file(s) had no coverage
+  entry`), not silently dropped.
+- **Shared backend protocol** `riskratchet.models.DiscoveredFunctionLike` (`id`, `span`,
+  `is_public`, `is_async`) — the structural unification of the Python
+  `analysis.DiscoveredFunction` and the TypeScript `typescript.TsFunction` behind one type,
+  conformance-checked statically and at runtime (`tests/test_backend_protocol.py`). Identity
+  (body/signature fingerprint for rename-aware baseline matching) stays Python-only until
+  TypeScript has a token-stable fingerprint — that identity half, not the shape, is what still
+  blocks TS from the scoring/baseline pipeline.
+- New `riskratchet.typescript_coverage` module (`load_istanbul_coverage`,
+  `load_istanbul_coverage_files`, `coverage_for_ts_span`, `spans_cover_any_statement`).
+  `TsFunction` gains an additive `coverage: CoverageStats | None` field, and `CoverageStats`
+  gains an additive `missing_branch_arms` field — the TS `(line, arm_index)` analog of the
+  Python `missing_branches` `(src_line, dst_line)` arcs, kept separate so the two are never
+  confused. Note: TS `line_coverage` is statement-start-derived (Istanbul) and is **not** the
+  same measurement as the Python line-level value — equal percentages must be recalibrated
+  before any future cross-language scoring.
+
 ## [0.2.12] - 2026-06-20
 
 0.2.12 is the "experimental TypeScript discovery + contract docs" release. It pulls

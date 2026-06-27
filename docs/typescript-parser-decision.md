@@ -38,10 +38,11 @@ so the paper recommendation below is now the committed choice. What the spike co
   — each cleanly filterable. Generated files are caught by `@generated` header / `*.pb.ts`
   name.
 
-The only contract areas **not** exercised yet (deferred to later slices, not blockers for
-discovery): coverage mapping (slice 3), cyclomatic complexity (slice 4), and the
-token-stable signature fingerprint for rename matching (only needed once TS enters the
-baseline). No Node-backed fallback was required.
+Coverage mapping (slice 3, `0.2.13`) has since landed for Istanbul JSON
+(`typescript_coverage.py`; see `language-backend-contract.md §2`). The contract areas
+still **not** exercised (deferred, not blockers): LCOV coverage, cyclomatic complexity
+(slice 4), and the token-stable signature fingerprint for rename matching (only needed
+once TS enters the baseline). No Node-backed fallback was required.
 
 The recommendation, now committed:
 

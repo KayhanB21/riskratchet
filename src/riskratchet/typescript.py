@@ -1,9 +1,13 @@
 """EXPERIMENTAL TypeScript function discovery (P20, slice 2, since 0.2.12).
 
-Discovery only — no scoring, no coverage, no baseline, no gating. The output is
-informational and its shape may change. The Python analyzer is unaffected: this module
-is never imported by `engine.analyze`; it is reached solely through the
-`scan --experimental-typescript` path.
+Discovery only — no scoring, no baseline, no gating. The output is informational and its
+shape may change. The Python analyzer is unaffected: this module is never imported by
+`engine.analyze`; it is reached solely through the `scan --experimental-typescript` path.
+
+Per-function coverage is *not* computed here — discovery stays parser-only. Slice 3
+(`0.2.13`) maps Istanbul `coverage-final.json` onto the spans this module returns; that lives
+in `typescript_coverage.py` and is attached to `TsFunction.coverage` by the CLI when
+`--ts-coverage` is given.
 
 Parsing uses tree-sitter, pulled in by the optional `typescript` extra
 (`pip install 'riskratchet[typescript]'`). A default Python-only install never imports
@@ -35,7 +39,7 @@ from typing import TYPE_CHECKING, Any
 from ._paths import any_match as _any_match
 from ._paths import has_hidden_parent as _has_hidden_parent
 from ._paths import relative_posix as _relative_posix
-from .models import FunctionId, FunctionSpan
+from .models import CoverageStats, FunctionId, FunctionSpan
 
 if TYPE_CHECKING:  # annotations only; tree-sitter is an optional runtime import
     from collections.abc import Callable
@@ -72,17 +76,24 @@ def _require_tree_sitter() -> tuple[Any, Any]:
 @dataclass(frozen=True, slots=True)
 class TsFunction:
     """A function discovered in a TypeScript source file. Language-neutral shape, reusing
-    `FunctionId`/`FunctionSpan`; no fingerprint/score (discovery is informational).
+    `FunctionId`/`FunctionSpan`/`CoverageStats`; no fingerprint/score (discovery is
+    informational). `coverage` is None until enriched from an Istanbul report
+    (`typescript_coverage.coverage_for_ts_span`); discovery itself never sets it.
 
-    TODO(slice-3): unify `TsFunction` with `DiscoveredFunction` behind one backend
-    protocol once TypeScript enters the scoring/baseline pipeline, rather than carrying
-    two divergent discovered-function shapes (see `docs/language-backend-contract.md`)."""
+    Conforms to `models.DiscoveredFunctionLike` — the shared backend protocol it satisfies
+    alongside the Python `analysis.DiscoveredFunction` (proven in
+    `tests/test_backend_protocol.py`). The structural shapes are now unified behind that one
+    protocol. What is still missing before TypeScript can enter the scoring/baseline pipeline
+    is **identity**: a token-stable body/signature fingerprint for rename-aware matching, which
+    Python carries on `DiscoveredFunction` but tree-sitter discovery does not yet produce. That
+    identity work — not the shape — is the remaining slice-5 dependency."""
 
     id: FunctionId
     span: FunctionSpan
     is_public: bool
     is_async: bool
     kind: str  # "function" | "method" | "arrow"
+    coverage: CoverageStats | None = None
 
 
 def iter_typescript_files(
