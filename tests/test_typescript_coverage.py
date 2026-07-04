@@ -349,7 +349,7 @@ def test_scan_ts_coverage_without_experimental_flag_warns(
         ["scan", ".", "--ts-coverage", "coverage-final.json", "--no-auto-cov"],
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "--ts-coverage has no effect without --experimental-typescript" in result.stderr
+    assert "--ts-coverage / --ts-entry have no effect without --experimental-typescript" in result.stderr
 
 
 def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:

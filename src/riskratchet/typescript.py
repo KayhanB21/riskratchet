@@ -32,18 +32,21 @@ supported (silently skipped): generator functions and async iterators.
 
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
 from ._paths import any_match as _any_match
 from ._paths import has_hidden_parent as _has_hidden_parent
 from ._paths import relative_posix as _relative_posix
-from .models import CoverageStats, FunctionId, FunctionSpan
+from .models import ComplexityStats, CoverageStats, FunctionId, FunctionSpan
+from .typescript_complexity import cyclomatic_for_node
+from .typescript_exports import Forward, Local, ModuleExports, resolve_specifier
 
 if TYPE_CHECKING:  # annotations only; tree-sitter is an optional runtime import
     from collections.abc import Callable
-    from pathlib import Path
 
     from tree_sitter import Node
 
@@ -93,6 +96,8 @@ class TsFunction:
     is_public: bool
     is_async: bool
     kind: str  # "function" | "method" | "arrow"
+    # McCabe cyclomatic (since 0.2.14), computed at discovery from the live tree-sitter node.
+    complexity: ComplexityStats | None = None
     coverage: CoverageStats | None = None
 
 
@@ -162,34 +167,59 @@ def is_generated_typescript(path: Path, source_head: str) -> bool:
     return _GENERATED_HEADER_RE.search(source_head) is not None
 
 
+def analyze_ts_file(
+    path: Path,
+    *,
+    root: Path,
+    on_error: Callable[[Path, str], None] | None = None,
+) -> tuple[list[TsFunction], ModuleExports]:
+    """Parse a `.ts`/`.tsx`/`.mts`/`.cts` file **once** and return both its discovered functions
+    and its export surface. The CLI uses this so a file is not parsed twice (once for discovery,
+    once for barrel resolution).
+
+    Returns `([], empty)` for generated files and for files with ERROR nodes (a genuinely broken
+    file), invoking `on_error(path, "syntax error")` in the latter case — never partial results.
+    """
+    node = _parse_root(path, on_error)
+    if node is None:
+        return [], ModuleExports()
+    return _functions_from_root(node, _relative_posix(path, root)), _exports_from_root(node)
+
+
 def discover_typescript(
     path: Path,
     *,
     root: Path,
     on_error: Callable[[Path, str], None] | None = None,
 ) -> list[TsFunction]:
-    """Discover functions in a single `.ts`/`.tsx`/`.mts`/`.cts` file.
+    """Discover functions in a single file (functions half of `analyze_ts_file`)."""
+    node = _parse_root(path, on_error)
+    if node is None:
+        return []
+    return _functions_from_root(node, _relative_posix(path, root))
 
-    Returns [] for generated files. If tree-sitter reports ERROR nodes (a genuinely
-    broken file), the whole file is skipped and `on_error(path, "syntax error")` is
-    invoked when provided — partial/garbage results are never emitted, matching the
-    Python backend's "skip unparseable files" behaviour.
-    """
+
+def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> Node | None:
+    """Shared loader: read + parse a TS file to its root node, or None for a generated or broken
+    file (invoking `on_error` for broken)."""
     source = path.read_bytes()
     head = source[:2000].decode("utf-8", "replace")
     if is_generated_typescript(path, head):
-        return []
+        return None
     tree_sitter, _ = _require_tree_sitter()
     parser = tree_sitter.Parser(_language(path.suffix))
     tree = parser.parse(source)
     if tree.root_node.has_error:
         if on_error is not None:
             on_error(path, "syntax error")
-        return []
-    rel = _relative_posix(path, root)
-    exported = _collect_exported_names(tree.root_node)
+        return None
+    return cast("Node", tree.root_node)
+
+
+def _functions_from_root(root: Node, rel: str) -> list[TsFunction]:
+    exported = _collect_exported_names(root)
     found: list[TsFunction] = []
-    for node in _walk(tree.root_node):
+    for node in _walk(root):
         fn = _function_from_node(node, rel, exported)
         if fn is not None:
             found.append(fn)
@@ -278,7 +308,8 @@ def _qualname(node: Node, own_name: str) -> str:
 
 def _collect_exported_names(root: Node) -> set[str]:
     """Local names made public by a top-level `export { name }` / `export { name as default }`
-    clause (the *local* name, not the alias). Complements inline `export`/`export default`."""
+    clause (the *local* name, not the alias), or by `export default <identifier>` referencing a
+    separately-declared binding. Complements inline `export`/`export default`."""
     names: set[str] = set()
     for child in root.children:
         if child.type != "export_statement":
@@ -291,7 +322,173 @@ def _collect_exported_names(root: Node) -> set[str]:
                     local = _ident_text(spec.child_by_field_name("name"))
                     if local is not None:
                         names.add(local)
+        # `export default myFunc;` — the default-exported binding is public even though the
+        # declaration itself carries no `export` keyword (fixed in 0.2.14).
+        default_ident = _default_export_identifier(child)
+        if default_ident is not None:
+            names.add(default_ident)
     return names
+
+
+def _default_export_identifier(stmt: Node) -> str | None:
+    """The bound name of a bare `export default <identifier>;` (else None)."""
+    if not any(c.type == "default" for c in stmt.children):
+        return None
+    value = stmt.child_by_field_name("value")
+    if value is not None and value.type == "identifier":
+        return _node_text(value)
+    return None
+
+
+def parse_module_exports(path: Path, *, root: Path) -> ModuleExports:
+    """Parse one file's top-level export surface (exports half of `analyze_ts_file`). Returns an
+    empty surface for generated or unparseable files, matching discovery."""
+    node = _parse_root(path, None)
+    return ModuleExports() if node is None else _exports_from_root(node)
+
+
+def _exports_from_root(root: Node) -> ModuleExports:
+    result = ModuleExports()
+    for child in root.children:
+        if child.type == "export_statement":
+            _classify_export(child, result)
+    return result
+
+
+def _classify_export(stmt: Node, result: ModuleExports) -> None:
+    source = stmt.child_by_field_name("source")
+    clause = next((c for c in stmt.children if c.type == "export_clause"), None)
+    if clause is not None:
+        spec = _string_literal(source) if source is not None else None
+        for member in clause.children:
+            if member.type == "export_specifier":
+                _classify_specifier(member, spec, result)
+        return
+    if source is not None:  # `export * from '…'` / `export * as ns from '…'` (no clause)
+        spec = _string_literal(source)
+        if spec is not None:
+            result.stars.append(spec)
+        return
+    is_default = any(c.type == "default" for c in stmt.children)
+    decl = stmt.child_by_field_name("declaration")
+    if decl is not None:
+        _classify_declaration(decl, is_default, result)
+        return
+    default_ident = _default_export_identifier(stmt)  # `export default <identifier>;`
+    if default_ident is not None:
+        result.exports["default"] = Local(default_ident)
+
+
+def _classify_specifier(member: Node, module_spec: str | None, result: ModuleExports) -> None:
+    name = _ident_text(member.child_by_field_name("name"))
+    if name is None:
+        return
+    exported_as = _ident_text(member.child_by_field_name("alias")) or name
+    if module_spec is None:
+        result.exports[exported_as] = Local(name)
+    else:
+        result.exports[exported_as] = Forward(module_spec, name)
+
+
+def _classify_declaration(decl: Node, is_default: bool, result: ModuleExports) -> None:
+    if decl.type in ("lexical_declaration", "variable_declaration"):
+        for child in decl.children:
+            if child.type == "variable_declarator":
+                name = _ident_text(child.child_by_field_name("name"))
+                if name is not None:
+                    result.exports[name] = Local(name)
+        return
+    name = _ident_text(decl.child_by_field_name("name"))
+    if name is None:
+        # `export default function(){}` / `export default class {}` — the anonymous default
+        # class discovers methods under a `default` qualname segment (`_anon_class_name`).
+        if is_default:
+            result.exports["default"] = Local("default")
+        return
+    result.exports["default" if is_default else name] = Local(name)
+
+
+def _string_literal(node: Node) -> str | None:
+    raw = _node_text(node)
+    if len(raw) >= 2 and raw[0] in "'\"`" and raw[-1] == raw[0]:
+        return raw[1:-1]
+    return raw or None
+
+
+def detect_ts_entries(root: Path, files: list[Path], explicit: list[Path]) -> list[str]:
+    """Resolve package entry file(s) to relative-POSIX keys within `files`, in priority order:
+    explicit `--ts-entry`, then `package.json` `exports`/`module`/`main`/`types`, then the
+    shallowest `index.{ts,tsx,mts,cts}`. Returns [] when nothing resolves — the caller then
+    keeps file-level export flags (no narrowing)."""
+    by_abs: dict[Path, str] = {}
+    keys: set[str] = set()
+    for path in files:
+        key = _relative_posix(path, root)
+        keys.add(key)
+        by_abs[path.resolve()] = key
+    if explicit:
+        out: list[str] = []
+        for entry in explicit:
+            abs_entry = (entry if entry.is_absolute() else Path.cwd() / entry).resolve()
+            matched = by_abs.get(abs_entry)
+            if matched is not None:
+                out.append(matched)
+        return out
+    from_package = _package_json_entries(root, keys)
+    if from_package:
+        return from_package
+    return _index_entries(keys)
+
+
+def _package_json_entries(root: Path, keys: set[str]) -> list[str]:
+    manifest = root / "package.json"
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if not isinstance(data, dict):
+        return []
+    out: list[str] = []
+    for spec in _package_json_specs(data):
+        resolved = resolve_specifier("package.json", spec, keys)
+        if resolved is not None and resolved not in out:
+            out.append(resolved)
+    return out
+
+
+def _package_json_specs(data: dict[str, Any]) -> list[str]:
+    specs = _exports_field_specs(data.get("exports"))
+    for field_name in ("module", "main", "types", "typings"):
+        value = data.get(field_name)
+        if isinstance(value, str):
+            specs.append(value)
+    return specs
+
+
+def _exports_field_specs(exports: Any) -> list[str]:
+    """Entry specifiers from a package.json `exports` field: a bare string, `exports["."]`, or
+    the conditions of `exports["."]` (`types`/`import`/`default`/`node`)."""
+    if isinstance(exports, str):
+        return [exports]
+    if not isinstance(exports, dict):
+        return []
+    root_export = exports.get(".", exports)
+    if isinstance(root_export, str):
+        return [root_export]
+    if not isinstance(root_export, dict):
+        return []
+    return [v for k in ("types", "import", "default", "node") if isinstance(v := root_export.get(k), str)]
+
+
+def _index_entries(keys: set[str]) -> list[str]:
+    indexes = [k for k in keys if k.rsplit("/", 1)[-1] in _INDEX_NAMES]
+    if not indexes:
+        return []
+    min_depth = min(k.count("/") for k in indexes)
+    return sorted(k for k in indexes if k.count("/") == min_depth)
+
+
+_INDEX_NAMES = frozenset({"index.ts", "index.tsx", "index.mts", "index.cts"})
 
 
 def _is_exported_decl(node: Node) -> bool:
@@ -387,4 +584,5 @@ def _function_from_node(node: Node, rel_path: str, exported: set[str]) -> TsFunc
         is_public=_is_public(node, exported),
         is_async=_is_async(node),
         kind=kind,
+        complexity=ComplexityStats(cyclomatic=cyclomatic_for_node(node)),
     )

@@ -895,7 +895,7 @@ requires-dist = [
     { name = "radon", specifier = ">=6.0.1" },
     { name = "rich", specifier = ">=13.7" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0" },
-    { name = "tree-sitter", marker = "extra == 'typescript'", specifier = ">=0.23,<0.26" },
+    { name = "tree-sitter", marker = "extra == 'typescript'", specifier = ">=0.23,<0.27" },
     { name = "tree-sitter-typescript", marker = "extra == 'typescript'", specifier = ">=0.23,<0.24" },
     { name = "typer", specifier = ">=0.12" },
 ]

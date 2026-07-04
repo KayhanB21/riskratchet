@@ -132,10 +132,48 @@ functions radon rolls into a parent. The increment set: `if`/`if`-expression,
 `for`/`async for`, `while`, `except`, `assert`, each non-first `and`/`or` clause,
 each comprehension filter, each `match` case.
 
-**TypeScript notes / open questions.** The algorithm is language-independent; the
-work is enumerating the equivalent TS branching nodes (`if`, `for`, `for…of`,
-`for…in`, `while`, `do`, `case`, `catch`, `?:`, `&&`/`||`/`??`, optional
-chaining) over whichever parse tree the backend produces. Slice 4 (`0.2.15`).
+**TypeScript — implemented in slice 4 (`0.2.14`), aligned to ESLint's `complexity` rule.**
+`src/riskratchet/typescript_complexity.py` (`cyclomatic_for_node`) walks the tree-sitter tree:
+base 1, `+1` per `if_statement`, `ternary_expression`, `for_statement`, `for_in_statement`
+(covers `for…of`/`for…in`), `while_statement`, `do_statement`, `catch_clause`, `switch_case`,
+each `&&`/`||`/`??` in a `binary_expression`, and each **default parameter** (a
+`required`/`optional_parameter` with a default value, plus each destructuring default
+`object_assignment_pattern` / `assignment_pattern` — ESLint's `AssignmentPattern`). Computed at
+discovery from the live node (no node retained), stored on `TsFunction.complexity`. Decisions,
+all matching ESLint:
+
+- **`switch_default` is not counted** (the catch-all is not a decision point).
+- **`??` IS counted** (ESLint counts it — a `LogicalExpression`); **optional chaining `?.` is
+  NOT** (ESLint does not count it either).
+- **Nested functions are pruned** — each function is scored on its own, as ESLint scores each.
+
+**Divergences from the Python reference (intentional, informational-only until slice 5).** The
+Python `_manual_cyclomatic` (a) does **not** count default parameters and (b) does **not** prune
+nested functions (`ast.walk` descends into them). So the raw TS and Python cyclomatic counts are
+**not directly comparable** for those two shapes, and — importantly — the gap is *not a constant
+offset*: default parameters push TS higher, absorbed nested functions push Python higher, so
+which backend reads higher depends on the code shape. No scoring/baseline/gating consumes either
+count today.
+
+**Committed reconciliation for slice 5 — per-language normalization, not one shared rule.** When
+TS enters scoring, the fix is to keep each backend's *raw* count as-is (TS stays ESLint-faithful
+so the displayed `cx N` matches what a TS dev's linter shows) and instead give the
+`structural_complexity` *normalization* its own per-backend calibration, so that the normalized
+0–100 component represents the **same distribution position** regardless of language. Python
+currently normalizes with `scoring._saturate(cc, free=1, saturation=21)`
+(`COMPLEXITY_SATURATION_CC = 20`); TS gets its own `(free, saturation)` (or mapping). The
+displayed metric and the scored metric are deliberately **decoupled**: ESLint-faithful on screen,
+language-fair at the gate.
+
+The TS constant is **derived, not hand-picked** — folded into the P21 calibration thread: run
+both analyzers over comparable corpora, compare the per-function cyclomatic distributions, and set
+the TS saturation so equal percentiles map to equal normalized scores. It ships at slice 5 (or
+`0.3.0` if it also revisits the Python constant) with the corpus + rationale, never as a silent
+number. This mirrors the coverage caveat in §2 (TS statement-derived vs Python line-level
+coverage): in both, the *shape* is shared but the *measurement* is not, so both feed one scoring
+model only after a data-anchored recalibration. Tradeoff accepted: two calibration surfaces
+instead of one shared counting rule, plus a TS corpus study that does not exist yet — the cost of
+not forcing one language's rules onto the other.
 
 ## 4. Public surface
 
@@ -154,9 +192,29 @@ components are public by convention *only if exported*. As of the slice-2 discov
 module this is **export reachability**: a declaration is public if inline-exported *or*
 named in a top-level `export { name }` / `export { name as default }` clause, and a
 method inherits its (possibly clause-exported) class's surface unless it is
-`private`/`protected`/`#name`. It stays purely syntactic — re-exports through barrel
-files (`index.ts`) and cross-module re-export resolution need the type checker and remain
-an open question for slice 4.
+`private`/`protected`/`#name`.
+
+**Barrel-aware narrowing — added in slice 4 (`0.2.14`).** File-level export is refined to
+**package-entry reachability**: `src/riskratchet/typescript_exports.py` walks the re-export
+graph (`export { x } from './m'`, `export { x as y } from`, `export * from`, transitively)
+from the package entry and a file-exported function *not* reachable from an entry is narrowed to
+internal. The entry is resolved in priority order: explicit `--ts-entry`, else `package.json`
+(`exports`/`module`/`main`/`types` — **best-effort: only the fields that point at *source*
+`.ts`; a built package whose `main`/`module` point at `dist/*.js` falls through**), else the
+shallowest `index.{ts,tsx,mts,cts}`. The driving entry is announced on stderr (override with
+`--ts-entry`). Also fixed here: a bare `export default myFunc;` referencing a separately-declared
+binding (previously missed) now marks that binding public.
+
+**Safety rail (per-name, not all-or-nothing).** Narrowing only *demotes*, and never on an
+unproven graph. The guard is graded by edge kind: an **unresolved wildcard** (`export * from`
+an unresolvable target) or a missing entry poisons the whole surface (a `*` could alias-expose
+any name → demote nobody); an **unresolved named** re-export (`export { x } from 'pkg'`) holds
+only that one name public and narrows everything else — so a single third-party named re-export
+in a barrel no longer disables the feature. Rationale: an unresolved specifier points outside the
+scanned set, and the only way it could hide one of *our* functions is a tsconfig alias back in —
+a named alias exposes exactly one name (covered), a wildcard could expose anything (poisons).
+Still out of scope (needs the type checker): tsconfig `paths`/`baseUrl` aliases, dynamic
+`import()`, and **declaration merging**.
 
 ## 5. Function identity
 

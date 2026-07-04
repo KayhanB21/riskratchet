@@ -9,6 +9,38 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+Slice 4 of the experimental TypeScript track: **cyclomatic complexity** and **barrel-aware
+public surface**. Still **informational only** — no scoring, no baseline, no gating, exit code
+unchanged. Python-only installs and the Python analyzer/scoring are byte-for-byte unchanged
+(the new code is reached only through `scan --experimental-typescript` and imports tree-sitter
+only via the opt-in `typescript` extra).
+
+### Added
+
+- (P20, slice 4) **Cyclomatic complexity for TypeScript**: every discovered function now shows
+  a McCabe `cx N` count in the `--experimental-typescript` listing (on **stderr**), computed to
+  match **ESLint's `complexity` rule** (`typescript_complexity.py`) — per-function (nested
+  functions pruned), counting `??` and default parameters, not counting optional chaining `?.`
+  or `switch` `default`. This intentionally differs from riskratchet's Python backend in two
+  ways (Python does not count default parameters and does not prune nested functions), so TS and
+  Python complexity are not directly comparable — a slice-5 reconciliation item.
+- (P20, slice 4) **Barrel-aware public surface**: `is_public` is narrowed to functions
+  reachable from the package entry through `export … from` re-export chains (`export { x } from`,
+  `export * from`, transitively). The entry is `--ts-entry` (new, repeatable), else
+  `package.json` `exports`/`module`/`main`/`types` (best-effort; source-pointing fields only),
+  else the shallowest `index.{ts,tsx,mts,cts}`; the driving entry is announced on stderr.
+  Narrowing only demotes, and never on an unproven graph: an **unresolved `export *`** (or
+  missing entry) keeps all flags, while a single **unresolved named** re-export holds only that
+  name public and narrows the rest — so a third-party re-export in a barrel doesn't disable the
+  feature.
+
+### Fixed
+
+- (TypeScript) A bare `export default myFunc;` referencing a separately-declared binding is now
+  recognized as public (previously marked internal).
+
 ## [0.2.13] - 2026-06-27
 
 0.2.13 is the "TypeScript coverage mapping" release — slice 3 of the experimental TypeScript

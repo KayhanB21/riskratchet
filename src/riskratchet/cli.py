@@ -295,6 +295,16 @@ def scan(
             "--coverage (which is Python).",
         ),
     ] = None,
+    ts_entry: Annotated[
+        list[Path] | None,
+        typer.Option(
+            "--ts-entry",
+            help="EXPERIMENTAL: package entry file(s) (e.g. src/index.ts) used to narrow TypeScript "
+            "public surface to what is reachable through barrel re-exports. Repeatable. Only used "
+            "with --experimental-typescript; falls back to package.json / index.ts, and to "
+            "file-level export flags when no entry is found.",
+        ),
+    ] = None,
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg, config_dir = _discover_config(config)
@@ -392,10 +402,11 @@ def scan(
             include=resolved_include,
             exclude=resolved_exclude,
             ts_coverage=ts_coverage or [],
+            ts_entry=ts_entry or [],
         )
-    elif ts_coverage:
+    elif ts_coverage or ts_entry:
         typer.secho(
-            "typescript: --ts-coverage has no effect without --experimental-typescript.",
+            "typescript: --ts-coverage / --ts-entry have no effect without --experimental-typescript.",
             fg=typer.colors.YELLOW,
             err=True,
         )
@@ -1615,9 +1626,11 @@ def _emit_typescript_discovery(
     include: list[str],
     exclude: list[str],
     ts_coverage: list[Path] | None = None,
+    ts_entry: list[Path] | None = None,
 ) -> None:
-    """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13): list
-    discovered TypeScript functions, optionally annotated with Istanbul coverage.
+    """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13; complexity +
+    barrel-aware public surface slice 4 since 0.2.14): list discovered TypeScript functions,
+    each with cyclomatic complexity, optionally annotated with Istanbul coverage.
 
     Informational only — no scoring, no baseline, no gating; does not affect the exit code.
     The whole listing (banner, skip warnings, and the function list) goes to STDERR: it is an
@@ -1631,6 +1644,7 @@ def _emit_typescript_discovery(
     from ._paths import relative_posix
 
     ts_coverage = ts_coverage or []
+    ts_entry = ts_entry or []
 
     typer.secho(
         "experimental: TypeScript discovery is informational and its output may change.",
@@ -1667,6 +1681,7 @@ def _emit_typescript_discovery(
             has_coverage=bool(ts_coverage),
             warn=_warn,
             on_error=_warn_skip,
+            entries=ts_entry,
         )
     except ImportError as exc:
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
@@ -1685,25 +1700,90 @@ def _collect_ts_functions(
     has_coverage: bool,
     warn: Any,
     on_error: Any,
+    entries: list[Path],
 ) -> tuple[list[Any], int]:
     """Discover functions in each file and (when coverage is supplied) attach it per file,
-    counting files that had no coverage entry. Returns (functions, unmeasured_file_count)."""
+    counting files that had no coverage entry. Then narrow `is_public` to entry-barrel
+    reachability. Returns (functions, unmeasured_file_count)."""
     from . import typescript as ts
     from ._paths import relative_posix
 
     functions: list[Any] = []
+    modules: dict[str, Any] = {}
     unmeasured = 0
     for path in files:
-        found = ts.discover_typescript(path, root=root, on_error=on_error)
-        if not has_coverage:
-            functions.extend(found)
-            continue
+        found, exports = ts.analyze_ts_file(path, root=root, on_error=on_error)  # single parse per file
         rel = relative_posix(path, root)
-        file_cov = coverage.lookup(rel)
-        if file_cov is None and found:
-            unmeasured += 1
-        functions.extend(_enrich_ts_file(found, file_cov, rel, warn))
+        modules[rel] = exports
+        if has_coverage:
+            file_cov = coverage.lookup(rel)
+            if file_cov is None and found:
+                unmeasured += 1
+            found = _enrich_ts_file(found, file_cov, rel, warn)
+        functions.extend(found)
+    functions = _apply_entry_narrowing(
+        functions, files, root=root, entries=entries, modules=modules, warn=warn
+    )
     return functions, unmeasured
+
+
+def _apply_entry_narrowing(
+    functions: list[Any],
+    files: list[Path],
+    *,
+    root: Path,
+    entries: list[Path],
+    modules: dict[str, Any],
+    warn: Any,
+) -> list[Any]:
+    """Narrow `is_public` to functions reachable from the package entry barrel, using the
+    already-parsed `modules` (rel-path → ModuleExports).
+
+    Safety rail: only demotes (public → internal), and only when an entry is found and the
+    re-export graph is trustworthy. A non-barrel project (no entry) or an **unresolved wildcard**
+    (`export *` / missing entry) leaves all flags untouched; an unresolved **named** re-export
+    holds only the affected name public and narrows the rest.
+    """
+    from . import typescript as ts
+    from . import typescript_exports as tsx
+
+    resolved_entries = ts.detect_ts_entries(root, files, entries)
+    if not resolved_entries:
+        if entries:
+            warn("public surface: --ts-entry did not match any scanned file; keeping export flags")
+        return functions
+    if entries and len(resolved_entries) < len(entries):
+        unmatched = len(entries) - len(resolved_entries)
+        warn(f"public surface: {unmatched} --ts-entry path(s) matched no scanned file")
+    result = tsx.resolve_entry_reachable(modules, resolved_entries)
+    if result.poison_all:
+        warn(
+            "public surface: an unresolved wildcard re-export (`export *`) or entry means the "
+            "surface can't be bounded; keeping file-level export flags"
+        )
+        return functions
+    warn(f"public surface narrowed to entry {', '.join(resolved_entries)} (override with --ts-entry)")
+    return _narrow_public(functions, result, warn)
+
+
+def _narrow_public(functions: list[Any], result: Any, warn: Any) -> list[Any]:
+    """Demote each public function whose binding is not entry-reachable, except names held
+    uncertain by an unresolved named re-export (kept public, counted for a note)."""
+    from dataclasses import replace
+
+    narrowed: list[Any] = []
+    kept_uncertain = 0
+    for fn in functions:
+        binding = fn.id.qualname.split(".", 1)[0]
+        if fn.is_public and (fn.id.path, binding) not in result.reachable:
+            if binding in result.uncertain_names:
+                kept_uncertain += 1
+            else:
+                fn = replace(fn, is_public=False)
+        narrowed.append(fn)
+    if kept_uncertain:
+        warn(f"public surface: kept {kept_uncertain} function(s) public behind unresolved named re-exports")
+    return narrowed
 
 
 def _render_ts_functions(functions: list[Any], file_count: int) -> list[str]:
@@ -1713,8 +1793,17 @@ def _render_ts_functions(functions: list[Any], file_count: int) -> list[str]:
     for fn in functions:
         visibility = "public" if fn.is_public else "internal"
         line = f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})"
+        line += _format_ts_complexity(fn.complexity)
         lines.append(line + _format_ts_coverage(fn.coverage))
     return lines
+
+
+def _format_ts_complexity(complexity: Any) -> str:
+    """Render the cyclomatic-complexity annotation (`cx N`) appended to a function's listing
+    line. Always present since 0.2.14 (complexity needs no external input)."""
+    if complexity is None:
+        return ""
+    return f"  cx {complexity.cyclomatic}"
 
 
 def _enrich_ts_file(found: list[Any], file_cov: Any, rel: str, warn: Any) -> list[Any]:
