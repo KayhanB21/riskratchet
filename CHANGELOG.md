@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [Unreleased]
+## [0.2.14] - 2026-07-04
 
 Slice 4 of the experimental TypeScript track: **cyclomatic complexity** and **barrel-aware
 public surface**. Still **informational only** — no scoring, no baseline, no gating, exit code
