@@ -1,9 +1,9 @@
 """Cyclomatic complexity for discovered TypeScript functions (P20 slice 4, since 0.2.14).
 
 tree-sitter lives in the optional `typescript` extra, so this module skips when it is absent.
-The counts mirror the Python McCabe algorithm (`complexity.py`) over the TS grammar; the two
-TS-specific decisions under test are that `??` IS counted and optional chaining `?.` is NOT,
-and that nested functions are pruned (each is its own unit).
+The counts match ESLint's `complexity` rule over the TS grammar; the decisions under test are
+that `??` IS counted, optional chaining `?.` is NOT, default parameters (`AssignmentPattern`)
+ARE, `switch` `default` is not, and nested functions are pruned (each is its own unit).
 """
 
 from __future__ import annotations
@@ -78,9 +78,23 @@ def test_nullish_coalescing_is_counted(tmp_path: Path) -> None:
 
 
 def test_optional_chaining_is_not_counted(tmp_path: Path) -> None:
-    # `?.` short-circuits but has no McCabe/Python counterpart and is intentionally excluded.
+    # `?.` short-circuits but ESLint's complexity rule does not count it, so neither do we.
     src = "export function f(o: { a?: { b?: number } }) { return o?.a?.b; }"
     assert _cc(tmp_path, src) == {"f": 1}
+
+
+def test_default_parameters_count(tmp_path: Path) -> None:
+    # ESLint's `AssignmentPattern`: a simple param default and a typed param default each +1;
+    # a param without a default does not count.
+    assert _cc(tmp_path, "export function f(x = 1, y: number = 2, z) { return z; }") == {"f": 3}
+
+
+def test_destructuring_defaults_count_in_params_and_body(tmp_path: Path) -> None:
+    # Object/array destructuring defaults count whether in a parameter or the body.
+    params = "export function f({ a = 1 } = {}, [b = 2] = []) { return a + b; }"
+    assert _cc(tmp_path, params) == {"f": 5}  # base + two param `= …` defaults + `a = 1` + `b = 2`
+    body = "export function g(o: any) { const { p = 1 } = o; return p; }"
+    assert _cc(tmp_path, body) == {"g": 2}
 
 
 def test_nested_function_is_pruned_from_parent(tmp_path: Path) -> None:
@@ -97,6 +111,7 @@ def test_fixture_complexity_values() -> None:
         "loopy": 8,
         "optionalChainAndNested": 2,
         "optionalChainAndNested.inner": 2,
+        "withDefaults": 6,
     }
 
 

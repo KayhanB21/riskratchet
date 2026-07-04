@@ -132,24 +132,27 @@ functions radon rolls into a parent. The increment set: `if`/`if`-expression,
 `for`/`async for`, `while`, `except`, `assert`, each non-first `and`/`or` clause,
 each comprehension filter, each `match` case.
 
-**TypeScript — implemented in slice 4 (`0.2.14`).**
-`src/riskratchet/typescript_complexity.py` (`cyclomatic_for_node`) mirrors
-`_manual_cyclomatic` over the tree-sitter tree: base 1, `+1` per `if_statement`,
-`ternary_expression`, `for_statement`, `for_in_statement` (covers `for…of`/`for…in`),
-`while_statement`, `do_statement`, `catch_clause`, `switch_case`, and each `&&`/`||`/`??`
-in a `binary_expression`. Computed at discovery from the live node (no node retained) and
-stored on `TsFunction.complexity`. Two deliberate TS-specific decisions:
+**TypeScript — implemented in slice 4 (`0.2.14`), aligned to ESLint's `complexity` rule.**
+`src/riskratchet/typescript_complexity.py` (`cyclomatic_for_node`) walks the tree-sitter tree:
+base 1, `+1` per `if_statement`, `ternary_expression`, `for_statement`, `for_in_statement`
+(covers `for…of`/`for…in`), `while_statement`, `do_statement`, `catch_clause`, `switch_case`,
+each `&&`/`||`/`??` in a `binary_expression`, and each **default parameter** (a
+`required`/`optional_parameter` with a default value, plus each destructuring default
+`object_assignment_pattern` / `assignment_pattern` — ESLint's `AssignmentPattern`). Computed at
+discovery from the live node (no node retained), stored on `TsFunction.complexity`. Decisions,
+all matching ESLint:
 
-- **`switch_default` is not counted** (the catch-all is not a new decision point), matching
-  how the Python side counts `case`s.
-- **`??` IS counted** (it short-circuits like `&&`/`||`); **optional chaining `?.` is NOT.**
-  `?.` has no McCabe/Python counterpart and is common enough that counting it would
-  systematically inflate TS complexity relative to Python and break cross-backend
-  comparability. Note: the shape is shared but, as with coverage, the counts are only
-  *comparable*, not identical measurements — nested functions are pruned per-function
-  (mirroring radon's per-block behaviour), and each nested function is scored on its own.
+- **`switch_default` is not counted** (the catch-all is not a decision point).
+- **`??` IS counted** (ESLint counts it — a `LogicalExpression`); **optional chaining `?.` is
+  NOT** (ESLint does not count it either).
+- **Nested functions are pruned** — each function is scored on its own, as ESLint scores each.
 
-Informational only — no scoring/baseline/gating yet.
+**Divergences from the Python reference (intentional, informational-only until slice 5).** The
+Python `_manual_cyclomatic` (a) does **not** count default parameters and (b) does **not** prune
+nested functions (`ast.walk` descends into them). So TS and Python complexity are **not directly
+comparable** for those two shapes. When TS enters the shared scoring pipeline (slice 5) this must
+be reconciled — bring the two backends onto one rule — the same way TS coverage needs
+recalibration (§2). No scoring/baseline/gating consumes either count today.
 
 ## 4. Public surface
 
@@ -173,17 +176,24 @@ method inherits its (possibly clause-exported) class's surface unless it is
 **Barrel-aware narrowing — added in slice 4 (`0.2.14`).** File-level export is refined to
 **package-entry reachability**: `src/riskratchet/typescript_exports.py` walks the re-export
 graph (`export { x } from './m'`, `export { x as y } from`, `export * from`, transitively)
-from the package entry — explicit `--ts-entry`, else `package.json`
-`exports`/`module`/`main`/`types`, else the shallowest `index.{ts,tsx,mts,cts}` — and a
-file-exported function that is *not* reachable from an entry is narrowed to internal. Also
-fixed here: a bare `export default myFunc;` referencing a separately-declared binding
-(previously missed) now marks that binding public.
+from the package entry and a file-exported function *not* reachable from an entry is narrowed to
+internal. The entry is resolved in priority order: explicit `--ts-entry`, else `package.json`
+(`exports`/`module`/`main`/`types` — **best-effort: only the fields that point at *source*
+`.ts`; a built package whose `main`/`module` point at `dist/*.js` falls through**), else the
+shallowest `index.{ts,tsx,mts,cts}`. The driving entry is announced on stderr (override with
+`--ts-entry`). Also fixed here: a bare `export default myFunc;` referencing a separately-declared
+binding (previously missed) now marks that binding public.
 
-**Safety rail.** Narrowing only *demotes*, and only when an entry is found *and* the graph
-resolves completely within the scanned set. No entry (a non-barrel project) or any unresolved
-specifier — a bare/`node_modules` import, a tsconfig `paths`/`baseUrl` alias, dynamic
-`import()` — keeps the file-level flags, so an unproven graph never wrongly asserts "internal".
-Still out of scope (needs the type checker): tsconfig path aliases and **declaration merging**.
+**Safety rail (per-name, not all-or-nothing).** Narrowing only *demotes*, and never on an
+unproven graph. The guard is graded by edge kind: an **unresolved wildcard** (`export * from`
+an unresolvable target) or a missing entry poisons the whole surface (a `*` could alias-expose
+any name → demote nobody); an **unresolved named** re-export (`export { x } from 'pkg'`) holds
+only that one name public and narrows everything else — so a single third-party named re-export
+in a barrel no longer disables the feature. Rationale: an unresolved specifier points outside the
+scanned set, and the only way it could hide one of *our* functions is a tsconfig alias back in —
+a named alias exposes exactly one name (covered), a wildcard could expose anything (poisons).
+Still out of scope (needs the type checker): tsconfig `paths`/`baseUrl` aliases, dynamic
+`import()`, and **declaration merging**.
 
 ## 5. Function identity
 

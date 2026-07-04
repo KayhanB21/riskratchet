@@ -1709,55 +1709,80 @@ def _collect_ts_functions(
     from ._paths import relative_posix
 
     functions: list[Any] = []
+    modules: dict[str, Any] = {}
     unmeasured = 0
     for path in files:
-        found = ts.discover_typescript(path, root=root, on_error=on_error)
-        if not has_coverage:
-            functions.extend(found)
-            continue
+        found, exports = ts.analyze_ts_file(path, root=root, on_error=on_error)  # single parse per file
         rel = relative_posix(path, root)
-        file_cov = coverage.lookup(rel)
-        if file_cov is None and found:
-            unmeasured += 1
-        functions.extend(_enrich_ts_file(found, file_cov, rel, warn))
-    functions = _apply_entry_narrowing(functions, files, root=root, entries=entries, warn=warn)
+        modules[rel] = exports
+        if has_coverage:
+            file_cov = coverage.lookup(rel)
+            if file_cov is None and found:
+                unmeasured += 1
+            found = _enrich_ts_file(found, file_cov, rel, warn)
+        functions.extend(found)
+    functions = _apply_entry_narrowing(
+        functions, files, root=root, entries=entries, modules=modules, warn=warn
+    )
     return functions, unmeasured
 
 
 def _apply_entry_narrowing(
-    functions: list[Any], files: list[Path], *, root: Path, entries: list[Path], warn: Any
+    functions: list[Any],
+    files: list[Path],
+    *,
+    root: Path,
+    entries: list[Path],
+    modules: dict[str, Any],
+    warn: Any,
 ) -> list[Any]:
-    """Narrow `is_public` to functions reachable from the package entry barrel.
+    """Narrow `is_public` to functions reachable from the package entry barrel, using the
+    already-parsed `modules` (rel-path → ModuleExports).
 
-    Safety rail: only demotes (public → internal), and only when an entry is found *and* the
-    re-export graph resolves completely within the scanned set. No entry (non-barrel project),
-    or any unresolved specifier/alias, leaves the file-level export flags untouched.
+    Safety rail: only demotes (public → internal), and only when an entry is found and the
+    re-export graph is trustworthy. A non-barrel project (no entry) or an **unresolved wildcard**
+    (`export *` / missing entry) leaves all flags untouched; an unresolved **named** re-export
+    holds only the affected name public and narrows the rest.
     """
-    from dataclasses import replace
-
     from . import typescript as ts
     from . import typescript_exports as tsx
-    from ._paths import relative_posix
 
     resolved_entries = ts.detect_ts_entries(root, files, entries)
     if not resolved_entries:
         if entries:
             warn("public surface: --ts-entry did not match any scanned file; keeping export flags")
         return functions
-    modules = {relative_posix(path, root): ts.parse_module_exports(path, root=root) for path in files}
-    reachable, complete = tsx.resolve_entry_reachable(modules, resolved_entries)
-    if not complete:
+    if entries and len(resolved_entries) < len(entries):
+        unmatched = len(entries) - len(resolved_entries)
+        warn(f"public surface: {unmatched} --ts-entry path(s) matched no scanned file")
+    result = tsx.resolve_entry_reachable(modules, resolved_entries)
+    if result.poison_all:
         warn(
-            "public surface: re-export graph is incomplete (a specifier resolves outside the "
-            "scanned set or uses an unhandled alias); keeping file-level export flags"
+            "public surface: an unresolved wildcard re-export (`export *`) or entry means the "
+            "surface can't be bounded; keeping file-level export flags"
         )
         return functions
+    warn(f"public surface narrowed to entry {', '.join(resolved_entries)} (override with --ts-entry)")
+    return _narrow_public(functions, result, warn)
+
+
+def _narrow_public(functions: list[Any], result: Any, warn: Any) -> list[Any]:
+    """Demote each public function whose binding is not entry-reachable, except names held
+    uncertain by an unresolved named re-export (kept public, counted for a note)."""
+    from dataclasses import replace
+
     narrowed: list[Any] = []
+    kept_uncertain = 0
     for fn in functions:
         binding = fn.id.qualname.split(".", 1)[0]
-        if fn.is_public and (fn.id.path, binding) not in reachable:
-            fn = replace(fn, is_public=False)
+        if fn.is_public and (fn.id.path, binding) not in result.reachable:
+            if binding in result.uncertain_names:
+                kept_uncertain += 1
+            else:
+                fn = replace(fn, is_public=False)
         narrowed.append(fn)
+    if kept_uncertain:
+        warn(f"public surface: kept {kept_uncertain} function(s) public behind unresolved named re-exports")
     return narrowed
 
 

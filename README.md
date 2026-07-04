@@ -799,12 +799,15 @@ riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-f
 when your package has an entry barrel riskratchet narrows it to what is actually reachable from
 that entry through `export … from` re-exports (`export { x } from`, `export * from`,
 transitively). The entry is taken from `--ts-entry` (repeatable), else `package.json`
-(`exports`/`module`/`main`/`types`), else the shallowest `index.{ts,tsx,mts,cts}`. A
+(`exports`/`module`/`main`/`types` — best-effort, only when they point at source `.ts`; a
+built-to-`dist` package falls through), else the shallowest `index.{ts,tsx,mts,cts}`. The entry
+that drove narrowing is printed on stderr so you can see (and `--ts-entry`-override) the guess. A
 file-exported function that no barrel re-exports is shown as `[internal]`. This only ever
-*narrows*, and only when the entry and the whole re-export graph resolve within the scanned
-files — a project with no barrel, or any unresolved import (a bare/`node_modules` import or a
-tsconfig path alias), keeps the plain file-level flags. Declaration merging and tsconfig alias
-resolution are out of scope (they need the type checker).
+*narrows*, never on an unproven graph: an **unresolved `export *`** (or missing entry) keeps all
+flags, while a single **unresolved named** re-export (e.g. `export { X } from 'some-lib'`) holds
+just that name public and still narrows the rest — so a third-party re-export in your barrel
+doesn't silently switch the whole feature off. Declaration merging and tsconfig alias resolution
+are out of scope (they need the type checker).
 
 ```bash
 riskratchet scan src --experimental-typescript --ts-entry src/index.ts

@@ -36,7 +36,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from ._paths import any_match as _any_match
 from ._paths import has_hidden_parent as _has_hidden_parent
@@ -167,34 +167,59 @@ def is_generated_typescript(path: Path, source_head: str) -> bool:
     return _GENERATED_HEADER_RE.search(source_head) is not None
 
 
+def analyze_ts_file(
+    path: Path,
+    *,
+    root: Path,
+    on_error: Callable[[Path, str], None] | None = None,
+) -> tuple[list[TsFunction], ModuleExports]:
+    """Parse a `.ts`/`.tsx`/`.mts`/`.cts` file **once** and return both its discovered functions
+    and its export surface. The CLI uses this so a file is not parsed twice (once for discovery,
+    once for barrel resolution).
+
+    Returns `([], empty)` for generated files and for files with ERROR nodes (a genuinely broken
+    file), invoking `on_error(path, "syntax error")` in the latter case — never partial results.
+    """
+    node = _parse_root(path, on_error)
+    if node is None:
+        return [], ModuleExports()
+    return _functions_from_root(node, _relative_posix(path, root)), _exports_from_root(node)
+
+
 def discover_typescript(
     path: Path,
     *,
     root: Path,
     on_error: Callable[[Path, str], None] | None = None,
 ) -> list[TsFunction]:
-    """Discover functions in a single `.ts`/`.tsx`/`.mts`/`.cts` file.
+    """Discover functions in a single file (functions half of `analyze_ts_file`)."""
+    node = _parse_root(path, on_error)
+    if node is None:
+        return []
+    return _functions_from_root(node, _relative_posix(path, root))
 
-    Returns [] for generated files. If tree-sitter reports ERROR nodes (a genuinely
-    broken file), the whole file is skipped and `on_error(path, "syntax error")` is
-    invoked when provided — partial/garbage results are never emitted, matching the
-    Python backend's "skip unparseable files" behaviour.
-    """
+
+def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> Node | None:
+    """Shared loader: read + parse a TS file to its root node, or None for a generated or broken
+    file (invoking `on_error` for broken)."""
     source = path.read_bytes()
     head = source[:2000].decode("utf-8", "replace")
     if is_generated_typescript(path, head):
-        return []
+        return None
     tree_sitter, _ = _require_tree_sitter()
     parser = tree_sitter.Parser(_language(path.suffix))
     tree = parser.parse(source)
     if tree.root_node.has_error:
         if on_error is not None:
             on_error(path, "syntax error")
-        return []
-    rel = _relative_posix(path, root)
-    exported = _collect_exported_names(tree.root_node)
+        return None
+    return cast("Node", tree.root_node)
+
+
+def _functions_from_root(root: Node, rel: str) -> list[TsFunction]:
+    exported = _collect_exported_names(root)
     found: list[TsFunction] = []
-    for node in _walk(tree.root_node):
+    for node in _walk(root):
         fn = _function_from_node(node, rel, exported)
         if fn is not None:
             found.append(fn)
@@ -316,22 +341,15 @@ def _default_export_identifier(stmt: Node) -> str | None:
 
 
 def parse_module_exports(path: Path, *, root: Path) -> ModuleExports:
-    """Parse one file's top-level export surface (for barrel resolution in
-    `typescript_exports`). Returns an empty surface for generated or unparseable files, matching
-    discovery. This is a second tree-sitter parse of the file, separate from
-    `discover_typescript`'s — acceptable for this experimental, informational-only path.
-    """
+    """Parse one file's top-level export surface (exports half of `analyze_ts_file`). Returns an
+    empty surface for generated or unparseable files, matching discovery."""
+    node = _parse_root(path, None)
+    return ModuleExports() if node is None else _exports_from_root(node)
+
+
+def _exports_from_root(root: Node) -> ModuleExports:
     result = ModuleExports()
-    source = path.read_bytes()
-    head = source[:2000].decode("utf-8", "replace")
-    if is_generated_typescript(path, head):
-        return result
-    tree_sitter, _ = _require_tree_sitter()
-    parser = tree_sitter.Parser(_language(path.suffix))
-    tree = parser.parse(source)
-    if tree.root_node.has_error:
-        return result
-    for child in tree.root_node.children:
+    for child in root.children:
         if child.type == "export_statement":
             _classify_export(child, result)
     return result

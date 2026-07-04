@@ -56,10 +56,10 @@ def test_named_reexport_narrows_unreferenced_sibling() -> None:
         "index.ts": _mod({"exposed": Forward("./api", "exposed")}),
         "api.ts": _mod({"exposed": Local("exposed"), "hidden": Local("hidden")}),
     }
-    reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is True
-    assert ("api.ts", "exposed") in reachable
-    assert ("api.ts", "hidden") not in reachable
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False
+    assert ("api.ts", "exposed") in res.reachable
+    assert ("api.ts", "hidden") not in res.reachable
 
 
 def test_aliased_reexport_maps_back_to_local_name() -> None:
@@ -67,8 +67,8 @@ def test_aliased_reexport_maps_back_to_local_name() -> None:
         "index.ts": _mod({"Renamed": Forward("./api", "original")}),
         "api.ts": _mod({"original": Local("original")}),
     }
-    reachable, _ = resolve_entry_reachable(modules, ["index.ts"])
-    assert ("api.ts", "original") in reachable
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert ("api.ts", "original") in res.reachable
 
 
 def test_star_reexport_is_reachable_but_never_carries_default() -> None:
@@ -76,10 +76,10 @@ def test_star_reexport_is_reachable_but_never_carries_default() -> None:
         "index.ts": _mod(stars=["./api"]),
         "api.ts": _mod({"a": Local("a"), "default": Local("d")}),
     }
-    reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is True
-    assert ("api.ts", "a") in reachable
-    assert ("api.ts", "d") not in reachable  # `export *` excludes the default export
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False
+    assert ("api.ts", "a") in res.reachable
+    assert ("api.ts", "d") not in res.reachable  # `export *` excludes the default export
 
 
 def test_transitive_reexport_chain_resolves() -> None:
@@ -88,35 +88,51 @@ def test_transitive_reexport_chain_resolves() -> None:
         "mid.ts": _mod({"leaf": Forward("./leaf", "leaf")}),
         "leaf.ts": _mod({"leaf": Local("leaf")}),
     }
-    reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is True
-    assert ("leaf.ts", "leaf") in reachable
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False
+    assert ("leaf.ts", "leaf") in res.reachable
+
+
+def test_named_through_barrel_of_stars_does_not_overwiden() -> None:
+    # Importing one name from a barrel-of-stars must reach only that name, not everything.
+    modules = {
+        "index.ts": _mod({"wanted": Forward("./barrel", "wanted")}),
+        "barrel.ts": _mod(stars=["./a", "./b"]),
+        "a.ts": _mod({"wanted": Local("wanted"), "other": Local("other")}),
+        "b.ts": _mod({"unrelated": Local("unrelated")}),
+    }
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False
+    assert ("a.ts", "wanted") in res.reachable
+    assert ("a.ts", "other") not in res.reachable  # not widened by the named-through-star lookup
+    assert ("b.ts", "unrelated") not in res.reachable
 
 
 def test_entry_own_declarations_and_default_are_reachable() -> None:
     modules = {"index.ts": _mod({"top": Local("top"), "default": Local("makeThing")})}
-    reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is True
-    assert ("index.ts", "top") in reachable
-    assert ("index.ts", "makeThing") in reachable  # default IS part of the entry's own surface
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False
+    assert ("index.ts", "top") in res.reachable
+    assert ("index.ts", "makeThing") in res.reachable  # default IS part of the entry's own surface
 
 
-def test_unresolved_forward_marks_incomplete() -> None:
-    modules = {"index.ts": _mod({"x": Forward("./nope", "x")})}
-    _reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is False
+def test_unresolved_named_forward_is_uncertain_not_poison() -> None:
+    modules = {"index.ts": _mod({"x": Forward("./nope", "srcX")})}
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is False  # a single external named re-export does not disable narrowing
+    assert res.uncertain_names == {"srcX"}  # keyed on the source name (matches the binding)
 
 
-def test_unresolved_star_marks_incomplete() -> None:
+def test_unresolved_star_poisons_all() -> None:
     modules = {"index.ts": _mod(stars=["./nope"])}
-    _reachable, complete = resolve_entry_reachable(modules, ["index.ts"])
-    assert complete is False
+    res = resolve_entry_reachable(modules, ["index.ts"])
+    assert res.poison_all is True  # a wildcard could expose anything → cannot narrow
 
 
-def test_entry_absent_from_modules_marks_incomplete() -> None:
-    reachable, complete = resolve_entry_reachable({}, ["index.ts"])
-    assert complete is False
-    assert reachable == set()
+def test_entry_absent_from_modules_poisons_all() -> None:
+    res = resolve_entry_reachable({}, ["index.ts"])
+    assert res.poison_all is True
+    assert res.reachable == set()
 
 
 # ---- entry detection (no tree-sitter needed) ------------------------------------------------
@@ -247,6 +263,7 @@ def test_barrel_narrowing_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert "helper  [public]" in err  # via `export *`
     assert "hidden  [internal]" in err  # unreferenced module → narrowed
     assert "cx 1" in err  # complexity column present alongside
+    assert "narrowed to entry index.ts" in err  # R4: the driving entry is announced
 
 
 def test_no_entry_keeps_file_export_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -261,18 +278,62 @@ def test_no_entry_keeps_file_export_flags(tmp_path: Path, monkeypatch: pytest.Mo
     assert "hidden  [public]" in result.stderr
 
 
-def test_incomplete_graph_warns_and_keeps_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_unresolved_wildcard_poisons_and_keeps_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # An unresolved `export *` could expose anything → the whole surface can't be bounded.
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     app_dir = _isolated_barrel(tmp_path)
     (app_dir / "index.ts").write_text(
-        'export { exposed } from "./public_api";\nexport { z } from "external-pkg";\n',
+        'export { exposed } from "./public_api";\nexport * from "external-pkg";\n',
         encoding="utf-8",
     )
     result = _scan(app_dir, monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "re-export graph is incomplete" in result.stderr
+    assert "surface can't be bounded" in result.stderr
     assert "alsoExposed  [public]" in result.stderr  # not demoted on an unproven graph
+
+
+def test_external_named_reexport_still_narrows(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # R2: a single external *named* re-export must NOT disable narrowing (the common case).
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = _isolated_barrel(tmp_path)
+    (app_dir / "index.ts").write_text(
+        'export { exposed } from "./public_api";\nexport { useState } from "react";\n',
+        encoding="utf-8",
+    )
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "exposed  [public]" in result.stderr
+    assert "alsoExposed  [internal]" in result.stderr  # still narrowed despite the external re-export
+    assert "hidden  [internal]" in result.stderr
+
+
+def test_uncertain_name_behind_alias_is_kept_public(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # A function whose binding matches an unresolved *named* re-export's source name is held
+    # public (it might be alias-exposed), while an unrelated sibling still narrows.
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "pkg"
+    app_dir.mkdir()
+    (app_dir / "index.ts").write_text('export { helper } from "@app/core";\n', encoding="utf-8")
+    (app_dir / "helpers.ts").write_text("export function helper() { return 1; }\n", encoding="utf-8")
+    (app_dir / "other.ts").write_text("export function unrelated() { return 2; }\n", encoding="utf-8")
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "helper  [public]" in result.stderr  # binding matches the uncertain source name
+    assert "unrelated  [internal]" in result.stderr  # unrelated → narrowed
+
+
+def test_partial_unmatched_ts_entry_warns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = _isolated_barrel(tmp_path)
+    (app_dir / "index.ts").unlink()
+    result = _scan(app_dir, monkeypatch, "--ts-entry", "public_api.ts", "--ts-entry", "nope.ts")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "1 --ts-entry path(s) matched no scanned file" in result.stderr
+    assert "exposed  [public]" in result.stderr  # narrowing still runs on the matched entry
 
 
 def test_explicit_ts_entry_overrides_detection(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -31,7 +31,7 @@ The table below is now **verified output**, not prediction — it is exactly wha
 | `broken.ts` | syntax error → skipped whole (warned), not partially listed | none — file skipped (`has_error`) |
 | `generated.pb.ts` | generated code that must be **excluded** | none — file skipped (`@generated` header + `*.pb.ts` name) |
 | `app/sample.ts` + `app/coverage-final.json` | slice-3 coverage mapping: discovered spans annotated from a **hand-authored** Istanbul report (no nyc run, so the suite stays hermetic) | `covered` 100% line / no branch; `partial` 80% line, 50% branch, miss-line 11 |
-| `complexity_cases.ts` | slice-4 cyclomatic complexity (`??` counted, `?.` not, `default` not, nested pruned) | `straight` cx 1, `branchy` cx 7, `loopy` cx 8, `optionalChainAndNested` cx 2, `optionalChainAndNested.inner` cx 2 |
+| `complexity_cases.ts` | slice-4 cyclomatic complexity, ESLint-aligned (`??` counted, `?.` not, `switch default` not, default params counted, nested pruned) | `straight` cx 1, `branchy` cx 7, `loopy` cx 8, `optionalChainAndNested` cx 2, `optionalChainAndNested.inner` cx 2, `withDefaults` cx 6 |
 | `barrel/{index,public_api,helpers,internal}.ts` | slice-4 barrel-aware public surface: entry `index.ts` narrows file-exports to entry reachability | `exposed` [pub] (re-exported by name), `alsoExposed` [int] (not re-exported), `helper` [pub] (via `export *`), `hidden` [int] (unreferenced module) |
 
 ## Resolved decisions (were "open questions" in 0.2.11)

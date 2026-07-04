@@ -57,3 +57,10 @@ export function optionalChainAndNested(obj: { a?: { b?: number } }): number {
   const inner = (n: number) => (n > 0 ? 1 : 2);
   return v + inner(v);
 }
+
+// Default parameters (ESLint's `AssignmentPattern`) each count +1: `x = 1`(+1), the object
+// param default `= {}`(+1) plus its `a = 2`(+1), the array param default `= []`(+1) plus its
+// `b = 3`(+1) → CC 6. (riskratchet's Python backend does NOT count these — a documented divergence.)
+export function withDefaults(x = 1, { a = 2 } = {}, [b = 3] = []): number {
+  return x + a + b;
+}

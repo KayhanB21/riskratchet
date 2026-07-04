@@ -108,46 +108,64 @@ def _match_module(target: str, module_keys: set[str]) -> str | None:
     return None
 
 
-def resolve_entry_reachable(
-    modules: dict[str, ModuleExports], entries: list[str]
-) -> tuple[set[tuple[str, str]], bool]:
-    """Return `(reachable_locals, complete)` for the given entry files.
+@dataclass(frozen=True, slots=True)
+class EntryReachability:
+    """Result of walking the re-export graph from the package entry.
 
-    `reachable_locals` is the set of `(file, local_name)` declarations reachable from any entry
-    through the re-export graph. `complete` is False when any specifier (an entry, a forward, or
-    a star target) cannot be resolved within `modules` — the signal for the caller to skip
-    narrowing rather than demote on an unproven graph.
+    `reachable` is the set of `(file, local_name)` declarations reachable from an entry. The
+    caller demotes a public function to internal only when its binding is *not* reachable — and
+    only when the graph is trustworthy, per the two guards below.
+
+    `poison_all` — an **unresolved wildcard** (`export * from <unresolved>`) reachable from an
+    entry, or an entry file not in the scanned set. A wildcard could re-export any name (incl. a
+    tsconfig-aliased one back into the set), so the surface can't be bounded and nothing is
+    demoted.
+
+    `uncertain_names` — the source-names of **unresolved named** re-exports
+    (`export { srcName } from <unresolved>`). Only a function bound to one of these names could
+    be alias-exposed, so only those are held public; everything else still narrows.
     """
+
+    reachable: set[tuple[str, str]]
+    poison_all: bool
+    uncertain_names: set[str]
+
+
+def resolve_entry_reachable(modules: dict[str, ModuleExports], entries: list[str]) -> EntryReachability:
+    """Walk the re-export graph from `entries` and return an `EntryReachability`. See that type
+    for how `reachable` / `poison_all` / `uncertain_names` gate the caller's narrowing."""
     return _Reachability(modules).run(entries)
 
 
 class _Reachability:
     """Worklist traversal of the re-export graph. Kept as a small state object so each step
-    stays simple; `complete` flips to False on the first unresolved edge."""
+    stays simple. Unresolved wildcards/entries set `poison_all`; unresolved named re-exports add
+    to `uncertain_names`."""
 
     def __init__(self, modules: dict[str, ModuleExports]) -> None:
         self.modules = modules
         self.keys = set(modules)
         self.reachable: set[tuple[str, str]] = set()
-        self.complete = True
+        self.poison_all = False
+        self.uncertain_names: set[str] = set()
         self._seen_all: set[tuple[str, bool]] = set()
         self._seen_name: set[tuple[str, str]] = set()
         # Items are ("all", file, include_default) or ("name", file, export_name).
         self._work: list[tuple[str, str, object]] = []
 
-    def run(self, entries: list[str]) -> tuple[set[tuple[str, str]], bool]:
+    def run(self, entries: list[str]) -> EntryReachability:
         for entry in entries:
             if entry in self.keys:
                 self._work.append(("all", entry, True))
             else:
-                self.complete = False
+                self.poison_all = True  # can't establish the surface from a missing entry
         while self._work:
             kind, file, payload = self._work.pop()
             if kind == "all":
                 self._expand_all(file, bool(payload))
             else:
                 self._resolve_name(file, str(payload))
-        return self.reachable, self.complete
+        return EntryReachability(self.reachable, self.poison_all, self.uncertain_names)
 
     def _expand_all(self, file: str, include_default: bool) -> None:
         if (file, include_default) in self._seen_all:
@@ -158,11 +176,9 @@ class _Reachability:
             if name == "default" and not include_default:
                 continue  # `export *` never re-exports the default
             self._work.append(("name", file, name))
-        for spec in mod.stars:
-            target = resolve_specifier(file, spec, self.keys)
-            if target is None:
-                self.complete = False
-            else:
+        for spec in mod.stars:  # `export *` re-exports the whole target
+            target = self._resolve_star(file, spec)
+            if target is not None:
                 self._work.append(("all", target, False))
 
     def _resolve_name(self, file: str, name: str) -> None:
@@ -172,23 +188,30 @@ class _Reachability:
         mod = self.modules[file]
         origin = mod.exports.get(name)
         if origin is None:
-            self._resolve_through_stars(file, name, mod)
+            self._resolve_through_stars(file, name, mod)  # may come from an `export * from`
             return
         if isinstance(origin, Local):
             self.reachable.add((file, origin.name))
             return
         target = resolve_specifier(file, origin.specifier, self.keys)
         if target is None:
-            self.complete = False
+            self.uncertain_names.add(origin.source_name)  # only this name might be alias-exposed
         else:
             self._work.append(("name", target, origin.source_name))
 
     def _resolve_through_stars(self, file: str, name: str, mod: ModuleExports) -> None:
-        # A name not listed here may still be re-exported by an `export * from`. Default is
-        # never carried by a star, so it is not chased through one.
+        # The name may be re-exported by an `export * from`. Forward just this name (not the whole
+        # target) so a named re-export from a barrel-of-stars doesn't over-widen. Default is never
+        # carried by a star.
         for spec in mod.stars:
-            target = resolve_specifier(file, spec, self.keys)
-            if target is None:
-                self.complete = False
-            elif name != "default":
+            target = self._resolve_star(file, spec)
+            if target is not None and name != "default":
                 self._work.append(("name", target, name))
+
+    def _resolve_star(self, file: str, spec: str) -> str | None:
+        # An unresolved wildcard could expose any name under any local binding, so we cannot bound
+        # the surface — poison it rather than guess. Returns the target key, or None if unresolved.
+        target = resolve_specifier(file, spec, self.keys)
+        if target is None:
+            self.poison_all = True
+        return target

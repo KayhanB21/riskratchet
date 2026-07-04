@@ -20,18 +20,21 @@ only via the opt-in `typescript` extra).
 ### Added
 
 - (P20, slice 4) **Cyclomatic complexity for TypeScript**: every discovered function now shows
-  a McCabe `cx N` count in the `--experimental-typescript` listing (on **stderr**), computed by
-  the same algorithm as the Python backend (`typescript_complexity.py`). `??` counts as a
-  branch; optional chaining `?.` deliberately does not (it has no Python counterpart and would
-  break cross-backend comparability); `switch` `default` is not counted; nested functions are
-  pruned so each is scored on its own.
+  a McCabe `cx N` count in the `--experimental-typescript` listing (on **stderr**), computed to
+  match **ESLint's `complexity` rule** (`typescript_complexity.py`) — per-function (nested
+  functions pruned), counting `??` and default parameters, not counting optional chaining `?.`
+  or `switch` `default`. This intentionally differs from riskratchet's Python backend in two
+  ways (Python does not count default parameters and does not prune nested functions), so TS and
+  Python complexity are not directly comparable — a slice-5 reconciliation item.
 - (P20, slice 4) **Barrel-aware public surface**: `is_public` is narrowed to functions
   reachable from the package entry through `export … from` re-export chains (`export { x } from`,
   `export * from`, transitively). The entry is `--ts-entry` (new, repeatable), else
-  `package.json` `exports`/`module`/`main`/`types`, else the shallowest `index.{ts,tsx,mts,cts}`.
-  Narrowing is safety-railed: it only demotes, and only when an entry is found and the re-export
-  graph resolves completely within the scanned set — a non-barrel project or any unresolved
-  specifier (bare/`node_modules` import, tsconfig alias) keeps the file-level export flags.
+  `package.json` `exports`/`module`/`main`/`types` (best-effort; source-pointing fields only),
+  else the shallowest `index.{ts,tsx,mts,cts}`; the driving entry is announced on stderr.
+  Narrowing only demotes, and never on an unproven graph: an **unresolved `export *`** (or
+  missing entry) keeps all flags, while a single **unresolved named** re-export holds only that
+  name public and narrows the rest — so a third-party re-export in a barrel doesn't disable the
+  feature.
 
 ### Fixed
 
