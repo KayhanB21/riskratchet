@@ -149,10 +149,31 @@ all matching ESLint:
 
 **Divergences from the Python reference (intentional, informational-only until slice 5).** The
 Python `_manual_cyclomatic` (a) does **not** count default parameters and (b) does **not** prune
-nested functions (`ast.walk` descends into them). So TS and Python complexity are **not directly
-comparable** for those two shapes. When TS enters the shared scoring pipeline (slice 5) this must
-be reconciled — bring the two backends onto one rule — the same way TS coverage needs
-recalibration (§2). No scoring/baseline/gating consumes either count today.
+nested functions (`ast.walk` descends into them). So the raw TS and Python cyclomatic counts are
+**not directly comparable** for those two shapes, and — importantly — the gap is *not a constant
+offset*: default parameters push TS higher, absorbed nested functions push Python higher, so
+which backend reads higher depends on the code shape. No scoring/baseline/gating consumes either
+count today.
+
+**Committed reconciliation for slice 5 — per-language normalization, not one shared rule.** When
+TS enters scoring, the fix is to keep each backend's *raw* count as-is (TS stays ESLint-faithful
+so the displayed `cx N` matches what a TS dev's linter shows) and instead give the
+`structural_complexity` *normalization* its own per-backend calibration, so that the normalized
+0–100 component represents the **same distribution position** regardless of language. Python
+currently normalizes with `scoring._saturate(cc, free=1, saturation=21)`
+(`COMPLEXITY_SATURATION_CC = 20`); TS gets its own `(free, saturation)` (or mapping). The
+displayed metric and the scored metric are deliberately **decoupled**: ESLint-faithful on screen,
+language-fair at the gate.
+
+The TS constant is **derived, not hand-picked** — folded into the P21 calibration thread: run
+both analyzers over comparable corpora, compare the per-function cyclomatic distributions, and set
+the TS saturation so equal percentiles map to equal normalized scores. It ships at slice 5 (or
+`0.3.0` if it also revisits the Python constant) with the corpus + rationale, never as a silent
+number. This mirrors the coverage caveat in §2 (TS statement-derived vs Python line-level
+coverage): in both, the *shape* is shared but the *measurement* is not, so both feed one scoring
+model only after a data-anchored recalibration. Tradeoff accepted: two calibration surfaces
+instead of one shared counting rule, plus a TS corpus study that does not exist yet — the cost of
+not forcing one language's rules onto the other.
 
 ## 4. Public surface
 
