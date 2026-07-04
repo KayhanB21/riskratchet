@@ -132,10 +132,24 @@ functions radon rolls into a parent. The increment set: `if`/`if`-expression,
 `for`/`async for`, `while`, `except`, `assert`, each non-first `and`/`or` clause,
 each comprehension filter, each `match` case.
 
-**TypeScript notes / open questions.** The algorithm is language-independent; the
-work is enumerating the equivalent TS branching nodes (`if`, `for`, `for…of`,
-`for…in`, `while`, `do`, `case`, `catch`, `?:`, `&&`/`||`/`??`, optional
-chaining) over whichever parse tree the backend produces. Slice 4 (`0.2.15`).
+**TypeScript — implemented in slice 4 (`0.2.14`).**
+`src/riskratchet/typescript_complexity.py` (`cyclomatic_for_node`) mirrors
+`_manual_cyclomatic` over the tree-sitter tree: base 1, `+1` per `if_statement`,
+`ternary_expression`, `for_statement`, `for_in_statement` (covers `for…of`/`for…in`),
+`while_statement`, `do_statement`, `catch_clause`, `switch_case`, and each `&&`/`||`/`??`
+in a `binary_expression`. Computed at discovery from the live node (no node retained) and
+stored on `TsFunction.complexity`. Two deliberate TS-specific decisions:
+
+- **`switch_default` is not counted** (the catch-all is not a new decision point), matching
+  how the Python side counts `case`s.
+- **`??` IS counted** (it short-circuits like `&&`/`||`); **optional chaining `?.` is NOT.**
+  `?.` has no McCabe/Python counterpart and is common enough that counting it would
+  systematically inflate TS complexity relative to Python and break cross-backend
+  comparability. Note: the shape is shared but, as with coverage, the counts are only
+  *comparable*, not identical measurements — nested functions are pruned per-function
+  (mirroring radon's per-block behaviour), and each nested function is scored on its own.
+
+Informational only — no scoring/baseline/gating yet.
 
 ## 4. Public surface
 
@@ -154,9 +168,22 @@ components are public by convention *only if exported*. As of the slice-2 discov
 module this is **export reachability**: a declaration is public if inline-exported *or*
 named in a top-level `export { name }` / `export { name as default }` clause, and a
 method inherits its (possibly clause-exported) class's surface unless it is
-`private`/`protected`/`#name`. It stays purely syntactic — re-exports through barrel
-files (`index.ts`) and cross-module re-export resolution need the type checker and remain
-an open question for slice 4.
+`private`/`protected`/`#name`.
+
+**Barrel-aware narrowing — added in slice 4 (`0.2.14`).** File-level export is refined to
+**package-entry reachability**: `src/riskratchet/typescript_exports.py` walks the re-export
+graph (`export { x } from './m'`, `export { x as y } from`, `export * from`, transitively)
+from the package entry — explicit `--ts-entry`, else `package.json`
+`exports`/`module`/`main`/`types`, else the shallowest `index.{ts,tsx,mts,cts}` — and a
+file-exported function that is *not* reachable from an entry is narrowed to internal. Also
+fixed here: a bare `export default myFunc;` referencing a separately-declared binding
+(previously missed) now marks that binding public.
+
+**Safety rail.** Narrowing only *demotes*, and only when an entry is found *and* the graph
+resolves completely within the scanned set. No entry (a non-barrel project) or any unresolved
+specifier — a bare/`node_modules` import, a tsconfig `paths`/`baseUrl` alias, dynamic
+`import()` — keeps the file-level flags, so an unproven graph never wrongly asserts "internal".
+Still out of scope (needs the type checker): tsconfig path aliases and **declaration merging**.
 
 ## 5. Function identity
 

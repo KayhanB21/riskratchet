@@ -755,9 +755,9 @@ scan paths, and coverage source.
 
 riskratchet scores Python. As the first steps toward TypeScript support, `scan
 --experimental-typescript` will *discover and list* the functions in your
-`.ts`/`.tsx`/`.mts`/`.cts` files, optionally annotated with per-function coverage. It is
-**informational only**: no scoring, no baseline, no gating, and it never changes the exit
-code.
+`.ts`/`.tsx`/`.mts`/`.cts` files, each with its cyclomatic complexity and optionally annotated
+with per-function coverage. It is **informational only**: no scoring, no baseline, no gating,
+and it never changes the exit code.
 The listing prints to **stderr** (it is an experimental diagnostic, not part of the
 machine-readable contract), so `--json` / `--format sarif` / `--output` stay valid
 with the flag on. The output format may change.
@@ -767,10 +767,15 @@ pip install 'riskratchet[typescript]'   # opt-in extra (tree-sitter); Python-onl
 riskratchet scan src --experimental-typescript
 # (on stderr:)
 # typescript: 3 function(s) in 1 file(s)
-#   src/math.ts::add  [public]  (4-6)
-#   src/math.ts::greet  [internal]  (8-13)
-#   src/math.ts::parseConfig  [public]  (15-21)
+#   src/math.ts::add  [public]  (4-6)  cx 1
+#   src/math.ts::greet  [internal]  (8-13)  cx 3
+#   src/math.ts::parseConfig  [public]  (15-21)  cx 5
 ```
+
+The `cx N` column is the McCabe cyclomatic complexity, computed by the same algorithm as the
+Python backend. `??` counts as a branch but optional chaining `?.` does not (it has no Python
+counterpart and would inflate the count), `switch` `default` is not counted, and nested
+functions are pruned so each is scored on its own.
 
 Add `--ts-coverage` to annotate each function with line/branch coverage from an
 Istanbul/nyc `coverage-final.json` (what `nyc`, `c8`, or Jest `--coverage` write). It is
@@ -786,8 +791,23 @@ line-level percentage.)
 riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-final.json
 # (on stderr:)
 # typescript: 2 function(s) in 1 file(s)
-#   src/math.ts::add  [public]  (4-6)  cov 100% line
-#   src/math.ts::parseConfig  [public]  (15-21)  cov 80% line / 50% branch  miss-lines 18
+#   src/math.ts::add  [public]  (4-6)  cx 1  cov 100% line
+#   src/math.ts::parseConfig  [public]  (15-21)  cx 5  cov 80% line / 50% branch  miss-lines 18
+```
+
+**Public surface is barrel-aware.** By default `is_public` follows a file's own `export`s, but
+when your package has an entry barrel riskratchet narrows it to what is actually reachable from
+that entry through `export … from` re-exports (`export { x } from`, `export * from`,
+transitively). The entry is taken from `--ts-entry` (repeatable), else `package.json`
+(`exports`/`module`/`main`/`types`), else the shallowest `index.{ts,tsx,mts,cts}`. A
+file-exported function that no barrel re-exports is shown as `[internal]`. This only ever
+*narrows*, and only when the entry and the whole re-export graph resolve within the scanned
+files — a project with no barrel, or any unresolved import (a bare/`node_modules` import or a
+tsconfig path alias), keeps the plain file-level flags. Declaration merging and tsconfig alias
+resolution are out of scope (they need the type checker).
+
+```bash
+riskratchet scan src --experimental-typescript --ts-entry src/index.ts
 ```
 
 It discovers top-level functions, class methods (including on abstract and
@@ -796,7 +816,8 @@ function expressions; React function components fall out as exported
 functions/arrows. Qualnames reflect nesting through classes, functions, and
 `namespace`/`module` blocks, so a namespaced `Foo.bar` never collides with a
 top-level `bar`. Public vs internal is **export reachability** — inline `export` /
-`export default` *and* separate `export { name }` clauses — not naming. Files with
+`export default`, separate `export { name }` clauses, and (with an entry barrel) cross-file
+re-export chains — not naming. Files with
 syntax errors are skipped with a warning (never partially listed). Deliberately
 **skipped**: anonymous inline callbacks (`xs.map(x => …)`), object-literal methods,
 interface/abstract method *signatures* (no body), and generated files (a

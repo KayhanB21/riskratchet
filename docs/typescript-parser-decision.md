@@ -39,10 +39,13 @@ so the paper recommendation below is now the committed choice. What the spike co
   name.
 
 Coverage mapping (slice 3, `0.2.13`) has since landed for Istanbul JSON
-(`typescript_coverage.py`; see `language-backend-contract.md §2`). The contract areas
-still **not** exercised (deferred, not blockers): LCOV coverage, cyclomatic complexity
-(slice 4), and the token-stable signature fingerprint for rename matching (only needed
-once TS enters the baseline). No Node-backed fallback was required.
+(`typescript_coverage.py`; see `language-backend-contract.md §2`), and **slice 4 (`0.2.14`)**
+added cyclomatic complexity (`typescript_complexity.py`) and barrel-aware public-surface
+narrowing (`typescript_exports.py`) — both over the same tree-sitter tree, still no Node-backed
+fallback. The contract areas still **not** exercised (deferred, not blockers): LCOV coverage,
+the token-stable signature fingerprint for rename matching (only needed once TS enters the
+baseline), and **declaration merging** (the one public-surface case that genuinely needs the
+type checker).
 
 The recommendation, now committed:
 
@@ -92,9 +95,12 @@ unacceptable for a baseline-gating tool. Rejected.
   with documented demand.
 - **No generators / async iterators** guaranteed in the first discovery slice;
   document them as explicitly unsupported until implemented.
-- **No type-aware analysis.** tree-sitter is syntactic; anything needing the type
-  checker (e.g. resolving re-exported public surface) is deferred and is the only
-  scenario that would reopen the Node-backed fallback.
+- **Limited type-aware analysis.** tree-sitter is syntactic. Slice 4 (`0.2.14`) resolves
+  *re-exported* public surface syntactically — a re-export graph over the scanned files with a
+  conservative "never demote on an unresolved chain" fallback (`typescript_exports.py`), so it
+  did **not** reopen the Node-backed fallback. What still genuinely needs the type checker —
+  **declaration merging**, and tsconfig `paths`/`baseUrl` alias resolution — stays deferred and
+  remains the only scenario that would.
 
 ## Packaging note
 

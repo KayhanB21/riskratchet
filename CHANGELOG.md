@@ -9,6 +9,35 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+Slice 4 of the experimental TypeScript track: **cyclomatic complexity** and **barrel-aware
+public surface**. Still **informational only** — no scoring, no baseline, no gating, exit code
+unchanged. Python-only installs and the Python analyzer/scoring are byte-for-byte unchanged
+(the new code is reached only through `scan --experimental-typescript` and imports tree-sitter
+only via the opt-in `typescript` extra).
+
+### Added
+
+- (P20, slice 4) **Cyclomatic complexity for TypeScript**: every discovered function now shows
+  a McCabe `cx N` count in the `--experimental-typescript` listing (on **stderr**), computed by
+  the same algorithm as the Python backend (`typescript_complexity.py`). `??` counts as a
+  branch; optional chaining `?.` deliberately does not (it has no Python counterpart and would
+  break cross-backend comparability); `switch` `default` is not counted; nested functions are
+  pruned so each is scored on its own.
+- (P20, slice 4) **Barrel-aware public surface**: `is_public` is narrowed to functions
+  reachable from the package entry through `export … from` re-export chains (`export { x } from`,
+  `export * from`, transitively). The entry is `--ts-entry` (new, repeatable), else
+  `package.json` `exports`/`module`/`main`/`types`, else the shallowest `index.{ts,tsx,mts,cts}`.
+  Narrowing is safety-railed: it only demotes, and only when an entry is found and the re-export
+  graph resolves completely within the scanned set — a non-barrel project or any unresolved
+  specifier (bare/`node_modules` import, tsconfig alias) keeps the file-level export flags.
+
+### Fixed
+
+- (TypeScript) A bare `export default myFunc;` referencing a separately-declared binding is now
+  recognized as public (previously marked internal).
+
 ## [0.2.13] - 2026-06-27
 
 0.2.13 is the "TypeScript coverage mapping" release — slice 3 of the experimental TypeScript

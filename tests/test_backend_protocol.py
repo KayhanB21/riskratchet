@@ -68,6 +68,9 @@ def test_protocol_is_the_common_surface_only() -> None:
     ts = _typescript_function()
     assert hasattr(py, "fingerprint") and hasattr(py, "signature")
     assert not hasattr(ts, "fingerprint") and not hasattr(ts, "signature")
+    # Complexity is likewise not on the shared protocol: it is a TS convenience field (the
+    # Python backend carries complexity on FunctionRisk, not on DiscoveredFunction).
+    assert hasattr(ts, "complexity") and not hasattr(py, "complexity")
 
 
 def test_backend_agnostic_code_can_consume_the_protocol() -> None:
