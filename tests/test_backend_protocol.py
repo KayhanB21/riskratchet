@@ -69,9 +69,19 @@ def test_protocol_is_the_common_surface_only() -> None:
     ts = _typescript_function()
     assert hasattr(py, "fingerprint") and hasattr(py, "signature")
     assert hasattr(ts, "fingerprint") and hasattr(ts, "signature")  # since 0.2.15
-    protocol_attrs = DiscoveredFunctionLike.__protocol_attrs__  # type: ignore[attr-defined]  # runtime-only
-    for attr in ("fingerprint", "signature"):
-        assert attr not in protocol_attrs  # identity is not on the shared structural surface
+
+    # Behavioral proof (portable across Python versions — no `__protocol_attrs__` introspection,
+    # which is 3.12+): an object exposing only the structural surface still satisfies the
+    # runtime-checkable protocol, so fingerprint/signature are demonstrably not required members.
+    class _StructuralOnly:
+        id = FunctionId(path="x.ts", qualname="f")
+        span = FunctionSpan(start_line=1, end_line=2)
+        is_public = True
+        is_async = False
+
+    structural = _StructuralOnly()
+    assert not hasattr(structural, "fingerprint") and not hasattr(structural, "signature")
+    assert isinstance(structural, DiscoveredFunctionLike)  # identity not needed to conform
     # Complexity is likewise not on the shared protocol: it is a TS convenience field (the
     # Python backend carries complexity on FunctionRisk, not on DiscoveredFunction).
     assert hasattr(ts, "complexity") and not hasattr(py, "complexity")
