@@ -3634,17 +3634,17 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_log",
-      "score": 1.0,
+      "score": 3.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "4e4cbba27b5b87d6960a4a39d8032393f11f897ba7d5a815bc4a098b6fb8dce3",
-      "signature": "098384a316cfebbf7f8b187cbe41f23b8a960cba9a5f8b3195787b3061bf9170"
+      "fingerprint": "8ea8f7980ea5abcffc53ff187cc1f9d12ed791849fc6da062c50b8cd97505201",
+      "signature": "6421ac2b3c46ed2e706692191d3176d2e492cfd819460c876b79e3b54d68eb16"
     },
     {
       "path": "src/riskratchet/reporting/sarif.py",

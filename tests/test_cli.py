@@ -130,6 +130,40 @@ def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) ->
     assert "typescript: 1 function(s)" not in result.stderr  # human listing suppressed in --json
 
 
+def test_scan_experimental_typescript_embeds_sarif_notes(tmp_path: Path) -> None:
+    # Since slice 5 (0.2.15) `--format sarif` emits each discovered TS function as an informational
+    # note result under the riskratchet.typescript-function rule (registered only when TS present).
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    (tmp_path / "a.ts").write_text(
+        "export function add(a: number) { return a > 0 ? a : -a; }\n", encoding="utf-8"
+    )
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(tmp_path),
+            "--experimental-typescript",
+            "--format",
+            "sarif",
+            "--no-git",
+            "--no-auto-cov",
+        ],
+    )
+    assert result.exit_code == 0
+    run = json.loads(result.stdout)["runs"][0]
+    assert "riskratchet.typescript-function" in {rule["id"] for rule in run["tool"]["driver"]["rules"]}
+    ts_notes = [r for r in run["results"] if r["ruleId"] == "riskratchet.typescript-function"]
+    assert len(ts_notes) == 1
+    note = ts_notes[0]
+    assert note["level"] == "note"
+    assert note["properties"]["language"] == "typescript"
+    assert note["properties"]["qualname"] == "add"
+    assert note["properties"]["complexity"] == 2  # base 1 + ternary
+    assert note["properties"]["fingerprint"]  # identity carried in SARIF too
+    assert "typescript: 1 function(s)" not in result.stderr  # human listing suppressed in sarif
+
+
 def test_baseline_writes_file(tmp_path: Path) -> None:
     src = _project(tmp_path)
     baseline_path = tmp_path / "baseline.json"

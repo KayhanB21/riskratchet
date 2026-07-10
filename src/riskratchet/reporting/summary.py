@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.models import (
     DiffEntry,
@@ -23,6 +23,11 @@ from riskratchet.models import (
     Severity,
 )
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:  # TsFunction is a pure dataclass; kept out of the runtime import graph
+    from collections.abc import Sequence
+
+    from riskratchet.typescript import TsFunction
 
 REPORT_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json"
 REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json"
@@ -80,6 +85,33 @@ def _remediation(fn: FunctionRisk) -> str:
 
 def _sorted_by_risk(functions: Iterable[FunctionRisk]) -> list[FunctionRisk]:
     return sorted(functions, key=lambda fn: (-fn.score, fn.id.as_target()))
+
+
+def _sorted_ts(functions: Sequence[TsFunction]) -> list[TsFunction]:
+    """Stable order (path, start line, qualname) — TS functions carry no risk to sort on. Shared by
+    the JSON and SARIF renderers (P20 slice 5)."""
+    return sorted(functions, key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
+
+
+def _ts_core_fields(fn: TsFunction) -> dict[str, Any]:
+    """The shared unscored-TypeScript field set (P20 slice 5), the single source of truth for both
+    the JSON `typescript[]` payload and the SARIF note `properties`. No score/components — TypeScript
+    is informational until 0.3.0. Includes `lines`; the SARIF caller drops it (its result location
+    carries the region), the JSON caller keeps it."""
+    coverage = fn.coverage
+    return {
+        "path": fn.id.path,
+        "qualname": fn.id.qualname,
+        "language": "typescript",
+        "kind": fn.kind,
+        "is_public": fn.is_public,
+        "complexity": fn.complexity.cyclomatic if fn.complexity is not None else None,
+        "line_coverage": coverage.line_coverage if coverage is not None else None,
+        "branch_coverage": coverage.branch_coverage if coverage is not None else None,
+        "lines": {"start": fn.span.start_line, "end": fn.span.end_line},
+        "fingerprint": fn.fingerprint,
+        "signature": fn.signature,
+    }
 
 
 def _fmt_optional(value: float | None, *, signed: bool = False) -> str:

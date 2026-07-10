@@ -12,7 +12,13 @@ from riskratchet.models import (
     RiskReport,
     Severity,
 )
-from riskratchet.reporting.summary import SourceLinks, _branch_pct, _sorted_by_risk
+from riskratchet.reporting.summary import (
+    SourceLinks,
+    _branch_pct,
+    _sorted_by_risk,
+    _sorted_ts,
+    _ts_core_fields,
+)
 from riskratchet.scoring import severity
 
 if TYPE_CHECKING:  # TsFunction is a pure dataclass; kept out of the runtime import graph
@@ -207,29 +213,15 @@ def _ts_function_sarif_result(fn: TsFunction) -> dict[str, Any]:
     detail = f", complexity {complexity}" if complexity is not None else ""
     if coverage is not None:
         detail += f", line coverage {coverage.line_coverage * 100:.0f}%"
+    # Reuse the shared TS field set, minus `lines` — the SARIF result location carries the region.
+    properties = {key: value for key, value in _ts_core_fields(fn).items() if key != "lines"}
     return {
         "ruleId": "riskratchet.typescript-function",
         "level": "note",
         "message": {"text": f"{fn.id.as_target()} ({visibility} TypeScript {fn.kind}){detail}."},
         "locations": [_sarif_location(fn.id.path, fn.span.start_line, fn.span.end_line)],
-        "properties": {
-            "path": fn.id.path,
-            "qualname": fn.id.qualname,
-            "language": "typescript",
-            "kind": fn.kind,
-            "is_public": fn.is_public,
-            "complexity": complexity,
-            "line_coverage": coverage.line_coverage if coverage is not None else None,
-            "branch_coverage": coverage.branch_coverage if coverage is not None else None,
-            "fingerprint": fn.fingerprint,
-            "signature": fn.signature,
-        },
+        "properties": properties,
     }
-
-
-def _sorted_ts(functions: Sequence[TsFunction]) -> list[TsFunction]:
-    """Stable order (path, start line, qualname) — TS functions carry no risk to sort on."""
-    return sorted(functions, key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
 
 
 def _sarif_level_for_severity(sev: Severity) -> str:

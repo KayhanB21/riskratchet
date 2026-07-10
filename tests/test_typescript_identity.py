@@ -1,11 +1,11 @@
 """Token-stable identity for discovered TypeScript functions (P20 slice 5, since 0.2.15).
 
 tree-sitter lives in the optional `typescript` extra, so this module skips when it is absent.
-The contract under test mirrors the Python backend (`analysis.function_fingerprint` /
+The contract under test is analogous to the Python backend (`analysis.function_fingerprint` /
 `matching.signature_fingerprint`): the fingerprint ignores the function's own name and all
 cosmetic formatting (quotes, whitespace, optional semicolons, trailing commas, redundant
-parens) but changes on a real body/signature edit, so the language-neutral rename matcher can
-consume it unchanged at 0.3.0.
+parens) but changes on a real body/signature edit. The pairwise-distinctness battery below is the
+guard against a silent hole in the lossy operator/modifier allowlist (not a proof of completeness).
 """
 
 from __future__ import annotations
@@ -103,6 +103,101 @@ def test_default_parameter_changes_signature(tmp_path: Path) -> None:
     _, sig1 = _one(tmp_path, "function f(x: number) { return x; }", "df1")
     _, sig2 = _one(tmp_path, "function f(x: number = 1) { return x; }", "df2")
     assert sig1 != sig2
+
+
+# Each snippet holds exactly one discovered function and is structurally distinct from every other,
+# so all body fingerprints must be pairwise unique. This is the guard against a silent hole in the
+# operator/modifier allowlist — if a semantic token were dropped, two rows here would collide.
+_DISTINCT_CASES: dict[str, str] = {
+    "plain": "function f(){ return 1; }",
+    "if": "function f(a){ if (a) { return 1; } return 0; }",
+    "while": "function f(a){ while (a) { a--; } return a; }",
+    "for": "function f(){ for (let i = 0; i < 3; i++) {} }",
+    "for_of": "function f(xs){ for (const x of xs) { g(x); } }",
+    "for_in": "function f(o){ for (const k in o) { g(k); } }",
+    "switch": "function f(a){ switch (a) { case 1: break; } }",
+    "try_catch": "function f(){ try { g(); } catch (e) { h(e); } }",
+    "add": "function f(a, b){ return a + b; }",
+    "sub": "function f(a, b){ return a - b; }",
+    "mul": "function f(a, b){ return a * b; }",
+    "strict_eq": "function f(a, b){ return a === b; }",
+    "logical_and": "function f(a, b){ return a && b; }",
+    "nullish": "function f(a, b){ return a ?? b; }",
+    "not": "function f(a){ return !a; }",
+    "negate": "function f(a){ return -a; }",
+    "update": "function f(a){ a++; return a; }",
+    "member": "function f(o){ return o.x; }",
+    "optional_chain": "function f(o){ return o?.x; }",
+    "call": "function f(){ return g(); }",
+    "new": "function f(){ return new G(); }",
+    "spread": "function f(a){ return g(...a); }",
+    "await": "async function f(p){ return await p; }",
+    "typeof": "function f(a){ return typeof a; }",
+    "param_string": "function f(a: string){ return a; }",
+    "param_number": "function f(a: number){ return a; }",
+    "default_param": "function f(a = 1){ return a; }",
+    # These four share the body `return 1` — they can differ ONLY by the modifier keyword, so they
+    # directly exercise the allowlist.
+    "method_plain": "class C { x(){ return 1; } }",
+    "method_get": "class C { get x(){ return 1; } }",
+    "method_static": "class C { static x(){ return 1; } }",
+    "method_generator": "class C { *x(){ return 1; } }",
+}
+
+
+def test_all_structurally_distinct_snippets_have_unique_fingerprints(tmp_path: Path) -> None:
+    fingerprints = {label: _one(tmp_path, src, label)[0] for label, src in _DISTINCT_CASES.items()}
+    # No two distinct constructs may share a body fingerprint.
+    collisions = [
+        (a, b) for a in fingerprints for b in fingerprints if a < b and fingerprints[a] == fingerprints[b]
+    ]
+    assert collisions == [], f"fingerprint collisions: {collisions}"
+
+
+def test_probed_pairs_stay_distinct(tmp_path: Path) -> None:
+    # Lock in the specific distinctions verified by hand during the slice-5 self-critique.
+    assert (
+        _one(tmp_path, _DISTINCT_CASES["for_of"], "a")[0] != _one(tmp_path, _DISTINCT_CASES["for_in"], "b")[0]
+    )
+    assert (
+        _one(tmp_path, _DISTINCT_CASES["member"], "c")[0]
+        != _one(tmp_path, _DISTINCT_CASES["optional_chain"], "d")[0]
+    )
+    assert (
+        _one(tmp_path, _DISTINCT_CASES["method_get"], "e")[0]
+        != _one(tmp_path, _DISTINCT_CASES["method_plain"], "f")[0]
+    )
+    assert (
+        _one(tmp_path, _DISTINCT_CASES["method_static"], "g")[0]
+        != _one(tmp_path, _DISTINCT_CASES["method_plain"], "h")[0]
+    )
+
+
+def _fp_of(tmp_path: Path, src: str, name: str, qualname: str) -> str:
+    """Body fingerprint of the function named `qualname` in `src` (which may hold several)."""
+    path = tmp_path / f"{name}.ts"
+    path.write_text(src, encoding="utf-8")
+    by_name = {fn.id.qualname: fn for fn in discover_typescript(path, root=tmp_path)}
+    fn = by_name[qualname]
+    assert fn.fingerprint is not None
+    return fn.fingerprint
+
+
+def test_nested_function_modifier_affects_parent_body(tmp_path: Path) -> None:
+    # Regression: modifier capture runs at every function-like node, so a nested arrow's `async`
+    # changes the *parent's* body fingerprint (the root-only collision found in the self-critique).
+    async_parent = _fp_of(tmp_path, "function p(){ const h = async () => 1; return h; }", "n1", "p")
+    sync_parent = _fp_of(tmp_path, "function p(){ const h = () => 1; return h; }", "n2", "p")
+    assert async_parent != sync_parent
+
+
+def test_multiply_operator_is_not_treated_as_generator_modifier(tmp_path: Path) -> None:
+    # `*` is a generator modifier only on a function node; as the multiply operator it must not
+    # inject a spurious `[*]` prefix (else `a * b` could collide with a generator body).
+    assert (
+        _one(tmp_path, "function f(a, b){ return a * b; }", "m1")[0]
+        != _one(tmp_path, "function f(a, b){ return a + b; }", "m2")[0]
+    )
 
 
 def test_callable_directly_on_a_node() -> None:

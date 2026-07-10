@@ -114,8 +114,8 @@
         "is_public": { "type": "boolean" },
         "group": { "type": ["string", "null"] },
         "language": {
-          "enum": ["python", "typescript"],
-          "$comment": "Relaxed from const \"python\" to an enum in 0.2.15 (P20 slice 5), when TypeScript gained native JSON output. Scored `functions[]` entries are still \"python\" today (TS is unscored and lives in the separate top-level `typescript[]` array); the enum keeps the field forward-compatible for when TS enters scoring at 0.3.0.",
+          "const": "python",
+          "$comment": "Scored `functions[]` entries are always \"python\": TypeScript is unscored and lives in the separate top-level `typescript[]` array ($defs/ts_function, language const \"typescript\"), so it never appears here. A future 0.3.0 that mixes scored TS into `functions[]` would relax this to enum [\"python\",\"typescript\"] — not this release.",
           "description": "Analyzer backend language (P19, since 0.2.11). Additive."
         },
         "lines": {

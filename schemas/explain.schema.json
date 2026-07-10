@@ -42,8 +42,8 @@
         "is_public": { "type": "boolean" },
         "group": { "type": ["string", "null"] },
         "language": {
-          "enum": ["python", "typescript"],
-          "$comment": "Relaxed from const \"python\" to an enum in 0.2.15 (P20 slice 5), paired with schemas/report.schema.json. `explain` emits Python functions today; the enum keeps the field forward-compatible for when TS enters scoring at 0.3.0.",
+          "const": "python",
+          "$comment": "`explain` emits a single scored Python function; TypeScript is unscored and not surfaced through `explain`, so this stays \"python\". A future 0.3.0 that scores TS would relax this — not this release.",
           "description": "Analyzer backend language (P19, since 0.2.11). Additive."
         },
         "lines": {

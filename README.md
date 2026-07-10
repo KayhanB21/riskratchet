@@ -834,11 +834,15 @@ the flag, so Python-only consumers see no change):
 ```
 
 These entries are **unscored** — no `score`/`components` — because TypeScript stays informational
-until it graduates from experimental. Each carries a token-stable `fingerprint` (body) and
-`signature` that are stable across formatter whitespace/quote/paren choices and change on real
-edits; they are groundwork for rename-aware tracking and nothing gates on them yet. With
-`--format sarif`, each function is emitted as an informational `note`-level result under the
-`riskratchet.typescript-function` rule, tagged `language: "typescript"` in `properties`.
+until it graduates from experimental. Each carries a `fingerprint` (body) and `signature` that are
+stable across formatter whitespace/quote/paren choices and change on real edits — a lossy structural
+hash, groundwork for rename-aware tracking that nothing consumes yet (the format is experimental and
+not frozen; it is tied to the tree-sitter grammar version, so it will be re-validated before any
+0.3.0 baseline stores it). With `--format sarif`, each function is emitted as an informational
+`note`-level result under the `riskratchet.typescript-function` rule, tagged `language: "typescript"`
+in `properties`. Note this means a SARIF consumer sees **one `note` per discovered function** — an
+inventory carried in `results`, not defect findings; an accepted tradeoff for this experimental,
+opt-in surface.
 
 It discovers top-level functions, class methods (including on abstract and
 anonymous default-export classes), and named (const/let-assigned) arrow and

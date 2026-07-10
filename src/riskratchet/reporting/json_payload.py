@@ -34,7 +34,9 @@ from riskratchet.reporting.summary import (
     _diff_summary,
     _regressions_summary,
     _sorted_by_risk,
+    _sorted_ts,
     _summary_payload,
+    _ts_core_fields,
 )
 from riskratchet.scoring import severity
 
@@ -177,31 +179,10 @@ def _function_payload(fn: FunctionRisk, *, links: SourceLinks | None = None) -> 
 
 
 def _ts_function_payload(fn: TsFunction) -> dict[str, Any]:
-    """EXPERIMENTAL: unscored TypeScript function payload (P20 slice 5).
-
-    Deliberately leaner than `_function_payload`: no `score`/`crap`/`components`/`churn`, because
-    TypeScript is informational only (no scoring/baseline/gating before 0.3.0). Carries the
-    identity fingerprints so a downstream consumer can already track a function across renames.
-    """
-    coverage = fn.coverage
-    return {
-        "path": fn.id.path,
-        "qualname": fn.id.qualname,
-        "language": "typescript",
-        "kind": fn.kind,
-        "is_public": fn.is_public,
-        "complexity": fn.complexity.cyclomatic if fn.complexity is not None else None,
-        "line_coverage": coverage.line_coverage if coverage is not None else None,
-        "branch_coverage": coverage.branch_coverage if coverage is not None else None,
-        "lines": {"start": fn.span.start_line, "end": fn.span.end_line},
-        "fingerprint": fn.fingerprint,
-        "signature": fn.signature,
-    }
-
-
-def _sorted_ts(functions: Sequence[TsFunction]) -> list[TsFunction]:
-    """Stable order (path, start line, qualname) — TS functions carry no risk to sort on."""
-    return sorted(functions, key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
+    """EXPERIMENTAL: unscored TypeScript function payload (P20 slice 5) — the shared
+    `_ts_core_fields` shape (incl. `lines`). Deliberately leaner than `_function_payload`: no
+    `score`/`crap`/`components`/`churn`, because TypeScript is informational only until 0.3.0."""
+    return _ts_core_fields(fn)
 
 
 def _regression_payload(reg: Regression, *, links: SourceLinks | None = None) -> dict[str, Any]:
