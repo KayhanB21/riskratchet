@@ -42,9 +42,9 @@
         "is_public": { "type": "boolean" },
         "group": { "type": ["string", "null"] },
         "language": {
-          "const": "python",
-          "$comment": "Locked to python until the TypeScript backend ships (P20, slice 5 / 0.2.16). At that point relax const -> enum [\"python\",\"typescript\"] here AND in schemas/report.schema.json, and update tests/test_schemas.py.",
-          "description": "Analyzer backend language (P19, since 0.2.11). Additive; future TypeScript support will emit \"typescript\". Always \"python\" today."
+          "enum": ["python", "typescript"],
+          "$comment": "Relaxed from const \"python\" to an enum in 0.2.15 (P20 slice 5), paired with schemas/report.schema.json. `explain` emits Python functions today; the enum keeps the field forward-compatible for when TS enters scoring at 0.3.0.",
+          "description": "Analyzer backend language (P19, since 0.2.11). Additive."
         },
         "lines": {
           "type": "object",

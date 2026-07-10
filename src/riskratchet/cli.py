@@ -8,7 +8,7 @@ modules; this file should stay easy to scan.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -382,6 +382,18 @@ def scan(
     )
     links = _links_for(repo_url, commit_ref, redaction)
     filtered = redact_report(filtered, redaction)
+    # EXPERIMENTAL (P20 slice 5): collect TS functions *before* rendering so the JSON/SARIF payload
+    # can embed them (`_embed_ts_in`); the banner/warnings emit to stderr during collection.
+    ts_functions, ts_file_count = _collect_scan_typescript(
+        experimental_typescript,
+        resolved_paths,
+        root=config_dir,
+        include=resolved_include,
+        exclude=resolved_exclude,
+        ts_coverage=ts_coverage or [],
+        ts_entry=ts_entry or [],
+    )
+    embed_ts = _embed_ts_in(effective_format, experimental=experimental_typescript, summary=summary)
     _emit_report(
         filtered,
         format=effective_format,
@@ -391,25 +403,12 @@ def scan(
         min_score=min_score,
         links=links,
         summary=summary,
+        ts_functions=ts_functions if embed_ts else (),
     )
     if effective_format == "table" and not quiet and not summary and output is None:
         baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
         _emit_scan_next_step_footer(filtered, baseline_file=baseline_file, config_present=bool(cfg))
-    if experimental_typescript:
-        _emit_typescript_discovery(
-            resolved_paths,
-            root=config_dir,
-            include=resolved_include,
-            exclude=resolved_exclude,
-            ts_coverage=ts_coverage or [],
-            ts_entry=ts_entry or [],
-        )
-    elif ts_coverage or ts_entry:
-        typer.secho(
-            "typescript: --ts-coverage / --ts-entry have no effect without --experimental-typescript.",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
+    _emit_scan_typescript_listing(ts_functions, ts_file_count, embed_ts=embed_ts)
     _emit_diagnostics(
         diag,
         verbose=verbose,
@@ -1464,6 +1463,7 @@ def _emit_report(
     min_score: float | None = None,
     links: SourceLinks | None = None,
     summary: bool = False,
+    ts_functions: Sequence[Any] = (),
 ) -> None:
     effective_limit = None if limit == 0 else limit
     if summary:
@@ -1471,12 +1471,15 @@ def _emit_report(
             render_report_summary_json(report) if format == "json" else render_report_summary_text(report)
         )
     elif format == "json":
-        rendered = render_report_json(report, links=links)
+        rendered = render_report_json(report, links=links, ts_functions=ts_functions)
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit, links=links)
     elif format == "sarif":
         rendered = render_report_sarif(
-            report, min_score=min_score if min_score is not None else 25.0, links=links
+            report,
+            min_score=min_score if min_score is not None else 25.0,
+            links=links,
+            ts_functions=ts_functions,
         )
     elif format == "github":
         rendered = render_report_github(report, min_score=min_score if min_score is not None else 25.0)
@@ -1619,7 +1622,7 @@ def _write(rendered: str, output: Path | None) -> None:
     output.write_text(rendered, encoding="utf-8")
 
 
-def _emit_typescript_discovery(
+def _collect_typescript(
     paths: list[Path],
     *,
     root: Path,
@@ -1627,17 +1630,18 @@ def _emit_typescript_discovery(
     exclude: list[str],
     ts_coverage: list[Path] | None = None,
     ts_entry: list[Path] | None = None,
-) -> None:
+) -> tuple[list[Any], int]:
     """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13; complexity +
-    barrel-aware public surface slice 4 since 0.2.14): list discovered TypeScript functions,
-    each with cyclomatic complexity, optionally annotated with Istanbul coverage.
+    barrel-aware public surface slice 4 since 0.2.14; native JSON/SARIF + identity slice 5 since
+    0.2.15): discover TypeScript functions, each with cyclomatic complexity, identity fingerprints,
+    and optional Istanbul coverage. Returns `(functions, file_count)`.
 
-    Informational only — no scoring, no baseline, no gating; does not affect the exit code.
-    The whole listing (banner, skip warnings, and the function list) goes to STDERR: it is an
-    experimental diagnostic, not part of the machine-readable contract, so `--json` /
-    `--format sarif` / `--output` keep emitting valid output on stdout. JSON/SARIF integration
-    is deferred to a later slice. tree-sitter is imported lazily, so a default Python-only
-    install never touches it.
+    Informational only — no scoring, no baseline, no gating; does not affect the exit code. The
+    banner and skip warnings go to STDERR (an experimental diagnostic, not part of the contract);
+    the discovered functions are handed back so the caller can either embed them in the
+    machine-readable JSON/SARIF payload (slice 5) or render the human stderr listing
+    (`_emit_typescript_stderr_listing`). tree-sitter is imported lazily, so a default Python-only
+    install never touches it; a missing extra raises `typer.Exit(2)`.
     """
     from . import typescript as ts
     from . import typescript_coverage as tscov
@@ -1689,7 +1693,50 @@ def _emit_typescript_discovery(
 
     if unmeasured_files:
         _warn(f"{unmeasured_files} file(s) had no coverage entry (shown without coverage)")
-    typer.echo("\n".join(_render_ts_functions(functions, len(files))), err=True)
+    return functions, len(files)
+
+
+def _emit_typescript_stderr_listing(functions: list[Any], file_count: int) -> None:
+    """Render the human-readable TS listing to STDERR (used for text/table/markdown formats, where
+    the machine JSON/SARIF payload does not carry the TypeScript section)."""
+    typer.echo("\n".join(_render_ts_functions(functions, file_count)), err=True)
+
+
+def _collect_scan_typescript(
+    experimental: bool,
+    paths: list[Path],
+    *,
+    root: Path,
+    include: list[str],
+    exclude: list[str],
+    ts_coverage: list[Path],
+    ts_entry: list[Path],
+) -> tuple[list[Any], int]:
+    """Collect TS functions for `scan`, or warn when `--ts-*` is passed without the flag.
+    Returns `([], 0)` when TypeScript discovery is not requested."""
+    if experimental:
+        return _collect_typescript(
+            paths, root=root, include=include, exclude=exclude, ts_coverage=ts_coverage, ts_entry=ts_entry
+        )
+    if ts_coverage or ts_entry:
+        typer.secho(
+            "typescript: --ts-coverage / --ts-entry have no effect without --experimental-typescript.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    return [], 0
+
+
+def _embed_ts_in(effective_format: str, *, experimental: bool, summary: bool) -> bool:
+    """TS rides inside the machine-readable payload only for the two structured formats, and never
+    in the counts-only `--summary` envelope; every other format keeps the human stderr listing."""
+    return experimental and not summary and effective_format in ("json", "sarif")
+
+
+def _emit_scan_typescript_listing(functions: list[Any], file_count: int, *, embed_ts: bool) -> None:
+    """Emit the human stderr listing for formats that don't embed TS in their payload."""
+    if functions and not embed_ts:
+        _emit_typescript_stderr_listing(functions, file_count)
 
 
 def _collect_ts_functions(

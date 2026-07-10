@@ -61,13 +61,17 @@ def test_typescript_function_conforms() -> None:
 
 
 def test_protocol_is_the_common_surface_only() -> None:
-    # Identity (fingerprint/signature) is intentionally NOT part of the shared protocol —
-    # it is the Python-only half TypeScript can't supply until it has token-stable
-    # fingerprints. The protocol unifies the *shape*, not the identity.
+    # Identity (fingerprint/signature) is intentionally NOT part of the shared protocol, even
+    # though both backends now carry it (TS gained token-stable fingerprints in slice 5). The
+    # protocol unifies the *structural* shape (id/span/is_public/is_async); identity stays off
+    # it because the rename matcher, not protocol-typed code, is what consumes it.
     py = _python_function()
     ts = _typescript_function()
     assert hasattr(py, "fingerprint") and hasattr(py, "signature")
-    assert not hasattr(ts, "fingerprint") and not hasattr(ts, "signature")
+    assert hasattr(ts, "fingerprint") and hasattr(ts, "signature")  # since 0.2.15
+    protocol_attrs = DiscoveredFunctionLike.__protocol_attrs__  # type: ignore[attr-defined]  # runtime-only
+    for attr in ("fingerprint", "signature"):
+        assert attr not in protocol_attrs  # identity is not on the shared structural surface
     # Complexity is likewise not on the shared protocol: it is a TS convenience field (the
     # Python backend carries complexity on FunctionRisk, not on DiscoveredFunction).
     assert hasattr(ts, "complexity") and not hasattr(py, "complexity")

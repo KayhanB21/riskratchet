@@ -758,9 +758,10 @@ riskratchet scores Python. As the first steps toward TypeScript support, `scan
 `.ts`/`.tsx`/`.mts`/`.cts` files, each with its cyclomatic complexity and optionally annotated
 with per-function coverage. It is **informational only**: no scoring, no baseline, no gating,
 and it never changes the exit code.
-The listing prints to **stderr** (it is an experimental diagnostic, not part of the
-machine-readable contract), so `--json` / `--format sarif` / `--output` stay valid
-with the flag on. The output format may change.
+For the human formats (table/markdown/…) the listing prints to **stderr** (an experimental
+diagnostic), so stdout stays clean. For `--json` and `--format sarif` the discovered functions are
+instead **embedded in the machine-readable payload** (see "Machine-readable output" below). The
+output shape may still change.
 
 ```bash
 pip install 'riskratchet[typescript]'   # opt-in extra (tree-sitter); Python-only installs are unaffected
@@ -812,6 +813,32 @@ are out of scope (they need the type checker).
 ```bash
 riskratchet scan src --experimental-typescript --ts-entry src/index.ts
 ```
+
+**Machine-readable output.** With `--json`, discovered functions ride in an additive top-level
+`typescript` array (the scored Python `functions` array is untouched, and the key is absent without
+the flag, so Python-only consumers see no change):
+
+```jsonc
+// riskratchet scan src --experimental-typescript --json
+{
+  "functions": [ /* … scored Python, unchanged … */ ],
+  "typescript": [
+    {
+      "path": "src/math.ts", "qualname": "parseConfig", "language": "typescript",
+      "kind": "function", "is_public": true, "complexity": 5,
+      "line_coverage": 0.8, "branch_coverage": 0.5, "lines": {"start": 15, "end": 21},
+      "fingerprint": "…", "signature": "…"
+    }
+  ]
+}
+```
+
+These entries are **unscored** — no `score`/`components` — because TypeScript stays informational
+until it graduates from experimental. Each carries a token-stable `fingerprint` (body) and
+`signature` that are stable across formatter whitespace/quote/paren choices and change on real
+edits; they are groundwork for rename-aware tracking and nothing gates on them yet. With
+`--format sarif`, each function is emitted as an informational `note`-level result under the
+`riskratchet.typescript-function` rule, tagged `language: "typescript"` in `properties`.
 
 It discovers top-level functions, class methods (including on abstract and
 anonymous default-export classes), and named (const/let-assigned) arrow and

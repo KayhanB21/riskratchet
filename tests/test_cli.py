@@ -111,8 +111,9 @@ def test_scan_experimental_typescript_lists_functions(tmp_path: Path) -> None:
 
 
 def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) -> None:
-    # Regression: the TS listing must not corrupt machine-readable stdout. With the flag on,
-    # `--json` stdout must still parse cleanly (listing is routed to stderr).
+    # Since slice 5 (0.2.15) `--json` embeds the discovered TS functions in a top-level
+    # `typescript` array; stdout must still parse cleanly, and only the banner (not a text
+    # listing) goes to stderr.
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     (tmp_path / "a.ts").write_text("export function add(a: number) { return a; }\n", encoding="utf-8")
@@ -121,9 +122,12 @@ def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) ->
         ["scan", str(tmp_path), "--experimental-typescript", "--json", "--no-git", "--no-auto-cov"],
     )
     assert result.exit_code == 0
-    payload = json.loads(result.stdout)  # raises if stdout was polluted by the listing
+    payload = json.loads(result.stdout)  # raises if stdout was polluted
     assert "functions" in payload
-    assert "typescript:" in result.stderr  # the listing still happened, just on stderr
+    assert [fn["qualname"] for fn in payload["typescript"]] == ["add"]
+    assert payload["typescript"][0]["language"] == "typescript"
+    assert "experimental: TypeScript discovery is informational" in result.stderr
+    assert "typescript: 1 function(s)" not in result.stderr  # human listing suppressed in --json
 
 
 def test_baseline_writes_file(tmp_path: Path) -> None:
