@@ -43,8 +43,8 @@
         "group": { "type": ["string", "null"] },
         "language": {
           "const": "python",
-          "$comment": "Locked to python until the TypeScript backend ships (P20, slice 5 / 0.2.16). At that point relax const -> enum [\"python\",\"typescript\"] here AND in schemas/report.schema.json, and update tests/test_schemas.py.",
-          "description": "Analyzer backend language (P19, since 0.2.11). Additive; future TypeScript support will emit \"typescript\". Always \"python\" today."
+          "$comment": "`explain` emits a single scored Python function; TypeScript is unscored and not surfaced through `explain`, so this stays \"python\". A future 0.3.0 that scores TS would relax this — not this release.",
+          "description": "Analyzer backend language (P19, since 0.2.11). Additive."
         },
         "lines": {
           "type": "object",

@@ -231,11 +231,35 @@ clears name and body, keeping args/decorators/return annotation. `match_rename()
 scores candidates with the weights `(BODY 0.55, SIG 0.20, PATH 0.10,
 QUALNAME_TAIL 0.05, COMPONENT 0.05, SCORE 0.05)`, threshold `0.65`.
 
-**TypeScript notes / open questions.** A backend needs a **token-stable**
-serialization of a TS function body and signature — equivalent to "strip names
-and source positions, hash the structure." The matcher weights and threshold are
-language-neutral and should not need re-tuning, but the fingerprints must be
-stable across the TS formatter's whitespace/quote choices.
+**TypeScript — implemented, unscored (slice 5, since 0.2.15).**
+`src/riskratchet/typescript_identity.py` provides a token-stable serialization **analogous to** the
+note above. `body_fingerprint()` serializes the whole function node (signature and body) with the
+function's own name excluded; `signature_fingerprint()` does the same with the body block excluded
+too — the same two-fingerprint split and SHA-256 `str` shape as Python's `function_fingerprint` /
+`signature_fingerprint`, so it is **intended** to slot into `match_rename` when TS enters scoring.
+It is **not** a faithful port of `ast.dump`: it is a lossy, hand-curated projection (walk the named
+nodes, add back a small operator/modifier allowlist), so its completeness is unproven —
+`tests/test_typescript_identity.py` carries a pairwise-distinctness battery as the guard, not a
+proof.
+
+Stability comes from serializing only *named* tree-sitter nodes: anonymous punctuation
+(`{ } ( ) , ; : . =>`) and string/template quotes are dropped, so the hash is immune to
+brace/spacing style, optional semicolons (ASI), trailing commas, and single-vs-double quotes;
+`parenthesized_expression` is unwrapped so redundant parens don't count. Three classes of
+*semantic* tokens that are anonymous in the grammar are added back explicitly, else they'd collide:
+operators on `binary`/`unary`/`update`/`augmented_assignment` expressions, and (only on
+function-like nodes, so the generator `*` never collides with the multiply operator) the modifier
+keywords `async`/`get`/`set`/`static`/`*`. Modifier capture runs at every function-like node, so a
+parent's body fingerprint reflects a nested function's modifiers.
+
+**Durability requirement for 0.3.0.** The payload embeds `SCHEME_VERSION` (bump on any serializer
+change) but **not** the tree-sitter-typescript **grammar version**, which the hash also depends on —
+it serializes grammar node-type strings, so a grammar upgrade can silently change every fingerprint.
+Harmless while the fingerprints are unconsumed (the matcher stays **unused** for TS this release —
+identity is groundwork, carried but not yet scored/gated). But **before a baseline persists TS
+fingerprints at 0.3.0**, that baseline must record the grammar + `SCHEME_VERSION`, and the grammar
+must be pinned or version-gated so a bump is detected, not silently treated as a mass rename. The
+matcher weights and threshold are language-neutral and are not re-tuned.
 
 ## Output seam
 
@@ -247,14 +271,25 @@ exists today. The first additive multi-language hook shipped in `0.2.11`:
 - `FunctionRisk.language` (`src/riskratchet/models.py`) — defaults to `"python"`.
 - Emitted as `function.language` in `scan --json` and `explain --json` via the
   shared `_function_payload()` (`src/riskratchet/reporting/json_payload.py`).
-- Declared in `schemas/report.schema.json` and `schemas/explain.schema.json` as
-  `{ "const": "python" }` today; a future backend relaxes this to
-  `{ "enum": ["python", "typescript"] }`.
+- Declared in `schemas/report.schema.json` and `schemas/explain.schema.json`.
+  **Since 0.2.15 (slice 5)** this is `{ "enum": ["python", "typescript"] }` (was
+  `{ "const": "python" }`).
 
-The field is additive: it is always `"python"` until a real backend sets
-otherwise, so existing consumers are unaffected. The baseline format, SARIF, and
-the check/diff payloads do **not** carry `language` yet — they gain it only when
-TypeScript scoring actually ships (slice 5, `0.2.16`).
+Slice 5 wired TypeScript into the machine-readable output, **still unscored**:
+
+- `scan --json --experimental-typescript` adds a top-level `typescript[]` array of
+  unscored functions (`$defs/ts_function`): `path`, `qualname`,
+  `language: "typescript"`, `kind`, `is_public`, `complexity`, line/branch coverage,
+  `lines`, and the identity `fingerprint`/`signature`. No `score`/`components` —
+  TypeScript is informational until `0.3.0`. The key is **omitted** without the flag,
+  so the Python contract and every snapshot are byte-stable.
+- `scan --format sarif --experimental-typescript` emits each TS function as an
+  informational `level: "note"` result under the new `riskratchet.typescript-function`
+  rule (registered only when TS results are present), tagged `language: "typescript"`.
+- Also fixed a latent gap: the scored Python SARIF result `properties` now carry
+  `language` and `group` (the JSON payload already had both since 0.2.11 / group
+  support). The baseline format and the check/diff payloads still do **not** carry
+  `language` — they gain it only when TypeScript scoring ships (`0.3.0`).
 
 ## Non-goals for groundwork
 

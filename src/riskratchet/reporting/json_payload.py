@@ -9,7 +9,7 @@ externally (URLs only).
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.models import (
     DiffEntry,
@@ -18,6 +18,11 @@ from riskratchet.models import (
     Regression,
     RiskReport,
 )
+
+if TYPE_CHECKING:  # TsFunction is a pure dataclass; kept out of the runtime import graph
+    from collections.abc import Sequence
+
+    from riskratchet.typescript import TsFunction
 from riskratchet.reporting.summary import (
     DIFF_SCHEMA_URL,
     EXPLAIN_SCHEMA_URL,
@@ -29,18 +34,30 @@ from riskratchet.reporting.summary import (
     _diff_summary,
     _regressions_summary,
     _sorted_by_risk,
+    _sorted_ts,
     _summary_payload,
+    _ts_core_fields,
 )
 from riskratchet.scoring import severity
 
 
-def render_report_json(report: RiskReport, *, links: SourceLinks | None = None) -> str:
+def render_report_json(
+    report: RiskReport,
+    *,
+    links: SourceLinks | None = None,
+    ts_functions: Sequence[TsFunction] = (),
+) -> str:
     payload: dict[str, Any] = {
         "$schema": REPORT_SCHEMA_URL,
         "version": OUTPUT_VERSION,
         "summary": _summary_payload(report),
         "functions": [_function_payload(fn, links=links) for fn in _sorted_by_risk(report.functions)],
     }
+    # EXPERIMENTAL (P20 slice 5): unscored TypeScript discovery, emitted as an additive top-level
+    # key only when `scan --experimental-typescript` surfaced functions. Absent otherwise, so the
+    # default Python contract and every snapshot are byte-stable.
+    if ts_functions:
+        payload["typescript"] = [_ts_function_payload(fn) for fn in _sorted_ts(ts_functions)]
     return json.dumps(payload, indent=2) + "\n"
 
 
@@ -159,6 +176,13 @@ def _function_payload(fn: FunctionRisk, *, links: SourceLinks | None = None) -> 
     if links is not None:
         payload["source_url"] = links.link_for(fn)
     return payload
+
+
+def _ts_function_payload(fn: TsFunction) -> dict[str, Any]:
+    """EXPERIMENTAL: unscored TypeScript function payload (P20 slice 5) — the shared
+    `_ts_core_fields` shape (incl. `lines`). Deliberately leaner than `_function_payload`: no
+    `score`/`crap`/`components`/`churn`, because TypeScript is informational only until 0.3.0."""
+    return _ts_core_fields(fn)
 
 
 def _regression_payload(reg: Regression, *, links: SourceLinks | None = None) -> dict[str, Any]:

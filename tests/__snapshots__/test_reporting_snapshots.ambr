@@ -664,6 +664,8 @@
               "branch_coverage": 0.5,
               "churn_commits": 0,
               "is_public": true,
+              "group": null,
+              "language": "python",
               "components": {
                 "coverage_gap": 90.0,
                 "structural_complexity": 90.0,
@@ -709,6 +711,8 @@
               "branch_coverage": 0.5,
               "churn_commits": 0,
               "is_public": true,
+              "group": null,
+              "language": "python",
               "components": {
                 "coverage_gap": 75.0,
                 "structural_complexity": 75.0,
@@ -754,6 +758,8 @@
               "branch_coverage": 0.5,
               "churn_commits": 0,
               "is_public": true,
+              "group": null,
+              "language": "python",
               "components": {
                 "coverage_gap": 60.0,
                 "structural_complexity": 60.0,
@@ -799,6 +805,8 @@
               "branch_coverage": 0.5,
               "churn_commits": 0,
               "is_public": true,
+              "group": null,
+              "language": "python",
               "components": {
                 "coverage_gap": 50.0,
                 "structural_complexity": 50.0,
@@ -1095,6 +1103,8 @@
               "branch_coverage": null,
               "churn_commits": 0,
               "is_public": true,
+              "group": null,
+              "language": "python",
               "components": {
                 "coverage_gap": 100.0,
                 "structural_complexity": 0.0,

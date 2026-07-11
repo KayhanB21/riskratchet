@@ -88,6 +88,25 @@ def test_scan_json_matches_report_schema(tmp_path: Path) -> None:
     Draft202012Validator(_load_schema("report.schema.json")).validate(payload)
 
 
+def test_scan_json_with_typescript_matches_report_schema(tmp_path: Path) -> None:
+    # Slice 5 (0.2.15): `scan --json --experimental-typescript` adds a top-level `typescript`
+    # array of unscored functions; the whole payload must still validate against the schema.
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    src = _project(tmp_path)
+    (src / "widget.ts").write_text(
+        "export function add(a: number, b = 1) { return a + b; }\n", encoding="utf-8"
+    )
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--json", "--experimental-typescript", "--no-auto-cov", "--no-git"],
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    assert payload["typescript"][0]["language"] == "typescript"
+    Draft202012Validator(_load_schema("report.schema.json")).validate(payload)
+
+
 def test_doctor_json_matches_doctor_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     src = _project(tmp_path)

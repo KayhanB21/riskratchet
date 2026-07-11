@@ -70,6 +70,11 @@
     "functions": {
       "type": "array",
       "items": { "$ref": "#/$defs/function" }
+    },
+    "typescript": {
+      "type": "array",
+      "description": "EXPERIMENTAL (P20 slice 5, since 0.2.15): unscored TypeScript functions, present only under `scan --experimental-typescript`. Additive and omitted otherwise, so Python-only consumers see no change.",
+      "items": { "$ref": "#/$defs/ts_function" }
     }
   },
   "$defs": {
@@ -110,8 +115,8 @@
         "group": { "type": ["string", "null"] },
         "language": {
           "const": "python",
-          "$comment": "Locked to python until the TypeScript backend ships (P20, slice 5 / 0.2.16). At that point relax const -> enum [\"python\",\"typescript\"] here AND in schemas/explain.schema.json, and update tests/test_schemas.py.",
-          "description": "Analyzer backend language (P19, since 0.2.11). Additive; future TypeScript support will emit \"typescript\". Always \"python\" today."
+          "$comment": "Scored `functions[]` entries are always \"python\": TypeScript is unscored and lives in the separate top-level `typescript[]` array ($defs/ts_function, language const \"typescript\"), so it never appears here. A future 0.3.0 that mixes scored TS into `functions[]` would relax this to enum [\"python\",\"typescript\"] — not this release.",
+          "description": "Analyzer backend language (P19, since 0.2.11). Additive."
         },
         "lines": {
           "type": "object",
@@ -144,6 +149,57 @@
         "churn": { "type": "number", "minimum": 0, "maximum": 100 },
         "public_surface": { "type": "number", "minimum": 0, "maximum": 100 },
         "sprawl": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "ts_function": {
+      "type": "object",
+      "description": "EXPERIMENTAL: an unscored TypeScript function (P20 slice 5, since 0.2.15). No score/crap/components/churn — TypeScript discovery is informational only until scoring lands at 0.3.0.",
+      "required": [
+        "path",
+        "qualname",
+        "language",
+        "kind",
+        "is_public",
+        "complexity",
+        "line_coverage",
+        "branch_coverage",
+        "lines",
+        "fingerprint",
+        "signature"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "description": "Repo-relative POSIX path." },
+        "qualname": { "type": "string" },
+        "language": { "const": "typescript" },
+        "kind": { "enum": ["function", "method", "arrow"] },
+        "is_public": { "type": "boolean", "description": "Package-entry reachability (barrel-aware, since 0.2.14)." },
+        "complexity": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "ESLint-aligned McCabe cyclomatic (since 0.2.14); null if uncomputed."
+        },
+        "line_coverage": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "From --ts-coverage (Istanbul); null when unmeasured."
+        },
+        "branch_coverage": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "lines": {
+          "type": "object",
+          "required": ["start", "end"],
+          "additionalProperties": false,
+          "properties": {
+            "start": { "type": "integer", "minimum": 1 },
+            "end": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "fingerprint": {
+          "type": ["string", "null"],
+          "description": "Token-stable body fingerprint (since 0.2.15); groundwork for rename-aware scoring at 0.3.0."
+        },
+        "signature": { "type": ["string", "null"], "description": "Token-stable signature fingerprint (since 0.2.15)." }
       }
     }
   }

@@ -44,6 +44,7 @@ from ._paths import relative_posix as _relative_posix
 from .models import ComplexityStats, CoverageStats, FunctionId, FunctionSpan
 from .typescript_complexity import cyclomatic_for_node
 from .typescript_exports import Forward, Local, ModuleExports, resolve_specifier
+from .typescript_identity import body_fingerprint, signature_fingerprint
 
 if TYPE_CHECKING:  # annotations only; tree-sitter is an optional runtime import
     from collections.abc import Callable
@@ -85,11 +86,12 @@ class TsFunction:
 
     Conforms to `models.DiscoveredFunctionLike` — the shared backend protocol it satisfies
     alongside the Python `analysis.DiscoveredFunction` (proven in
-    `tests/test_backend_protocol.py`). The structural shapes are now unified behind that one
-    protocol. What is still missing before TypeScript can enter the scoring/baseline pipeline
-    is **identity**: a token-stable body/signature fingerprint for rename-aware matching, which
-    Python carries on `DiscoveredFunction` but tree-sitter discovery does not yet produce. That
-    identity work — not the shape — is the remaining slice-5 dependency."""
+    `tests/test_backend_protocol.py`). The structural shapes are unified behind that one
+    protocol. Since 0.2.15 `fingerprint`/`signature` carry the token-stable identity
+    (`typescript_identity`) that mirrors the Python backend's, closing the last gap before
+    TypeScript can enter the scoring/baseline pipeline — though nothing scores or gates on it
+    yet (that lands at `0.3.0`). They are `None` only on hand-constructed `TsFunction`s that
+    predate the identity fields; discovery always sets them."""
 
     id: FunctionId
     span: FunctionSpan
@@ -99,6 +101,9 @@ class TsFunction:
     # McCabe cyclomatic (since 0.2.14), computed at discovery from the live tree-sitter node.
     complexity: ComplexityStats | None = None
     coverage: CoverageStats | None = None
+    # Token-stable identity (since 0.2.15), computed at discovery from the live tree-sitter node.
+    fingerprint: str | None = None
+    signature: str | None = None
 
 
 def iter_typescript_files(
@@ -585,4 +590,6 @@ def _function_from_node(node: Node, rel_path: str, exported: set[str]) -> TsFunc
         is_async=_is_async(node),
         kind=kind,
         complexity=ComplexityStats(cyclomatic=cyclomatic_for_node(node)),
+        fingerprint=body_fingerprint(node),
+        signature=signature_fingerprint(node),
     )

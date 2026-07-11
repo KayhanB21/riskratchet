@@ -9,6 +9,53 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.15] - 2026-07-10
+
+Slice 5 of the experimental TypeScript track: **native JSON/SARIF output** and **token-stable
+identity** for discovered TypeScript functions. Still **informational only** — no scoring, no
+baseline, no gating, exit code unchanged. Python-only installs and the Python analyzer/scoring are
+unchanged (TypeScript is reached only through `scan --experimental-typescript` and imports
+tree-sitter only via the opt-in `typescript` extra).
+
+### Added
+
+- (P20, slice 5) **TypeScript in `scan --json`**: a new additive top-level `typescript` array of
+  unscored functions — `path`, `qualname`, `language: "typescript"`, `kind`, `is_public`,
+  `complexity`, line/branch coverage, `lines`, and identity `fingerprint`/`signature`. No
+  `score`/`components` (TypeScript is informational until 0.3.0). The key is **omitted** without
+  the flag, so the Python contract and all snapshots are byte-stable. Schema: `report.schema.json`
+  gains `$defs/ts_function`.
+- (P20, slice 5) **TypeScript in `scan --format sarif`**: each discovered function is emitted as an
+  informational `level: "note"` result under a new `riskratchet.typescript-function` rule
+  (registered only when TypeScript results are present), tagged `language: "typescript"` in
+  `properties`. Note this means **one `note` per discovered function** — an inventory carried in
+  `results`, not defect findings; an accepted tradeoff for this experimental, opt-in surface.
+- (P20, slice 5) **Token-stable identity** (`typescript_identity.py`): a body and a signature
+  fingerprint per function — a lossy structural hash **analogous to** the Python backend's contract,
+  stable across formatter whitespace/quote/semicolon/paren choices and sensitive to real
+  body/signature edits. It is groundwork for rename-aware scoring at 0.3.0 (the matcher is already
+  language-neutral and is *intended* to consume these), but nothing scores or gates on it yet, the
+  format is **experimental and not frozen**, and it is scheme-versioned (`SCHEME_VERSION`) and tied
+  to the tree-sitter-typescript grammar version — so it must be re-validated and the grammar pinned
+  before any 0.3.0 baseline stores it.
+
+### Fixed
+
+- (SARIF) Scored Python function results now carry `properties.language` (added additively in
+  0.2.11 to the JSON payload but never to SARIF) and `properties.group`, so the two machine formats
+  match.
+
+### Changed
+
+- (experimental TypeScript) With `--json` / `--format sarif`, the discovered-function listing that
+  0.2.14 printed to **stderr** is now embedded in the stdout payload instead (see above) and the
+  stderr listing is suppressed for those two formats — additive on stdout, a deliberate subtraction
+  on stderr for that flag combo. The human (table/markdown/…) formats keep the stderr listing.
+- `function.language` in `report.schema.json` / `explain.schema.json` stays `{ "const": "python" }`:
+  scored `functions[]` entries are always Python, since unscored TypeScript lives in the separate
+  `typescript[]` array (`$defs/ts_function`, `language: "typescript"`). A future 0.3.0 that mixes
+  scored TS into `functions[]` is what would relax it to an enum.
+
 ## [0.2.14] - 2026-07-04
 
 Slice 4 of the experimental TypeScript track: **cyclomatic complexity** and **barrel-aware
