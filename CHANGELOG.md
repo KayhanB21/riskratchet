@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.2.15] - 2026-07-10
+## [0.2.15] - 2026-07-11
 
 Slice 5 of the experimental TypeScript track: **native JSON/SARIF output** and **token-stable
 identity** for discovered TypeScript functions. Still **informational only** — no scoring, no
