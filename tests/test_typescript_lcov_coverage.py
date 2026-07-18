@@ -74,6 +74,65 @@ def test_lcov_partial_reports_missing_line_and_uncovered_branch() -> None:
     assert stats.missing_branches == ()
 
 
+def test_lcov_matches_istanbul_on_switch_and_multiple_branches(tmp_path: Path) -> None:
+    # A richer structure than the fixture's single `if`: a 3-arm switch + a 2-arm branch, with a
+    # missing line and a missing switch arm. Built as an Istanbul dict and the equivalent LCOV text,
+    # asserting identical CoverageStats — hardening the core normalization guarantee.
+    istanbul = {
+        "statementMap": {
+            "0": {"start": {"line": 2}},
+            "1": {"start": {"line": 3}},
+            "2": {"start": {"line": 4}},
+            "3": {"start": {"line": 6}},
+            "4": {"start": {"line": 7}},
+        },
+        "s": {"0": 1, "1": 0, "2": 1, "3": 1, "4": 1},  # line 3 never executed
+        "branchMap": {
+            "0": {"loc": {"start": {"line": 4}}},  # switch, 3 arms
+            "1": {"loc": {"start": {"line": 6}}},  # if, 2 arms
+        },
+        "b": {"0": [1, 0, 1], "1": [1, 1]},  # switch middle arm uncovered
+    }
+    lcov = tmp_path / "cov.lcov"
+    lcov.write_text(
+        "SF:pkg/x.ts\n"
+        "DA:2,1\nDA:3,0\nDA:4,1\nDA:6,1\nDA:7,1\n"
+        "BRDA:4,0,0,1\nBRDA:4,0,1,0\nBRDA:4,0,2,1\n"
+        "BRDA:6,1,0,1\nBRDA:6,1,1,1\n"
+        "end_of_record\n",
+        encoding="utf-8",
+    )
+    lcov_cov = load_lcov_coverage(lcov).lookup("x.ts")
+    assert lcov_cov is not None
+    span = FunctionSpan(start_line=1, end_line=10)
+    assert coverage_for_ts_span(lcov_cov, span) == coverage_for_ts_span(istanbul, span)
+
+
+def test_lcov_tolerates_real_tool_output_shape(tmp_path: Path) -> None:
+    # Production LCOV carries a VER: header, per-line DA checksums (a 3rd field), FN/FNDA function
+    # records, and FNF/FNH + LF/LH + BRF/BRH totals. All must be tolerated; only DA/BRDA are used.
+    lcov = tmp_path / "cov.lcov"
+    lcov.write_text(
+        "TN:my suite\n"
+        "VER:1\n"
+        "SF:pkg/x.ts\n"
+        "FN:1,f\nFN:5,g\nFNDA:3,f\nFNDA:0,g\nFNF:2\nFNH:1\n"
+        "DA:2,3,abcdef0123456789abcdef0123456789\n"  # DA with a checksum third field
+        "DA:3,0,00000000000000000000000000000000\n"
+        "BRDA:2,0,0,3\nBRDA:2,0,1,0\nBRF:2\nBRH:1\n"
+        "LF:2\nLH:1\n"
+        "end_of_record\n",
+        encoding="utf-8",
+    )
+    file_cov = load_lcov_coverage(lcov).lookup("x.ts")
+    assert file_cov is not None
+    stats = coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=10))
+    assert stats.line_coverage == pytest.approx(0.5)  # DA lines 2 (hit) / 3 (miss)
+    assert stats.missing_lines == (3,)
+    assert stats.branch_coverage == pytest.approx(0.5)  # BRDA arm 1 not taken
+    assert stats.missing_branch_arms == ((2, 1),)
+
+
 # ---- parser specifics ------------------------------------------------------------------
 
 
@@ -254,6 +313,18 @@ def test_dispatcher_content_sniffs_unknown_extension(tmp_path: Path) -> None:
     assert load_ts_coverage_files([json_txt]).lookup("sample.ts") is not None
 
 
+def test_dispatcher_extension_wins_over_content(tmp_path: Path) -> None:
+    # Design decision: the extension is authoritative. A file with LCOV content but a `.json`
+    # extension is routed to the Istanbul loader, which rejects it — skipped via on_error, not
+    # silently misparsed. (Content sniffing only kicks in for a neutral extension.)
+    mislabeled = tmp_path / "cov.json"
+    mislabeled.write_text(LCOV_FILE.read_text(encoding="utf-8"), encoding="utf-8")
+    errors: list[str] = []
+    data = load_ts_coverage_files([mislabeled], on_error=lambda path, msg: errors.append(str(path)))
+    assert data.lookup("sample.ts") is None
+    assert any("cov.json" in e for e in errors)
+
+
 def test_dispatcher_skips_bad_shard_with_callback(tmp_path: Path) -> None:
     good = tmp_path / "good.lcov"
     good.write_text(LCOV_FILE.read_text(encoding="utf-8"), encoding="utf-8")
@@ -361,3 +432,52 @@ def test_scan_mixes_istanbul_and_lcov_reports(tmp_path: Path, monkeypatch: pytes
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "cov 100% line" in result.stderr  # sample.ts::covered resolved via the LCOV report
+
+
+def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:
+    from typer.testing import CliRunner
+
+    from riskratchet.cli import app
+
+    monkeypatch.chdir(app_dir)
+    return CliRunner().invoke(app, ["scan", ".", "--experimental-typescript", "--no-auto-cov", *extra])
+
+
+def test_scan_ts_coverage_lcov_warns_and_omits_when_misaligned(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An LCOV report whose line numbers describe compiled JS (no DA lands in any discovered span)
+    must warn and show NO coverage, not confidently-wrong numbers — same guard as Istanbul."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "app"
+    app_dir.mkdir()
+    (app_dir / "sample.ts").write_text((APP / "sample.ts").read_text(encoding="utf-8"), encoding="utf-8")
+    # Same measured lines as the fixture but shoved past line 200, as if collected on built output.
+    shifted = "SF:src/app/sample.ts\n" + "".join(
+        f"DA:{200 + n},{hits}\n" for n, hits in ((2, 1), (3, 1), (7, 1), (8, 1), (9, 1), (11, 0), (13, 1))
+    )
+    shifted += "BRDA:208,0,0,1\nBRDA:208,0,1,0\nend_of_record\n"
+    (app_dir / "shifted.lcov").write_text(shifted, encoding="utf-8")
+
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "shifted.lcov")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "don't intersect any discovered function" in result.stderr
+    assert "% line" not in result.stderr  # no coverage annotation emitted at all
+
+
+def test_scan_ts_coverage_lcov_hints_when_file_has_no_entry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A discovered file absent from the LCOV report is reported explicitly, not silently."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "app"
+    app_dir.mkdir()
+    (app_dir / "other.ts").write_text("export function f(): number {\n  return 1;\n}\n", encoding="utf-8")
+    # An LCOV that measures some unrelated file, so other.ts has no entry.
+    (app_dir / "cov.lcov").write_text("SF:pkg/unrelated.ts\nDA:1,1\nend_of_record\n", encoding="utf-8")
+
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "cov.lcov")
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "1 file(s) had no coverage entry" in result.stderr

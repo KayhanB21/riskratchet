@@ -790,8 +790,16 @@ file's coverage rather than showing wrong numbers. (TS line-coverage is statemen
 Istanbul and line-derived for LCOV, and neither is directly comparable to the Python line-level
 percentage.)
 
+Produce a report your toolchain already knows how to emit: `c8 --reporter=lcov` (LCOV) or
+`c8 --reporter=json` / `nyc --reporter=json` (Istanbul); Jest via
+`coverageReporters: ['lcov']` (or `['json']`); Vitest via `--coverage.reporter=lcov`; or
+Karma's lcov reporter. Point `--ts-coverage` at the resulting `lcov.info` or
+`coverage-final.json` — either works.
+
 ```bash
 riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-final.json
+# or an LCOV report — same output:
+riskratchet scan src --experimental-typescript --ts-coverage coverage/lcov.info
 # (on stderr:)
 # typescript: 2 function(s) in 1 file(s)
 #   src/math.ts::add  [public]  (4-6)  cx 1  cov 100% line
