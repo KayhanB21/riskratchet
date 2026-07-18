@@ -9,6 +9,34 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.2.16] - 2026-07-17
+
+LCOV coverage support for the experimental TypeScript track. Still **informational only** — no
+scoring, no baseline, no gating, exit code unchanged. Python-only installs and the Python
+analyzer/scoring are unchanged (TypeScript is reached only through `scan
+--experimental-typescript` and the coverage mapping imports no tree-sitter).
+
+### Added
+
+- **`--ts-coverage` now accepts LCOV (`lcov.info`)** in addition to Istanbul/nyc
+  `coverage-final.json` (the format most non-nyc toolchains emit — `c8 --reporter=lcov`, Karma,
+  many Jest reporters, CI uploaders). The format is **auto-detected per file** (extension
+  `.info`/`.lcov` or a leading `TN:`/`SF:` line → LCOV; a leading `{` → Istanbul JSON), so a single
+  repeatable `--ts-coverage` list may **mix both formats** and they merge. An LCOV report is
+  normalized into the same internal shape as Istanbul, so an LCOV and an Istanbul report describing
+  the same measured lines produce identical coverage numbers. `--ts-coverage` remains repeatable,
+  TypeScript-only, and separate from the Python `--coverage`.
+
+### Notes
+
+- LCOV `line_coverage` is **line-derived** (a line is measured iff it carries a `DA` record) — a
+  third measurement basis distinct from Istanbul's statement-start lines and coverage.py's
+  executable-line set. As before, coverage percentages are **not interchangeable across backends**
+  (see `docs/language-backend-contract.md §2`). LCOV `FN`/`FNDA` function hit counts and the
+  `LF`/`LH`/`BRF`/`BRH` file totals have no field in `CoverageStats` and are parsed-and-ignored.
+- No schema, CLI-flag, JSON-field, SARIF, or baseline changes; all Python-output snapshots are
+  byte-stable (the Istanbul code path is untouched).
+
 ## [0.2.15] - 2026-07-11
 
 Slice 5 of the experimental TypeScript track: **native JSON/SARIF output** and **token-stable

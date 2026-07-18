@@ -289,10 +289,10 @@ def scan(
         list[Path] | None,
         typer.Option(
             "--ts-coverage",
-            help="EXPERIMENTAL: Istanbul/nyc coverage-final.json to annotate discovered "
-            "TypeScript functions with line/branch coverage. Repeatable (pass one per package "
-            "in a monorepo). Only used with --experimental-typescript; separate from "
-            "--coverage (which is Python).",
+            help="EXPERIMENTAL: Istanbul/nyc coverage-final.json or LCOV lcov.info to annotate "
+            "discovered TypeScript functions with line/branch coverage (format auto-detected per "
+            "file). Repeatable (pass one per package in a monorepo; formats may be mixed). Only "
+            "used with --experimental-typescript; separate from --coverage (which is Python).",
         ),
     ] = None,
     ts_entry: Annotated[
@@ -1633,8 +1633,9 @@ def _collect_typescript(
 ) -> tuple[list[Any], int]:
     """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13; complexity +
     barrel-aware public surface slice 4 since 0.2.14; native JSON/SARIF + identity slice 5 since
-    0.2.15): discover TypeScript functions, each with cyclomatic complexity, identity fingerprints,
-    and optional Istanbul coverage. Returns `(functions, file_count)`.
+    0.2.15; LCOV coverage since 0.2.16): discover TypeScript functions, each with cyclomatic
+    complexity, identity fingerprints, and optional Istanbul or LCOV coverage. Returns
+    `(functions, file_count)`.
 
     Informational only — no scoring, no baseline, no gating; does not affect the exit code. The
     banner and skip warnings go to STDERR (an experimental diagnostic, not part of the contract);
@@ -1669,7 +1670,7 @@ def _collect_typescript(
 
     coverage = tscov.empty_istanbul_coverage()
     if ts_coverage:
-        coverage = tscov.load_istanbul_coverage_files(
+        coverage = tscov.load_ts_coverage_files(
             ts_coverage,
             on_error=lambda path, msg: _warn(f"--ts-coverage {path}: {msg} (skipped)"),
         )

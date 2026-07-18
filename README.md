@@ -779,14 +779,16 @@ counterpart and would inflate the count), `switch` `default` is not counted, and
 functions are pruned so each is scored on its own.
 
 Add `--ts-coverage` to annotate each function with line/branch coverage from an
-Istanbul/nyc `coverage-final.json` (what `nyc`, `c8`, or Jest `--coverage` write). It is
-separate from Python `--coverage`, and is **repeatable** — pass one report per package in a
-monorepo and they merge. A file absent from the report is reported explicitly (not silently
+Istanbul/nyc `coverage-final.json` (what `nyc`, `c8`, or Jest `--coverage` write) **or an
+LCOV `lcov.info`** (what `c8 --reporter=lcov`, Karma, many Jest reporters, and CI uploaders
+write). The format is auto-detected per file, so a single **repeatable** `--ts-coverage` list
+may mix both — pass one report per package in a monorepo and they merge. It is separate from
+Python `--coverage`. A file absent from the report is reported explicitly (not silently
 dropped). If a report's line numbers don't line up with the source — the sign of coverage
 collected on *compiled JS* without source-map remapping — riskratchet warns and omits that
-file's coverage rather than showing wrong numbers. **Istanbul JSON only** for now; LCOV is
-deferred. (TS line-coverage is statement-derived and isn't directly comparable to the Python
-line-level percentage.)
+file's coverage rather than showing wrong numbers. (TS line-coverage is statement-derived for
+Istanbul and line-derived for LCOV, and neither is directly comparable to the Python line-level
+percentage.)
 
 ```bash
 riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-final.json

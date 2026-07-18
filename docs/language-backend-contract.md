@@ -88,7 +88,7 @@ from the coverage report.
 file's executed/missing line and branch sets. The format is already
 language-agnostic JSON; only the *producer* is Python-specific.
 
-**TypeScript status — slice 3 (`0.2.13`) landed for Istanbul JSON.**
+**TypeScript status — slice 3 (`0.2.13`) landed for Istanbul JSON; LCOV added in `0.2.16`.**
 `src/riskratchet/typescript_coverage.py` maps an Istanbul/nyc `coverage-final.json`
 onto the spans `typescript.py` discovers, returning the same `CoverageStats`.
 Algorithm: **line coverage** keys on each statement's `start.line` only (not its
@@ -101,13 +101,23 @@ Istanbul has no `(src_line, dst_line)` analog. Paths are matched basename + long
 (Istanbul keys are absolute). It is reached only through `scan
 --experimental-typescript --ts-coverage` (repeatable — one report per package in a
 monorepo, merged; Istanbul keys are absolute, so no prefix map is needed) and stays
-informational (no scoring/gating). **LCOV is intentionally deferred** — it is line/branch
-oriented and closer to the existing shape, and folds in later if demand appears.
+informational (no scoring/gating).
+
+**LCOV (`lcov.info`) is supported since `0.2.16`** — rather than teach the mapping a second
+shape, an LCOV report is parsed into the *same* synthetic Istanbul-shaped per-file dict: each
+`DA:<line>,<hits>` becomes a one-line statement, and each `BRDA:` group (keyed by `(line, block)`)
+becomes a synthetic branch, so `coverage_for_ts_span` / `spans_cover_any_statement` and the
+merge/lookup machinery are reused unchanged (an LCOV and an Istanbul report describing the same
+measured lines yield identical `CoverageStats`). Format is auto-detected per file (extension
+`.info`/`.lcov` or a leading `TN:`/`SF:` line → LCOV; a leading `{` → Istanbul JSON), so one
+`--ts-coverage` list may mix both. LCOV `FN`/`FNDA` (function hit counts) and the `LF`/`LH`/`BRF`/
+`BRH` file totals have no home in `CoverageStats` and are parsed-and-ignored.
 
 **Semantics are not identical across backends — do not treat the percentages as
-interchangeable.** TS `line_coverage` is *statement-start-derived* (a line counts as
-measured iff an Istanbul statement starts on it); the Python backend's is *line-level*
-(coverage.py's executable-line set). A TS function and a Python function both at "80%" are
+interchangeable.** TS `line_coverage` from Istanbul is *statement-start-derived* (a line counts as
+measured iff an Istanbul statement starts on it); **LCOV is *line*-derived** (a line counts iff it
+has a `DA` record) — a third measurement basis; the Python backend's is *line-level*
+(coverage.py's executable-line set). Two functions both at "80%" across any of these are
 not the same denominator, so this output is **not** consumable unchanged by a future
 cross-language scoring blend — it must be recalibrated first. Likewise TS branch arms go in
 `CoverageStats.missing_branch_arms` (`(line, arm_index)`), never the Python `missing_branches`
