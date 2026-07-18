@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.2.16] - 2026-07-17
+## [0.2.16] - 2026-07-18
 
 LCOV coverage support for the experimental TypeScript track. Still **informational only** — no
 scoring, no baseline, no gating, exit code unchanged. Python-only installs and the Python

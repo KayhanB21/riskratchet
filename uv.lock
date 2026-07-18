@@ -855,7 +855,7 @@ wheels = [
 
 [[package]]
 name = "riskratchet"
-version = "0.2.15"
+version = "0.2.16"
 source = { editable = "." }
 dependencies = [
     { name = "coverage" },
