@@ -32,8 +32,13 @@ analyzer/scoring are unchanged (TypeScript is reached only through `scan
 - LCOV `line_coverage` is **line-derived** (a line is measured iff it carries a `DA` record) — a
   third measurement basis distinct from Istanbul's statement-start lines and coverage.py's
   executable-line set. As before, coverage percentages are **not interchangeable across backends**
-  (see `docs/language-backend-contract.md §2`). LCOV `FN`/`FNDA` function hit counts and the
-  `LF`/`LH`/`BRF`/`BRH` file totals have no field in `CoverageStats` and are parsed-and-ignored.
+  (see `docs/language-backend-contract.md §2`) — real `c8`-LCOV and `nyc`-Istanbul reports diverge
+  on the same source. LCOV `FN`/`FNDA` function hit counts and the `LF`/`LH`/`BRF`/`BRH` file totals
+  have no field in `CoverageStats` and are parsed-and-ignored (whether to consume `FNDA` is an open
+  0.3.0 question).
+- Robustness: a UTF-8 BOM is stripped; a record whose `DA:` lines are all unparseable is **rejected**
+  rather than silently read as "100% covered"; and an LCOV report saved under a `.json` name gets a
+  directed "looks like an LCOV report" hint instead of an opaque JSON error.
 - No schema, CLI-flag, JSON-field, SARIF, or baseline changes; all Python-output snapshots are
   byte-stable (the Istanbul code path is untouched).
 

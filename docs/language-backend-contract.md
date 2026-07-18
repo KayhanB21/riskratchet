@@ -107,11 +107,26 @@ informational (no scoring/gating).
 shape, an LCOV report is parsed into the *same* synthetic Istanbul-shaped per-file dict: each
 `DA:<line>,<hits>` becomes a one-line statement, and each `BRDA:` group (keyed by `(line, block)`)
 becomes a synthetic branch, so `coverage_for_ts_span` / `spans_cover_any_statement` and the
-merge/lookup machinery are reused unchanged (an LCOV and an Istanbul report describing the same
-measured lines yield identical `CoverageStats`). Format is auto-detected per file (extension
-`.info`/`.lcov` or a leading `TN:`/`SF:` line → LCOV; a leading `{` → Istanbul JSON), so one
-`--ts-coverage` list may mix both. LCOV `FN`/`FNDA` (function hit counts) and the `LF`/`LH`/`BRF`/
-`BRH` file totals have no home in `CoverageStats` and are parsed-and-ignored.
+merge/lookup machinery are reused unchanged. (The normalization is faithful — an LCOV and an
+Istanbul report *hand-authored to describe the same measured lines* yield identical
+`CoverageStats`, which is what the equivalence test pins. This is **not** a claim that real tools
+agree: a real `c8 --reporter=lcov` and a real `nyc --reporter=json` model branches and measured
+lines differently and legitimately diverge on the same source — see the committed
+`tests/fixtures/typescript/c8_real/lcov.info`, captured from an actual c8 run, whose numbers are
+not the Istanbul fixture's.) Format is auto-detected per file (extension `.info`/`.lcov` or a
+leading `TN:`/`SF:` line → LCOV; a leading `{` → Istanbul JSON), so one `--ts-coverage` list may
+mix both. A record whose `DA:` lines are all unparseable is rejected rather than silently read as
+"100% covered".
+
+LCOV `FN`/`FNDA` (function hit counts) and the `LF`/`LH`/`BRF`/`BRH` file totals have no home in
+`CoverageStats` and are parsed-and-ignored today. **Open 0.3.0 question:** `FNDA` is LCOV's one
+*function-level* signal ("was this function ever called"), which is exactly this tool's unit of
+analysis — the current line-span reconstruction ignores it. Before TS coverage feeds scoring at
+`0.3.0`, decide whether to consume `FNDA` directly (and whether `FN` declaration lines make a
+better source-map misalignment check than the statement-based one). **Pre-0.3.0 validation gate:**
+the current test fixtures other than `c8_real/` are hand-authored; before promotion, validate the
+parser against real output from each supported producer (c8, nyc, Jest, Vitest, Karma), since their
+`BRDA`/`DA` conventions differ.
 
 **Semantics are not identical across backends — do not treat the percentages as
 interchangeable.** TS `line_coverage` from Istanbul is *statement-start-derived* (a line counts as

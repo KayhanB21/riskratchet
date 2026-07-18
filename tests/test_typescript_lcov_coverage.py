@@ -46,12 +46,55 @@ def _lcov_file_cov() -> dict[str, Any]:
 
 
 @pytest.mark.parametrize("span", [COVERED_SPAN, PARTIAL_SPAN])
-def test_lcov_yields_identical_coverage_stats_to_istanbul(span: FunctionSpan) -> None:
-    # The whole design rests on this: same measured lines/branches → same CoverageStats.
+def test_lcov_normalizes_to_same_stats_as_a_matched_istanbul_fixture(span: FunctionSpan) -> None:
+    # NOTE: this proves the *normalization* is faithful — the two fixtures were hand-authored to
+    # describe the same measured lines/branches, so equal input must give equal CoverageStats. It
+    # does NOT claim real tools agree: a real `c8 --reporter=lcov` and a real
+    # `nyc --reporter=json` model branches and measured lines differently and will diverge on the
+    # same source (see `test_parses_real_c8_generated_lcov`, whose numbers are legitimately not the
+    # Istanbul fixture's).
     istanbul = load_istanbul_coverage(ISTANBUL_FILE).lookup("sample.ts")
     lcov = load_lcov_coverage(LCOV_FILE).lookup("sample.ts")
     assert istanbul is not None and lcov is not None
     assert coverage_for_ts_span(lcov, span) == coverage_for_ts_span(istanbul, span)
+
+
+C8_REAL_FILE = Path(__file__).parent / "fixtures" / "typescript" / "c8_real" / "lcov.info"
+
+
+def test_parses_real_c8_generated_lcov() -> None:
+    # Unlike the hand-authored fixtures, `c8_real/lcov.info` was produced by an actual
+    # `c8 --reporter=lcovonly` run (source: `c8_real/sample.js`). It exercises the real byte shape:
+    # DA on *every* line (declarations, braces), FNF/FNH before FNDA, and c8's per-block branch
+    # model (four single-arm BRDA blocks, not Istanbul's two-arm `if`). Values below are read off
+    # the committed, frozen fixture.
+    data = load_lcov_coverage(C8_REAL_FILE)
+    file_cov = data.lookup("sample.js")
+    assert file_cov is not None
+
+    covered = coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=4))
+    assert covered.line_coverage == 1.0
+    assert covered.branch_coverage == 1.0  # both block-0/1 branches on line 1 taken
+    assert covered.missing_lines == ()
+
+    partial = coverage_for_ts_span(file_cov, FunctionSpan(start_line=5, end_line=13))
+    assert partial.line_coverage == pytest.approx(7 / 9)  # lines 10,11 (the else body) not run
+    assert partial.missing_lines == (10, 11)
+    assert partial.branch_coverage == pytest.approx(0.5)  # else block (line 9) never taken
+    assert partial.missing_branch_arms == ((9, 0),)
+
+
+def test_real_c8_lcov_diverges_from_the_istanbul_fixture() -> None:
+    # Empirical proof that LCOV and Istanbul are NOT interchangeable on real output: c8 reports the
+    # uncovered `partial` branch on line 9 (the `else`) as arm 0, while the Istanbul fixture reports
+    # it on line 8 as arm 1, and the line-coverage denominators differ (7/9 vs 0.8).
+    c8 = load_lcov_coverage(C8_REAL_FILE).lookup("sample.js")
+    istanbul = load_istanbul_coverage(ISTANBUL_FILE).lookup("sample.ts")
+    assert c8 is not None and istanbul is not None
+    c8_partial = coverage_for_ts_span(c8, FunctionSpan(start_line=5, end_line=13))
+    ist_partial = coverage_for_ts_span(istanbul, PARTIAL_SPAN)
+    assert c8_partial.missing_branch_arms != ist_partial.missing_branch_arms
+    assert c8_partial.line_coverage != ist_partial.line_coverage
 
 
 def test_lcov_covered_function_is_100_percent_no_branch() -> None:
@@ -204,6 +247,36 @@ def test_lcov_malformed_data_lines_are_skipped(tmp_path: Path) -> None:
     assert stats.branch_coverage is None
 
 
+def test_lcov_all_corrupt_da_record_is_rejected_not_silently_100_percent(tmp_path: Path) -> None:
+    # A record whose DA lines were ALL unparseable must not become an empty ("100% covered") entry.
+    # With only that one corrupt record, the whole file has no readable data → ValueError → skipped.
+    lcov = tmp_path / "cov.lcov"
+    lcov.write_text("SF:pkg/x.ts\nDA:bad,bad\nDA:also,bad\nend_of_record\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="no readable coverage data"):
+        load_lcov_coverage(lcov)
+
+
+def test_lcov_corrupt_record_dropped_but_good_record_kept(tmp_path: Path) -> None:
+    # In a multi-file report, one all-corrupt record is dropped while a good one survives — the
+    # corrupt file simply has no entry (reported as unmeasured downstream), not a false 100%.
+    lcov = tmp_path / "cov.lcov"
+    lcov.write_text(
+        "SF:pkg/corrupt.ts\nDA:bad,bad\nend_of_record\nSF:pkg/good.ts\nDA:2,1\nend_of_record\n",
+        encoding="utf-8",
+    )
+    data = load_lcov_coverage(lcov)
+    assert data.lookup("corrupt.ts") is None  # not fabricated as fully covered
+    assert data.lookup("good.ts") is not None
+
+
+def test_lcov_strips_utf8_bom(tmp_path: Path) -> None:
+    lcov = tmp_path / "cov.lcov"
+    lcov.write_bytes(b"\xef\xbb\xbfSF:pkg/x.ts\nDA:2,1\nend_of_record\n")  # UTF-8 BOM prefix
+    file_cov = load_lcov_coverage(lcov).lookup("x.ts")
+    assert file_cov is not None
+    assert coverage_for_ts_span(file_cov, FunctionSpan(start_line=1, end_line=5)).line_coverage == 1.0
+
+
 def test_lcov_flushes_record_without_trailing_end_of_record(tmp_path: Path) -> None:
     lcov = tmp_path / "cov.lcov"
     lcov.write_text("SF:pkg/x.ts\nDA:2,1\n", encoding="utf-8")  # no end_of_record
@@ -313,16 +386,17 @@ def test_dispatcher_content_sniffs_unknown_extension(tmp_path: Path) -> None:
     assert load_ts_coverage_files([json_txt]).lookup("sample.ts") is not None
 
 
-def test_dispatcher_extension_wins_over_content(tmp_path: Path) -> None:
+def test_dispatcher_extension_wins_over_content_with_a_directed_hint(tmp_path: Path) -> None:
     # Design decision: the extension is authoritative. A file with LCOV content but a `.json`
-    # extension is routed to the Istanbul loader, which rejects it — skipped via on_error, not
+    # extension is routed to the Istanbul loader — but instead of the opaque "not a JSON object"
+    # error, the user gets a directed hint that it looks like LCOV. Skipped via on_error, not
     # silently misparsed. (Content sniffing only kicks in for a neutral extension.)
     mislabeled = tmp_path / "cov.json"
     mislabeled.write_text(LCOV_FILE.read_text(encoding="utf-8"), encoding="utf-8")
-    errors: list[str] = []
-    data = load_ts_coverage_files([mislabeled], on_error=lambda path, msg: errors.append(str(path)))
+    messages: list[str] = []
+    data = load_ts_coverage_files([mislabeled], on_error=lambda path, msg: messages.append(msg))
     assert data.lookup("sample.ts") is None
-    assert any("cov.json" in e for e in errors)
+    assert any("looks like an LCOV report" in m for m in messages)
 
 
 def test_dispatcher_skips_bad_shard_with_callback(tmp_path: Path) -> None:

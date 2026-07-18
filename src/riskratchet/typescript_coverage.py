@@ -169,9 +169,18 @@ def load_lcov_coverage(path: Any) -> IstanbulCoverageData:
         raise
     except OSError as exc:
         raise ValueError(f"could not read LCOV coverage file {path}: {exc}") from exc
+    return _lcov_from_text(text, path)
 
-    files, by_suffix = _parse_lcov(text)
+
+def _lcov_from_text(text: str, path: Any) -> IstanbulCoverageData:
+    """Parse already-read LCOV text into a view (shared by the loader and the sniffing dispatcher,
+    so a content-sniffed file is not read twice)."""
+    files, by_suffix, saw_sf = _parse_lcov(text)
     if not files:
+        if saw_sf:
+            # There was an SF: record but nothing survived — e.g. every DA: line was corrupt. A
+            # falsely-empty entry would read as "100% covered"; refuse it instead of lying.
+            raise ValueError(f"LCOV coverage file {path} has SF: records but no readable coverage data")
         raise ValueError(f"LCOV coverage file {path} has no SF: records")
     return IstanbulCoverageData(_files=files, _by_suffix=by_suffix)
 
@@ -215,8 +224,19 @@ def _load_one_ts_coverage(path: Any) -> IstanbulCoverageData:
     if by_suffix is True:
         return load_lcov_coverage(path)
     if by_suffix is False:
-        return load_istanbul_coverage(path)
-    # Unknown extension: sniff the content (re-read is negligible for these small files).
+        # Extension says JSON. If the Istanbul loader rejects it and the bytes look like LCOV, the
+        # user almost certainly saved an LCOV report under a `.json` name — say so, don't just
+        # surface the opaque "not a JSON object" error.
+        try:
+            return load_istanbul_coverage(path)
+        except ValueError as exc:
+            if _path_looks_like_lcov_content(path):
+                raise ValueError(
+                    f"{path} looks like an LCOV report but has a .json extension; "
+                    "rename it to .info/.lcov (or pass it as-is under a neutral extension)"
+                ) from exc
+            raise
+    # Unknown extension: sniff the content, then reuse the text so the file is read only once.
     try:
         text = path.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -224,8 +244,16 @@ def _load_one_ts_coverage(path: Any) -> IstanbulCoverageData:
     except OSError as exc:
         raise ValueError(f"could not read coverage file {path}: {exc}") from exc
     if _text_is_lcov(text):
-        return load_lcov_coverage(path)
+        return _lcov_from_text(text, path)
     return load_istanbul_coverage(path)
+
+
+def _path_looks_like_lcov_content(path: Any) -> bool:
+    """Best-effort re-read + sniff, only used to sharpen an error message; never raises."""
+    try:
+        return _text_is_lcov(path.read_text(encoding="utf-8"))
+    except OSError:
+        return False
 
 
 _LCOV_SUFFIXES = (".info", ".lcov")
@@ -244,7 +272,7 @@ def _is_lcov_by_suffix(path: Any) -> bool | None:
 
 def _text_is_lcov(text: str) -> bool:
     """True if the first non-blank line looks like an LCOV record (vs a leading `{` for JSON)."""
-    for line in text.splitlines():
+    for line in text.lstrip("\ufeff").splitlines():
         stripped = line.strip()
         if not stripped:
             continue
@@ -252,40 +280,52 @@ def _text_is_lcov(text: str) -> bool:
     return False
 
 
-def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]]]:
-    """Parse LCOV text into `(files, by_suffix)` of synthetic Istanbul-shaped per-file dicts.
+def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]], bool]:
+    """Parse LCOV text into `(files, by_suffix, saw_sf)` of synthetic Istanbul-shaped per-file dicts.
 
     Records run `SF:<path>` … `end_of_record`. `DA:<line>,<hits>` become one-line statements;
     `BRDA:<line>,<block>,<branch>,<taken>` are grouped by `(line, block)` into synthetic branches
     (a `taken` of `-` or `0` is an uncovered arm). Malformed individual data lines are skipped
     (graceful degradation, as with malformed Istanbul substructures); a record with no trailing
-    `end_of_record` is still flushed at EOF."""
+    `end_of_record` is still flushed at EOF.
+
+    A record whose `DA:` lines were *all* unparseable is dropped entirely (`da_seen > 0` but nothing
+    parsed): a falsely-empty entry would be read downstream as "100% covered", so a corrupt record
+    must not masquerade as a clean one. A record with genuinely no `DA:` lines is a valid
+    nothing-to-measure entry and is kept. `saw_sf` reports whether any `SF:` was present at all, so
+    the caller can tell "not LCOV / empty" apart from "LCOV but corrupt". A leading UTF-8 BOM is
+    stripped so a BOM-prefixed report still parses."""
     files: dict[str, dict[str, Any]] = {}
     by_suffix: dict[str, list[str]] = {}
+    saw_sf = False
 
     current_path: str | None = None
     da: list[tuple[int, int]] = []
     brda: list[tuple[int, str, int]] = []
+    da_seen = 0  # `DA:` lines encountered (parsed or not), to detect an all-corrupt record
 
     def _flush() -> None:
-        nonlocal current_path, da, brda
-        if current_path is not None:
+        nonlocal current_path, da, brda, da_seen
+        # Drop a record whose DA lines were all corrupt; keep a genuinely DA-less (empty) record.
+        if current_path is not None and not (da_seen > 0 and not da):
             normalized = current_path.replace("\\", "/")
             if normalized not in files:
                 by_suffix.setdefault(_basename(normalized), []).append(normalized)
             files[normalized] = _lcov_record_to_istanbul(da, brda)
-        current_path, da, brda = None, [], []
+        current_path, da, brda, da_seen = None, [], [], 0
 
-    for raw_line in text.splitlines():
+    for raw_line in text.lstrip("\ufeff").splitlines():
         line = raw_line.strip()
         if not line:
             continue
         if line.startswith("SF:"):
             _flush()
             current_path = line[3:].strip()
+            saw_sf = True
         elif line == "end_of_record":
             _flush()
         elif line.startswith("DA:") and current_path is not None:
+            da_seen += 1
             da_record = _parse_lcov_da(line[3:])
             if da_record is not None:
                 da.append(da_record)
@@ -294,7 +334,7 @@ def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[st
             if brda_record is not None:
                 brda.append(brda_record)
     _flush()
-    return files, by_suffix
+    return files, by_suffix, saw_sf
 
 
 def _lcov_record_to_istanbul(
