@@ -1,11 +1,13 @@
-"""EXPERIMENTAL: map Istanbul/nyc coverage onto discovered TypeScript function spans
-(P20, slice 3, since 0.2.13).
+"""EXPERIMENTAL: map Istanbul/nyc or LCOV coverage onto discovered TypeScript function spans
+(P20, slice 3, since 0.2.13; LCOV since 0.2.16).
 
 Discovery (`typescript.py`) tells us *where* each TypeScript function is; this module
 answers *how well tested* it is, by reading an Istanbul `coverage-final.json` (the dominant
-TS/JS coverage artifact, produced by `nyc`/`c8`/Jest's `--coverage`) and intersecting its
-per-statement / per-branch data with a function's line span. The result is a
-`CoverageStats` — the same shape the Python backend produces in `coverage.py`.
+TS/JS coverage artifact, produced by `nyc`/`c8`/Jest's `--coverage`) or an LCOV `lcov.info`
+(the other common artifact — `c8 --reporter=lcov`, Karma, many Jest reporters, and CI
+uploaders emit it) and intersecting its per-line / per-branch data with a function's line
+span. The result is a `CoverageStats` — the same shape the Python backend produces in
+`coverage.py`.
 
 **The shape is shared; the *semantics* are not identical, and equal percentages do not
 mean equal measurement.** TS `line_coverage` here is *statement-start-derived* (a line is
@@ -33,8 +35,20 @@ each value carrying `statementMap`/`s` (per-statement ranges + hit counts), `bra
 keys are JSON strings; lines are 1-based, columns 0-based. Unknown keys (`_coverageSchema`,
 `hash`, `inputSourceMap`) are tolerated.
 
-LCOV is intentionally out of scope for this slice (Istanbul JSON only); it is closer to
-`coverage.py`'s shape and folds in later if demand appears.
+LCOV (`lcov.info`) is supported since 0.2.16. Rather than teach the mapping functions a second
+shape, an LCOV report is parsed into the *same* synthetic Istanbul-shaped per-file dict — each
+`DA:<line>,<hits>` becomes a one-line "statement" (`statementMap`/`s`); each `BRDA:` group,
+keyed by `(line, block)`, becomes a synthetic branch (`branchMap`/`b`). So `coverage_for_ts_span`,
+`spans_cover_any_statement`, and the merge/lookup machinery are reused unchanged. LCOV is
+*line*-oriented (a line is "measured" iff it has a `DA` record), a third measurement basis
+distinct from Istanbul's statement-start lines and coverage.py's executable-line set — so, as in
+`docs/language-backend-contract.md §2`, equal percentages across backends do not mean equal
+measurement. LCOV `FN`/`FNDA` (function hit counts) and the `LF`/`LH`/`BRF`/`BRH` file totals have
+no home in `CoverageStats` and are parsed-and-ignored; `missing_branches` stays empty (LCOV, like
+Istanbul, has no `(src_line, dst_line)` arc).
+
+Format is auto-detected per file (extension `.info`/`.lcov` or a leading `TN:`/`SF:` line → LCOV;
+a leading `{` → Istanbul JSON), so a single `--ts-coverage` list may mix both and merges them.
 """
 
 from __future__ import annotations
@@ -140,6 +154,257 @@ def load_istanbul_coverage_files(
 
 def empty_istanbul_coverage() -> IstanbulCoverageData:
     return IstanbulCoverageData(_files={}, _by_suffix={})
+
+
+def load_lcov_coverage(path: Any) -> IstanbulCoverageData:
+    """Load an LCOV `lcov.info` from disk, normalized into the same Istanbul-shaped view.
+
+    Each `SF:` record is turned into a synthetic per-file dict (`statementMap`/`s` from `DA:`,
+    `branchMap`/`b` from `BRDA:`) so the existing mapping functions consume it unchanged. Raises
+    FileNotFoundError if missing, ValueError on unreadable content or a report with no `SF:`
+    records (mirrors `load_istanbul_coverage`)."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        raise
+    except OSError as exc:
+        raise ValueError(f"could not read LCOV coverage file {path}: {exc}") from exc
+    return _lcov_from_text(text, path)
+
+
+def _lcov_from_text(text: str, path: Any) -> IstanbulCoverageData:
+    """Parse already-read LCOV text into a view (shared by the loader and the sniffing dispatcher,
+    so a content-sniffed file is not read twice)."""
+    files, by_suffix, saw_sf = _parse_lcov(text)
+    if not files:
+        if saw_sf:
+            # There was an SF: record but nothing survived — e.g. every DA: line was corrupt. A
+            # falsely-empty entry would read as "100% covered"; refuse it instead of lying.
+            raise ValueError(f"LCOV coverage file {path} has SF: records but no readable coverage data")
+        raise ValueError(f"LCOV coverage file {path} has no SF: records")
+    return IstanbulCoverageData(_files=files, _by_suffix=by_suffix)
+
+
+def load_ts_coverage_files(
+    paths: list[Any],
+    *,
+    on_error: Any = None,
+) -> IstanbulCoverageData:
+    """Load and merge several TS coverage reports, auto-detecting Istanbul JSON vs LCOV per file.
+
+    A `--ts-coverage` list may freely mix `coverage-final.json` and `lcov.info` shards (common in
+    a polyglot monorepo). Detection is by extension (`.info`/`.lcov` → LCOV, `.json` → Istanbul)
+    and, for anything else, by content (a leading `TN:`/`SF:` line → LCOV, otherwise Istanbul
+    JSON). Keys are absolute source paths, so shards contribute disjoint entries and a later report
+    wins on the rare duplicate. Each path that is missing or unreadable is reported via
+    `on_error(path, message)` (when given) and skipped, rather than failing the whole listing."""
+    files: dict[str, dict[str, Any]] = {}
+    by_suffix: dict[str, list[str]] = {}
+    for path in paths:
+        try:
+            shard = _load_one_ts_coverage(path)
+        except FileNotFoundError:
+            if on_error is not None:
+                on_error(path, "file not found")
+            continue
+        except ValueError as exc:
+            if on_error is not None:
+                on_error(path, str(exc))
+            continue
+        for key, payload in shard._files.items():
+            if key not in files:
+                by_suffix.setdefault(_basename(key), []).append(key)
+            files[key] = payload
+    return IstanbulCoverageData(_files=files, _by_suffix=by_suffix)
+
+
+def _load_one_ts_coverage(path: Any) -> IstanbulCoverageData:
+    """Dispatch one report to the Istanbul or LCOV loader based on extension, then content."""
+    by_suffix = _is_lcov_by_suffix(path)
+    if by_suffix is True:
+        return load_lcov_coverage(path)
+    if by_suffix is False:
+        # Extension says JSON. If the Istanbul loader rejects it and the bytes look like LCOV, the
+        # user almost certainly saved an LCOV report under a `.json` name — say so, don't just
+        # surface the opaque "not a JSON object" error.
+        try:
+            return load_istanbul_coverage(path)
+        except ValueError as exc:
+            if _path_looks_like_lcov_content(path):
+                raise ValueError(
+                    f"{path} looks like an LCOV report but has a .json extension; "
+                    "rename it to .info/.lcov (or pass it as-is under a neutral extension)"
+                ) from exc
+            raise
+    # Unknown extension: sniff the content, then reuse the text so the file is read only once.
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        raise
+    except OSError as exc:
+        raise ValueError(f"could not read coverage file {path}: {exc}") from exc
+    if _text_is_lcov(text):
+        return _lcov_from_text(text, path)
+    return load_istanbul_coverage(path)
+
+
+def _path_looks_like_lcov_content(path: Any) -> bool:
+    """Best-effort re-read + sniff, only used to sharpen an error message; never raises."""
+    try:
+        return _text_is_lcov(path.read_text(encoding="utf-8"))
+    except OSError:
+        return False
+
+
+_LCOV_SUFFIXES = (".info", ".lcov")
+_LCOV_LINE_PREFIXES = ("SF:", "TN:", "VER:")
+
+
+def _is_lcov_by_suffix(path: Any) -> bool | None:
+    """True if the path is clearly LCOV by extension, False if clearly JSON, None if unknown."""
+    name = (getattr(path, "name", None) or str(path)).lower()
+    if name.endswith(_LCOV_SUFFIXES):
+        return True
+    if name.endswith(".json"):
+        return False
+    return None
+
+
+def _text_is_lcov(text: str) -> bool:
+    """True if the first non-blank line looks like an LCOV record (vs a leading `{` for JSON)."""
+    for line in text.lstrip("\ufeff").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        return stripped.startswith(_LCOV_LINE_PREFIXES)
+    return False
+
+
+def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[str]], bool]:
+    """Parse LCOV text into `(files, by_suffix, saw_sf)` of synthetic Istanbul-shaped per-file dicts.
+
+    Records run `SF:<path>` … `end_of_record`. `DA:<line>,<hits>` become one-line statements;
+    `BRDA:<line>,<block>,<branch>,<taken>` are grouped by `(line, block)` into synthetic branches
+    (a `taken` of `-` or `0` is an uncovered arm). Malformed individual data lines are skipped
+    (graceful degradation, as with malformed Istanbul substructures); a record with no trailing
+    `end_of_record` is still flushed at EOF.
+
+    A record whose `DA:` lines were *all* unparseable is dropped entirely (`da_seen > 0` but nothing
+    parsed): a falsely-empty entry would be read downstream as "100% covered", so a corrupt record
+    must not masquerade as a clean one. A record with genuinely no `DA:` lines is a valid
+    nothing-to-measure entry and is kept. `saw_sf` reports whether any `SF:` was present at all, so
+    the caller can tell "not LCOV / empty" apart from "LCOV but corrupt". A leading UTF-8 BOM is
+    stripped so a BOM-prefixed report still parses."""
+    files: dict[str, dict[str, Any]] = {}
+    by_suffix: dict[str, list[str]] = {}
+    saw_sf = False
+
+    current_path: str | None = None
+    da: list[tuple[int, int]] = []
+    brda: list[tuple[int, str, int]] = []
+    da_seen = 0  # `DA:` lines encountered (parsed or not), to detect an all-corrupt record
+
+    def _flush() -> None:
+        nonlocal current_path, da, brda, da_seen
+        # Drop a record whose DA lines were all corrupt; keep a genuinely DA-less (empty) record.
+        if current_path is not None and not (da_seen > 0 and not da):
+            normalized = current_path.replace("\\", "/")
+            if normalized not in files:
+                by_suffix.setdefault(_basename(normalized), []).append(normalized)
+            files[normalized] = _lcov_record_to_istanbul(da, brda)
+        current_path, da, brda, da_seen = None, [], [], 0
+
+    for raw_line in text.lstrip("\ufeff").splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if line.startswith("SF:"):
+            _flush()
+            current_path = line[3:].strip()
+            saw_sf = True
+        elif line == "end_of_record":
+            _flush()
+        elif line.startswith("DA:") and current_path is not None:
+            da_seen += 1
+            da_record = _parse_lcov_da(line[3:])
+            if da_record is not None:
+                da.append(da_record)
+        elif line.startswith("BRDA:") and current_path is not None:
+            brda_record = _parse_lcov_brda(line[5:])
+            if brda_record is not None:
+                brda.append(brda_record)
+    _flush()
+    return files, by_suffix, saw_sf
+
+
+def _lcov_record_to_istanbul(
+    da: list[tuple[int, int]],
+    brda: list[tuple[int, str, int]],
+) -> dict[str, Any]:
+    """Build one synthetic Istanbul-shaped file dict from parsed `DA`/`BRDA` records."""
+    statement_map: dict[str, Any] = {}
+    hits: dict[str, Any] = {}
+    for index, (line, count) in enumerate(da):
+        sid = str(index)
+        statement_map[sid] = {"start": {"line": line}}
+        hits[sid] = count
+
+    # Group branch arms by (line, block), preserving first-seen order, into positional arm lists.
+    # Arm order follows encounter order (well-formed LCOV emits branches in order); the positional
+    # index becomes the `arm_index` in `missing_branch_arms`, exactly as Istanbul's `b[id]` array
+    # is positional. Two distinct blocks on one line stay separate branch points (correct
+    # denominator) but can yield the same `(line, arm_index)` pair — an informational-only overlap
+    # that matches Istanbul's own per-branch indexing, not a coverage-count error.
+    groups: dict[tuple[int, str], list[int]] = {}
+    order: list[tuple[int, str]] = []
+    for line, block, taken in brda:
+        key = (line, block)
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(taken)
+
+    branch_map: dict[str, Any] = {}
+    b: dict[str, Any] = {}
+    for index, key in enumerate(order):
+        bid = str(index)
+        branch_map[bid] = {"loc": {"start": {"line": key[0]}}}
+        b[bid] = list(groups[key])
+
+    return {"statementMap": statement_map, "s": hits, "branchMap": branch_map, "b": b}
+
+
+def _parse_lcov_da(fields: str) -> tuple[int, int] | None:
+    """`DA:<line>,<hits>[,<checksum>]` → `(line, hits)`; None if the numbers are malformed."""
+    parts = fields.split(",")
+    if len(parts) < 2:
+        return None
+    try:
+        return int(parts[0]), int(parts[1])
+    except ValueError:
+        return None
+
+
+def _parse_lcov_brda(fields: str) -> tuple[int, str, int] | None:
+    """`BRDA:<line>,<block>,<branch>,<taken>` → `(line, block, taken)`; `taken` of `-` → 0.
+    None if the line/taken numbers are malformed. `branch` is dropped (arm order carries it)."""
+    parts = fields.split(",")
+    if len(parts) < 4:
+        return None
+    try:
+        line = int(parts[0])
+    except ValueError:
+        return None
+    block = parts[1]
+    taken_raw = parts[3]
+    if taken_raw == "-":
+        taken = 0
+    else:
+        try:
+            taken = int(taken_raw)
+        except ValueError:
+            return None
+    return line, block, taken
 
 
 def spans_cover_any_statement(
