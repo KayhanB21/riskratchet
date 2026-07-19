@@ -49,7 +49,7 @@ baseline bump has an audit trail," not "every PR needs a label."
 
 - One logical change per PR. If you find yourself writing "and also..." in the description, split it.
 - Tests for new behavior. Bug fixes should include a regression test that fails without the fix.
-- Update `CHANGELOG.md` under the "Unreleased" section.
+- Add any user-visible change to `CHANGELOG.md` under an `## [Unreleased]` heading (create it if absent); the release commit renames it to the dated version.
 - Keep the diff focused: no drive-by reformatting, no unrelated dependency bumps.
 - Treat baseline bumps like lockfile changes: review them deliberately, and do
   not use them as a way to hide an accidental regression.
@@ -87,9 +87,13 @@ runner. Before flipping the PR out of draft:
 
 ## Releasing (maintainers)
 
-1. Bump `version` in `pyproject.toml`.
-2. Move "Unreleased" entries to a new dated section in `CHANGELOG.md`.
-3. Tag `vX.Y.Z` on `master`. The `publish.yml` workflow handles the rest via PyPI Trusted Publishing.
+The authoritative, complete checklist lives in [`AGENTS.md`](AGENTS.md) under "Cutting a release" —
+follow it, not a summary, because `tests/test_release_integrity.py` enforces several of the steps in
+CI. In brief, it is a **dedicated release commit** that bumps `pyproject.toml` + `uv.lock`, the
+`test_release_integrity.py` version pin, `ACTION_REF` in `src/riskratchet/init.py`, the README
+`uses:`/`rev:` pins, and the `CHANGELOG.md` date; then tag `vX.Y.Z` on `master` (→ `publish.yml`
+Trusted Publishing, with a manual PyPI approval gate); then bump the `riskratchet-action` wrapper
+(delegated ref, a new `v1.0.N` tag, force-move `v1`) once PyPI shows the new version.
 
 ## Questions
 

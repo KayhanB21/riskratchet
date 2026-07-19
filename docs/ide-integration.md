@@ -65,9 +65,9 @@ JetBrains SARIF support is uneven across editions. Two paths:
 
 ### PyCharm/IntelliJ Ultimate 2024.2+
 
-These bundle a generic LSP client. A native `riskratchet lsp` server is
-on the roadmap and will be the cleanest integration path once it lands.
-Until then:
+These bundle a generic LSP client. A native `riskratchet lsp` server is a
+**demand-gated** roadmap item (it ships only if real demand appears — see `TODO.md`) and would be
+the cleanest integration path if built. Until/unless it does:
 
 1. Run `riskratchet scan src --format sarif --output .riskratchet/report.sarif`
    from the terminal panel.
@@ -86,9 +86,9 @@ workflow is:
 
 ## Neovim / Helix / Zed / Sublime
 
-These editors all speak LSP and will integrate cleanly once a native
-`riskratchet lsp` server lands. Until then, the `--format github` and
-`--format pr-comment` outputs are the recommended surface — they were
+These editors all speak LSP and would integrate cleanly *if* a native
+`riskratchet lsp` server is built (demand-gated — see `TODO.md`). Until/unless it is, the
+`--format github` and `--format pr-comment` outputs are the recommended surface — they were
 designed for terminal and code review, not editors.
 
 ## Other LSP-capable editors

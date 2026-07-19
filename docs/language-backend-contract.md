@@ -7,16 +7,17 @@ AST. This document names the contract a language backend must fill so a future
 TypeScript backend (P19–P20, `0.2.13` →) can be slotted in without touching
 scoring or output.
 
-It is a **contract, not an implementation plan**. Each section states what the
-engine needs, points at the Python reference, and notes the open questions for
-TypeScript. No TypeScript code ships in `0.2.11` — see
-[`typescript-parser-decision.md`](./typescript-parser-decision.md) for the parser
+It began as a **contract, not an implementation plan** (no TypeScript code shipped in the `0.2.11`
+groundwork). Since then slices 2–5 (`0.2.12`–`0.2.15`) plus LCOV coverage (`0.2.16`) have landed, so
+each section now also records what the implemented TS backend actually does. Each section states what
+the engine needs, points at the Python reference, and notes the remaining open questions for
+TypeScript — see [`typescript-parser-decision.md`](./typescript-parser-decision.md) for the parser
 strategy.
 
 ## The seam
 
-**The discovered-function shapes are now unified behind one protocol;
-identity is the remaining gap.** Python discovery is in `analysis.py` (it calls `ast`
+**The discovered-function shapes are unified behind one protocol, and the identity half landed in
+slice 5 (`0.2.15`).** Python discovery is in `analysis.py` (it calls `ast`
 directly) and TypeScript discovery in a *separate* module, `typescript.py` (tree-sitter),
 reached only through `scan --experimental-typescript`. They share the language-neutral
 `FunctionId`/`FunctionSpan` data shapes and the path helpers in `riskratchet._paths`
@@ -27,12 +28,13 @@ reached only through `scan --experimental-typescript`. They share the language-n
 the common surface. Backend-agnostic code can be written against the protocol instead of a
 concrete type.
 
-What the protocol deliberately omits is **identity** — a token-stable body/signature
+The protocol deliberately omits **identity** on the common surface — a token-stable body/signature
 fingerprint for rename-aware baseline matching. Python supplies it on `DiscoveredFunction`;
-tree-sitter discovery does not yet produce it. So while the engine *could* score either
-language through the seam on the common surface, TypeScript cannot enter the
-scoring/**baseline** pipeline until that identity half lands (the remaining slice-5 work,
-tracked on `TsFunction`). The rest of this document describes the rest of the contract
+tree-sitter discovery gained it in slice 5 (`0.2.15`, `typescript_identity.py`), emitted but still
+informational (see §5). So the engine *could* score either language through the seam — TypeScript
+stays out of the scoring/**baseline** pipeline not because identity is missing but because
+**scoring is deferred to `0.3.0`** (demand-gated), and the grammar-durability gate (§5) must close
+first. The rest of this document describes the rest of the contract
 (coverage, complexity, public surface, identity), using today's Python code as the worked
 reference and the TS module as the second concrete data point.
 
@@ -76,7 +78,7 @@ discovery is graded against.
 ## 2. Coverage mapping
 
 **Contract.** Given a function span and the project's coverage data, return a
-`CoverageStats(line_coverage, branch_coverage, missing_lines, missing_branches)`
+`CoverageStats(line_coverage, branch_coverage, missing_lines, missing_branches, missing_branch_arms)`
 — line coverage as the fraction of measured lines in the span that executed,
 branch coverage as executed/total branches (or `None` if not measured). A
 missing-file policy (`PESSIMISTIC` / `OPTIMISTIC` / `SKIP`) governs files absent
@@ -95,9 +97,10 @@ Algorithm: **line coverage** keys on each statement's `start.line` only (not its
 end line), collapsing statements that share a line with `max` hit count — exactly
 `istanbul-lib-coverage.getLineCoverage`; **branch coverage** counts the arms of each
 branch whose `loc.start.line` falls in the span (`b[id]` is a per-arm hit-count array
-positionally aligned to `branchMap[id].locations`), and `missing_branches` reuses the
-`tuple[(int, int), …]` field as `(branch_line, arm_index)` — a TS-specific shape, since
-Istanbul has no `(src_line, dst_line)` analog. Paths are matched basename + longest-suffix
+positionally aligned to `branchMap[id].locations`), and the missing arms go in the TS-specific
+`missing_branch_arms` field as `(branch_line, arm_index)` — since Istanbul has no
+`(src_line, dst_line)` analog, the Python `missing_branches` stays empty for TS. Paths are matched
+basename + longest-suffix
 (Istanbul keys are absolute). It is reached only through `scan
 --experimental-typescript --ts-coverage` (repeatable — one report per package in a
 monorepo, merged; Istanbul keys are absolute, so no prefix map is needed) and stays
@@ -172,7 +175,7 @@ all matching ESLint:
   NOT** (ESLint does not count it either).
 - **Nested functions are pruned** — each function is scored on its own, as ESLint scores each.
 
-**Divergences from the Python reference (intentional, informational-only until slice 5).** The
+**Divergences from the Python reference (intentional, informational-only until 0.3.0).** The
 Python `_manual_cyclomatic` (a) does **not** count default parameters and (b) does **not** prune
 nested functions (`ast.walk` descends into them). So the raw TS and Python cyclomatic counts are
 **not directly comparable** for those two shapes, and — importantly — the gap is *not a constant
@@ -180,7 +183,7 @@ offset*: default parameters push TS higher, absorbed nested functions push Pytho
 which backend reads higher depends on the code shape. No scoring/baseline/gating consumes either
 count today.
 
-**Committed reconciliation for slice 5 — per-language normalization, not one shared rule.** When
+**Committed reconciliation for 0.3.0 — per-language normalization, not one shared rule.** When
 TS enters scoring, the fix is to keep each backend's *raw* count as-is (TS stays ESLint-faithful
 so the displayed `cx N` matches what a TS dev's linter shows) and instead give the
 `structural_complexity` *normalization* its own per-backend calibration, so that the normalized
@@ -192,8 +195,8 @@ language-fair at the gate.
 
 The TS constant is **derived, not hand-picked** — folded into the P21 calibration thread: run
 both analyzers over comparable corpora, compare the per-function cyclomatic distributions, and set
-the TS saturation so equal percentiles map to equal normalized scores. It ships at slice 5 (or
-`0.3.0` if it also revisits the Python constant) with the corpus + rationale, never as a silent
+the TS saturation so equal percentiles map to equal normalized scores. It ships at `0.3.0` (when
+TS enters scoring, possibly revisiting the Python constant) with the corpus + rationale, never as a silent
 number. This mirrors the coverage caveat in §2 (TS statement-derived vs Python line-level
 coverage): in both, the *shape* is shared but the *measurement* is not, so both feed one scoring
 model only after a data-anchored recalibration. Tradeoff accepted: two calibration surfaces
@@ -316,9 +319,12 @@ Slice 5 wired TypeScript into the machine-readable output, **still unscored**:
   support). The baseline format and the check/diff payloads still do **not** carry
   `language` — they gain it only when TypeScript scoring ships (`0.3.0`).
 
-## Non-goals for groundwork
+## Non-goals (through 0.2.x)
 
-- No TypeScript scoring, discovery, or parser dependency ships in `0.2.11`.
-- No change to Python scoring, weights, thresholds, or the matcher.
+- No TypeScript **scoring/baseline/gating** ships in `0.2.x` — the TS backend stays informational
+  (discovery, coverage, complexity, public surface, JSON/SARIF, and identity all shipped across
+  0.2.11–0.2.16 but never feed the score). Scoring is `0.3.0`, demand-gated.
+- No change to Python scoring, weights, thresholds, or the matcher in `0.2.x` (the `sprawl`
+  recalibration is a `0.3.0` decision).
 - No mandatory Node dependency for Python-only installs — ever (see the parser
   decision doc).

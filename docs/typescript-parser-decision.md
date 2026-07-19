@@ -42,10 +42,11 @@ Coverage mapping (slice 3, `0.2.13`) has since landed for Istanbul JSON
 (`typescript_coverage.py`; see `language-backend-contract.md §2`), and **slice 4 (`0.2.14`)**
 added cyclomatic complexity (`typescript_complexity.py`) and barrel-aware public-surface
 narrowing (`typescript_exports.py`) — both over the same tree-sitter tree, still no Node-backed
-fallback. The contract areas still **not** exercised (deferred, not blockers): LCOV coverage,
-the token-stable signature fingerprint for rename matching (only needed once TS enters the
-baseline), and **declaration merging** (the one public-surface case that genuinely needs the
-type checker).
+fallback. Since then, coverage gained **LCOV** support (`0.2.16`) and slice 5 (`0.2.15`) added the token-stable
+body/signature **identity fingerprints** (`typescript_identity.py`, still informational). The contract
+areas still **not** exercised (deferred, not blockers) are **declaration merging** (the one
+public-surface case that genuinely needs the type checker) and tsconfig `paths`/`baseUrl` alias
+resolution.
 
 The recommendation, now committed:
 

@@ -187,7 +187,10 @@ semantic guarantee [15].
 Sprawl can over-penalize generated, vendor, migration, or framework-shaped
 code. The default config excludes common generated and migration paths, and
 teams should extend those exclusions when the measured code is not an
-appropriate maintainability target [15].
+appropriate maintainability target [15]. The empirical calibration thread (P21)
+further flags the *file-line* half of sprawl as a likely size confound; dropping
+or shrinking it is the model-supported candidate for the 0.3.0 weight review (see
+`docs/sprawl-component-finding.md`).
 
 Token-efficient summaries can hide architecture. Context research supports
 summarization and compression when the right context is selected, but it also
@@ -218,7 +221,8 @@ why the risk is intentional, temporary, or cheaper than the alternatives [15].
 Keep weights configurable but conservative by default. The current defaults
 weight coverage and structure most heavily while preserving branch, churn,
 public-surface, and sprawl signals; overrides are validated and renormalized so
-typos or negative weights cannot silently weaken the model [15].
+typos or negative weights cannot silently weaken the model [15]. (The file-line
+component of sprawl is under empirical review for the 0.3.0 weight recalibration; see P21.)
 
 Re-run the literature check before publishing this externally. The 2026 AI-code
 and agent-efficiency literature is moving quickly; preprints should be labeled
