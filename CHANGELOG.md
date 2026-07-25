@@ -64,6 +64,11 @@ carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands
   are matched **by id only** and the tool warns "re-baseline recommended" — a bump is detected, not
   read as a mass rename. **v2 baselines load unchanged** (every entry reads as `language: "python"`,
   no identity), so existing Python baselines keep working; regenerate to adopt v3.
+  - **Fingerprint scheme 2.** A completeness audit before this first fingerprint-persisting release
+    closed two anonymous-token collisions in the TypeScript identity serializer (`const` vs `let`,
+    and a `readonly` parameter property), bumping `SCHEME_VERSION` `1` → `2`. No baseline in the
+    wild was pinned to scheme 1, so there is no migration cost; the scheme is recorded in the v3
+    `identity` block and gated by the grammar-change guard above.
 
 ## [0.2.16] - 2026-07-18
 

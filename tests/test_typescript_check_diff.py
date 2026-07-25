@@ -96,7 +96,7 @@ def test_baseline_typescript_writes_v3_with_identity(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.stderr
     raw = json.loads(out.read_text(encoding="utf-8"))
     assert raw["version"] == "3"
-    assert raw["identity"]["typescript"]["scheme"] == 1
+    assert raw["identity"]["typescript"]["scheme"] == 2
     by_name = {e["qualname"]: e for e in raw["entries"]}
     assert by_name["g"]["language"] == "typescript"
     assert "language" not in by_name["f"]  # Python omitted

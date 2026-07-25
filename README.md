@@ -751,32 +751,38 @@ baseline per package is useful when packages release independently. Every
 command prints a diagnostic banner to stderr summarizing the resolved root,
 scan paths, and coverage source.
 
-## Experimental: TypeScript discovery
+## TypeScript
 
-riskratchet scores Python. As the first steps toward TypeScript support, `scan
---experimental-typescript` will *discover and list* the functions in your
-`.ts`/`.tsx`/`.mts`/`.cts` files, each with its cyclomatic complexity and optionally annotated
-with per-function coverage. It is **informational only**: no scoring, no baseline, no gating,
-and it never changes the exit code.
-For the human formats (table/markdown/…) the listing prints to **stderr** (an experimental
-diagnostic), so stdout stays clean. For `--json` and `--format sarif` the discovered functions are
-instead **embedded in the machine-readable payload** (see "Machine-readable output" below). The
-output shape may still change.
+riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`
+(also `check`, `diff`, and `baseline`) and the functions in your `.ts`/`.tsx`/`.mts`/`.cts` files
+are discovered, scored, gated, and tracked in the baseline exactly like Python — same score,
+severity, CRAP, and components, flowing through the same `functions[]` array with
+`language: "typescript"`. It is opt-in (Python-only runs are untouched) and requires the
+`[typescript]` extra.
+
+> **Supported ahead of demand.** Every TypeScript slice — discovery, complexity, coverage, public
+> surface, token-stable fingerprints, and now scoring — was built by maintainer choice rather than in
+> response to a paying-in-CI user. TypeScript is fully supported and technically complete, but its
+> field-hardening is younger than the Python backend's; treat scores as calibrated-but-new. See
+> [`docs/language-backend-contract.md`](docs/language-backend-contract.md) for what "supported" means
+> per backend.
 
 ```bash
 pip install 'riskratchet[typescript]'   # opt-in extra (tree-sitter); Python-only installs are unaffected
-riskratchet scan src --experimental-typescript
-# (on stderr:)
-# typescript: 3 function(s) in 1 file(s)
-#   src/math.ts::add  [public]  (4-6)  cx 1
-#   src/math.ts::greet  [internal]  (8-13)  cx 3
-#   src/math.ts::parseConfig  [public]  (15-21)  cx 5
+riskratchet scan src --typescript
+# TypeScript functions appear in the scan table (and functions[] / SARIF) tagged language=typescript.
 ```
 
-The `cx N` column is the McCabe cyclomatic complexity, computed by the same algorithm as the
-Python backend. `??` counts as a branch but optional chaining `?.` does not (it has no Python
-counterpart and would inflate the count), `switch` `default` is not counted, and nested
-functions are pruned so each is scored on its own.
+`--experimental-typescript` is a deprecated hidden alias for `--typescript`, kept for one release; it
+prints a deprecation warning and behaves identically. It will be removed in a later minor.
+
+TypeScript complexity (the `CC` column) is the McCabe cyclomatic count, computed to match ESLint's
+`complexity` rule: `??` counts as a branch but optional chaining `?.` does not (it has no Python
+counterpart and would inflate the count), `switch` `default` is not counted, and nested functions
+are pruned so each is scored on its own. The *raw* count stays ESLint-faithful (so it matches a TS
+dev's linter), while the `structural_complexity` score component normalizes it with a
+corpus-derived TS calibration ([`docs/typescript-complexity-calibration.md`](docs/typescript-complexity-calibration.md)),
+so equal complexity percentiles score equally across Python and TypeScript.
 
 Add `--ts-coverage` to annotate each function with line/branch coverage from an
 Istanbul/nyc `coverage-final.json` (what `nyc`, `c8`, or Jest `--coverage` write) **or an
@@ -797,14 +803,14 @@ Karma's lcov reporter. Point `--ts-coverage` at the resulting `lcov.info` or
 `coverage-final.json` — either works.
 
 ```bash
-riskratchet scan src --experimental-typescript --ts-coverage coverage/coverage-final.json
+riskratchet scan src --typescript --ts-coverage coverage/coverage-final.json
 # or an LCOV report — same output:
-riskratchet scan src --experimental-typescript --ts-coverage coverage/lcov.info
-# (on stderr:)
-# typescript: 2 function(s) in 1 file(s)
-#   src/math.ts::add  [public]  (4-6)  cx 1  cov 100% line
-#   src/math.ts::parseConfig  [public]  (15-21)  cx 5  cov 80% line / 50% branch  miss-lines 18
+riskratchet scan src --typescript --ts-coverage coverage/lcov.info
 ```
+
+Coverage feeds the `coverage_gap` / `branch_gap` score components and the CRAP number just as Python
+coverage does. As noted above, each backend scores its own coverage fraction, so a TS percentage is
+**not** directly comparable to the Python line-level percentage (documented, accepted).
 
 **Public surface is barrel-aware.** By default `is_public` follows a file's own `export`s, but
 when your package has an entry barrel riskratchet narrows it to what is actually reachable from
@@ -821,38 +827,43 @@ doesn't silently switch the whole feature off. Declaration merging and tsconfig 
 are out of scope (they need the type checker).
 
 ```bash
-riskratchet scan src --experimental-typescript --ts-entry src/index.ts
+riskratchet scan src --typescript --ts-entry src/index.ts
 ```
 
-**Machine-readable output.** With `--json`, discovered functions ride in an additive top-level
-`typescript` array (the scored Python `functions` array is untouched, and the key is absent without
-the flag, so Python-only consumers see no change):
+**Machine-readable output.** With `--json`, scored TypeScript functions ride in the same top-level
+`functions[]` array as Python, each tagged `language: "typescript"` and carrying the identical
+score/severity/CRAP/components shape (the key is absent for Python-only functions, which read
+`language: "python"`):
 
 ```jsonc
-// riskratchet scan src --experimental-typescript --json
+// riskratchet scan src --typescript --ts-coverage coverage/lcov.info --json
 {
-  "functions": [ /* … scored Python, unchanged … */ ],
-  "typescript": [
+  "functions": [
+    { "language": "python",     /* … scored Python, same shape … */ },
     {
       "path": "src/math.ts", "qualname": "parseConfig", "language": "typescript",
-      "kind": "function", "is_public": true, "complexity": 5,
-      "line_coverage": 0.8, "branch_coverage": 0.5, "lines": {"start": 15, "end": 21},
-      "fingerprint": "…", "signature": "…"
+      "severity": "medium", "score": 43.75, "crap": 20.0, "complexity": 4,
+      "line_coverage": 0.0, "branch_coverage": null, "is_public": true,
+      "lines": {"start": 1, "end": 6},
+      "components": { "coverage_gap": 100.0, "structural_complexity": 15.0, "branch_gap": 0.0,
+                      "churn": 0.0, "public_surface": 100.0, "sprawl": 0.0 }
     }
   ]
 }
 ```
 
-These entries are **unscored** — no `score`/`components` — because TypeScript stays informational
-until it graduates from experimental. Each carries a `fingerprint` (body) and `signature` that are
-stable across formatter whitespace/quote/paren choices and change on real edits — a lossy structural
-hash, groundwork for rename-aware tracking that nothing consumes yet (the format is experimental and
-not frozen; it is tied to the tree-sitter grammar version, so it will be re-validated before any
-0.3.0 baseline stores it). With `--format sarif`, each function is emitted as an informational
-`note`-level result under the `riskratchet.typescript-function` rule, tagged `language: "typescript"`
-in `properties`. Note this means a SARIF consumer sees **one `note` per discovered function** — an
-inventory carried in `results`, not defect findings; an accepted tradeoff for this experimental,
-opt-in surface.
+> **Breaking (0.3.0):** the separate informational top-level `typescript[]` array that `0.2.x`
+> emitted under `--experimental-typescript` is **gone**. Scored TypeScript now flows through
+> `functions[]`, so `functions[].language` is `"python"` or `"typescript"` and a consumer that
+> assumed every entry was Python must filter on `language`.
+
+Internally each function also carries a `fingerprint` (body) and `signature` — stable across
+formatter whitespace/quote/paren choices, changing on real edits — that the baseline uses for
+rename-aware tracking (see "Baseline format" below; TS identity is pinned to the tree-sitter grammar
+version). With `--format sarif`, each scored TypeScript function is emitted under the shared
+`riskratchet.function-risk` rule at a level mapped from its severity, tagged `language: "typescript"`
+in `properties` — the same treatment Python functions get (the separate informational
+`riskratchet.typescript-function` note rule is gone).
 
 It discovers top-level functions, class methods (including on abstract and
 anonymous default-export classes), and named (const/let-assigned) arrow and

@@ -5,7 +5,9 @@ The contract under test is analogous to the Python backend (`analysis.function_f
 `matching.signature_fingerprint`): the fingerprint ignores the function's own name and all
 cosmetic formatting (quotes, whitespace, optional semicolons, trailing commas, redundant
 parens) but changes on a real body/signature edit. The pairwise-distinctness battery below is the
-guard against a silent hole in the lossy operator/modifier allowlist (not a proof of completeness).
+guard against a silent hole in the lossy operator/keyword allowlist (not a proof of completeness).
+The B7 completeness audit added the `const`/`let` and `readonly`-parameter regression cases (scheme
+2) after probing which anonymous grammar tokens the allowlist could drop.
 """
 
 from __future__ import annotations
@@ -239,3 +241,19 @@ def test_callable_directly_on_a_node() -> None:
     assert fn_node.type == "function_declaration"
     assert len(body_fingerprint(fn_node)) == 64
     assert len(signature_fingerprint(fn_node)) == 64
+
+
+def test_const_vs_let_are_distinct(tmp_path: Path) -> None:
+    # B7 completeness audit: `const`/`let` are anonymous `lexical_declaration` kind tokens. Before
+    # scheme 2 they collided; a real reassignability difference must change the body fingerprint.
+    const_fp = _fp_of(tmp_path, "function f(){ const x = 1; return x; }", "c1", "f")
+    let_fp = _fp_of(tmp_path, "function f(){ let x = 1; return x; }", "c2", "f")
+    assert const_fp != let_fp
+
+
+def test_readonly_parameter_property_is_distinct(tmp_path: Path) -> None:
+    # B7 completeness audit: a `readonly` parameter property declares a class field; the `readonly`
+    # keyword is an anonymous `required_parameter` child that collided before scheme 2.
+    plain = _fp_of(tmp_path, "class C{ constructor(x: number){ this; } }", "r1", "C.constructor")
+    readonly = _fp_of(tmp_path, "class C{ constructor(readonly x: number){ this; } }", "r2", "C.constructor")
+    assert plain != readonly

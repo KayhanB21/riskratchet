@@ -81,7 +81,7 @@ def test_typescript_baseline_records_language_and_identity(tmp_path: Path) -> No
     )
     baseline = baseline_from_report(report)
     assert set(baseline.identity) == {"typescript"}
-    assert baseline.identity["typescript"]["scheme"] == 1
+    assert baseline.identity["typescript"]["scheme"] == 2  # scheme 2 since the B7 completeness audit
     assert baseline.identity["typescript"]["grammar"]  # the installed grammar version
     out = tmp_path / "b.json"
     save_baseline(baseline, out)
@@ -128,8 +128,8 @@ def test_v2_baseline_loads_as_all_python(tmp_path: Path) -> None:
 
 def test_typescript_identity_stale_detects_grammar_bump() -> None:
     entries = {FunctionId("s.ts", "g"): _baseline_entry("s.ts", "g", "typescript")}
-    fresh = Baseline(version="3", entries=entries, identity={"typescript": {"scheme": 1, "grammar": "0.0.0"}})
-    # A grammar that can't match the runtime's is stale.
+    fresh = Baseline(version="3", entries=entries, identity={"typescript": {"scheme": 2, "grammar": "0.0.0"}})
+    # A grammar that can't match the runtime's is stale (scheme matches; grammar is the trigger).
     assert typescript_identity_stale(fresh) is True
     # No TS identity recorded → never stale.
     assert typescript_identity_stale(Baseline(version="3", entries={}, identity={})) is False
