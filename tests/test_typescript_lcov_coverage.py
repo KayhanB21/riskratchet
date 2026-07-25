@@ -424,7 +424,13 @@ def _isolated_lcov_app(tmp_path: Path) -> Path:
     return dest
 
 
-def test_scan_ts_coverage_lcov_annotates_stderr_listing(
+def _ts_by_name(result: Any) -> dict[str, Any]:
+    return {
+        fn["qualname"]: fn for fn in json.loads(result.stdout)["functions"] if fn["language"] == "typescript"
+    }
+
+
+def test_scan_ts_coverage_lcov_scores_functions_with_coverage(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     pytest.importorskip("tree_sitter")
@@ -437,38 +443,19 @@ def test_scan_ts_coverage_lcov_annotates_stderr_listing(
     monkeypatch.chdir(_isolated_lcov_app(tmp_path))
     result = runner.invoke(
         app,
-        ["scan", ".", "--experimental-typescript", "--ts-coverage", "coverage.lcov", "--no-auto-cov"],
-    )
-    assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "cov 100% line" in result.stderr  # covered()
-    assert "cov 80% line / 50% branch" in result.stderr  # partial()
-    assert "miss-lines 11" in result.stderr
-
-
-def test_scan_ts_coverage_lcov_embedded_in_json(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    pytest.importorskip("tree_sitter")
-    pytest.importorskip("tree_sitter_typescript")
-    from typer.testing import CliRunner
-
-    from riskratchet.cli import app
-
-    runner = CliRunner()
-    monkeypatch.chdir(_isolated_lcov_app(tmp_path))
-    result = runner.invoke(
-        app,
         [
             "scan",
             ".",
-            "--experimental-typescript",
+            "--typescript",
             "--ts-coverage",
             "coverage.lcov",
             "--json",
             "--no-auto-cov",
+            "--no-git",
         ],
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    payload = json.loads(result.stdout)
-    by_name = {fn["qualname"]: fn for fn in payload["typescript"]}
+    by_name = _ts_by_name(result)
     assert by_name["covered"]["line_coverage"] == 1.0
     assert by_name["partial"]["line_coverage"] == 0.8
     assert by_name["partial"]["branch_coverage"] == 0.5
@@ -476,12 +463,9 @@ def test_scan_ts_coverage_lcov_embedded_in_json(tmp_path: Path, monkeypatch: pyt
 
 def test_scan_mixes_istanbul_and_lcov_reports(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """A single --ts-coverage list may mix formats: LCOV for sample.ts + an unrelated Istanbul
-    shard both load, and the function is annotated from the LCOV report."""
+    shard both load, and the function is scored from the LCOV report."""
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
-    from typer.testing import CliRunner
-
-    from riskratchet.cli import app
 
     app_dir = tmp_path / "app"
     app_dir.mkdir()
@@ -490,22 +474,9 @@ def test_scan_mixes_istanbul_and_lcov_reports(tmp_path: Path, monkeypatch: pytes
     (app_dir / "b.json").write_text(
         json.dumps({"pkg-b/other.ts": {"statementMap": {}, "s": {}}}), encoding="utf-8"
     )
-    monkeypatch.chdir(app_dir)
-    result = CliRunner().invoke(
-        app,
-        [
-            "scan",
-            ".",
-            "--experimental-typescript",
-            "--no-auto-cov",
-            "--ts-coverage",
-            "a.lcov",
-            "--ts-coverage",
-            "b.json",
-        ],
-    )
+    result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "a.lcov", "--ts-coverage", "b.json")
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "cov 100% line" in result.stderr  # sample.ts::covered resolved via the LCOV report
+    assert _ts_by_name(result)["covered"]["line_coverage"] == 1.0  # resolved via the LCOV report
 
 
 def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:
@@ -514,7 +485,9 @@ def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) ->
     from riskratchet.cli import app
 
     monkeypatch.chdir(app_dir)
-    return CliRunner().invoke(app, ["scan", ".", "--experimental-typescript", "--no-auto-cov", *extra])
+    return CliRunner().invoke(
+        app, ["scan", ".", "--typescript", "--json", "--no-auto-cov", "--no-git", *extra]
+    )
 
 
 def test_scan_ts_coverage_lcov_warns_and_omits_when_misaligned(

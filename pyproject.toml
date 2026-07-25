@@ -1,7 +1,7 @@
 [project]
 name = "riskratchet"
-version = "0.2.16"
-description = "A maintainability ratchet for AI-assisted Python."
+version = "0.3.0"
+description = "A maintainability ratchet for AI-assisted Python and TypeScript."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
@@ -30,11 +30,10 @@ dependencies = [
     "tomli>=2.0; python_version < '3.11'",
 ]
 
-# Opt-in only. EXPERIMENTAL TypeScript discovery (P20, since 0.2.12). Pulled in by
+# Opt-in only. TypeScript backend (P20, since 0.2.12). Pulled in by
 # `pip install riskratchet[typescript]`; gated behind `extra == "typescript"` markers so
 # a default Python-only install resolves exactly as before (no tree-sitter, no Node).
-# The `--experimental-typescript` scan path lazily imports these and errors with an
-# install hint if absent.
+# The TypeScript scan path lazily imports these and errors with an install hint if absent.
 #
 # Upper bounds are deliberate: discovery asserts against the grammar's exact node taxonomy
 # (`tests/test_typescript_discovery.py`), so a major grammar bump could rename/restructure
@@ -42,6 +41,12 @@ dependencies = [
 # `tree-sitter-typescript` ceiling is the load-bearing one (it owns the node taxonomy);
 # the `tree-sitter` ceiling tracks the binding ABI. Raise them deliberately, re-running the
 # discovery suite, not via a transitive resolve.
+#
+# 0.3.0 durability: the token-stable fingerprints hash grammar node-type strings, so the grammar
+# version is a durability input. Rather than an exact `==` (which would over-constrain downstream
+# installs), the grammar stays tightly minor-bounded here and the *recorded* version is the gate:
+# `typescript_identity.grammar_version()` reads the installed version, the baseline `identity` block
+# persists it (B6), and a persisted-vs-runtime mismatch suppresses TS rename-matching for that run.
 [project.optional-dependencies]
 typescript = [
     "tree-sitter>=0.23,<0.27",

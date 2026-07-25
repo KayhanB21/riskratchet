@@ -42,9 +42,9 @@
         "is_public": { "type": "boolean" },
         "group": { "type": ["string", "null"] },
         "language": {
-          "const": "python",
-          "$comment": "`explain` emits a single scored Python function; TypeScript is unscored and not surfaced through `explain`, so this stays \"python\". A future 0.3.0 that scores TS would relax this — not this release.",
-          "description": "Analyzer backend language (P19, since 0.2.11). Additive."
+          "enum": ["python", "typescript"],
+          "$comment": "Since 0.3.0 TypeScript is scored, so a function surfaced through `explain` may be either language (enum, not the pre-0.3.0 const \"python\").",
+          "description": "Analyzer backend language (P19, since 0.2.11; enum since 0.3.0)."
         },
         "lines": {
           "type": "object",

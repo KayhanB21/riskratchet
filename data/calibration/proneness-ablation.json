@@ -2,9 +2,9 @@
   "schema": 1,
   "note": "Pooled, repo-stratified L2 logistic regression (repo fixed-effects), leave-one-repo-out. Null model uses past activity only; the full model adds the coverage-free structural signals. Delta AUC (full - null) with a repo-clustered bootstrap tests whether structure predicts future change-proneness beyond prior activity. Gradient buckets per-repo delta by tier. Analysis only; change-proneness is a maintainability proxy, not maintainability.",
   "snapshot": {
-    "n_repos": 34,
-    "n_functions": 33490,
-    "n_change_prone": 4515,
+    "n_repos": 43,
+    "n_functions": 41605,
+    "n_change_prone": 5860,
     "repos": [
       "arrow",
       "arviz",
@@ -14,12 +14,18 @@
       "category-encoders",
       "cattrs",
       "click",
+      "comfyui",
       "croniter",
       "deepdiff",
       "feature-engine",
       "flask",
       "formulaic",
+      "gpt-sovits",
+      "gpt4free",
+      "gpt_academic",
+      "hackingtool",
       "jsonschema",
+      "kohya_ss",
       "lifelines",
       "loguru",
       "markdown",
@@ -30,13 +36,16 @@
       "packaging",
       "pingouin",
       "pint",
+      "proxy_pool",
       "pygments",
       "pyparsing",
       "requests",
       "rich",
+      "rsactftool",
       "sqlglot",
       "sqlparse",
       "tenacity",
+      "text-generation-webui",
       "werkzeug",
       "wrapt",
       "xarray"
@@ -61,9 +70,9 @@
   },
   "results": {
     "null": {
-      "auc_mean": 0.5744,
-      "auc_weighted": 0.5815,
-      "logloss": 0.385,
+      "auc_mean": 0.5881,
+      "auc_weighted": 0.602,
+      "logloss": 0.39,
       "per_repo_auc": [
         {
           "repo": "arrow",
@@ -106,6 +115,11 @@
           "auc": 0.5713
         },
         {
+          "repo": "comfyui",
+          "n_prone": 716,
+          "auc": 0.6501
+        },
+        {
           "repo": "croniter",
           "n_prone": 62,
           "auc": 0.6932
@@ -131,9 +145,34 @@
           "auc": 0.59
         },
         {
+          "repo": "gpt-sovits",
+          "n_prone": 53,
+          "auc": 0.7802
+        },
+        {
+          "repo": "gpt4free",
+          "n_prone": 234,
+          "auc": 0.7467
+        },
+        {
+          "repo": "gpt_academic",
+          "n_prone": 39,
+          "auc": 0.5865
+        },
+        {
+          "repo": "hackingtool",
+          "n_prone": 23,
+          "auc": 0.4925
+        },
+        {
           "repo": "jsonschema",
           "n_prone": 25,
           "auc": 0.5204
+        },
+        {
+          "repo": "kohya_ss",
+          "n_prone": 58,
+          "auc": 0.7737
         },
         {
           "repo": "lifelines",
@@ -186,6 +225,11 @@
           "auc": 0.538
         },
         {
+          "repo": "proxy_pool",
+          "n_prone": 15,
+          "auc": 0.5
+        },
+        {
           "repo": "pygments",
           "n_prone": 16,
           "auc": 0.4935
@@ -206,6 +250,11 @@
           "auc": 0.6256
         },
         {
+          "repo": "rsactftool",
+          "n_prone": 84,
+          "auc": 0.4325
+        },
+        {
           "repo": "sqlglot",
           "n_prone": 599,
           "auc": 0.5902
@@ -219,6 +268,11 @@
           "repo": "tenacity",
           "n_prone": 39,
           "auc": 0.6849
+        },
+        {
+          "repo": "text-generation-webui",
+          "n_prone": 123,
+          "auc": 0.7974
         },
         {
           "repo": "werkzeug",
@@ -238,207 +292,252 @@
       ]
     },
     "full": {
-      "auc_mean": 0.6608,
-      "auc_weighted": 0.652,
-      "logloss": 0.3801,
+      "auc_mean": 0.6743,
+      "auc_weighted": 0.6675,
+      "logloss": 0.3843,
       "per_repo_auc": [
         {
           "repo": "arrow",
           "n_prone": 35,
-          "auc": 0.5122
+          "auc": 0.5186
         },
         {
           "repo": "arviz",
           "n_prone": 18,
-          "auc": 0.8158
+          "auc": 0.8207
         },
         {
           "repo": "attrs",
           "n_prone": 29,
-          "auc": 0.7675
+          "auc": 0.7669
         },
         {
           "repo": "bayesian-optimization",
           "n_prone": 26,
-          "auc": 0.5888
+          "auc": 0.5849
         },
         {
           "repo": "boltons",
           "n_prone": 4,
-          "auc": 0.6419
+          "auc": 0.6429
         },
         {
           "repo": "category-encoders",
           "n_prone": 21,
-          "auc": 0.7383
+          "auc": 0.739
         },
         {
           "repo": "cattrs",
           "n_prone": 55,
-          "auc": 0.6375
+          "auc": 0.6372
         },
         {
           "repo": "click",
           "n_prone": 132,
-          "auc": 0.7166
+          "auc": 0.7139
+        },
+        {
+          "repo": "comfyui",
+          "n_prone": 716,
+          "auc": 0.6782
         },
         {
           "repo": "croniter",
           "n_prone": 62,
-          "auc": 0.6894
+          "auc": 0.6871
         },
         {
           "repo": "deepdiff",
           "n_prone": 87,
-          "auc": 0.626
+          "auc": 0.6252
         },
         {
           "repo": "feature-engine",
           "n_prone": 24,
-          "auc": 0.7166
+          "auc": 0.7171
         },
         {
           "repo": "flask",
           "n_prone": 82,
-          "auc": 0.5546
+          "auc": 0.5677
         },
         {
           "repo": "formulaic",
           "n_prone": 32,
-          "auc": 0.6696
+          "auc": 0.6712
+        },
+        {
+          "repo": "gpt-sovits",
+          "n_prone": 53,
+          "auc": 0.7965
+        },
+        {
+          "repo": "gpt4free",
+          "n_prone": 234,
+          "auc": 0.7565
+        },
+        {
+          "repo": "gpt_academic",
+          "n_prone": 39,
+          "auc": 0.5926
+        },
+        {
+          "repo": "hackingtool",
+          "n_prone": 23,
+          "auc": 0.6295
         },
         {
           "repo": "jsonschema",
           "n_prone": 25,
-          "auc": 0.6501
+          "auc": 0.646
+        },
+        {
+          "repo": "kohya_ss",
+          "n_prone": 58,
+          "auc": 0.8293
         },
         {
           "repo": "lifelines",
           "n_prone": 12,
-          "auc": 0.7943
+          "auc": 0.7976
         },
         {
           "repo": "loguru",
           "n_prone": 52,
-          "auc": 0.4487
+          "auc": 0.4858
         },
         {
           "repo": "markdown",
           "n_prone": 24,
-          "auc": 0.5811
+          "auc": 0.5718
         },
         {
           "repo": "marshmallow",
           "n_prone": 49,
-          "auc": 0.6257
+          "auc": 0.6261
         },
         {
           "repo": "mlxtend",
           "n_prone": 118,
-          "auc": 0.7225
+          "auc": 0.7227
         },
         {
           "repo": "more-itertools",
           "n_prone": 63,
-          "auc": 0.5899
+          "auc": 0.5775
         },
         {
           "repo": "networkx",
           "n_prone": 607,
-          "auc": 0.7109
+          "auc": 0.7126
         },
         {
           "repo": "packaging",
           "n_prone": 57,
-          "auc": 0.6789
+          "auc": 0.6801
         },
         {
           "repo": "pingouin",
           "n_prone": 40,
-          "auc": 0.8231
+          "auc": 0.8218
         },
         {
           "repo": "pint",
           "n_prone": 138,
-          "auc": 0.5485
+          "auc": 0.5484
+        },
+        {
+          "repo": "proxy_pool",
+          "n_prone": 15,
+          "auc": 0.5943
         },
         {
           "repo": "pygments",
           "n_prone": 16,
-          "auc": 0.6254
+          "auc": 0.6252
         },
         {
           "repo": "pyparsing",
           "n_prone": 120,
-          "auc": 0.631
+          "auc": 0.6308
         },
         {
           "repo": "requests",
           "n_prone": 60,
-          "auc": 0.6857
+          "auc": 0.684
         },
         {
           "repo": "rich",
           "n_prone": 83,
-          "auc": 0.754
+          "auc": 0.7578
+        },
+        {
+          "repo": "rsactftool",
+          "n_prone": 84,
+          "auc": 0.7933
         },
         {
           "repo": "sqlglot",
           "n_prone": 599,
-          "auc": 0.6372
+          "auc": 0.637
         },
         {
           "repo": "sqlparse",
           "n_prone": 22,
-          "auc": 0.7353
+          "auc": 0.7331
         },
         {
           "repo": "tenacity",
           "n_prone": 39,
-          "auc": 0.7331
+          "auc": 0.7313
+        },
+        {
+          "repo": "text-generation-webui",
+          "n_prone": 123,
+          "auc": 0.8079
         },
         {
           "repo": "werkzeug",
           "n_prone": 212,
-          "auc": 0.5633
+          "auc": 0.5636
         },
         {
           "repo": "wrapt",
           "n_prone": 48,
-          "auc": 0.6063
+          "auc": 0.6259
         },
         {
           "repo": "xarray",
           "n_prone": 1524,
-          "auc": 0.6464
+          "auc": 0.6457
         }
       ]
     }
   },
   "structure_beats_activity": {
-    "delta_auc_full_minus_null_mean": 0.0864,
-    "delta_auc_weighted": 0.0705,
-    "n_repos_full_better": "30/34",
+    "delta_auc_full_minus_null_mean": 0.0862,
+    "delta_auc_weighted": 0.0655,
+    "n_repos_full_better": "39/43",
     "sign_test_p": 0.0
   },
   "file_line_coefficient": {
-    "standardized": 0.0387,
+    "standardized": 0.024,
     "sign": "positive",
     "ci95": [
-      -0.046,
-      0.1624
+      -0.0542,
+      0.1184
     ],
     "method": "repo-clustered bootstrap, seed 0, 1000 draws"
   },
   "gradient": {
     "polished": {
       "n_repos": 34,
-      "mean_delta_auc_full_minus_null": 0.0864
+      "mean_delta_auc_full_minus_null": 0.0879
     },
     "messy": {
-      "n_repos": 0,
-      "mean_delta_auc_full_minus_null": null
+      "n_repos": 9,
+      "mean_delta_auc_full_minus_null": 0.0798
     }
   },
-  "verdict": "Structural signals beat the past-churn null: keeping complexity/sprawl/public raises pooled leave-one-repo-out AUC by \u0394=+0.086 over activity alone. They carry maintenance-burden signal beyond 'active code stays active.' The file-line sprawl half remains net-noise under this outcome (coef +0.039, 95% CI [-0.046, 0.162]). Analysis only; no weight change. Change-proneness is a proxy (got-edited, not was-painful), the corpus is a gradient toward \u2014 not at \u2014 the AI-side-project target, and the construct gap (edits != maintainability) is anchored, not closed, by the review-comment check."
+  "verdict": "Structural signals beat the past-churn null: keeping complexity/sprawl/public raises pooled leave-one-repo-out AUC by \u0394=+0.086 over activity alone. They carry maintenance-burden signal beyond 'active code stays active.' The file-line sprawl half remains net-noise under this outcome (coef +0.024, 95% CI [-0.054, 0.118]). Analysis only; no weight change. Change-proneness is a proxy (got-edited, not was-painful), the corpus is a gradient toward \u2014 not at \u2014 the AI-side-project target, and the construct gap (edits != maintainability) is anchored, not closed, by the review-comment check."
 }

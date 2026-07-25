@@ -1,0 +1,2571 @@
+{
+  "snapshot_sha": "f08bb9a2012eeac213232c2fe087ba330b1801fb",
+  "head_sha": "ed888c71f221df552750e1834b3654abab8ae345",
+  "window_days": 365,
+  "n_functions": 489,
+  "n_change_prone": 123,
+  "n_future_commits": 451,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "modules/LoRA.py::add_lora_to_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/LoRA.py::add_lora_transformers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "modules/block_requests.py::my_open",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 5,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "modules/callbacks.py::Iteratorize.__del__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/callbacks.py::Iteratorize.__init__",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/callbacks.py::Iteratorize.__init__.gentask",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::add_message_attachment",
+      "future_commits": 1,
+      "future_lines": 43,
+      "past_commits": 2,
+      "past_lines": 64,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::add_message_version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::chatbot_wrapper",
+      "future_commits": 20,
+      "future_lines": 132,
+      "past_commits": 18,
+      "past_lines": 132,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::check_tavern_character",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::clear_character_for_ui",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::count_prompt_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::delete_character",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::extract_docx_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::extract_pdf_text",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::find_all_histories_with_first_prompts",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::generate_chat_prompt",
+      "future_commits": 40,
+      "future_lines": 451,
+      "past_commits": 10,
+      "past_lines": 92,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::generate_chat_prompt.make_prompt",
+      "future_commits": 18,
+      "future_lines": 177,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::generate_chat_reply",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::generate_chat_reply_wrapper",
+      "future_commits": 25,
+      "future_lines": 391,
+      "past_commits": 3,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::generate_pfp_cache",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::generate_search_query",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 3,
+      "past_lines": 28,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::get_chat_state_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::get_current_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::get_generation_prompt",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::get_history_file_path",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::get_paths",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::get_stopping_strings",
+      "future_commits": 11,
+      "future_lines": 88,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::get_thinking_suppression_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_branch_chat_click",
+      "future_commits": 5,
+      "future_lines": 11,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_character_menu_change",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_character_picture_change",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_delete_chat_confirm_click",
+      "future_commits": 4,
+      "future_lines": 25,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_delete_template_click",
+      "future_commits": 5,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_edit_message_click",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 4,
+      "past_lines": 72,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_load_template_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_mode_change",
+      "future_commits": 4,
+      "future_lines": 18,
+      "past_commits": 4,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_navigate_version_click",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 3,
+      "past_lines": 55,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_remove_last_click",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_rename_chat_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_rename_chat_confirm",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_save_character_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_save_template_click",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_search_chat_change",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_send_chat_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_send_dummy_message_click",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_send_dummy_reply_click",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_send_instruction_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::handle_start_new_chat_click",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_unique_id_select",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::handle_upload_chat_history",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::impersonate_wrapper",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::jinja_template_from_old_format",
+      "future_commits": 1,
+      "future_lines": 99,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::jinja_template_from_old_format.preprocess",
+      "future_commits": 1,
+      "future_lines": 99,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::load_character",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::load_history",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::load_history_after_deletion",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::load_history_json",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::load_instruction_template",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::load_instruction_template_memoized",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::load_last_chat_state",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::load_latest_history",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::remove_last_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::restore_character_for_ui",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::save_character",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::save_history",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::save_last_chat_state",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 38,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::send_dummy_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::send_dummy_reply",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::start_new_chat",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::strftime_now",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::update_character_menu_after_deletion",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::update_message_metadata",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::upload_character",
+      "future_commits": 5,
+      "future_lines": 24,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "modules/chat.py::upload_tavern_character",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/chat.py::upload_your_profile_picture",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/evaluate.py::calculate_perplexity",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "modules/evaluate.py::load_past_evaluations",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/evaluate.py::save_past_evaluations",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2.py::Exllamav2Model.encode",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2.py::Exllamav2Model.from_pretrained",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 68,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2.py::Exllamav2Model.generate_with_streaming",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2_hf.py::Exllamav2HF.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2_hf.py::Exllamav2HF.__init__",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 34,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav2_hf.py::Exllamav2HF.from_pretrained",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.__call__",
+      "future_commits": 5,
+      "future_lines": 127,
+      "past_commits": 4,
+      "past_lines": 233,
+      "change_prone": true
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.__init__",
+      "future_commits": 4,
+      "future_lines": 20,
+      "past_commits": 3,
+      "past_lines": 207,
+      "change_prone": true
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF._validate_model_class",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 179,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF._validate_model_kwargs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 179,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.device",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 179,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.from_pretrained",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 179,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.prepare_inputs_for_generation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 179,
+      "change_prone": false
+    },
+    {
+      "target": "modules/exllamav3_hf.py::Exllamav3HF.unload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::_apply_custom_css",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::_apply_custom_js",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::create_extensions_block",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::create_extensions_tabs",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::iterator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/extensions.py::load_extensions",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 2,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "modules/gradio_hijack.py::create_app_with_trustedhost",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "modules/grammar/grammar_utils.py::IncrementalGrammarConstraint.accept_char",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/grammar/grammar_utils.py::IncrementalGrammarConstraint.pos_char_acceptance",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::actions_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::chat_html_wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::convert_to_markdown",
+      "future_commits": 4,
+      "future_lines": 84,
+      "past_commits": 13,
+      "past_lines": 116,
+      "change_prone": true
+    },
+    {
+      "target": "modules/html_generator.py::convert_to_markdown_wrapped",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::extract_thinking_block",
+      "future_commits": 5,
+      "future_lines": 94,
+      "past_commits": 2,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "modules/html_generator.py::format_message_attachments",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "modules/html_generator.py::format_message_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::generate_basic_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::generate_cai_chat_html",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 15,
+      "past_lines": 121,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::generate_cai_chat_html.create_message",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::generate_instruct_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 14,
+      "past_lines": 119,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::generate_instruct_html.create_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::get_character_image_with_cache_buster",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::get_message_tooltip",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::get_version_navigation_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::minify_css",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::process_markdown_content",
+      "future_commits": 7,
+      "future_lines": 74,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": true
+    },
+    {
+      "target": "modules/html_generator.py::replace_quotes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::replace_quotes.replacer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "modules/html_generator.py::time_greeting",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.__del__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 338,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.__enter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 338,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.__exit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 338,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.__init__",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 5,
+      "past_lines": 343,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer._find_available_port",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 338,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer._get_bos_token",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 3,
+      "past_lines": 340,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer._get_vocabulary_size",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer._start_server",
+      "future_commits": 33,
+      "future_lines": 113,
+      "past_commits": 22,
+      "past_lines": 418,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.decode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 340,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.encode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 340,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.generate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.generate_with_streaming",
+      "future_commits": 12,
+      "future_lines": 77,
+      "past_commits": 19,
+      "past_lines": 431,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.get_logits",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 5,
+      "past_lines": 342,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.prepare_payload",
+      "future_commits": 5,
+      "future_lines": 26,
+      "past_commits": 4,
+      "past_lines": 371,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::LlamaServer.stop",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 338,
+      "change_prone": true
+    },
+    {
+      "target": "modules/llama_cpp_server.py::filter_stderr_with_progress",
+      "future_commits": 8,
+      "future_lines": 40,
+      "past_commits": 6,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "modules/loaders.py::blacklist_samplers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/loaders.py::get_all_params",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/loaders.py::make_loader_params_visible",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/loaders.py::transformers_samplers",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 5,
+      "past_lines": 27,
+      "change_prone": true
+    },
+    {
+      "target": "modules/logging_colors.py::setup_logging",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/logits.py::_get_next_logits",
+      "future_commits": 6,
+      "future_lines": 19,
+      "past_commits": 6,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "modules/logits.py::get_next_logits",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/metadata_gguf.py::get_single",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models.py::ExLlamav2_loader",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models.py::ExLlamav3_HF_loader",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models.py::TensorRT_LLM_loader",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models.py::llama_cpp_server_loader",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models.py::load_model",
+      "future_commits": 8,
+      "future_lines": 17,
+      "past_commits": 8,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models.py::transformers_loader",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models.py::unload_model",
+      "future_commits": 4,
+      "future_lines": 11,
+      "past_commits": 5,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models.py::unload_model_if_idle",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::apply_model_settings_to_state",
+      "future_commits": 7,
+      "future_lines": 26,
+      "past_commits": 3,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models_settings.py::estimate_vram",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 148,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::get_fallback_settings",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::get_model_metadata",
+      "future_commits": 20,
+      "future_lines": 87,
+      "past_commits": 14,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models_settings.py::get_model_size_mb",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 135,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::get_nvidia_vram",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::infer_loader",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 6,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models_settings.py::load_gguf_metadata_with_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::save_instruction_template",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::save_model_settings",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/models_settings.py::update_gpu_layers_and_vram",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 8,
+      "past_lines": 84,
+      "change_prone": true
+    },
+    {
+      "target": "modules/models_settings.py::update_model_parameters",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/presets.py::default_preset",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 8,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "modules/presets.py::load_preset",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/presets.py::neutralize_samplers_for_ui",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/presets.py::reset_preset_for_ui",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/prompts.py::count_tokens",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/prompts.py::load_prompt",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 3,
+      "past_lines": 20,
+      "change_prone": true
+    },
+    {
+      "target": "modules/sampler_hijack.py::FrequencyPenaltyLogitsProcessor.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::FrequencyPenaltyLogitsProcessor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::FrequencyPenaltyLogitsProcessor.apply_frequency_penalty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::MirostatLogitsWarper.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::PresencePenaltyLogitsProcessor.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::PresencePenaltyLogitsProcessor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::PresencePenaltyLogitsProcessor.apply_presence_penalty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::RepetitionPenaltyLogitsProcessorWithRange.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::RepetitionPenaltyLogitsProcessorWithRange.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::RepetitionPenaltyLogitsProcessorWithRange.apply_repetition_penalty",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::TopNSigmaLogitsWarper.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::TopNSigmaLogitsWarper.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::XTCLogitsWarper.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::XTCLogitsWarper.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::generation_config_init_patch",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 5,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sampler_hijack.py::get_logits_processor_patch",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 8,
+      "past_lines": 86,
+      "change_prone": true
+    },
+    {
+      "target": "modules/sampler_hijack.py::get_logits_processor_patch.custom_sort_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListExtension.extendMarkdown",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListIndentProcessor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListIndentProcessor.detab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListIndentProcessor.get_level",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListIndentProcessor.looseDetab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneListIndentProcessor.test",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneOListProcessor.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneOListProcessor.get_items",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneOListProcessor.looseDetab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneOListProcessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneParagraphProcessor.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneParagraphProcessor.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneUListProcessor.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::SaneUListProcessor.get_items",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/sane_markdown_lists.py::makeExtension",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "modules/shared.py::do_cmd_flags_warnings",
+      "future_commits": 4,
+      "future_lines": 21,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/shared.py::fix_loader_name",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/shared.py::load_user_config",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/tensorrt_llm.py::TensorRTLLMModel.from_pretrained",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/tensorrt_llm.py::TensorRTLLMModel.generate_with_streaming",
+      "future_commits": 3,
+      "future_lines": 26,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::_generate_reply",
+      "future_commits": 5,
+      "future_lines": 11,
+      "past_commits": 6,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::decode",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/text_generation.py::encode",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 4,
+      "past_lines": 31,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::generate_reply",
+      "future_commits": 3,
+      "future_lines": 18,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::generate_reply_HF",
+      "future_commits": 6,
+      "future_lines": 12,
+      "past_commits": 10,
+      "past_lines": 79,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::generate_reply_custom",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 8,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "modules/text_generation.py::generate_reply_wrapper",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/text_generation.py::get_reply_from_output_ids",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "modules/text_generation.py::get_token_ids",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/text_generation.py::print_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/text_generation.py::set_manual_seed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "modules/torch_utils.py::clear_torch_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "modules/torch_utils.py::get_device",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": true
+    },
+    {
+      "target": "modules/training.py::backup_adapter",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/training.py::create_ui",
+      "future_commits": 13,
+      "future_lines": 60,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "modules/training.py::do_train",
+      "future_commits": 22,
+      "future_lines": 377,
+      "past_commits": 4,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "modules/training.py::do_train.Callbacks.on_log",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/training.py::do_train.list_target_modules",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/training.py::do_train.log_train_dataset",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "modules/training.py::do_train.threaded_run",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/training.py::do_train.tokenize",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/transformers_loader.py::LogitsBiasProcessor.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::LogitsBiasProcessor.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::LogitsBiasProcessor.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::LogprobProcessor.__call__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::LogprobProcessor.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::LogprobProcessor.__repr__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::Stream.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::Stream.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::_StopEverythingStoppingCriteria.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::_StopEverythingStoppingCriteria.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::get_max_memory_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "modules/transformers_loader.py::load_model_HF",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 4,
+      "past_lines": 285,
+      "change_prone": true
+    },
+    {
+      "target": "modules/transformers_loader.py::load_tokenizer",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 287,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui.py::_perform_debounced_save",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui.py::apply_interface_values",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui.py::create_refresh_button",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui.py::gather_interface_values",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui.py::list_interface_input_elements",
+      "future_commits": 13,
+      "future_lines": 35,
+      "past_commits": 16,
+      "past_lines": 69,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui.py::list_model_elements",
+      "future_commits": 8,
+      "future_lines": 12,
+      "past_commits": 11,
+      "past_lines": 52,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui.py::save_settings",
+      "future_commits": 5,
+      "future_lines": 13,
+      "past_commits": 7,
+      "past_lines": 42,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui.py::setup_auto_save",
+      "future_commits": 13,
+      "future_lines": 37,
+      "past_commits": 5,
+      "past_lines": 141,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui.py::store_current_state_and_debounce",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 96,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_chat.py::create_character_settings_ui",
+      "future_commits": 4,
+      "future_lines": 15,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_chat.py::create_chat_settings_ui",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 8,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_chat.py::create_event_handlers",
+      "future_commits": 10,
+      "future_lines": 42,
+      "past_commits": 25,
+      "past_lines": 100,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_chat.py::create_ui",
+      "future_commits": 27,
+      "future_lines": 93,
+      "past_commits": 29,
+      "past_lines": 78,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_default.py::create_event_handlers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_default.py::create_ui",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 21,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_default.py::handle_delete_prompt_confirm_default",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 84,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_default.py::handle_new_prompt",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_default.py::handle_rename_prompt_click_default",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_default.py::handle_rename_prompt_confirm_default",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::create_event_handlers",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::create_ui",
+      "future_commits": 3,
+      "future_lines": 22,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_delete_character_confirm_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_delete_confirm_click",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_delete_grammar_click",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_delete_preset_click",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_save_character_confirm_click",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_save_confirm_click",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_save_grammar_click",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_file_saving.py::handle_save_preset_confirm_click",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::create_event_handlers",
+      "future_commits": 5,
+      "future_lines": 27,
+      "past_commits": 8,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::create_ui",
+      "future_commits": 30,
+      "future_lines": 68,
+      "past_commits": 41,
+      "past_lines": 123,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::download_model_wrapper",
+      "future_commits": 3,
+      "future_lines": 24,
+      "past_commits": 9,
+      "past_lines": 141,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::download_model_wrapper.downloader_thread_target",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_model_menu.py::format_file_size",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_model_menu.py::get_initial_gpu_layers_max",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_model_menu.py::get_initial_vram_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_model_menu.py::handle_load_model_event_final",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::handle_load_model_event_initial",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::load_lora_wrapper",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_model_menu.py::load_model_wrapper",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_model_menu.py::update_truncation_length",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_notebook.py::_perform_notebook_debounced_save",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::autosave_prompt",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 86,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_notebook.py::create_event_handlers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::create_ui",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 5,
+      "past_lines": 22,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_notebook.py::generate_and_save_wrapper_notebook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 82,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::handle_delete_prompt_confirm_notebook",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 81,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_notebook.py::handle_new_prompt",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::handle_rename_prompt_click_notebook",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::handle_rename_prompt_confirm_notebook",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_notebook.py::safe_autosave_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_notebook.py::store_notebook_state_and_debounce",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_parameters.py::create_event_handlers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_parameters.py::create_ui",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 18,
+      "past_lines": 120,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_parameters.py::get_truncation_length",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_parameters.py::load_grammar",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_session.py::create_ui",
+      "future_commits": 8,
+      "future_lines": 33,
+      "past_commits": 12,
+      "past_lines": 34,
+      "change_prone": true
+    },
+    {
+      "target": "modules/ui_session.py::get_boolean_arguments",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_session.py::handle_default_to_notebook_change",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "modules/ui_session.py::handle_save_settings",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 4,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "modules/utils.py::check_model_loaded",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": true
+    },
+    {
+      "target": "modules/utils.py::current_time",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::delete_file",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_characters",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_extensions",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_ggufs",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_grammars",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_instruction_templates",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "modules/utils.py::get_available_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_presets",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "modules/utils.py::get_available_prompts",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "modules/utils.py::save_file",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "modules/web_search.py::add_web_search_attachments",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 144,
+      "change_prone": false
+    },
+    {
+      "target": "modules/web_search.py::download_web_page",
+      "future_commits": 6,
+      "future_lines": 25,
+      "past_commits": 5,
+      "past_lines": 146,
+      "change_prone": true
+    },
+    {
+      "target": "modules/web_search.py::get_current_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "modules/web_search.py::perform_web_search",
+      "future_commits": 8,
+      "future_lines": 61,
+      "past_commits": 5,
+      "past_lines": 172,
+      "change_prone": true
+    },
+    {
+      "target": "modules/web_search.py::truncate_content_by_tokens",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    }
+  ]
+}

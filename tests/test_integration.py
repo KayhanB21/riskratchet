@@ -17,6 +17,7 @@ are hermetic and don't depend on the parent repo's state.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -91,7 +92,12 @@ def _write_project(root: Path) -> None:
 
 
 def _run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    # Keep the nested `pre-commit run` hermetic: an ambient `SKIP` in the outer
+    # developer environment (e.g. `SKIP=riskratchet` while stacking dev commits)
+    # names hooks by id and would otherwise skip the very `riskratchet` hook these
+    # tests assert fires. Strip it so each test fully controls its own hook set.
+    env = {k: v for k, v in os.environ.items() if k != "SKIP"}
+    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, env=env)
 
 
 def _bin(path: str | None, name: str) -> str:

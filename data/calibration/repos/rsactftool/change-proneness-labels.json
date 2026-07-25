@@ -1,0 +1,2699 @@
+{
+  "snapshot_sha": "7b3189bcb0ac65244eee3a1b0eabbe918531cbc8",
+  "head_sha": "7c98848f1945de3e67a420871e8672f5ad9aa5d5",
+  "window_days": 365,
+  "n_functions": 336,
+  "n_change_prone": 84,
+  "n_future_commits": 37,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.attack",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.attack_wrapper",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.can_run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.get_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/abstract_attack.py::AbstractAttack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_factors.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_factors.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_modulus_related_message.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_modulus_related_message.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_modulus_related_message.py::Attack.common_modulus_related_message_attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/common_modulus_related_message.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 76,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/hastads.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 85,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/hastads.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 85,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/hastads.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 86,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/same_n_huge_e.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 70,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/same_n_huge_e.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 70,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/multi_keys/same_n_huge_e.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/SQUFOF.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/SQUFOF.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/SQUFOF.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/XYXZ.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/XYXZ.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/XYXZ.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/binary_polinomial_factoring.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/binary_polinomial_factoring.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/boneh_durfee.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/boneh_durfee.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/boneh_durfee.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/brent.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/brent.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/brent.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 58,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/carmichael.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/carmichael.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/carmichael.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/classical_shor.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/classical_shor.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/classical_shor.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/comfact_cn.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/comfact_cn.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/comfact_cn.py::Attack.comfact",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/comfact_cn.py::Attack.test",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/compositorial_pm1_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/compositorial_pm1_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/compositorial_pm1_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/cube_root.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 55,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/cube_root.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 55,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/cube_root.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/dixon.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/dixon.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 15,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/dixon.py::Attack.test",
+      "future_commits": 1,
+      "future_lines": 36,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 85,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 85,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 86,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm2.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 82,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm2.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 82,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/ecm2.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 83,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/euler.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/euler.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/euler.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factor_2PN.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factor_2PN.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factor_2PN.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factordb.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factordb.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factordb.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factordb.py::getfdb",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factorial_pm1_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factorial_pm1_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/factorial_pm1_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat_numbers_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat_numbers_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fermat_numbers_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fibonacci_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fibonacci_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/fibonacci_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/hart.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/hart.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/hart.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/highandlowbitsequal.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/highandlowbitsequal.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/highandlowbitsequal.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/kraitchik.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/kraitchik.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/kraitchik.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lattice.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lattice.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lattice.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehman.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehman.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehman.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehmer.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehmer.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lehmer.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/londahl.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/londahl.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/londahl.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lucas_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lucas_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/lucas_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_pm1_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_pm1_gcd.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_pm1_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_primes.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 104,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_primes.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 104,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/mersenne_primes.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 105,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/multiple_base_inversion_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 78,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/multiple_base_inversion_gcd.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 78,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/multiple_base_inversion_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 78,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/multiple_base_inversion_gcd.py::FF",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 78,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/neca.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/neca.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/neca.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nonRSA.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nonRSA.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 59,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nonRSA.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 60,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/noveltyprimes.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/noveltyprimes.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/noveltyprimes.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nullattack.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nullattack.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/nullattack.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_d.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 67,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_d.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 67,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_d.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 67,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_q.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_q.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/partial_q.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 57,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pastctfprimes.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pastctfprimes.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pastctfprimes.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pisano_period.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pisano_period.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 54,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pisano_period.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 55,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_p_1.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_p_1.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_p_1.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_rho.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_rho.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_rho.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_strassen.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_strassen.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/pollard_strassen.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/primorial_pm1_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/primorial_pm1_gcd.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/primorial_pm1_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qicheng.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qicheng.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qicheng.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qs.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 58,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qs.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 58,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/qs.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/rapid7primes.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/rapid7primes.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/rapid7primes.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/roca.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/roca.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 53,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/roca.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/siqs.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/siqs.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/siqs.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 108,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/siqs.py::SiqsAttack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/siqs.py::SiqsAttack.doattack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/small_crt_exp.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 63,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/small_crt_exp.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 63,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/small_crt_exp.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallfraction.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallfraction.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 52,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallfraction.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallq.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallq.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 2,
+      "past_lines": 41,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/smallq.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/system_primes_gcd.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/system_primes_gcd.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/system_primes_gcd.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wiener.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wiener.py::Attack.attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wiener.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/williams_pp1.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/williams_pp1.py::Attack.attack",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 52,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/williams_pp1.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wolframalpha.py::Attack.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 91,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wolframalpha.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 91,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wolframalpha.py::Attack.can_run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 91,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/wolframalpha.py::Attack.wa_query_factors",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 92,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/z3_solver.py::Attack.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 100,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/z3_solver.py::Attack.attack",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 100,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/z3_solver.py::Attack.test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 101,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/attacks/single_key/z3_solver.py::Attack.z3_solve",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 100,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::FactorHighAndLowBitsEqual",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::Fibonacci.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::Fibonacci._fib_res",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::Fibonacci.factorization",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::Fibonacci.get_n_mod_d",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::Fibonacci.get_period_bigint",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::InverseInverseSqrt2exp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::SQUFOF",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::brent",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::carmichael",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::close_factor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::difference_of_powers_factor",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::dixon",
+      "future_commits": 2,
+      "future_lines": 205,
+      "past_commits": 2,
+      "past_lines": 668,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::euler",
+      "future_commits": 2,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::factor_2PN",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::factor_XYXZ",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::fermat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::hart",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::kraitchik",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::lehman",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::lehmer_machine",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::pollard_P_1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::pollard_rho",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::pollard_strassen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::shor",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::solve_partial_q",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::wiener",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/algos.py::williams_pp1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 656,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/conspicuous_check.py::privatekey_check",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/customlogger.py::CustomFormatter.format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::cado_factor_driver",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::external_factorization",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::ifferm",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::msieve_factor_driver",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::neca_factor_driver",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/external.py::yafu_factor_driver",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/fdb.py::send2fdb",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/idrsa_pub_disector.py::disect_idrsa_pub",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/idrsa_pub_disector.py::disect_idrsa_pub.getdata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/is_roca_test.py::is_roca_vulnerable",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 496,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PrivateKey.__init__",
+      "future_commits": 2,
+      "future_lines": 25,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PrivateKey.__str__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PrivateKey.decrypt",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PrivateKey.is_conspicuous",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PublicKey.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::PublicKey.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::generate_keys_from_p_q_e_n",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::generate_pq_from_n_and_p_or_q",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/keys_wrapper.py::load_partial_privkey",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 291,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_fac",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_fermat_prime_criterion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_fib",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_gcd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_gcdext",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_introot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_introot_gmpy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_introot_gmpy2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_invmod",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_iroot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_is_prime",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_is_square",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_isqrt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_isqrt_rem",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_isqrt_rem_gmpy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_lucas",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_next_prime",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_powmod",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_powmod_base_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_powmod_exp_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_primes_yield",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_primes_yield_gmpy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::_remove",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::chinese_remainder",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::common_modulus_related_message",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::contfrac_to_rational",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::convergents_from_contfrac",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::dlp_bruteforce",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::erathostenes_sieve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::factor_ned_deterministic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::factor_ned_probabilistic",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::getpubkeysz",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::ilogb",
+      "future_commits": 1,
+      "future_lines": 59,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::inv_mod_pow_of_2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::is_cube",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::is_lucas",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 687,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::list_prod",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::miller_rabin",
+      "future_commits": 2,
+      "future_lines": 11,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::mlucas",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::mulmod",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::neg_pow",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::phi",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::rational_to_contfrac",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::tonelli",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/number_theory.py::trivial_factorization_with_n_b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 686,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/pickling.py::SafeUnpickler.find_class",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/pickling.py::compress_pickle",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/pickling.py::decompress_pickle",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/pickling.py::safe_load",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.attack_multiple_keys",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.attack_single_key",
+      "future_commits": 2,
+      "future_lines": 31,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.can_stop_tests",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.get_attack",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.get_boolean_results",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.load_attacks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 386,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.pre_attack_check",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.print_results_details",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/rsa_attack.py::RSAAttack.priv_key_send2fdb",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 383,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/system_primes.py::load_system_consts",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1318,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/timeout.py::timeout.__enter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/timeout.py::timeout.__exit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/timeout.py::timeout.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/timeout.py::timeout.handle_timeout",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::TimeoutError.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::TimeoutError.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::binary_search",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::get_base64_value",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::get_numeric_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::n2s",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::print_decrypted_res",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::print_results",
+      "future_commits": 4,
+      "future_lines": 38,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::s2n",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::sageworks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::terminate_proc_tree",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::timeout.__enter__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::timeout.__enter__.alarm_func",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::timeout.__exit__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::timeout.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/lib/utils.py::timeout._timeout_handler",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 241,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::banner",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::check_is_roca",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::cleanup",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::convert_idrsa_pub",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::decrypt_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::dump_key_parameters",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::load_keys",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::main",
+      "future_commits": 3,
+      "future_lines": 20,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::parse_args",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::pubkey_detail",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::run_attacks",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": true
+    },
+    {
+      "target": "src/RsaCtfTool/main.py::run_conspicuous_check",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 593,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/sage/roca_attack.py::roca",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/sage/roca_attack.py::solve",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "src/RsaCtfTool/sage/sage_functions.py::coppersmith_howgrave_univariate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 85,
+      "change_prone": false
+    }
+  ]
+}

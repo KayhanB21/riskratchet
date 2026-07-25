@@ -1,0 +1,1179 @@
+{
+  "snapshot_sha": "e794bb8a5d1ce2335281307b263d2550c60921b3",
+  "head_sha": "45088f04af78e11cec5407ff4652ea3ed2c14422",
+  "window_days": 365,
+  "n_functions": 280,
+  "n_change_prone": 58,
+  "n_future_commits": 43,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "kohya_gui/basic_caption_gui.py::caption_images",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/basic_caption_gui.py::gradio_basic_caption_gui_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/blip2_caption_gui.py::get_images_in_directory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/blip2_caption_gui.py::gradio_blip2_caption_gui_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/blip2_caption_gui.py::load_model",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/blip_caption_gui.py::gradio_blip_caption_gui_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_accelerate_launch.py::AccelerateLaunch.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_accelerate_launch.py::AccelerateLaunch.__init__.validate_gpu_ids",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_accelerate_launch.py::AccelerateLaunch.run_cmd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_advanced_training.py::AdvancedTraining.__init__",
+      "future_commits": 3,
+      "future_lines": 25,
+      "past_commits": 5,
+      "past_lines": 73,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.init_grad_and_lr_controls",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.init_learning_rate_controls",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.init_learning_rate_controls.lr_scheduler_changed",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.init_lr_and_optimizer_controls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_basic_training.py::BasicTraining.init_training_controls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_command_executor.py::CommandExecutor.__init__",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_command_executor.py::CommandExecutor.execute_command",
+      "future_commits": 1,
+      "future_lines": 29,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_command_executor.py::CommandExecutor.kill_command",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_command_executor.py::CommandExecutor.wait_for_training_to_end",
+      "future_commits": 1,
+      "future_lines": 22,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_configuration_file.py::ConfigurationFile.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_configuration_file.py::ConfigurationFile.create_config_gui",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_flux1.py::flux1Training.__init__",
+      "future_commits": 2,
+      "future_lines": 64,
+      "past_commits": 5,
+      "past_lines": 346,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_flux1.py::flux1Training.__init__.noise_offset_type_change",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 336,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_folders.py::Folders.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_folders.py::Folders.create_folders_gui",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_gui_config.py::KohyaSSGUIConfig.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_gui_config.py::KohyaSSGUIConfig.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_gui_config.py::KohyaSSGUIConfig.get_allowed_paths",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_gui_config.py::KohyaSSGUIConfig.load_config",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_lora_tab.py::LoRATools.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_metadata.py::MetaData.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_sample_images.py::SampleImages.initialize_accordion",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_sample_images.py::create_prompt_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_sd3.py::sd3Training.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 251,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_sd3.py::sd3Training.__init__.noise_offset_type_change",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 249,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_sdxl_parameters.py::SDXLParameters.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_sdxl_parameters.py::SDXLParameters.initialize_accordion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_source_model.py::SourceModel.__init__",
+      "future_commits": 4,
+      "future_lines": 141,
+      "past_commits": 4,
+      "past_lines": 88,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_source_model.py::SourceModel.__init__.toggle_checkboxes",
+      "future_commits": 3,
+      "future_lines": 59,
+      "past_commits": 2,
+      "past_lines": 70,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/class_tensorboard.py::TensorboardManager.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_tensorboard.py::TensorboardManager.start_tensorboard",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/class_tensorboard.py::check_avx_support",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/common_gui.py::check_if_model_exist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::color_aug_changed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::find_replace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_any_file_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_executable_path",
+      "future_commits": 1,
+      "future_lines": 24,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_file_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_folder_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_saveasfile_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::get_saveasfilename_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::is_file_writable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::output_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::print_command_and_toml",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::set_pretrained_model_name_or_path_input",
+      "future_commits": 3,
+      "future_lines": 34,
+      "past_commits": 1,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/common_gui.py::setup_environment",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/common_gui.py::update_my_data",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/common_gui.py::validate_folder_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::validate_model_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/common_gui.py::verify_image_folder_pattern",
+      "future_commits": 1,
+      "future_lines": 52,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dataset_balancing_gui.py::dataset_balancing",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/dataset_balancing_gui.py::gradio_dataset_balancing_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/dataset_balancing_gui.py::warning",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/dreambooth_folder_creation_gui.py::dreambooth_folder_preparation",
+      "future_commits": 1,
+      "future_lines": 95,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dreambooth_folder_creation_gui.py::gradio_dreambooth_folder_creation_tab",
+      "future_commits": 1,
+      "future_lines": 22,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dreambooth_gui.py::dreambooth_tab",
+      "future_commits": 3,
+      "future_lines": 307,
+      "past_commits": 5,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dreambooth_gui.py::open_configuration",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dreambooth_gui.py::save_configuration",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/dreambooth_gui.py::train_model",
+      "future_commits": 7,
+      "future_lines": 71,
+      "past_commits": 3,
+      "past_lines": 180,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/extract_lora_gui.py::gradio_extract_lora_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/extract_lora_gui.py::gradio_extract_lora_tab.change_modeltype_model_tuned",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/finetune_gui.py::finetune_tab",
+      "future_commits": 6,
+      "future_lines": 449,
+      "past_commits": 4,
+      "past_lines": 115,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/finetune_gui.py::open_configuration",
+      "future_commits": 4,
+      "future_lines": 43,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/finetune_gui.py::save_configuration",
+      "future_commits": 4,
+      "future_lines": 43,
+      "past_commits": 1,
+      "past_lines": 50,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/finetune_gui.py::train_model",
+      "future_commits": 8,
+      "future_lines": 252,
+      "past_commits": 2,
+      "past_lines": 139,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/flux_extract_lora_gui.py::extract_flux_lora",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 273,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_extract_lora_gui.py::gradio_flux_extract_lora_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 273,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_extract_lora_gui.py::gradio_flux_extract_lora_tab.list_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 273,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.build_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.build_tab.list_flux_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.build_tab.list_lora_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.build_tab.list_save_to",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.load_inputs_from_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.merge_flux_lora",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::GradioFluxMergeLoRaTab.save_inputs_to_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::check_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/flux_merge_lora_gui.py::verify_conditions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/git_caption_gui.py::gradio_git_caption_gui_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::_get_caption_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 389,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::_get_quick_tags",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 387,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::_get_tag_checkbox_updates",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 388,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::delete_images_and_caption",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::derive_target_folder",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::gradio_kontext_manual_caption_gui_tab",
+      "future_commits": 3,
+      "future_lines": 242,
+      "past_commits": 4,
+      "past_lines": 517,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::gradio_kontext_manual_caption_gui_tab.render_pagination_with_logic",
+      "future_commits": 1,
+      "future_lines": 19,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::gradio_kontext_manual_caption_gui_tab.update_dir_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::import_tags_from_captions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 414,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::load_images",
+      "future_commits": 2,
+      "future_lines": 39,
+      "past_commits": 3,
+      "past_lines": 433,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::load_images.error_message",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 3,
+      "past_lines": 389,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::paginate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 388,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::paginate_go",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 387,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::save_caption",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 388,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::update_image_caption",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 389,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::update_image_tags",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 389,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::update_images",
+      "future_commits": 2,
+      "future_lines": 20,
+      "past_commits": 2,
+      "past_lines": 417,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/kontext_manual_caption_gui.py::update_quick_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 386,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::get_effective_lr_messages",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 1,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::lora_tab",
+      "future_commits": 15,
+      "future_lines": 650,
+      "past_commits": 5,
+      "past_lines": 367,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::lora_tab.update_LoRA_settings",
+      "future_commits": 4,
+      "future_lines": 40,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::open_configuration",
+      "future_commits": 8,
+      "future_lines": 63,
+      "past_commits": 2,
+      "past_lines": 159,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::save_configuration",
+      "future_commits": 7,
+      "future_lines": 61,
+      "past_commits": 2,
+      "past_lines": 153,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/lora_gui.py::train_model",
+      "future_commits": 16,
+      "future_lines": 501,
+      "past_commits": 8,
+      "past_lines": 455,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::_get_caption_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::_get_quick_tags",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::_get_tag_checkbox_updates",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::gradio_manual_caption_gui_tab",
+      "future_commits": 1,
+      "future_lines": 192,
+      "past_commits": 6,
+      "past_lines": 78,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::gradio_manual_caption_gui_tab.render_pagination_with_logic",
+      "future_commits": 1,
+      "future_lines": 19,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::gradio_manual_caption_gui_tab.update_dir_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::import_tags_from_captions",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 3,
+      "past_lines": 34,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::load_images",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::load_images.error_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::paginate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::paginate_go",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::save_caption",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::update_image_caption",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::update_image_tags",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/manual_caption_gui.py::update_images",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/merge_lora_gui.py::GradioMergeLoRaTab.build_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/resize_lora_gui.py::gradio_resize_lora_tab",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/resize_lora_gui.py::resize_lora",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.Is_FLUX1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.Is_SD1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.Is_SD2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.Is_SD3",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.Is_SDXL",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/sd_modeltype.py::SDModelType.__init__.hasKeyPrefix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/textual_inversion_gui.py::open_configuration",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/textual_inversion_gui.py::save_configuration",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/textual_inversion_gui.py::ti_tab",
+      "future_commits": 1,
+      "future_lines": 248,
+      "past_commits": 4,
+      "past_lines": 37,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/textual_inversion_gui.py::train_model",
+      "future_commits": 6,
+      "future_lines": 49,
+      "past_commits": 2,
+      "past_lines": 32,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/utilities.py::utilities_tab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "kohya_gui/wd14_caption_gui.py::caption_images",
+      "future_commits": 1,
+      "future_lines": 70,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "kohya_gui/wd14_caption_gui.py::gradio_wd14_caption_gui_tab",
+      "future_commits": 1,
+      "future_lines": 51,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": true
+    }
+  ]
+}

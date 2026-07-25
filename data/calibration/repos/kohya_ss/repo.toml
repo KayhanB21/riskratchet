@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Middle-of-gradient: actively developed training GUI, nominal tests; source in kohya_gui/.
+name = "kohya_ss"
+url = "https://github.com/bmaltais/kohya_ss"
+paths = ["kohya_gui"]
+pr_branch = "master"
+coverage_free = true

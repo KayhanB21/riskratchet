@@ -26,7 +26,10 @@ from riskratchet.baseline.io import (
     BASELINE_VERSION,
     baseline_from_report,
     load_baseline,
+    runtime_typescript_identity,
     save_baseline,
+    suppress_stale_typescript_renames,
+    typescript_identity_stale,
 )
 from riskratchet.baseline.regressions import (
     regressions_above_threshold,
@@ -41,5 +44,8 @@ __all__ = [
     "load_baseline",
     "regressions_above_threshold",
     "regressions_from_diff",
+    "runtime_typescript_identity",
     "save_baseline",
+    "suppress_stale_typescript_renames",
+    "typescript_identity_stale",
 ]

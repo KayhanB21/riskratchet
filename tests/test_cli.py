@@ -91,8 +91,8 @@ def test_scan_sarif_output_is_valid(tmp_path: Path) -> None:
     assert not location["artifactLocation"]["uri"].startswith("/")
 
 
-def test_scan_experimental_typescript_lists_functions(tmp_path: Path) -> None:
-    # Experimental, informational TS discovery (P20 slice 2). Skips without the extra.
+def test_scan_typescript_scores_into_functions_array(tmp_path: Path) -> None:
+    # 0.3.0: --typescript scores TS functions into the shared functions[] with language tags.
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     (tmp_path / "a.ts").write_text(
@@ -100,39 +100,48 @@ def test_scan_experimental_typescript_lists_functions(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     result = runner.invoke(
-        app, ["scan", str(tmp_path), "--experimental-typescript", "--no-git", "--no-auto-cov"]
+        app, ["scan", str(tmp_path), "--typescript", "--json", "--no-git", "--no-auto-cov"]
     )
     assert result.exit_code == 0
-    # The listing is an experimental diagnostic on stderr, never stdout.
-    assert "typescript: 2 function(s) in 1 file(s)" in result.stderr
-    assert "::add  [public]" in result.stderr
-    assert "::helper  [internal]" in result.stderr
-    assert "typescript:" not in result.stdout
+    payload = json.loads(result.stdout)
+    assert "typescript" not in payload  # the separate informational array was removed
+    by_name = {fn["qualname"]: fn for fn in payload["functions"]}
+    assert by_name["add"]["language"] == "typescript"
+    assert by_name["helper"]["language"] == "typescript"
+    assert by_name["add"]["is_public"] is True
+    assert by_name["helper"]["is_public"] is False
+    assert isinstance(by_name["add"]["score"], (int, float))  # scored, not informational
 
 
-def test_scan_experimental_typescript_keeps_json_stdout_valid(tmp_path: Path) -> None:
-    # Since slice 5 (0.2.15) `--json` embeds the discovered TS functions in a top-level
-    # `typescript` array; stdout must still parse cleanly, and only the banner (not a text
-    # listing) goes to stderr.
+def test_scan_typescript_json_stdout_is_clean(tmp_path: Path) -> None:
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     (tmp_path / "a.ts").write_text("export function add(a: number) { return a; }\n", encoding="utf-8")
     result = runner.invoke(
-        app,
-        ["scan", str(tmp_path), "--experimental-typescript", "--json", "--no-git", "--no-auto-cov"],
+        app, ["scan", str(tmp_path), "--typescript", "--json", "--no-git", "--no-auto-cov"]
     )
     assert result.exit_code == 0
     payload = json.loads(result.stdout)  # raises if stdout was polluted
-    assert "functions" in payload
-    assert [fn["qualname"] for fn in payload["typescript"]] == ["add"]
-    assert payload["typescript"][0]["language"] == "typescript"
-    assert "experimental: TypeScript discovery is informational" in result.stderr
-    assert "typescript: 1 function(s)" not in result.stderr  # human listing suppressed in --json
+    assert [fn["qualname"] for fn in payload["functions"]] == ["add"]
+    assert payload["functions"][0]["language"] == "typescript"
 
 
-def test_scan_experimental_typescript_embeds_sarif_notes(tmp_path: Path) -> None:
-    # Since slice 5 (0.2.15) `--format sarif` emits each discovered TS function as an informational
-    # note result under the riskratchet.typescript-function rule (registered only when TS present).
+def test_scan_experimental_typescript_is_deprecated_alias(tmp_path: Path) -> None:
+    # The old flag still works but warns and behaves exactly like --typescript (scored).
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    (tmp_path / "a.ts").write_text("export function add(a: number) { return a; }\n", encoding="utf-8")
+    result = runner.invoke(
+        app, ["scan", str(tmp_path), "--experimental-typescript", "--json", "--no-git", "--no-auto-cov"]
+    )
+    assert result.exit_code == 0
+    assert "--experimental-typescript is deprecated; use --typescript" in result.stderr
+    assert json.loads(result.stdout)["functions"][0]["language"] == "typescript"
+
+
+def test_scan_typescript_emits_scored_sarif_result(tmp_path: Path) -> None:
+    # 0.3.0: a scored TS function is a regular riskratchet.function-risk result tagged
+    # language:"typescript" — the separate riskratchet.typescript-function note rule is gone.
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     (tmp_path / "a.ts").write_text(
@@ -143,24 +152,23 @@ def test_scan_experimental_typescript_embeds_sarif_notes(tmp_path: Path) -> None
         [
             "scan",
             str(tmp_path),
-            "--experimental-typescript",
+            "--typescript",
             "--format",
             "sarif",
             "--no-git",
             "--no-auto-cov",
+            "--min-score",
+            "0",
         ],
     )
     assert result.exit_code == 0
     run = json.loads(result.stdout)["runs"][0]
-    assert "riskratchet.typescript-function" in {rule["id"] for rule in run["tool"]["driver"]["rules"]}
-    ts_notes = [r for r in run["results"] if r["ruleId"] == "riskratchet.typescript-function"]
-    assert len(ts_notes) == 1
-    note = ts_notes[0]
-    assert note["level"] == "note"
-    assert note["properties"]["language"] == "typescript"
-    assert note["properties"]["qualname"] == "add"
-    assert note["properties"]["complexity"] == 2  # base 1 + ternary
-    assert note["properties"]["fingerprint"]  # identity carried in SARIF too
+    rule_ids = {rule["id"] for rule in run["tool"]["driver"]["rules"]}
+    assert "riskratchet.typescript-function" not in rule_ids  # removed
+    ts = [r for r in run["results"] if r["properties"].get("qualname") == "add"]
+    assert len(ts) == 1
+    assert ts[0]["ruleId"] == "riskratchet.function-risk"
+    assert ts[0]["properties"]["language"] == "typescript"
     assert "typescript: 1 function(s)" not in result.stderr  # human listing suppressed in sarif
 
 
@@ -181,7 +189,7 @@ def test_baseline_writes_file(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     payload = json.loads(baseline_path.read_text(encoding="utf-8"))
-    assert payload["version"] == "2"
+    assert payload["version"] == "3"
     assert isinstance(payload["entries"], list)
     assert len(payload["entries"]) >= 1
 

@@ -1,4 +1,4 @@
-"""riskratchet: A maintainability ratchet for AI-assisted Python."""
+"""riskratchet: A maintainability ratchet for AI-assisted Python and TypeScript."""
 
 from riskratchet._version import __version__
 from riskratchet.baseline import (

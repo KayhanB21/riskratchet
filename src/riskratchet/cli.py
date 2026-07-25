@@ -8,7 +8,7 @@ modules; this file should stay easy to scan.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -21,6 +21,8 @@ from riskratchet.baseline import (
     regressions_above_threshold,
     regressions_from_diff,
     save_baseline,
+    suppress_stale_typescript_renames,
+    typescript_identity_stale,
 )
 from riskratchet.baseline import (
     diff as diff_baseline,
@@ -57,6 +59,7 @@ from riskratchet.init import (
     write_starter_config,
 )
 from riskratchet.models import Baseline, DiffReport, Regression, RegressionKind, RiskReport, Severity
+from riskratchet.pipeline import build_report
 from riskratchet.redaction import (
     RedactionConfig,
     redact_diagnostics,
@@ -102,8 +105,35 @@ VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
 VALID_FAIL_SEVERITIES = ("low", "medium", "high", "critical")
 
+# Shared TypeScript-backend options (since 0.3.0), reused by check/diff (scan declares its own so it
+# can also carry the deprecated --experimental-typescript alias).
+TypescriptOption = Annotated[
+    bool,
+    typer.Option(
+        "--typescript",
+        help="Also analyze and score TypeScript functions (since 0.3.0), mixed into the scored "
+        "functions with `language: \"typescript\"`. Needs `pip install 'riskratchet[typescript]'`.",
+    ),
+]
+TsCoverageOption = Annotated[
+    list[Path] | None,
+    typer.Option(
+        "--ts-coverage",
+        help="Istanbul/nyc/LCOV coverage report(s) to give TypeScript functions line/branch coverage "
+        "(format auto-detected). Repeatable. Only used with --typescript.",
+    ),
+]
+TsEntryOption = Annotated[
+    list[Path] | None,
+    typer.Option(
+        "--ts-entry",
+        help="TypeScript package entry file(s) (e.g. src/index.ts) to narrow public surface to what "
+        "is reachable through barrel re-exports. Repeatable. Only used with --typescript.",
+    ),
+]
+
 app = typer.Typer(
-    help="A maintainability ratchet for AI-assisted Python.",
+    help="A maintainability ratchet for AI-assisted Python and TypeScript.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -277,32 +307,40 @@ def scan(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    typescript: Annotated[
+        bool,
+        typer.Option(
+            "--typescript",
+            help="Also analyze and SCORE TypeScript functions (since 0.3.0), mixed into the scored "
+            "functions with `language: \"typescript\"`. Needs `pip install 'riskratchet[typescript]'`.",
+        ),
+    ] = False,
     experimental_typescript: Annotated[
         bool,
         typer.Option(
             "--experimental-typescript",
-            help="EXPERIMENTAL: also list discovered TypeScript functions (informational only; "
-            "no scoring or gating; needs `pip install 'riskratchet[typescript]'`). Output may change.",
+            help="Deprecated alias for --typescript (TypeScript is scored since 0.3.0).",
+            hidden=True,
         ),
     ] = False,
     ts_coverage: Annotated[
         list[Path] | None,
         typer.Option(
             "--ts-coverage",
-            help="EXPERIMENTAL: Istanbul/nyc coverage-final.json or LCOV lcov.info to annotate "
-            "discovered TypeScript functions with line/branch coverage (format auto-detected per "
-            "file). Repeatable (pass one per package in a monorepo; formats may be mixed). Only "
-            "used with --experimental-typescript; separate from --coverage (which is Python).",
+            help="Istanbul/nyc coverage-final.json or LCOV lcov.info to give TypeScript functions "
+            "line/branch coverage (format auto-detected per file). Repeatable (one per package in a "
+            "monorepo; formats may be mixed). Only used with --typescript; separate from --coverage "
+            "(which is Python).",
         ),
     ] = None,
     ts_entry: Annotated[
         list[Path] | None,
         typer.Option(
             "--ts-entry",
-            help="EXPERIMENTAL: package entry file(s) (e.g. src/index.ts) used to narrow TypeScript "
-            "public surface to what is reachable through barrel re-exports. Repeatable. Only used "
-            "with --experimental-typescript; falls back to package.json / index.ts, and to "
-            "file-level export flags when no entry is found.",
+            help="Package entry file(s) (e.g. src/index.ts) used to narrow TypeScript public surface "
+            "to what is reachable through barrel re-exports. Repeatable. Only used with --typescript; "
+            "falls back to package.json / index.ts, and to file-level export flags when no entry is "
+            "found.",
         ),
     ] = None,
 ) -> None:
@@ -354,20 +392,32 @@ def scan(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
+    ts_enabled = _resolve_typescript_flag(
+        typescript, experimental_typescript, ts_coverage=ts_coverage, ts_entry=ts_entry
     )
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:  # missing [typescript] extra, surfaced during TS discovery
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
     _populate_run_diagnostics(
         diag,
@@ -382,18 +432,6 @@ def scan(
     )
     links = _links_for(repo_url, commit_ref, redaction)
     filtered = redact_report(filtered, redaction)
-    # EXPERIMENTAL (P20 slice 5): collect TS functions *before* rendering so the JSON/SARIF payload
-    # can embed them (`_embed_ts_in`); the banner/warnings emit to stderr during collection.
-    ts_functions, ts_file_count = _collect_scan_typescript(
-        experimental_typescript,
-        resolved_paths,
-        root=config_dir,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        ts_coverage=ts_coverage or [],
-        ts_entry=ts_entry or [],
-    )
-    embed_ts = _embed_ts_in(effective_format, experimental=experimental_typescript, summary=summary)
     _emit_report(
         filtered,
         format=effective_format,
@@ -403,12 +441,10 @@ def scan(
         min_score=min_score,
         links=links,
         summary=summary,
-        ts_functions=ts_functions if embed_ts else (),
     )
     if effective_format == "table" and not quiet and not summary and output is None:
         baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
         _emit_scan_next_step_footer(filtered, baseline_file=baseline_file, config_present=bool(cfg))
-    _emit_scan_typescript_listing(ts_functions, ts_file_count, embed_ts=embed_ts)
     _emit_diagnostics(
         diag,
         verbose=verbose,
@@ -472,6 +508,9 @@ def baseline(
         Path | None,
         typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
     ] = None,
+    typescript: TypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Compute current risk and save it as the new baseline.
 
@@ -517,20 +556,30 @@ def baseline(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-    )
+    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -671,6 +720,9 @@ def check(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    typescript: TypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg, config_dir = _discover_config(config)
@@ -764,20 +816,32 @@ def check(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-    )
+    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    if old is not None:
+        old, report = _apply_ts_identity_guard(old, report, ts_enabled=ts_enabled)
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -1100,6 +1164,9 @@ def diff(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    typescript: TypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Show full baseline diff; does not fail."""
     cfg, config_dir = _discover_config(config)
@@ -1165,20 +1232,31 @@ def diff(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-    )
+    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    old, report = _apply_ts_identity_guard(old, report, ts_enabled=ts_enabled)
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -1463,7 +1541,6 @@ def _emit_report(
     min_score: float | None = None,
     links: SourceLinks | None = None,
     summary: bool = False,
-    ts_functions: Sequence[Any] = (),
 ) -> None:
     effective_limit = None if limit == 0 else limit
     if summary:
@@ -1471,7 +1548,7 @@ def _emit_report(
             render_report_summary_json(report) if format == "json" else render_report_summary_text(report)
         )
     elif format == "json":
-        rendered = render_report_json(report, links=links, ts_functions=ts_functions)
+        rendered = render_report_json(report, links=links)
     elif format == "markdown":
         rendered = render_report_markdown(report, limit=effective_limit, links=links)
     elif format == "sarif":
@@ -1479,7 +1556,6 @@ def _emit_report(
             report,
             min_score=min_score if min_score is not None else 25.0,
             links=links,
-            ts_functions=ts_functions,
         )
     elif format == "github":
         rendered = render_report_github(report, min_score=min_score if min_score is not None else 25.0)
@@ -1622,272 +1698,59 @@ def _write(rendered: str, output: Path | None) -> None:
     output.write_text(rendered, encoding="utf-8")
 
 
-def _collect_typescript(
-    paths: list[Path],
+def _resolve_typescript_flag(
+    typescript: bool,
+    experimental_typescript: bool,
     *,
-    root: Path,
-    include: list[str],
-    exclude: list[str],
-    ts_coverage: list[Path] | None = None,
-    ts_entry: list[Path] | None = None,
-) -> tuple[list[Any], int]:
-    """EXPERIMENTAL (P20, slice 2 since 0.2.12; coverage slice 3 since 0.2.13; complexity +
-    barrel-aware public surface slice 4 since 0.2.14; native JSON/SARIF + identity slice 5 since
-    0.2.15; LCOV coverage since 0.2.16): discover TypeScript functions, each with cyclomatic
-    complexity, identity fingerprints, and optional Istanbul or LCOV coverage. Returns
-    `(functions, file_count)`.
-
-    Informational only — no scoring, no baseline, no gating; does not affect the exit code. The
-    banner and skip warnings go to STDERR (an experimental diagnostic, not part of the contract);
-    the discovered functions are handed back so the caller can either embed them in the
-    machine-readable JSON/SARIF payload (slice 5) or render the human stderr listing
-    (`_emit_typescript_stderr_listing`). tree-sitter is imported lazily, so a default Python-only
-    install never touches it; a missing extra raises `typer.Exit(2)`.
-    """
-    from . import typescript as ts
-    from . import typescript_coverage as tscov
-    from ._paths import relative_posix
-
-    ts_coverage = ts_coverage or []
-    ts_entry = ts_entry or []
-
-    typer.secho(
-        "experimental: TypeScript discovery is informational and its output may change.",
-        fg=typer.colors.YELLOW,
-        err=True,
-    )
-    files = ts.iter_typescript_files(paths, root=root, include=include, exclude=exclude)
-    if not files and exclude:
+    ts_coverage: list[Path] | None,
+    ts_entry: list[Path] | None,
+) -> bool:
+    """Resolve the TypeScript toggle, warning on the deprecated alias and on stray --ts-* flags."""
+    if experimental_typescript and not typescript:
         typer.secho(
-            "typescript: no .ts/.tsx/.mts/.cts files matched "
-            f"(exclude patterns active: {', '.join(exclude)})",
+            "--experimental-typescript is deprecated; use --typescript (TypeScript is scored since 0.3.0).",
             fg=typer.colors.YELLOW,
             err=True,
         )
-
-    def _warn(message: str) -> None:
-        typer.secho(f"typescript: {message}", fg=typer.colors.YELLOW, err=True)
-
-    coverage = tscov.empty_istanbul_coverage()
-    if ts_coverage:
-        coverage = tscov.load_ts_coverage_files(
-            ts_coverage,
-            on_error=lambda path, msg: _warn(f"--ts-coverage {path}: {msg} (skipped)"),
+    enabled = typescript or experimental_typescript
+    if (ts_coverage or ts_entry) and not enabled:
+        typer.secho(
+            "typescript: --ts-coverage / --ts-entry have no effect without --typescript.",
+            fg=typer.colors.YELLOW,
+            err=True,
         )
+    return enabled
 
-    def _warn_skip(path: Path, message: str) -> None:
-        typer.secho(f"skipping {relative_posix(path, root)}: {message}", fg=typer.colors.YELLOW, err=True)
+
+def _ts_warn(message: str) -> None:
+    typer.secho(f"typescript: {message}", fg=typer.colors.YELLOW, err=True)
+
+
+def _apply_ts_identity_guard(
+    old: Baseline,
+    report: RiskReport,
+    *,
+    ts_enabled: bool,
+) -> tuple[Baseline, RiskReport]:
+    """When TS is analyzed against a baseline whose recorded TS grammar/scheme differs from the
+    runtime's, the persisted TS fingerprints are stale — match TypeScript by id only (never by a
+    cross-grammar fingerprint) and tell the user to re-baseline. Python matching is unaffected."""
+    if not ts_enabled or not typescript_identity_stale(old):
+        return old, report
+    _ts_warn(
+        "baseline TypeScript grammar/scheme differs from the runtime; matching TypeScript functions "
+        "by id only (a grammar bump changes every fingerprint) — re-baseline recommended"
+    )
+    return suppress_stale_typescript_renames(old, report)
+
+
+def _rel_or_str(path: Any, root: Path) -> str:
+    from ._paths import relative_posix
 
     try:
-        functions, unmeasured_files = _collect_ts_functions(
-            files,
-            root=root,
-            coverage=coverage,
-            has_coverage=bool(ts_coverage),
-            warn=_warn,
-            on_error=_warn_skip,
-            entries=ts_entry,
-        )
-    except ImportError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2) from exc
-
-    if unmeasured_files:
-        _warn(f"{unmeasured_files} file(s) had no coverage entry (shown without coverage)")
-    return functions, len(files)
-
-
-def _emit_typescript_stderr_listing(functions: list[Any], file_count: int) -> None:
-    """Render the human-readable TS listing to STDERR (used for text/table/markdown formats, where
-    the machine JSON/SARIF payload does not carry the TypeScript section)."""
-    typer.echo("\n".join(_render_ts_functions(functions, file_count)), err=True)
-
-
-def _collect_scan_typescript(
-    experimental: bool,
-    paths: list[Path],
-    *,
-    root: Path,
-    include: list[str],
-    exclude: list[str],
-    ts_coverage: list[Path],
-    ts_entry: list[Path],
-) -> tuple[list[Any], int]:
-    """Collect TS functions for `scan`, or warn when `--ts-*` is passed without the flag.
-    Returns `([], 0)` when TypeScript discovery is not requested."""
-    if experimental:
-        return _collect_typescript(
-            paths, root=root, include=include, exclude=exclude, ts_coverage=ts_coverage, ts_entry=ts_entry
-        )
-    if ts_coverage or ts_entry:
-        typer.secho(
-            "typescript: --ts-coverage / --ts-entry have no effect without --experimental-typescript.",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
-    return [], 0
-
-
-def _embed_ts_in(effective_format: str, *, experimental: bool, summary: bool) -> bool:
-    """TS rides inside the machine-readable payload only for the two structured formats, and never
-    in the counts-only `--summary` envelope; every other format keeps the human stderr listing."""
-    return experimental and not summary and effective_format in ("json", "sarif")
-
-
-def _emit_scan_typescript_listing(functions: list[Any], file_count: int, *, embed_ts: bool) -> None:
-    """Emit the human stderr listing for formats that don't embed TS in their payload."""
-    if functions and not embed_ts:
-        _emit_typescript_stderr_listing(functions, file_count)
-
-
-def _collect_ts_functions(
-    files: list[Path],
-    *,
-    root: Path,
-    coverage: Any,
-    has_coverage: bool,
-    warn: Any,
-    on_error: Any,
-    entries: list[Path],
-) -> tuple[list[Any], int]:
-    """Discover functions in each file and (when coverage is supplied) attach it per file,
-    counting files that had no coverage entry. Then narrow `is_public` to entry-barrel
-    reachability. Returns (functions, unmeasured_file_count)."""
-    from . import typescript as ts
-    from ._paths import relative_posix
-
-    functions: list[Any] = []
-    modules: dict[str, Any] = {}
-    unmeasured = 0
-    for path in files:
-        found, exports = ts.analyze_ts_file(path, root=root, on_error=on_error)  # single parse per file
-        rel = relative_posix(path, root)
-        modules[rel] = exports
-        if has_coverage:
-            file_cov = coverage.lookup(rel)
-            if file_cov is None and found:
-                unmeasured += 1
-            found = _enrich_ts_file(found, file_cov, rel, warn)
-        functions.extend(found)
-    functions = _apply_entry_narrowing(
-        functions, files, root=root, entries=entries, modules=modules, warn=warn
-    )
-    return functions, unmeasured
-
-
-def _apply_entry_narrowing(
-    functions: list[Any],
-    files: list[Path],
-    *,
-    root: Path,
-    entries: list[Path],
-    modules: dict[str, Any],
-    warn: Any,
-) -> list[Any]:
-    """Narrow `is_public` to functions reachable from the package entry barrel, using the
-    already-parsed `modules` (rel-path → ModuleExports).
-
-    Safety rail: only demotes (public → internal), and only when an entry is found and the
-    re-export graph is trustworthy. A non-barrel project (no entry) or an **unresolved wildcard**
-    (`export *` / missing entry) leaves all flags untouched; an unresolved **named** re-export
-    holds only the affected name public and narrows the rest.
-    """
-    from . import typescript as ts
-    from . import typescript_exports as tsx
-
-    resolved_entries = ts.detect_ts_entries(root, files, entries)
-    if not resolved_entries:
-        if entries:
-            warn("public surface: --ts-entry did not match any scanned file; keeping export flags")
-        return functions
-    if entries and len(resolved_entries) < len(entries):
-        unmatched = len(entries) - len(resolved_entries)
-        warn(f"public surface: {unmatched} --ts-entry path(s) matched no scanned file")
-    result = tsx.resolve_entry_reachable(modules, resolved_entries)
-    if result.poison_all:
-        warn(
-            "public surface: an unresolved wildcard re-export (`export *`) or entry means the "
-            "surface can't be bounded; keeping file-level export flags"
-        )
-        return functions
-    warn(f"public surface narrowed to entry {', '.join(resolved_entries)} (override with --ts-entry)")
-    return _narrow_public(functions, result, warn)
-
-
-def _narrow_public(functions: list[Any], result: Any, warn: Any) -> list[Any]:
-    """Demote each public function whose binding is not entry-reachable, except names held
-    uncertain by an unresolved named re-export (kept public, counted for a note)."""
-    from dataclasses import replace
-
-    narrowed: list[Any] = []
-    kept_uncertain = 0
-    for fn in functions:
-        binding = fn.id.qualname.split(".", 1)[0]
-        if fn.is_public and (fn.id.path, binding) not in result.reachable:
-            if binding in result.uncertain_names:
-                kept_uncertain += 1
-            else:
-                fn = replace(fn, is_public=False)
-        narrowed.append(fn)
-    if kept_uncertain:
-        warn(f"public surface: kept {kept_uncertain} function(s) public behind unresolved named re-exports")
-    return narrowed
-
-
-def _render_ts_functions(functions: list[Any], file_count: int) -> list[str]:
-    """Render the stderr listing: one header line plus one line per function (sorted)."""
-    functions.sort(key=lambda fn: (fn.id.path, fn.span.start_line, fn.id.qualname))
-    lines = [f"typescript: {len(functions)} function(s) in {file_count} file(s)"]
-    for fn in functions:
-        visibility = "public" if fn.is_public else "internal"
-        line = f"  {fn.id.as_target()}  [{visibility}]  ({fn.span.start_line}-{fn.span.end_line})"
-        line += _format_ts_complexity(fn.complexity)
-        lines.append(line + _format_ts_coverage(fn.coverage))
-    return lines
-
-
-def _format_ts_complexity(complexity: Any) -> str:
-    """Render the cyclomatic-complexity annotation (`cx N`) appended to a function's listing
-    line. Always present since 0.2.14 (complexity needs no external input)."""
-    if complexity is None:
-        return ""
-    return f"  cx {complexity.cyclomatic}"
-
-
-def _enrich_ts_file(found: list[Any], file_cov: Any, rel: str, warn: Any) -> list[Any]:
-    """Attach Istanbul coverage to one file's discovered functions.
-
-    Returns `coverage=None` when the file is absent from the report, or when its line numbers
-    don't intersect any discovered span — the signature of coverage collected on compiled JS
-    without source-map remapping, which is warned so wrong numbers are never shown.
-    """
-    from dataclasses import replace
-
-    from . import typescript_coverage as tscov
-
-    if file_cov is None:
-        return [replace(fn, coverage=None) for fn in found]
-    if found and not tscov.spans_cover_any_statement(file_cov, [fn.span for fn in found]):
-        warn(
-            f"{rel}: coverage line numbers don't intersect any discovered function "
-            "— likely measured on compiled JS, not source (source maps?); coverage omitted"
-        )
-        return [replace(fn, coverage=None) for fn in found]
-    return [replace(fn, coverage=tscov.coverage_for_ts_span(file_cov, fn.span)) for fn in found]
-
-
-def _format_ts_coverage(coverage: Any) -> str:
-    """Render the coverage annotation appended to a function's listing line, or '' when the
-    function's file had no coverage entry."""
-    if coverage is None:
-        return ""
-    parts = [f"cov {round(coverage.line_coverage * 100)}% line"]
-    if coverage.branch_coverage is not None:
-        parts.append(f"{round(coverage.branch_coverage * 100)}% branch")
-    annotation = "  " + " / ".join(parts)
-    if coverage.missing_lines:
-        annotation += "  miss-lines " + ",".join(str(line) for line in coverage.missing_lines)
-    return annotation
+        return relative_posix(Path(path), root)
+    except (ValueError, OSError):
+        return str(path)
 
 
 def _validate_format(format: str) -> None:

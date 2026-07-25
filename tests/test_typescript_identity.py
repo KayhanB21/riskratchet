@@ -5,11 +5,14 @@ The contract under test is analogous to the Python backend (`analysis.function_f
 `matching.signature_fingerprint`): the fingerprint ignores the function's own name and all
 cosmetic formatting (quotes, whitespace, optional semicolons, trailing commas, redundant
 parens) but changes on a real body/signature edit. The pairwise-distinctness battery below is the
-guard against a silent hole in the lossy operator/modifier allowlist (not a proof of completeness).
+guard against a silent hole in the lossy operator/keyword allowlist (not a proof of completeness).
+The B7 completeness audit added the `const`/`let` and `readonly`-parameter regression cases (scheme
+2) after probing which anonymous grammar tokens the allowlist could drop.
 """
 
 from __future__ import annotations
 
+import importlib.metadata
 from pathlib import Path
 
 import pytest
@@ -18,7 +21,35 @@ pytest.importorskip("tree_sitter")
 pytest.importorskip("tree_sitter_typescript")
 
 from riskratchet.typescript import discover_typescript
-from riskratchet.typescript_identity import body_fingerprint, signature_fingerprint
+from riskratchet.typescript_identity import (
+    GRAMMAR_DISTRIBUTION,
+    SCHEME_VERSION,
+    body_fingerprint,
+    grammar_version,
+    signature_fingerprint,
+)
+
+
+def test_grammar_version_matches_installed_distribution() -> None:
+    # B1: grammar_version() is a runtime durability accessor — it must report the exact
+    # installed tree-sitter-typescript version, which the 0.3.0 baseline records (B6).
+    assert GRAMMAR_DISTRIBUTION == "tree-sitter-typescript"
+    assert grammar_version() == importlib.metadata.version("tree-sitter-typescript")
+    # Version-like: at least major.minor, all dot-separated segments non-empty.
+    parts = grammar_version().split(".")
+    assert len(parts) >= 2 and all(parts)
+
+
+def test_grammar_version_within_pinned_minor() -> None:
+    # The [typescript] extra pins >=0.23,<0.24; the recorded version must live in that band,
+    # so a silent transitive bump past the tested node taxonomy can't slip through unnoticed.
+    major, minor, *_ = grammar_version().split(".")
+    assert (int(major), int(minor)) == (0, 23)
+
+
+def test_scheme_version_is_a_positive_int() -> None:
+    # SCHEME_VERSION is surfaced for the baseline identity block; it must be a stable positive int.
+    assert isinstance(SCHEME_VERSION, int) and SCHEME_VERSION >= 1
 
 
 def _one(tmp_path: Path, src: str, name: str) -> tuple[str, str]:
@@ -210,3 +241,19 @@ def test_callable_directly_on_a_node() -> None:
     assert fn_node.type == "function_declaration"
     assert len(body_fingerprint(fn_node)) == 64
     assert len(signature_fingerprint(fn_node)) == 64
+
+
+def test_const_vs_let_are_distinct(tmp_path: Path) -> None:
+    # B7 completeness audit: `const`/`let` are anonymous `lexical_declaration` kind tokens. Before
+    # scheme 2 they collided; a real reassignability difference must change the body fingerprint.
+    const_fp = _fp_of(tmp_path, "function f(){ const x = 1; return x; }", "c1", "f")
+    let_fp = _fp_of(tmp_path, "function f(){ let x = 1; return x; }", "c2", "f")
+    assert const_fp != let_fp
+
+
+def test_readonly_parameter_property_is_distinct(tmp_path: Path) -> None:
+    # B7 completeness audit: a `readonly` parameter property declares a class field; the `readonly`
+    # keyword is an anonymous `required_parameter` child that collided before scheme 2.
+    plain = _fp_of(tmp_path, "class C{ constructor(x: number){ this; } }", "r1", "C.constructor")
+    readonly = _fp_of(tmp_path, "class C{ constructor(readonly x: number){ this; } }", "r2", "C.constructor")
+    assert plain != readonly

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from riskratchet.models import (
     FunctionRisk,
@@ -16,24 +16,8 @@ from riskratchet.reporting.summary import (
     SourceLinks,
     _branch_pct,
     _sorted_by_risk,
-    _sorted_ts,
-    _ts_core_fields,
 )
 from riskratchet.scoring import severity
-
-if TYPE_CHECKING:  # TsFunction is a pure dataclass; kept out of the runtime import graph
-    from collections.abc import Sequence
-
-    from riskratchet.typescript import TsFunction
-
-_TS_RULE = {
-    "id": "riskratchet.typescript-function",
-    "name": "TypeScript function (experimental)",
-    "shortDescription": {
-        "text": "Informational: a discovered TypeScript function. Unscored (no gating) until 0.3.0."
-    },
-    "helpUri": "https://github.com/KayhanB21/riskratchet",
-}
 
 
 def render_report_sarif(
@@ -41,18 +25,16 @@ def render_report_sarif(
     *,
     min_score: float = 25.0,
     links: SourceLinks | None = None,
-    ts_functions: Sequence[TsFunction] = (),
 ) -> str:
+    # Since 0.3.0 scored TypeScript functions are regular `riskratchet.function-risk` results,
+    # tagged `language: "typescript"` in their properties (the former separate informational
+    # `riskratchet.typescript-function` note rule was removed).
     results = [
         _function_sarif_result(fn, links=links)
         for fn in _sorted_by_risk(report.functions)
         if fn.score >= min_score
     ]
-    # EXPERIMENTAL (P20 slice 5): unscored TypeScript functions become informational `note`
-    # results, present only under `scan --experimental-typescript`. Appended after the scored
-    # Python results, so default SARIF output is unchanged.
-    ts_results = [_ts_function_sarif_result(fn) for fn in _sorted_ts(ts_functions)]
-    return json.dumps(_sarif_log(results + ts_results, include_ts_rule=bool(ts_results)), indent=2) + "\n"
+    return json.dumps(_sarif_log(results), indent=2) + "\n"
 
 
 def render_regressions_sarif(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
@@ -65,7 +47,7 @@ def render_regressions_sarif(regressions: list[Regression], *, links: SourceLink
     )
 
 
-def _sarif_log(results: list[dict[str, Any]], *, include_ts_rule: bool = False) -> dict[str, Any]:
+def _sarif_log(results: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
         "version": "2.1.0",
@@ -75,7 +57,7 @@ def _sarif_log(results: list[dict[str, Any]], *, include_ts_rule: bool = False) 
                     "driver": {
                         "name": "riskratchet",
                         "informationUri": "https://github.com/KayhanB21/riskratchet",
-                        "rules": _sarif_rules(include_ts_rule=include_ts_rule),
+                        "rules": _sarif_rules(),
                     }
                 },
                 "results": results,
@@ -84,8 +66,8 @@ def _sarif_log(results: list[dict[str, Any]], *, include_ts_rule: bool = False) 
     }
 
 
-def _sarif_rules(*, include_ts_rule: bool) -> list[dict[str, Any]]:
-    rules: list[dict[str, Any]] = [
+def _sarif_rules() -> list[dict[str, Any]]:
+    return [
         {
             "id": "riskratchet.function-risk",
             "name": "Function maintainability risk",
@@ -99,10 +81,6 @@ def _sarif_rules(*, include_ts_rule: bool) -> list[dict[str, Any]]:
             "helpUri": "https://github.com/KayhanB21/riskratchet",
         },
     ]
-    # The TS rule is added only when TS results are present, so default SARIF output is byte-stable.
-    if include_ts_rule:
-        rules.append(_TS_RULE)
-    return rules
 
 
 def _function_sarif_result(fn: FunctionRisk, *, links: SourceLinks | None = None) -> dict[str, Any]:
@@ -198,29 +176,6 @@ def _sarif_function_properties(fn: FunctionRisk) -> dict[str, Any]:
             "public_surface": fn.components.public_surface,
             "sprawl": fn.components.sprawl,
         },
-    }
-
-
-def _ts_function_sarif_result(fn: TsFunction) -> dict[str, Any]:
-    """EXPERIMENTAL: an unscored TypeScript function as an informational `note` result (P20 slice 5).
-
-    Carries no score/severity — TypeScript is informational until 0.3.0 — so it is always `note`
-    level and tagged `language: "typescript"` in properties, alongside its identity fingerprints.
-    """
-    coverage = fn.coverage
-    complexity = fn.complexity.cyclomatic if fn.complexity is not None else None
-    visibility = "public" if fn.is_public else "internal"
-    detail = f", complexity {complexity}" if complexity is not None else ""
-    if coverage is not None:
-        detail += f", line coverage {coverage.line_coverage * 100:.0f}%"
-    # Reuse the shared TS field set, minus `lines` — the SARIF result location carries the region.
-    properties = {key: value for key, value in _ts_core_fields(fn).items() if key != "lines"}
-    return {
-        "ruleId": "riskratchet.typescript-function",
-        "level": "note",
-        "message": {"text": f"{fn.id.as_target()} ({visibility} TypeScript {fn.kind}){detail}."},
-        "locations": [_sarif_location(fn.id.path, fn.span.start_line, fn.span.end_line)],
-        "properties": properties,
     }
 
 

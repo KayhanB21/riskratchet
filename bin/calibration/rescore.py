@@ -83,8 +83,11 @@ class Candidate:
 
 def _build_candidates() -> tuple[Candidate, ...]:
     candidates = [
-        Candidate("baseline", "current shipped scoring (control)", _baseline_sprawl),
-        Candidate("drop_file_line", "sprawl = function-length term only", _drop_file_line),
+        # "baseline" is the PRE-0.3.0 shipped blend (fn+file)/2, retained as the historical
+        # control the 0.3.0 decision was measured against. As of 0.3.0 the shipped scoring is
+        # `drop_file_line` (the file-line half was dropped — see docs/sprawl-component-finding.md).
+        Candidate("baseline", "pre-0.3.0 blend (fn+file)/2 — historical control", _baseline_sprawl),
+        Candidate("drop_file_line", "sprawl = function-length term only (shipped in 0.3.0)", _drop_file_line),
     ]
     for fw in SHARE_SWEEP:
         candidates.append(

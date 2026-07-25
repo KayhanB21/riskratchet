@@ -1,0 +1,8 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Iconic "AI side project": large, fast-moving, no top-level tests dir. Scored on the
+# g4f/ package only (etc/, projects/, generated_media/ excluded).
+name = "gpt4free"
+url = "https://github.com/xtekky/gpt4free"
+paths = ["g4f"]
+pr_branch = "main"
+coverage_free = true

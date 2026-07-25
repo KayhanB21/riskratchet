@@ -16,6 +16,8 @@ from riskratchet.models import (
     Severity,
 )
 from riskratchet.scoring import (
+    PYTHON_COMPLEXITY_CALIBRATION,
+    TYPESCRIPT_COMPLEXITY_CALIBRATION,
     WEIGHTS,
     branch_gap_score,
     churn_score,
@@ -65,6 +67,50 @@ def test_structural_complexity_is_monotonic() -> None:
     assert values == sorted(values)
 
 
+def test_structural_complexity_default_calibration_is_python_literal() -> None:
+    # B0: the default calibration must reproduce the pre-0.3.0 hardcoded band exactly,
+    # so passing PYTHON_COMPLEXITY_CALIBRATION explicitly is byte-identical to omitting it.
+    assert PYTHON_COMPLEXITY_CALIBRATION == (1.0, 21.0)
+    for cc in range(1, 30):
+        stats = ComplexityStats(cyclomatic=cc)
+        assert structural_complexity_score(stats) == structural_complexity_score(
+            stats, PYTHON_COMPLEXITY_CALIBRATION
+        )
+
+
+def test_typescript_complexity_calibration_is_derived_band() -> None:
+    # B2: the TS band is derived by endpoint-percentile matching (see
+    # docs/typescript-complexity-calibration.md). It happens to equal Python's (1, 21) on the
+    # 0.3.0 corpus, but is a distinct constant so a future re-derivation can move TS alone.
+    assert TYPESCRIPT_COMPLEXITY_CALIBRATION == (1.0, 21.0)
+    free, saturation = TYPESCRIPT_COMPLEXITY_CALIBRATION
+    assert free >= 1.0 and saturation > free  # honors the _saturate precondition
+
+
+def test_structural_complexity_respects_custom_calibration() -> None:
+    # A wider band saturates later: CC=21 is fully saturated under the Python band but only
+    # partway up a (1, 41) band. The knob is threaded as a value; no language branching.
+    stats = ComplexityStats(cyclomatic=21)
+    assert structural_complexity_score(stats, (1.0, 21.0)) == 100.0
+    assert structural_complexity_score(stats, (1.0, 41.0)) == pytest.approx(50.0)
+
+
+def test_compute_components_threads_complexity_calibration() -> None:
+    # compute_components must forward the calibration to structural_complexity_score.
+    kwargs = dict(
+        is_public=True,
+        span=_span(10),
+        complexity=ComplexityStats(cyclomatic=21),
+        coverage=CoverageStats(line_coverage=1.0, branch_coverage=None),
+        churn=ChurnStats(commits=0),
+        file_stats=_file(100),
+    )
+    default = compute_components(**kwargs)  # type: ignore[arg-type]
+    widened = compute_components(**kwargs, complexity_calibration=(1.0, 41.0))  # type: ignore[arg-type]
+    assert default.structural_complexity == 100.0
+    assert widened.structural_complexity == pytest.approx(50.0)
+
+
 def test_churn_score_saturates() -> None:
     assert churn_score(ChurnStats(commits=0)) == 0.0
     assert churn_score(ChurnStats(commits=10)) == 100.0
@@ -79,11 +125,14 @@ def test_public_surface_score_only_penalises_public_functions() -> None:
     assert public_surface_score(is_public=True, coverage=well_tested) == 0.0
 
 
-def test_sprawl_score_combines_function_and_file_length() -> None:
-    small = sprawl_score(_span(20), _file(100))
-    big = sprawl_score(_span(160), _file(1000))
-    assert small == 0.0
-    assert big == 100.0
+def test_sprawl_score_is_function_length_only() -> None:
+    # 0.3.0: sprawl is the function-length term only; the file-line half was dropped.
+    assert sprawl_score(_span(20), _file(100)) == 0.0
+    assert sprawl_score(_span(160), _file(1000)) == 100.0
+    # File length is irrelevant now: a short function scores 0 and a saturated-length
+    # function scores 100 regardless of how big the enclosing file is.
+    assert sprawl_score(_span(20), _file(5000)) == 0.0
+    assert sprawl_score(_span(160), _file(50)) == 100.0
 
 
 def test_total_risk_is_bounded_and_weighted() -> None:
@@ -230,15 +279,16 @@ def test_public_surface_at_coverage_boundaries() -> None:
     assert public_surface_score(is_public=True, coverage=public_full) == 0.0
 
 
-def test_sprawl_at_blending_boundaries() -> None:
-    # Below free thresholds: both halves zero -> 0.
+def test_sprawl_boundaries_track_function_length_only() -> None:
+    # 0.3.0: only the function-length band matters; file size never moves sprawl.
+    # At/below the function-length free threshold (80): 0, whatever the file size.
     assert sprawl_score(_span(80), _file(500)) == 0.0
-    # At/above saturation: both halves 100 -> 100.
+    assert sprawl_score(_span(80), _file(1000)) == 0.0
+    # At/above the function-length saturation (160): 100, whatever the file size.
     assert sprawl_score(_span(160), _file(1000)) == 100.0
-    # Big function in small file: function half saturates, file half is 0.
-    assert sprawl_score(_span(160), _file(500)) == pytest.approx(50.0)
-    # Small function in big file: symmetric.
-    assert sprawl_score(_span(80), _file(1000)) == pytest.approx(50.0)
+    assert sprawl_score(_span(160), _file(500)) == 100.0
+    # Midway up the function-length band, independent of file size.
+    assert sprawl_score(_span(120), _file(100)) == pytest.approx(50.0)
 
 
 def test_severity_bands_at_exact_boundaries() -> None:

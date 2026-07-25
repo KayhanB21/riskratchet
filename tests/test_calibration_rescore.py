@@ -57,8 +57,11 @@ def test_file_size_regression_is_suppressed_by_candidates(tmp_path: Path) -> Non
 def test_rescore_only_changes_sprawl_and_score(tmp_path: Path) -> None:
     report = analyze_report([_project(tmp_path, pad_lines=1300)], tmp_path)
     original = report.functions[0]
-    rescored = rescore_report(report, _candidate("drop_file_line")).functions[0]
-    # Sprawl + total score change; every other component is preserved.
+    # As of 0.3.0 the shipped scoring IS drop_file_line, so re-applying that candidate is a
+    # no-op. Rescore with the legacy "baseline" blend (fn+file)/2 — in a 1300-line file its
+    # file-line term is non-zero, so it still differs from the shipped function-only sprawl —
+    # to exercise that the machinery changes only sprawl + total score, nothing else.
+    rescored = rescore_report(report, _candidate("baseline")).functions[0]
     assert rescored.components.structural_complexity == original.components.structural_complexity
     assert rescored.components.coverage_gap == original.components.coverage_gap
     assert rescored.fingerprint == original.fingerprint

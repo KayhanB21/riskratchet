@@ -1,0 +1,6771 @@
+{
+  "snapshot_sha": "91b658dbb110e521dbe262b890000733f6f4a5f3",
+  "head_sha": "5c0b1a223ab03bc8fc09cbdf439d9522d47d9c2c",
+  "window_days": 365,
+  "n_functions": 935,
+  "n_change_prone": 232,
+  "n_future_commits": 654,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "g4f/Provider/Blackbox.py::Blackbox.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 67,
+      "past_lines": 1024,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Blackbox.py::Blackbox.fetch_validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 14,
+      "past_lines": 264,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Blackbox.py::Blackbox.fetch_validated.is_valid_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 120,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Blackbox.py::Blackbox.generate_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Blackbox.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Chatai.py::Chatai.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Chatai.py::Chatai.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Chatai.py::generate_machine_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Cloudflare.py::Cloudflare.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 107,
+      "past_commits": 21,
+      "past_lines": 320,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Cloudflare.py::clean_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::Copilot.cookies_to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::Copilot.create",
+      "future_commits": 9,
+      "future_lines": 185,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::Copilot.create_authed",
+      "future_commits": 13,
+      "future_lines": 297,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::Copilot.on_auth_async",
+      "future_commits": 7,
+      "future_lines": 50,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::get_access_token_and_cookies",
+      "future_commits": 9,
+      "future_lines": 62,
+      "past_commits": 4,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Copilot.py::readHAR",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 3,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/DeepInfraChat.py::DeepInfraChat.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 167,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/DuckDuckGo.py::DuckDuckGo.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Free2GPT.py::Free2GPT.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 78,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Free2GPT.py::generate_signature",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/ImageLabs.py::ImageLabs.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 112,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/ImageLabs.py::ImageLabs.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 832,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LambdaChat.py::LambdaChat.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 334,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LambdaChat.py::LambdaChat.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena._build_continuation_payloads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 579,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena._build_payloads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 579,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 134,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena.create_async_generator.read_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/LegacyLMArena.py::LegacyLMArena.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OIVSCodeSer0501.py::OIVSCodeSer0501.get_headers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OIVSCodeSer2.py::OIVSCodeSer2.get_headers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::Conversation.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::Conversation._generate_encryption_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::Conversation.generate_conversation_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::Conversation.is_token_expired",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::Conversation.update_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria._generate_refresh_token",
+      "future_commits": 2,
+      "future_lines": 37,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.check_upload_status",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.create_async_generator",
+      "future_commits": 3,
+      "future_lines": 41,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.extract_image_urls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.get_access_token",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.get_model",
+      "future_commits": 1,
+      "future_lines": 26,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/OperaAria.py::OperaAria.upload_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 330,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/PerplexityLabs.py::PerplexityLabs.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 7,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI._generate_image",
+      "future_commits": 13,
+      "future_lines": 53,
+      "past_commits": 41,
+      "past_lines": 357,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI._generate_image.get_image",
+      "future_commits": 5,
+      "future_lines": 18,
+      "past_commits": 9,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI._generate_image.get_url_with_seed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI._generate_text",
+      "future_commits": 10,
+      "future_lines": 29,
+      "past_commits": 49,
+      "past_lines": 516,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI.create_async_generator",
+      "future_commits": 11,
+      "future_lines": 19,
+      "past_commits": 42,
+      "past_lines": 340,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI.get_grouped_models",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/PollinationsAI.py::PollinationsAI.get_models",
+      "future_commits": 21,
+      "future_lines": 142,
+      "past_commits": 27,
+      "past_lines": 367,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsImage.py::PollinationsImage.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 12,
+      "past_lines": 83,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/PollinationsImage.py::PollinationsImage.get_grouped_models",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/PollinationsImage.py::PollinationsImage.get_models",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 5,
+      "past_lines": 88,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/SearXNG.py::SearXNG.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/Startnest.py::Startnest.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 216,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Startnest.py::Startnest.generate_signature",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 216,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/TeachAnything.py::TeachAnything._get_headers",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 144,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/TeachAnything.py::TeachAnything.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 139,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/WeWordle.py::WeWordle.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 29,
+      "past_commits": 1,
+      "past_lines": 157,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/WeWordle.py::WeWordle.iter_any",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 157,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/YouTube.py::YouTube.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 156,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/YouTube.py::YouTubeProvider.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 126,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/YouTube.py::YouTubeProvider.download",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/YouTube.py::YouTubeProvider.search",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 126,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/YouTube.py::demo",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 126,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Yqcloud.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 89,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/Yqcloud.py::Yqcloud.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/audio/EdgeTTS.py::EdgeTTS.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/audio/EdgeTTS.py::EdgeTTS.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 76,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/audio/MarkItDown.py::MarkItDown.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 4,
+      "past_lines": 73,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/audio/OpenAIFM.py::OpenAIFM.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/audio/OpenAIFM.py::OpenAIFM.get_grouped_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/audio/gTTS.py::gTTS.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.create_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.get_auth_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 189,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.read_and_refresh_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 189,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::ARTA.refresh_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/ARTA.py::raise_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/deprecated/PenguinAI.py::PenguinAI.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider._build_second_payloads",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider.create_authed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider.create_authed.read_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 159,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider.on_auth_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::HarProvider.on_auth_async.callback",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::find_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 152,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::find_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 152,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::get_str_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 151,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::read_har_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 153,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::read_list_recusive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 151,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/har/__init__.py::read_str_recusive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 151,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/BlackForestLabs_Flux1Dev.py::BlackForestLabs_Flux1Dev.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/BlackForestLabs_Flux1Dev.py::BlackForestLabs_Flux1Dev.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/BlackForestLabs_Flux1KontextDev.py::BlackForestLabs_Flux1KontextDev.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 146,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/hf_space/BlackForestLabs_Flux1KontextDev.py::BlackForestLabs_Flux1KontextDev.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 145,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/CohereForAI_C4AI_Command.py::CohereForAI_C4AI_Command.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/CohereForAI_C4AI_Command.py::CohereForAI_C4AI_Command.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/DeepseekAI_JanusPro7b.py::DeepseekAI_JanusPro7b.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/DeepseekAI_JanusPro7b.py::DeepseekAI_JanusPro7b.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/DeepseekAI_JanusPro7b.py::get_zerogpu_token",
+      "future_commits": 1,
+      "future_lines": 31,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/hf_space/Microsoft_Phi_4_Multimodal.py::Microsoft_Phi_4_Multimodal.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Microsoft_Phi_4_Multimodal.py::Microsoft_Phi_4_Multimodal.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_5.py::Qwen_Qwen_2_5.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 146,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_5.py::Qwen_Qwen_2_5.create_async_generator.generate_session_hash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 146,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_5M.py::Qwen_Qwen_2_5M.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_5_Max.py::Qwen_Qwen_2_5_Max.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_5_Max.py::Qwen_Qwen_2_5_Max.create_async_generator.generate_session_hash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 133,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_2_72B.py::Qwen_Qwen_2_72B.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/Qwen_Qwen_3.py::Qwen_Qwen_3.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 144,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/StabilityAI_SD35Large.py::StabilityAI_SD35Large.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/__init__.py::HuggingSpace.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 7,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/__init__.py::HuggingSpace.get_models",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 4,
+      "past_lines": 65,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/hf_space/__init__.py::HuggingSpace.get_parameters",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 51,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/hf_space/raise_for_status.py::raise_for_status",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/local/Ollama.py::Ollama.create_async_generator",
+      "future_commits": 6,
+      "future_lines": 51,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/local/Ollama.py::Ollama.get_models",
+      "future_commits": 10,
+      "future_lines": 27,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Anthropic.py::Anthropic.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 34,
+      "past_commits": 4,
+      "past_lines": 200,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Anthropic.py::Anthropic.get_headers",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 194,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Anthropic.py::Anthropic.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 194,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Azure.py::Azure.create_async_generator",
+      "future_commits": 13,
+      "future_lines": 81,
+      "past_commits": 5,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Azure.py::Azure.get_models",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 3,
+      "past_lines": 18,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BingCreateImages.py::BingCreateImages.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro._check_premium_access",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro._find_session_in_har_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.check_subscription",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 33,
+      "past_commits": 2,
+      "past_lines": 1356,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.fetch_validated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.fetch_validated.is_valid_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.generate_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.get_models",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::BlackboxPro.get_models_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/BlackboxPro.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1355,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/CablyAI.py::CablyAI.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Cerebras.py::Cerebras.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 69,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/CopilotAccount.py::CopilotAccount.on_auth_async",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepInfra.py::DeepInfra.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepInfra.py::DeepInfra.create_async_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepInfra.py::DeepInfra.get_image_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepInfra.py::DeepInfra.get_models",
+      "future_commits": 2,
+      "future_lines": 37,
+      "past_commits": 3,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepSeekAPI.py::DeepSeekAPI.create_authed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 124,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepSeekAPI.py::DeepSeekAPI.on_auth_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 108,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/DeepSeekAPI.py::DeepSeekAPI.on_auth_async.callback",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 105,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.build_request",
+      "future_commits": 1,
+      "future_lines": 33,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator",
+      "future_commits": 8,
+      "future_lines": 290,
+      "past_commits": 24,
+      "past_lines": 119,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator.find_str",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator.find_youtube_ids",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator.read_recusive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator.replace_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.create_async_generator.replace_link",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.fetch_snlm0e",
+      "future_commits": 2,
+      "future_lines": 28,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.nodriver_login",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 9,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.start_auto_refresh",
+      "future_commits": 2,
+      "future_lines": 29,
+      "past_commits": 2,
+      "past_lines": 25,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.synthesize",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.upload_images",
+      "future_commits": 2,
+      "future_lines": 68,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::Gemini.upload_images.upload_image",
+      "future_commits": 2,
+      "future_lines": 41,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::iter_base64_decode",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 3,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::iter_filter_base64",
+      "future_commits": 1,
+      "future_lines": 19,
+      "past_commits": 3,
+      "past_lines": 31,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Gemini.py::rotate_1psidts",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 31,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GeminiPro.py::GeminiPro.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 12,
+      "past_lines": 72,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GeminiPro.py::GeminiPro.get_models",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 4,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GigaChat.py::GigaChat.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GithubCopilot.py::Conversation.__init__",
+      "future_commits": 1,
+      "future_lines": 191,
+      "past_commits": 1,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GithubCopilot.py::GithubCopilot.create_async_generator",
+      "future_commits": 3,
+      "future_lines": 230,
+      "past_commits": 5,
+      "past_lines": 111,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/GoogleSearch.py::GoogleSearch.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Grok.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 154,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Grok.py::Grok._prepare_payload",
+      "future_commits": 2,
+      "future_lines": 58,
+      "past_commits": 3,
+      "past_lines": 155,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Grok.py::Grok.create_authed",
+      "future_commits": 1,
+      "future_lines": 63,
+      "past_commits": 6,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Grok.py::Grok.on_auth_async",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 3,
+      "past_lines": 50,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Grok.py::Grok.on_auth_async.on_request",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/LMArenaBeta.py::LMArenaBeta.create_async_generator",
+      "future_commits": 20,
+      "future_lines": 148,
+      "past_commits": 8,
+      "past_lines": 201,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/LMArenaBeta.py::LMArenaBeta.create_async_generator.callback",
+      "future_commits": 3,
+      "future_lines": 27,
+      "past_commits": 5,
+      "past_lines": 189,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MetaAI.py::MetaAI.prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MetaAI.py::Sources.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MicrosoftDesigner.py::MicrosoftDesigner.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 169,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MicrosoftDesigner.py::MicrosoftDesigner.generate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 167,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MicrosoftDesigner.py::create_images",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 167,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MicrosoftDesigner.py::get_access_token_and_user_agent",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 174,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/MicrosoftDesigner.py::readHAR",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 167,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.add_reference",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.get_ref_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.get_reference",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.merge_reference",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::ContentReferences.update_reference",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::Conversation.__init__",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 7,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.add_source",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.find_by_ref_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.find_by_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.get_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenAISources.get_ref_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat._create_request_args",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat._set_api_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat._update_cookie_header",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat._update_request_args",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.create_authed",
+      "future_commits": 13,
+      "future_lines": 93,
+      "past_commits": 34,
+      "past_lines": 258,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.create_authed.sequence_replacer",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.create_authed.sequence_replacer.citation_replacer",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.create_authed.sequence_replacer.products_replacer",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 75,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.create_messages",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 6,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.get_default_headers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.get_generated_image",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 8,
+      "past_lines": 51,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.iter_messages_line",
+      "future_commits": 3,
+      "future_lines": 28,
+      "past_commits": 19,
+      "past_lines": 177,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.login",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 12,
+      "past_lines": 110,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.nodriver_auth",
+      "future_commits": 5,
+      "future_lines": 43,
+      "past_commits": 25,
+      "past_lines": 132,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.nodriver_auth.on_request",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 10,
+      "past_lines": 36,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.on_auth_async",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 5,
+      "past_lines": 30,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.synthesize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.upload_images",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::OpenaiChat.upload_images.upload_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/OpenaiChat.py::get_cookies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Pi.py::Pi.ask",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Pi.py::Pi.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Pi.py::Pi.get_chat_history",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Pi.py::Pi.start_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/PuterJS.py::PuterJS.create_async_generator",
+      "future_commits": 4,
+      "future_lines": 24,
+      "past_commits": 4,
+      "past_lines": 29,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/PuterJS.py::PuterJS.get_driver_for_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/PuterJS.py::PuterJS.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/PuterJS.py::PuterJS.get_models",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Reka.py::Reka.create_completion",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Reka.py::Reka.get_access_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Reka.py::Reka.upload_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Replicate.py::Replicate.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/ThebApi.py::ThebApi.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Together.py::Together.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 324,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Video.py::RequestConfig.get_response",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 5,
+      "past_lines": 28,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Video.py::Video.create_async_generator",
+      "future_commits": 4,
+      "future_lines": 25,
+      "past_commits": 21,
+      "past_lines": 363,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/Video.py::Video.create_async_generator.on_request",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 6,
+      "past_lines": 187,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/You.py::You.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/You.py::You.upload_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/bing/create_images.py::create_images",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::HuggingChat.create_authed",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::HuggingChat.create_conversation",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::HuggingChat.fetch_message_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::HuggingChat.get_models",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingChat.py::HuggingChat.on_auth_async",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceAPI.py::HuggingFaceAPI.create_async_generator",
+      "future_commits": 3,
+      "future_lines": 14,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceAPI.py::HuggingFaceAPI.get_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceAPI.py::HuggingFaceAPI.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceAPI.py::HuggingFaceAPI.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::HuggingFaceInference.create_async_generator",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::HuggingFaceInference.get_model_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::HuggingFaceInference.get_models",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::format_prompt_custom",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::format_prompt_llama",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::format_prompt_mistral",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::format_prompt_qwen",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::format_prompt_qwen2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceInference.py::get_inputs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceMedia.py::HuggingFaceMedia.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceMedia.py::HuggingFaceMedia.create_async_generator.generate",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceMedia.py::HuggingFaceMedia.get_mapping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 175,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/HuggingFaceMedia.py::HuggingFaceMedia.get_models",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/__init__.py::HuggingFace.create_async_generator",
+      "future_commits": 2,
+      "future_lines": 24,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/needs_auth/hf/__init__.py::HuggingFace.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/HailuoAI.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/HailuoAI.py::HailuoAI.create_authed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/HailuoAI.py::HailuoAI.on_auth_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::CallbackResults.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::generate_yy_header",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::get_body_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::get_body_to_yy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::get_browser_callback",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::get_browser_callback.callback",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/needs_auth/mini_max/crypt.py::hash_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 103,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AI365VIP.py::AI365VIP.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AIUncensored.py::AIUncensored.calculate_signature",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AIUncensored.py::AIUncensored.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AIUncensored.py::AIUncensored.get_server_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 116,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AiChatOnline.py::AiChatOnline.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AiChatOnline.py::AiChatOnline.grab_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AiChats.py::AiChats.create_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 78,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AiChats.py::AiChats.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Aichat.py::Aichat.create_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 64,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Ails.py::Ails.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Ails.py::_format_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Ails.py::_hash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AllenAI.py::AllenAI.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AllenAI.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AmigoChat.py::AmigoChat.generate_chat_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/AmigoChat.py::AmigoChat.get_personaId",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Aura.py::Aura.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatGpt.py::ChatGpt.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatGpt.py::format_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 200,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatGpt.py::init_session",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 200,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatGptEs.py::ChatGptEs.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatGptt.py::ChatGptt.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/ChatgptFree.py::ChatgptFree.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::Conversation.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::DDG.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::DDG.generate_fe_signals",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::DDG.generate_fe_version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::DDG.generate_user_agent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/DDG.py::DDG.generate_x_vqd_hash_1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Equing.py::Equing.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/FlowGpt.py::FlowGpt.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/FreeNetfly.py::FreeNetfly._process_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/FreeNetfly.py::FreeNetfly.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/GPROChat.py::GPROChat.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/GPROChat.py::GPROChat.generate_signature",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Koala.py::Koala.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Liaobots.py::Liaobots.bypass_captcha",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Liaobots.py::Liaobots.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Liaobots.py::Liaobots.get_auth_code",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Liaobots.py::Liaobots.is_supported",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Lockchat.py::Lockchat.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/MagickPen.py::MagickPen.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/MagickPen.py::MagickPen.fetch_api_credentials",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::Phind.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::deterministic_stringify",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::deterministic_stringify.handle_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::generate_challenge",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::generate_challenge_seed",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::prng_general",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Phind.py::simple_hash",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 140,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Pizzagpt.py::Pizzagpt.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Prodia.py::Prodia._poll_job",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 150,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Prodia.py::Prodia.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Raycast.py::Raycast.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/RubiksAI.py::RubiksAI.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/RubiksAI.py::RubiksAI.create_referer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/RubiksAI.py::RubiksAI.generate_mid",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 163,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/TypeGPT.py::TypeGPT.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Upstage.py::Upstage.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Vercel.py::Vercel.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 392,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Vercel.py::get_anti_bot_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 392,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Websim.py::Websim._handle_chat_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 184,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Websim.py::Websim._handle_image_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Websim.py::Websim.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 184,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/not_working/Websim.py::Websim.generate_project_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 184,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/har_file.py::get_har_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/har_file.py::get_headers",
+      "future_commits": 1,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/openai/har_file.py::get_request_config",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/har_file.py::readHAR",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/har_file.py::sendRequest",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::OrderedMap.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::OrderedMap.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::OrderedMap.add",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::OrderedMap.to_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::generate_answer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_answer_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_config",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 742,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_14",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_15",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_17",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_18",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_19",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_20",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_21",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_23",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_24",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_5",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_6",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_7",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_func_map.func_8",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_parse_time",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_requirements_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::get_turnstile_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::is_float",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::is_slice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::is_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::process_turnstile",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::process_turnstile.func_3",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::process_turnstile_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/new.py::to_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 735,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/openai/proofofwork.py::generate_proof_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/template/BackendApi.py::BackendApi.create_async_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 142,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/template/OpenaiTemplate.py::OpenaiTemplate.create_async_generator",
+      "future_commits": 17,
+      "future_lines": 46,
+      "past_commits": 23,
+      "past_lines": 98,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/template/OpenaiTemplate.py::OpenaiTemplate.get_headers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/Provider/template/OpenaiTemplate.py::OpenaiTemplate.get_models",
+      "future_commits": 26,
+      "future_lines": 60,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/Provider/template/OpenaiTemplate.py::read_response",
+      "future_commits": 13,
+      "future_lines": 36,
+      "past_commits": 3,
+      "past_lines": 46,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/__init__.py::ChatCompletion.create",
+      "future_commits": 2,
+      "future_lines": 18,
+      "past_commits": 11,
+      "past_lines": 26,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/__init__.py::ChatCompletion.create_async",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 9,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.get_username",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_authorization",
+      "future_commits": 31,
+      "future_lines": 97,
+      "past_commits": 23,
+      "past_lines": 97,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_authorization.authorization",
+      "future_commits": 27,
+      "future_lines": 89,
+      "past_commits": 23,
+      "past_lines": 92,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes",
+      "future_commits": 42,
+      "future_lines": 736,
+      "past_commits": 80,
+      "past_lines": 893,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.chat_completions",
+      "future_commits": 20,
+      "future_lines": 312,
+      "past_commits": 26,
+      "past_lines": 148,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.chat_completions.streaming",
+      "future_commits": 3,
+      "future_lines": 5,
+      "past_commits": 5,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.convert",
+      "future_commits": 7,
+      "future_lines": 20,
+      "past_commits": 3,
+      "past_lines": 16,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.generate_image",
+      "future_commits": 5,
+      "future_lines": 22,
+      "past_commits": 14,
+      "past_lines": 100,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.generate_speech",
+      "future_commits": 5,
+      "future_lines": 19,
+      "past_commits": 5,
+      "past_lines": 59,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.generate_speech.delete_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.get_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.get_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 11,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.get_media.get_timestamp",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.get_media.stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.get_media_thumbnail",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.markitdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.model_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.models",
+      "future_commits": 15,
+      "future_lines": 45,
+      "past_commits": 13,
+      "past_lines": 72,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.provider_chat_completions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.provider_responses",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 52,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.providers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.providers_info",
+      "future_commits": 4,
+      "future_lines": 8,
+      "past_commits": 5,
+      "past_lines": 103,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.providers_info.safe_get_models",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 93,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.read_root",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.read_root_v1",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.upload_cookies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_routes.v1_responses",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_validation_exception_handler",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::Api.register_validation_exception_handler.validation_exception_handler",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::AppConfig.set_config",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::ErrorResponse.from_exception",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::ErrorResponse.from_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::ErrorResponse.render",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::create_app",
+      "future_commits": 4,
+      "future_lines": 88,
+      "past_commits": 13,
+      "past_lines": 45,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::create_app_debug",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::create_app_with_demo_and_debug",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::create_app_with_gui_and_debug",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::format_exception",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 5,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::lifespan",
+      "future_commits": 9,
+      "future_lines": 16,
+      "past_commits": 3,
+      "past_lines": 17,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/__init__.py::run_api",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/api/__init__.py::update_headers",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/api/stubs.py::ImageGenerationConfig.parse_size",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/__init__.py::get_api_parser",
+      "future_commits": 10,
+      "future_lines": 190,
+      "past_commits": 2,
+      "past_lines": 68,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/__init__.py::main",
+      "future_commits": 11,
+      "future_lines": 93,
+      "past_commits": 2,
+      "past_lines": 21,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/__init__.py::run_api_args",
+      "future_commits": 10,
+      "future_lines": 41,
+      "past_commits": 2,
+      "past_lines": 68,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::ConversationManager.__init__",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 3,
+      "past_lines": 225,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::ConversationManager._load",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 7,
+      "past_lines": 233,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::ConversationManager.add_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 222,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/cli/client.py::ConversationManager.get_messages",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 222,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::ConversationManager.save",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 6,
+      "past_lines": 229,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::get_parser",
+      "future_commits": 3,
+      "future_lines": 24,
+      "past_commits": 8,
+      "past_lines": 246,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::run_args",
+      "future_commits": 3,
+      "future_lines": 39,
+      "past_commits": 6,
+      "past_lines": 231,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::run_client_args",
+      "future_commits": 5,
+      "future_lines": 52,
+      "past_commits": 8,
+      "past_lines": 285,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::save_content",
+      "future_commits": 4,
+      "future_lines": 32,
+      "past_commits": 6,
+      "past_lines": 54,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cli/client.py::stream_response",
+      "future_commits": 4,
+      "future_lines": 32,
+      "past_commits": 10,
+      "past_lines": 255,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncChat.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 469,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncClient.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 481,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncCompletions.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 469,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncCompletions.create",
+      "future_commits": 8,
+      "future_lines": 37,
+      "past_commits": 22,
+      "past_lines": 540,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncCompletions.stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncImages.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncImages.create_variation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 478,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncImages.generate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 477,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncResponses.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::AsyncResponses.create",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 48,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Chat.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 469,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Client.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 6,
+      "past_lines": 481,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Completions.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 469,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Completions.create",
+      "future_commits": 9,
+      "future_lines": 39,
+      "past_commits": 20,
+      "past_lines": 524,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::Completions.stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 470,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images._generate_image_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 9,
+      "past_lines": 73,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images._process_image_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 20,
+      "past_lines": 567,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images._process_image_response.get_b64_from_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.async_create_variation",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 19,
+      "past_lines": 575,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.async_generate",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 18,
+      "past_lines": 562,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.create_variation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 488,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.generate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 481,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::Images.get_provider_handler",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::add_chunk",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::anext",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 473,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::async_iter_append_model_and_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 485,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::async_iter_response",
+      "future_commits": 6,
+      "future_lines": 24,
+      "past_commits": 19,
+      "past_lines": 554,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::async_response",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::iter_append_model_and_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 479,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/__init__.py::iter_response",
+      "future_commits": 6,
+      "future_lines": 26,
+      "past_commits": 23,
+      "past_lines": 573,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/__init__.py::resolve_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/helper.py::filter_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/helper.py::filter_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/helper.py::find_stop",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/helper.py::safe_aclose",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 63,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get_all",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get_video",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/models.py::ClientModels.get_vision",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 62,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/service.py::convert_to_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/service.py::get_last_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/service.py::get_model_and_provider",
+      "future_commits": 4,
+      "future_lines": 18,
+      "past_commits": 10,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/stubs.py::AudioResponseModel.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::BaseModel.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletion.model_construct",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 8,
+      "past_lines": 70,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletion.serialize_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionChoice.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionChunk.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionChunk.serialize_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionDelta.model_construct",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 41,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionDelta.serialize_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionDeltaChoice.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionMessage.model_construct",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 6,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionMessage.save",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionMessage.serialize_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ChatCompletionMessage.serialize_reasoning_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ClientResponse.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ClientResponse.serialize_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 37,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::Image.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::Image.save",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ImagesResponse.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ResponseMessage.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ResponseMessageContent.model_construct",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ResponseMessageContent.serialize_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::ToolCallModel.model_construct",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 34,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/client/stubs.py::UsageModel.model_construct",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::field_serializer.__call__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/stubs.py::field_serializer.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/types.py::Client.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/client/types.py::Client.get_proxy",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/config.py::get_config_dir",
+      "future_commits": 3,
+      "future_lines": 13,
+      "past_commits": 2,
+      "past_lines": 246,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cookies.py::g4f",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/cookies.py::get_cookies",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cookies.py::load_cookies_from_browsers",
+      "future_commits": 4,
+      "future_lines": 26,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cookies.py::read_cookie_files",
+      "future_commits": 9,
+      "future_lines": 102,
+      "past_commits": 6,
+      "past_lines": 21,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cookies.py::set_cookies",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/cookies.py::set_cookies_dir",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/debug.py::error",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/debug.py::log",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/files.py::get_bucket_dir",
+      "future_commits": 1,
+      "future_lines": 8,
+      "past_commits": 2,
+      "past_lines": 28,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/files.py::secure_filename",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 2,
+      "past_lines": 30,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/__init__.py::get_gui_app",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 6,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/__init__.py::run_gui",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/gui_parser.py::gui_parser",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/run.py::run_gui_args",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api._create_response_stream",
+      "future_commits": 12,
+      "future_lines": 22,
+      "past_commits": 62,
+      "past_lines": 287,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api._create_response_stream.decorated_log",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api._format_json",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api._prepare_conversation_kwargs",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 12,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api._yield_logs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_provider_models",
+      "future_commits": 9,
+      "future_lines": 29,
+      "past_commits": 16,
+      "past_lines": 59,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_provider_models.get_model_data",
+      "future_commits": 4,
+      "future_lines": 16,
+      "past_commits": 3,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_providers",
+      "future_commits": 3,
+      "future_lines": 4,
+      "past_commits": 14,
+      "past_lines": 44,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_providers.safe_get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.get_version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.handle_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::Api.serve_images",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::get_error_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/api.py::get_target_paths_and_urls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/app.py::create_app",
+      "future_commits": 2,
+      "future_lines": 24,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__",
+      "future_commits": 45,
+      "future_lines": 442,
+      "past_commits": 90,
+      "past_lines": 835,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__._handle_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.add_log",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.add_memory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.add_usage",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.create",
+      "future_commits": 6,
+      "future_lines": 14,
+      "past_commits": 17,
+      "past_lines": 155,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.create.cast_str",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 8,
+      "past_lines": 73,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.create.cast_str.iter_response",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.find_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 11,
+      "past_lines": 53,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.get_chat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 40,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.get_demo_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.get_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.get_public_key",
+      "future_commits": 5,
+      "future_lines": 22,
+      "past_commits": 3,
+      "past_lines": 42,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.get_usage",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.handle_conversation",
+      "future_commits": 8,
+      "future_lines": 26,
+      "past_commits": 32,
+      "past_lines": 135,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.jsonify_models",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.jsonify_provider_models",
+      "future_commits": 4,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.manage_files",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 3,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.read_memory",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 45,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.upload_chat",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 4,
+      "past_lines": 40,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.upload_cookies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.upload_files",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 15,
+      "past_lines": 185,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.__init__.validate_secret",
+      "future_commits": 3,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 42,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api._format_json",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.get_provider_models",
+      "future_commits": 6,
+      "future_lines": 10,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::Backend_Api.handle_synthesize",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::safe_iter_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/backend_api.py::safe_iter_generator.iter_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/crypto.py::create_or_read_keys",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 74,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/crypto.py::decrypt_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/crypto.py::encrypt_data",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/crypto.py::get_session_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.choose_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.get_conversation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.get_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.get_provider_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.get_providers",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.get_version",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.on_camera",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.on_image_selection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.set_selected",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/js_api.py::JsApi.take_picture",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website.__init__",
+      "future_commits": 7,
+      "future_lines": 42,
+      "past_commits": 10,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website._background",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website._chat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website._dist",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website._index",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::Website._qrcode",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::redirect_home",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/gui/server/website.py::render",
+      "future_commits": 24,
+      "future_lines": 90,
+      "past_commits": 12,
+      "past_lines": 76,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/gui/webview.py::run_webview",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/__init__.py::ImageRequest.__init__",
+      "future_commits": 3,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 247,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::ImageRequest.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 257,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/__init__.py::extract_data_uri",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 2,
+      "past_lines": 248,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::get_extension",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/__init__.py::get_width_height",
+      "future_commits": 5,
+      "future_lines": 53,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_accepted_format",
+      "future_commits": 2,
+      "future_lines": 6,
+      "past_commits": 1,
+      "past_lines": 247,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_allowed_extension",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 3,
+      "past_lines": 254,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_data_an_audio",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 6,
+      "past_lines": 27,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_data_an_media",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_data_uri_an_image",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 4,
+      "past_lines": 252,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_valid_audio",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::is_valid_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/__init__.py::process_image",
+      "future_commits": 5,
+      "future_lines": 33,
+      "past_commits": 17,
+      "past_lines": 318,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::to_bytes",
+      "future_commits": 6,
+      "future_lines": 41,
+      "past_commits": 6,
+      "past_lines": 265,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::to_data_uri",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 249,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/__init__.py::to_image",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 2,
+      "past_lines": 252,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::to_input_audio",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 3,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/__init__.py::use_aspect_ratio",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 8,
+      "past_lines": 60,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::copy_media",
+      "future_commits": 5,
+      "future_lines": 46,
+      "past_commits": 21,
+      "past_lines": 124,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::copy_media.copy_image",
+      "future_commits": 5,
+      "future_lines": 39,
+      "past_commits": 20,
+      "past_lines": 71,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::ensure_media_dir",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/copy_images.py::get_filename",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 8,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::get_media_dir",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/copy_images.py::get_media_extension",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 8,
+      "past_lines": 23,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::get_source_url",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/image/copy_images.py::save_response_media",
+      "future_commits": 3,
+      "future_lines": 18,
+      "past_commits": 14,
+      "past_lines": 96,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/image/copy_images.py::update_filename",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/langchain.py::ChatAI.validate_environment",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 41,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/langchain.py::new_convert_message_to_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/__init__.py::MarkItDown.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 120,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/__init__.py::MarkItDown._convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 120,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/__init__.py::MarkItDown.convert_stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 47,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_audio_converter.py::AudioConverter.accepts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 105,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_audio_converter.py::AudioConverter.convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 107,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_base_converter.py::AsyncDocumentConverterResult.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_image_converter.py::ImageConverter.accepts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 92,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_image_converter.py::ImageConverter.convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 92,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_llm_caption.py::llm_caption",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_llm_caption.py::llm_caption.read_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/markitdown/_transcribe_audio.py::transcribe_audio",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/pydantic_ai.py::AIModel.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 2,
+      "past_lines": 143,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/pydantic_ai.py::AIModel.name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 143,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/pydantic_ai.py::new_infer_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 143,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/integration/pydantic_ai.py::patch_infer_model",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 73,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::Model.__all__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::Model.__post_init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.all_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.clear",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.list_models_by_provider",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.register",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 125,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelRegistry.validate_all_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelUtils.get_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelUtils.refresh",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::ModelUtils.register_alias",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/models.py::_get_working_providers",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 2,
+      "past_lines": 24,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.create_model_map",
+      "future_commits": 13,
+      "future_lines": 123,
+      "past_commits": 2,
+      "past_lines": 77,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.create_model_map.clean_name",
+      "future_commits": 1,
+      "future_lines": 22,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.extend_ignored",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.get_grouped_models",
+      "future_commits": 4,
+      "future_lines": 20,
+      "past_commits": 2,
+      "past_lines": 96,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.get_models",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyModelProviderMixin.update_model_map",
+      "future_commits": 2,
+      "future_lines": 14,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/any_provider.py::AnyProvider.create_async_generator",
+      "future_commits": 14,
+      "future_lines": 79,
+      "past_commits": 26,
+      "past_lines": 294,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/asyncio.py::async_generator_to_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 66,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/asyncio.py::await_callback",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 67,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/asyncio.py::get_running_loop",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 66,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/asyncio.py::to_async_iterator",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 4,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/asyncio.py::to_sync_generator",
+      "future_commits": 1,
+      "future_lines": 17,
+      "past_commits": 4,
+      "past_lines": 73,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.async_create_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.create_async",
+      "future_commits": 5,
+      "future_lines": 12,
+      "past_commits": 5,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.create_async.create_func",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.create_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.get_parameters",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 60,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.get_parameters.get_type_as_var",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.params",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AbstractProvider.params.get_type_name",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.create_async_generator",
+      "future_commits": 5,
+      "future_lines": 20,
+      "past_commits": 9,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.create_completion",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 12,
+      "past_lines": 72,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.get_auth_result",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.on_auth",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.on_auth_async",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.write_cache_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncAuthedProvider.write_cache_file.toJSON",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncGeneratorProvider.async_create_function",
+      "future_commits": 4,
+      "future_lines": 21,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncGeneratorProvider.create_completion",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 7,
+      "past_lines": 14,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AsyncProvider.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::AuthFileMixin.get_cache_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/base_provider.py::ProviderModelMixin.get_model",
+      "future_commits": 2,
+      "future_lines": 8,
+      "past_commits": 6,
+      "past_lines": 9,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::ProviderModelMixin.get_models",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/base_provider.py::RaiseErrorMixin.raise_error",
+      "future_commits": 1,
+      "future_lines": 21,
+      "past_commits": 8,
+      "past_lines": 33,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/helper.py::async_concat_chunks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::concat_chunks",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::format_media_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::format_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::format_prompt_max_length",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::get_last_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::get_last_user_message",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 4,
+      "past_lines": 27,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/helper.py::get_system_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::render_messages",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/helper.py::to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::AudioResponse.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::AudioResponse.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::AudioResponse.to_uri",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::BaseConversation.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ContinueResponse.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::DebugResponse.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::FinishReason.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::HiddenResponse.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ImageResponse.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ImageResponse.to_string",
+      "future_commits": 2,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/response.py::JsonMixin.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::JsonMixin.get_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::JsonMixin.reset",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::MediaResponse.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::MediaResponse.get",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::MediaResponse.get_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Parameters.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::PreviewResponse.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::PreviewResponse.to_string",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Reasoning.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Reasoning.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Reasoning.get_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::RequestLogin.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::RequestLogin.to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ResponseType.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 28,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::SourceLink.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::SourceLink.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Sources.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Sources.__str__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 4,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Sources.add_source",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::SuggestedFollowups.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::SynthesizeData.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::TitleGeneration.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ToolCalls.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::ToolCalls.get_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::Usage.__init__",
+      "future_commits": 4,
+      "future_lines": 25,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/response.py::VideoResponse.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::YouTubeResponse.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::YouTubeResponse.to_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::format_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 71,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::format_images_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 76,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::format_link",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::is_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::quote_title",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/response.py::quote_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::IterListProvider.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::IterListProvider.create_async_generator",
+      "future_commits": 3,
+      "future_lines": 11,
+      "past_commits": 26,
+      "past_lines": 82,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::IterListProvider.create_completion",
+      "future_commits": 1,
+      "future_lines": 5,
+      "past_commits": 20,
+      "past_lines": 58,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::IterListProvider.get_providers",
+      "future_commits": 3,
+      "future_lines": 16,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::RetryProvider.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::RetryProvider.create_async_generator",
+      "future_commits": 3,
+      "future_lines": 8,
+      "past_commits": 7,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::RetryProvider.create_completion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/retry_provider.py::raise_exceptions",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/tool_support.py::ToolSupportProvider.create_async_generator",
+      "future_commits": 4,
+      "future_lines": 209,
+      "past_commits": 5,
+      "past_lines": 94,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/providers/types.py::BaseProvider.async_create_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/types.py::BaseProvider.create_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/types.py::BaseProvider.get_dict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/providers/types.py::BaseProvider.get_parent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::Session.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_args_from_nodriver",
+      "future_commits": 6,
+      "future_lines": 20,
+      "past_commits": 14,
+      "past_lines": 85,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_args_from_nodriver.stop_browser",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_args_from_webview",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_cookie_params_from_dict",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 1,
+      "past_lines": 49,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_nodriver",
+      "future_commits": 15,
+      "future_lines": 37,
+      "past_commits": 16,
+      "past_lines": 89,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/__init__.py::get_nodriver.on_stop",
+      "future_commits": 4,
+      "future_lines": 5,
+      "past_commits": 3,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/__init__.py::iter_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::merge_cookies",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 54,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::see_stream",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/__init__.py::set_browser_executable_path",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/aiohttp.py::StreamResponse.sse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/aiohttp.py::StreamSession.__aenter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/aiohttp.py::StreamSession.__aexit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/aiohttp.py::StreamSession.__init__",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::FormData.__init__",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::FormData.add_field",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::StreamResponse.__aenter__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::StreamResponse.__init__",
+      "future_commits": 1,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::StreamResponse.sse",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::StreamSession.request",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::WebSocket.__aexit__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::WebSocket.__init__",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::WebSocket.receive_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/curl_cffi.py::WebSocket.send_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/raise_for_status.py::is_cloudflare",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/raise_for_status.py::is_openai",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/requests/raise_for_status.py::raise_for_status",
+      "future_commits": 2,
+      "future_lines": 4,
+      "past_commits": 10,
+      "past_lines": 41,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/requests/raise_for_status.py::raise_for_status_async",
+      "future_commits": 6,
+      "future_lines": 12,
+      "past_commits": 16,
+      "past_lines": 77,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/files.py::async_read_and_download_urls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::cache_stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 513,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::download_urls",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 8,
+      "past_lines": 564,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::download_urls.download_url",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 7,
+      "past_lines": 544,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_async_streaming",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_downloads_urls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_file_extension",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_filename",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 518,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_filename_from_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_filenames",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 513,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_streaming",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 540,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::get_tempfile",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::is_complete",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::read_and_download_urls",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::read_bucket",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 517,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::read_links",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 512,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::read_path_chunked",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::spacy_refine_chunks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::split_file_by_size_and_newline",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::stream_chunks",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 21,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::stream_read_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 523,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::stream_read_parts_and_refine",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 512,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/files.py::supports_filename",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 511,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/media.py::merge_media",
+      "future_commits": 2,
+      "future_lines": 7,
+      "past_commits": 5,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/media.py::render_media",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/media.py::render_messages",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 7,
+      "past_lines": 102,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/media.py::render_part",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::AuthManager.load_api_key",
+      "future_commits": 1,
+      "future_lines": 32,
+      "past_commits": 7,
+      "past_lines": 81,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ThinkingProcessor.process_thinking_chunk",
+      "future_commits": 1,
+      "future_lines": 6,
+      "past_commits": 5,
+      "past_lines": 102,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ToolHandler.process_bucket_tool",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 3,
+      "past_lines": 80,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ToolHandler.process_continue_tool",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 2,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ToolHandler.process_search_tool",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 2,
+      "past_lines": 15,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ToolHandler.process_tools",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 3,
+      "past_lines": 64,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/run_tools.py::ToolHandler.validate_arguments",
+      "future_commits": 1,
+      "future_lines": 3,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::async_iter_run_tools",
+      "future_commits": 17,
+      "future_lines": 151,
+      "past_commits": 18,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/run_tools.py::iter_run_tools",
+      "future_commits": 17,
+      "future_lines": 161,
+      "past_commits": 26,
+      "past_lines": 239,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/run_tools.py::iter_run_tools.on_bucket",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/run_tools.py::perform_web_search",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 2,
+      "past_lines": 55,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResultEntry.__init__",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResultEntry.set_text",
+      "future_commits": 2,
+      "future_lines": 236,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.__init__",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.__iter__",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.__len__",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.from_dict",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.get_dict",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::SearchResults.get_sources",
+      "future_commits": 1,
+      "future_lines": 228,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::do_search",
+      "future_commits": 1,
+      "future_lines": 11,
+      "past_commits": 13,
+      "past_lines": 94,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::fetch_and_scrape",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 10,
+      "past_lines": 104,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/web_search.py::get_search_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/tools/web_search.py::scrape_text",
+      "future_commits": 1,
+      "future_lines": 326,
+      "past_commits": 10,
+      "past_lines": 93,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/tools/web_search.py::search",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 9,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/version.py::VersionUtils.check_version",
+      "future_commits": 1,
+      "future_lines": 20,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/version.py::VersionUtils.current_version",
+      "future_commits": 3,
+      "future_lines": 17,
+      "past_commits": 4,
+      "past_lines": 5,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/version.py::VersionUtils.latest_version",
+      "future_commits": 3,
+      "future_lines": 9,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/version.py::VersionUtils.latest_version_cached",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "g4f/version.py::get_git_version",
+      "future_commits": 2,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/version.py::get_github_version",
+      "future_commits": 2,
+      "future_lines": 17,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": true
+    },
+    {
+      "target": "g4f/version.py::get_pypi_version",
+      "future_commits": 2,
+      "future_lines": 16,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}

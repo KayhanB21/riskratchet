@@ -42,14 +42,15 @@ def _score_in_file(total_lines: int) -> tuple[float, float]:
     return total_risk(comp, weights=DEFAULT_WEIGHTS), comp.structural_complexity
 
 
-def test_file_size_moves_score_but_not_structural_complexity() -> None:
+def test_file_size_no_longer_moves_score() -> None:
+    # 0.3.0: the file-line half of sprawl was dropped (see docs/sprawl-component-finding.md
+    # "Decision for 0.3.0"), so a byte-identical function now scores identically regardless
+    # of the enclosing file's size — the module-split confound this experiment first
+    # surfaced in 0.2.9 no longer moves the production score.
     small_score, small_struct = _score_in_file(300)
     big_score, big_struct = _score_in_file(1200)
-    # The file-line term lifts the score of a byte-identical function...
-    assert big_score > small_score
-    # ...by the full sprawl swing: weight 0.10 * half of sprawl * 100 = 5.0.
-    assert round(big_score - small_score, 2) == 5.0
-    # ...while structural_complexity is unaffected by file size.
+    assert big_score == small_score
+    # structural_complexity was, and remains, unaffected by file size.
     assert small_struct == big_struct
 
 

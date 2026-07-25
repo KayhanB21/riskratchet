@@ -9,6 +9,75 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.0] - 2026-07-25
+
+The first breaking minor — "final calibration before 1.0." Two independent fronts land together: the
+**sprawl scoring recalibration** (Python weights corrected on three converging lines of evidence) and
+the **TypeScript-scoring promotion** (TypeScript goes from six informational slices to a first-class
+scored backend). Both regenerate the dogfood baseline. See the per-front **Breaking** entries below.
+
+### Breaking
+
+- **The `sprawl` component no longer counts file length.** `sprawl` is now the function-length
+  term only; the file-line half was **dropped**. Previously `sprawl = (function_length_term +
+  file_length_term) / 2`, which meant every function in a large file inherited a size penalty it
+  did not earn — a short helper in a 1,200-line module scored the same sprawl as a genuinely
+  sprawling function, and cosmetically splitting a file lowered scores with no real maintainability
+  gain. Three independent labelled-outcome analyses agree the file-line half carries **no
+  predictive signal** (the 0.2.10 SZZ defect ablation, the phase-4 change-proneness ablation, and a
+  new 0.3.0 change-proneness gradient that added a messy/AI-side-project cohort and still found it
+  net-noise, with no god-module regime reasserting). See
+  [`docs/sprawl-component-finding.md`](docs/sprawl-component-finding.md) "Decision for 0.3.0".
+  - **Effect on scores:** functions in large files score **lower** (the confound is gone); a small
+    minority of genuinely long functions score **higher** (they are no longer averaged-down by
+    their file). Component weights are unchanged — only the `sprawl` definition changed.
+  - **Baselines must be regenerated.** Because per-function `score` and the `sprawl` component
+    change, existing `.riskratchet.json` baselines no longer match; regenerate with
+    `riskratchet baseline <paths> --coverage <coverage.json>` and record a bump rationale.
+  - `sprawl` is now a pure per-function signal (a function-length count), independent of the file —
+    which also makes it **language-neutral** for the TypeScript backend entering scoring in 0.3.0.
+
+- **TypeScript is now a scored backend (`--typescript` on `scan`, `check`, `diff`).** After six
+  informational slices (0.2.11–0.2.16), TypeScript is promoted from discovery to first-class scoring.
+  `--typescript` analyzes and **scores** TypeScript functions, mixing them into the shared
+  `functions[]` array with `language: "typescript"`, using a corpus-derived TS complexity calibration
+  (equal complexity percentiles map to equal normalized scores across languages) and optional
+  `--ts-coverage` (Istanbul/nyc/c8/Jest/Vitest/Karma; LCOV or Istanbul JSON, validated against real
+  output). `check`/`diff` gate and diff scored TS functions through the same language-neutral ratchet
+  as Python.
+  - **Output break:** the separate informational top-level `typescript[]` array (JSON) and the
+    `riskratchet.typescript-function` SARIF note rule are **removed** — TypeScript functions are now
+    ordinary scored entries in `functions[]` / regular `riskratchet.function-risk` SARIF results,
+    tagged `language: "typescript"`. `functions[].language` in the report/explain schemas relaxes
+    from `const "python"` to `enum ["python", "typescript"]`.
+  - **Flag rename:** `--experimental-typescript` is deprecated (hidden alias for `--typescript`, one
+    release) and now **scores** rather than merely listing; the experimental stderr banner and
+    listing are gone.
+  - The Python-only path is byte-for-byte unchanged — `engine.py` never imports tree-sitter, and a
+    scan without `--typescript` imports neither the TypeScript backend nor tree-sitter. The
+    `[typescript]` extra (`pip install 'riskratchet[typescript]'`) is still required to use it.
+
+- **Baseline format v3.** `BASELINE_VERSION` bumps `"2"` → `"3"`. Baseline entries gain an optional
+  `language` field (**omitted for Python entries**, so a Python-only baseline changes only the
+  top-level version string — no entry churn), and a baseline that contains TypeScript entries gains a
+  top-level `identity` block recording the fingerprint scheme + pinned tree-sitter-typescript grammar
+  those fingerprints were made with. On `check`/`diff`, if the baseline's recorded TS grammar/scheme
+  differs from the runtime's (a grammar bump silently changes every fingerprint), TypeScript functions
+  are matched **by id only** and the tool warns "re-baseline recommended" — a bump is detected, not
+  read as a mass rename. **v2 baselines load unchanged** (every entry reads as `language: "python"`,
+  no identity), so existing Python baselines keep working; regenerate to adopt v3.
+  - **Fingerprint scheme 2.** A completeness audit before this first fingerprint-persisting release
+    closed two anonymous-token collisions in the TypeScript identity serializer (`const` vs `let`,
+    and a `readonly` parameter property), bumping `SCHEME_VERSION` `1` → `2`. No baseline in the
+    wild was pinned to scheme 1, so there is no migration cost; the scheme is recorded in the v3
+    `identity` block and gated by the grammar-change guard above.
+
+- **No other breaking JSON-schema changes** were queued for this minor. The only field-level schema
+  change is the additive-then-relaxed `functions[].language` (`const "python"` → `enum ["python",
+  "typescript"]`) and the removal of the informational `typescript[]` array, both covered above; the
+  `check`/`diff` payloads and baseline entries gain `language` as described. No deferred rename or
+  type change was outstanding.
+
 ## [0.2.16] - 2026-07-18
 
 LCOV coverage support for the experimental TypeScript track. Still **informational only** — no

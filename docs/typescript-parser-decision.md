@@ -43,7 +43,9 @@ Coverage mapping (slice 3, `0.2.13`) has since landed for Istanbul JSON
 added cyclomatic complexity (`typescript_complexity.py`) and barrel-aware public-surface
 narrowing (`typescript_exports.py`) — both over the same tree-sitter tree, still no Node-backed
 fallback. Since then, coverage gained **LCOV** support (`0.2.16`) and slice 5 (`0.2.15`) added the token-stable
-body/signature **identity fingerprints** (`typescript_identity.py`, still informational). The contract
+body/signature **identity fingerprints** (`typescript_identity.py`). **In `0.3.0` (B0–B7) every one of
+these inputs was routed through scoring**: `--typescript` scores TS through scan/check/diff/baseline,
+the fingerprints drive rename matching, and the grammar version is pinned into baseline v3. The contract
 areas still **not** exercised (deferred, not blockers) are **declaration merging** (the one
 public-surface case that genuinely needs the type checker) and tsconfig `paths`/`baseUrl` alias
 resolution.
@@ -106,11 +108,14 @@ unacceptable for a baseline-gating tool. Rejected.
 ## Packaging note
 
 The extra is declared as `[project.optional-dependencies].typescript` (landed in
-`0.2.12`): `tree-sitter>=0.23,<0.26` and `tree-sitter-typescript>=0.23,<0.24`. The
+`0.2.12`): `tree-sitter>=0.23,<0.27` and `tree-sitter-typescript>=0.23,<0.24`. The
 upper bounds are deliberate — discovery asserts against the grammar's exact node
 taxonomy, so a major `tree-sitter-typescript` bump could rename/restructure nodes and
 silently break the suite via an unrelated `uv lock` refresh; the ceiling forces a
-deliberate, test-gated upgrade. The `0.2.11` wheel had the same runtime dependency set
+deliberate, test-gated upgrade. **Since `0.3.0` this ceiling is load-bearing for baseline
+stability too:** the pinned grammar version is recorded in baseline v3's `identity` block, and a
+persisted-vs-runtime mismatch suppresses TS rename matching for that run (id-only) with a
+"re-baseline recommended" warning (`typescript_identity.grammar_version()`, B1/B6). The `0.2.11` wheel had the same runtime dependency set
 as `0.2.10`; the `0.2.12` wheel keeps tree-sitter behind the `extra == "typescript"`
 marker, so a Python-only install still resolves unchanged (`uv export --no-dev` shows no
 tree-sitter; `uv build --clear` confirms the `Requires-Dist` gating).
