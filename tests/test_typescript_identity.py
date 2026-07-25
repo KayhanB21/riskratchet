@@ -10,6 +10,7 @@ guard against a silent hole in the lossy operator/modifier allowlist (not a proo
 
 from __future__ import annotations
 
+import importlib.metadata
 from pathlib import Path
 
 import pytest
@@ -18,7 +19,35 @@ pytest.importorskip("tree_sitter")
 pytest.importorskip("tree_sitter_typescript")
 
 from riskratchet.typescript import discover_typescript
-from riskratchet.typescript_identity import body_fingerprint, signature_fingerprint
+from riskratchet.typescript_identity import (
+    GRAMMAR_DISTRIBUTION,
+    SCHEME_VERSION,
+    body_fingerprint,
+    grammar_version,
+    signature_fingerprint,
+)
+
+
+def test_grammar_version_matches_installed_distribution() -> None:
+    # B1: grammar_version() is a runtime durability accessor — it must report the exact
+    # installed tree-sitter-typescript version, which the 0.3.0 baseline records (B6).
+    assert GRAMMAR_DISTRIBUTION == "tree-sitter-typescript"
+    assert grammar_version() == importlib.metadata.version("tree-sitter-typescript")
+    # Version-like: at least major.minor, all dot-separated segments non-empty.
+    parts = grammar_version().split(".")
+    assert len(parts) >= 2 and all(parts)
+
+
+def test_grammar_version_within_pinned_minor() -> None:
+    # The [typescript] extra pins >=0.23,<0.24; the recorded version must live in that band,
+    # so a silent transitive bump past the tested node taxonomy can't slip through unnoticed.
+    major, minor, *_ = grammar_version().split(".")
+    assert (int(major), int(minor)) == (0, 23)
+
+
+def test_scheme_version_is_a_positive_int() -> None:
+    # SCHEME_VERSION is surfaced for the baseline identity block; it must be a stable positive int.
+    assert isinstance(SCHEME_VERSION, int) and SCHEME_VERSION >= 1
 
 
 def _one(tmp_path: Path, src: str, name: str) -> tuple[str, str]:

@@ -21,7 +21,12 @@ scores or gates on them yet.
 so a grammar upgrade (e.g. a dependabot bump) can silently change every fingerprint. That is
 harmless while nothing consumes them, but before `0.3.0` persists TS fingerprints in a baseline the
 baseline **must** record the grammar + `SCHEME_VERSION`, and the grammar must be pinned or
-version-gated (see `docs/language-backend-contract.md §5`). Known limitation, now guarded: modifier
+version-gated (see `docs/language-backend-contract.md §5`). Both durability inputs are now
+retrievable at runtime: `SCHEME_VERSION` (below) and `grammar_version()` (reads the installed
+grammar's distribution version); the `0.3.0` baseline records both and suppresses TS rename-matching
+when a persisted value ≠ runtime, so a bump is detected rather than read as a mass rename (B6). The
+grammar stays tightly minor-bounded in the `[typescript]` extra; the recorded version is the gate.
+Known limitation, now guarded: modifier
 capture applies at every function-like node (root and nested), so a parent body reflects a nested
 function's `async`/generator — the earlier root-only collision is fixed.
 
@@ -59,6 +64,7 @@ objects it is handed, so a Python-only install never touches it.
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # tree-sitter is an optional runtime import; annotations only
@@ -69,9 +75,30 @@ SCHEME_VERSION = 1
 
 Bump whenever the serializer below changes shape, so fingerprints from different schemes never
 silently collide or falsely diverge. **This does not capture the tree-sitter-typescript grammar
-version**, which the fingerprints also depend on (they hash grammar node-type strings) — see the
-module docstring and `docs/language-backend-contract.md §5` for the 0.3.0 durability requirement.
+version**, which the fingerprints also depend on (they hash grammar node-type strings) — call
+`grammar_version()` for that second durability input; see the module docstring and
+`docs/language-backend-contract.md §5` for the 0.3.0 durability requirement.
 """
+
+# PyPI distribution name of the grammar (import name is `tree_sitter_typescript`). The fingerprints
+# hash this grammar's node-type strings, so its version is a durability input alongside SCHEME_VERSION.
+GRAMMAR_DISTRIBUTION = "tree-sitter-typescript"
+
+
+def grammar_version() -> str:
+    """Return the installed tree-sitter-typescript distribution version (e.g. ``"0.23.2"``).
+
+    The fingerprints hash grammar node-type strings, so the grammar version is a durability input on
+    par with `SCHEME_VERSION`: a grammar upgrade can silently change every fingerprint. The 0.3.0
+    baseline records both `SCHEME_VERSION` and this value in its top-level ``identity`` block (B6) so
+    a later grammar/scheme mismatch is *detected* — and TS rename-matching suppressed for that run —
+    rather than read as a mass rename. This reads distribution metadata only; it does not import
+    tree-sitter, so a Python-only caller could technically call it, but it raises
+    `importlib.metadata.PackageNotFoundError` when the ``[typescript]`` extra is absent. Callers
+    invoke it only while TypeScript analysis is active (a TS entry is being discovered or persisted).
+    """
+    return importlib.metadata.version(GRAMMAR_DISTRIBUTION)
+
 
 # Anonymous `operator`-field tokens that must survive normalization (`+` vs `-`, `++`, `+=`).
 _OPERATOR_NODES = frozenset(

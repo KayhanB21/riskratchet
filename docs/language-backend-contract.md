@@ -280,14 +280,18 @@ function-like nodes, so the generator `*` never collides with the multiply opera
 keywords `async`/`get`/`set`/`static`/`*`. Modifier capture runs at every function-like node, so a
 parent's body fingerprint reflects a nested function's modifiers.
 
-**Durability requirement for 0.3.0.** The payload embeds `SCHEME_VERSION` (bump on any serializer
-change) but **not** the tree-sitter-typescript **grammar version**, which the hash also depends on —
-it serializes grammar node-type strings, so a grammar upgrade can silently change every fingerprint.
-Harmless while the fingerprints are unconsumed (the matcher stays **unused** for TS this release —
-identity is groundwork, carried but not yet scored/gated). But **before a baseline persists TS
-fingerprints at 0.3.0**, that baseline must record the grammar + `SCHEME_VERSION`, and the grammar
-must be pinned or version-gated so a bump is detected, not silently treated as a mass rename. The
-matcher weights and threshold are language-neutral and are not re-tuned.
+**Durability requirement for 0.3.0 — closing (B1) and closed (B6).** The payload embeds
+`SCHEME_VERSION` (bump on any serializer change) but **not** the tree-sitter-typescript **grammar
+version**, which the hash also depends on — it serializes grammar node-type strings, so a grammar
+upgrade can silently change every fingerprint. Both durability inputs are now retrievable at
+runtime: `typescript_identity.SCHEME_VERSION` and `typescript_identity.grammar_version()` (reads the
+installed grammar's distribution version), with the grammar tightly minor-bounded in the
+`[typescript]` extra (`>=0.23,<0.24`) so a taxonomy-breaking bump can't slip in via a transitive
+resolve (B1). When the baseline persists TS fingerprints (B6), it records both values in a top-level
+`identity` block and, on a persisted-vs-runtime mismatch, suppresses TS rename-matching for that run
+(id-equality only) and warns "re-baseline recommended" — so a grammar/scheme bump is *detected*, not
+silently treated as a mass rename. The matcher weights and threshold are language-neutral and are not
+re-tuned.
 
 ## Output seam
 
