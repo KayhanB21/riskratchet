@@ -4,7 +4,7 @@
 
 # riskratchet
 
-**A maintainability ratchet for AI-assisted Python.** The bar can only move down.
+**A maintainability ratchet for AI-assisted Python and TypeScript.** The bar can only move down.
 
 [PyPI](https://pypi.org/project/riskratchet/) · [Source](https://github.com/KayhanB21/riskratchet) · [Post](https://kayhan.dev/posts/014-letting-agents-write-code-without-ratcheting-up-risk/)
 
@@ -107,7 +107,7 @@ warnings → `baseline` → `check`.
 ## GitHub Action
 
 The composite action ships in `action.yml` so adopters don't have to
-copy a workflow file — `uses: KayhanB21/riskratchet@v0.2.16` is the
+copy a workflow file — `uses: KayhanB21/riskratchet@v0.3.0` is the
 canonical reference. The action installs riskratchet via `uv tool
 install`, runs `check` (`--format pr-comment` in both baseline and
 no-baseline modes), upserts a sticky PR comment, and surfaces the
@@ -125,7 +125,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-      - uses: KayhanB21/riskratchet@v0.2.16
+      - uses: KayhanB21/riskratchet@v0.3.0
         with:
           coverage: coverage.json
 ```
@@ -264,7 +264,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.2.16
+    rev: v0.3.0
     hooks:
       - id: riskratchet
         args:

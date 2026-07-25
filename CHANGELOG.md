@@ -9,10 +9,12 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.3.0] - unreleased
+## [0.3.0] - 2026-07-25
 
-The first breaking minor. **In progress** — this entry accumulates until release. So far it
-carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands here too.
+The first breaking minor — "final calibration before 1.0." Two independent fronts land together: the
+**sprawl scoring recalibration** (Python weights corrected on three converging lines of evidence) and
+the **TypeScript-scoring promotion** (TypeScript goes from six informational slices to a first-class
+scored backend). Both regenerate the dogfood baseline. See the per-front **Breaking** entries below.
 
 ### Breaking
 
@@ -69,6 +71,12 @@ carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands
     and a `readonly` parameter property), bumping `SCHEME_VERSION` `1` → `2`. No baseline in the
     wild was pinned to scheme 1, so there is no migration cost; the scheme is recorded in the v3
     `identity` block and gated by the grammar-change guard above.
+
+- **No other breaking JSON-schema changes** were queued for this minor. The only field-level schema
+  change is the additive-then-relaxed `functions[].language` (`const "python"` → `enum ["python",
+  "typescript"]`) and the removal of the informational `typescript[]` array, both covered above; the
+  `check`/`diff` payloads and baseline entries gain `language` as described. No deferred rename or
+  type change was outstanding.
 
 ## [0.2.16] - 2026-07-18
 

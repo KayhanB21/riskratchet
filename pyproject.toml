@@ -1,7 +1,7 @@
 [project]
 name = "riskratchet"
-version = "0.2.16"
-description = "A maintainability ratchet for AI-assisted Python."
+version = "0.3.0"
+description = "A maintainability ratchet for AI-assisted Python and TypeScript."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }

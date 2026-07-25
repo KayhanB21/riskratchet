@@ -133,7 +133,7 @@ TsEntryOption = Annotated[
 ]
 
 app = typer.Typer(
-    help="A maintainability ratchet for AI-assisted Python.",
+    help="A maintainability ratchet for AI-assisted Python and TypeScript.",
     no_args_is_help=True,
     add_completion=False,
 )
