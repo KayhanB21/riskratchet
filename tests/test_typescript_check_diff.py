@@ -85,6 +85,46 @@ def test_check_typescript_new_function_is_gated(tmp_path: Path) -> None:
     assert "g" in result.stdout or "g" in result.stderr
 
 
+def test_baseline_typescript_writes_v3_with_identity(tmp_path: Path) -> None:
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    _project(tmp_path)
+    out = tmp_path / ".rr.json"
+    result = runner.invoke(
+        app, ["baseline", str(tmp_path), "--typescript", "--output", str(out), "--no-git", "--no-auto-cov"]
+    )
+    assert result.exit_code == 0, result.stderr
+    raw = json.loads(out.read_text(encoding="utf-8"))
+    assert raw["version"] == "3"
+    assert raw["identity"]["typescript"]["scheme"] == 1
+    by_name = {e["qualname"]: e for e in raw["entries"]}
+    assert by_name["g"]["language"] == "typescript"
+    assert "language" not in by_name["f"]  # Python omitted
+
+
+def test_check_warns_and_id_matches_on_stale_grammar(tmp_path: Path) -> None:
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    _project(tmp_path)
+    out = tmp_path / ".rr.json"
+    assert (
+        runner.invoke(
+            app,
+            ["baseline", str(tmp_path), "--typescript", "--output", str(out), "--no-git", "--no-auto-cov"],
+        ).exit_code
+        == 0
+    )
+    # Corrupt the recorded grammar so it can't match the runtime → stale.
+    data = json.loads(out.read_text(encoding="utf-8"))
+    data["identity"]["typescript"]["grammar"] = "0.0.1-stale"
+    out.write_text(json.dumps(data), encoding="utf-8")
+    result = runner.invoke(
+        app, ["check", str(tmp_path), "--typescript", "--baseline", str(out), "--no-git", "--no-auto-cov"]
+    )
+    assert result.exit_code == 0
+    assert "re-baseline recommended" in result.stderr
+
+
 def test_check_without_typescript_ignores_ts(tmp_path: Path) -> None:
     # Without --typescript, the TS file is invisible to check (Python-only), so the gate passes.
     pytest.importorskip("tree_sitter")

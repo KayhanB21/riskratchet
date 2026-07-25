@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 
 class Severity(str, Enum):
@@ -160,6 +160,9 @@ class BaselineEntry:
     fingerprint: str | None = None
     signature: str | None = None
     group: str | None = None
+    # Analyzer backend language (baseline v3, 0.3.0). Serialized only when != "python", so a
+    # Python-only baseline stays byte-stable across the v2→v3 bump (only the version string moves).
+    language: str = "python"
 
 
 @dataclass
@@ -168,10 +171,18 @@ class Baseline:
 
     Not frozen because the entries dict is keyed by FunctionId for fast lookup
     after deserialization; baselines are read-then-compared, never mutated.
+
+    `identity` (baseline v3) records, per non-Python language, the fingerprint
+    scheme + pinned grammar version the persisted fingerprints were produced
+    with — e.g. `{"typescript": {"scheme": 1, "grammar": "0.23.2"}}`. It is
+    written only when an entry for that language exists, and lets the rename
+    matcher detect a grammar/scheme bump (which silently changes every
+    fingerprint) instead of reading it as a mass rename.
     """
 
     version: str
     entries: dict[FunctionId, BaselineEntry] = field(default_factory=dict)
+    identity: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)

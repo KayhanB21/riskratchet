@@ -78,7 +78,7 @@ def test_save_and_load_roundtrip(tmp_path: Path) -> None:
         FunctionId("b.py", "bar"),
     }
     assert loaded.entries[FunctionId("a.py", "foo")].score == pytest.approx(42.0)
-    assert loaded.version == "2"
+    assert loaded.version == "3"
     assert loaded.entries[FunctionId("a.py", "foo")].fingerprint == "a.py:foo"
 
 

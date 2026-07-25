@@ -55,6 +55,16 @@ carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands
     scan without `--typescript` imports neither the TypeScript backend nor tree-sitter. The
     `[typescript]` extra (`pip install 'riskratchet[typescript]'`) is still required to use it.
 
+- **Baseline format v3.** `BASELINE_VERSION` bumps `"2"` → `"3"`. Baseline entries gain an optional
+  `language` field (**omitted for Python entries**, so a Python-only baseline changes only the
+  top-level version string — no entry churn), and a baseline that contains TypeScript entries gains a
+  top-level `identity` block recording the fingerprint scheme + pinned tree-sitter-typescript grammar
+  those fingerprints were made with. On `check`/`diff`, if the baseline's recorded TS grammar/scheme
+  differs from the runtime's (a grammar bump silently changes every fingerprint), TypeScript functions
+  are matched **by id only** and the tool warns "re-baseline recommended" — a bump is detected, not
+  read as a mass rename. **v2 baselines load unchanged** (every entry reads as `language: "python"`,
+  no identity), so existing Python baselines keep working; regenerate to adopt v3.
+
 ## [0.2.16] - 2026-07-18
 
 LCOV coverage support for the experimental TypeScript track. Still **informational only** — no

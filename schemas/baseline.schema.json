@@ -7,7 +7,19 @@
   "required": ["version", "entries"],
   "additionalProperties": false,
   "properties": {
-    "version": { "type": "string", "enum": ["1", "2"] },
+    "version": { "type": "string", "enum": ["1", "2", "3"] },
+    "identity": {
+      "type": "object",
+      "description": "Baseline v3 (0.3.0): per-non-Python-language fingerprint provenance (scheme + pinned grammar the persisted fingerprints were made with). Present only when an entry for that language exists; absent from a Python-only baseline.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "scheme": { "type": "integer", "minimum": 1 },
+          "grammar": { "type": "string" }
+        }
+      }
+    },
     "entries": {
       "type": "array",
       "items": {
@@ -20,6 +32,10 @@
           "fingerprint": { "type": "string" },
           "signature": { "type": "string" },
           "group": { "type": "string" },
+          "language": {
+            "enum": ["python", "typescript"],
+            "description": "Baseline v3 (0.3.0): analyzer backend language. Omitted (defaults \"python\") on Python entries for byte stability; present on TypeScript entries."
+          },
           "score": { "type": "number", "minimum": 0, "maximum": 100 },
           "components": {
             "type": "object",

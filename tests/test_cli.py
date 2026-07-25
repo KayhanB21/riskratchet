@@ -189,7 +189,7 @@ def test_baseline_writes_file(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     payload = json.loads(baseline_path.read_text(encoding="utf-8"))
-    assert payload["version"] == "2"
+    assert payload["version"] == "3"
     assert isinstance(payload["entries"], list)
     assert len(payload["entries"]) >= 1
 
