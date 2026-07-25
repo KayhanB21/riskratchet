@@ -35,12 +35,14 @@ carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands
   - `sprawl` is now a pure per-function signal (a function-length count), independent of the file —
     which also makes it **language-neutral** for the TypeScript backend entering scoring in 0.3.0.
 
-- **TypeScript is now a scored backend (`scan --typescript`).** After six informational slices
-  (0.2.11–0.2.16), TypeScript is promoted from discovery to first-class scoring. `scan --typescript`
-  analyzes and **scores** TypeScript functions, mixing them into the shared `functions[]` array with
-  `language: "typescript"`, using a corpus-derived TS complexity calibration (equal complexity
-  percentiles map to equal normalized scores across languages) and optional `--ts-coverage`
-  (Istanbul/nyc/c8/Jest/Vitest/Karma; LCOV or Istanbul JSON, validated against real output).
+- **TypeScript is now a scored backend (`--typescript` on `scan`, `check`, `diff`).** After six
+  informational slices (0.2.11–0.2.16), TypeScript is promoted from discovery to first-class scoring.
+  `--typescript` analyzes and **scores** TypeScript functions, mixing them into the shared
+  `functions[]` array with `language: "typescript"`, using a corpus-derived TS complexity calibration
+  (equal complexity percentiles map to equal normalized scores across languages) and optional
+  `--ts-coverage` (Istanbul/nyc/c8/Jest/Vitest/Karma; LCOV or Istanbul JSON, validated against real
+  output). `check`/`diff` gate and diff scored TS functions through the same language-neutral ratchet
+  as Python.
   - **Output break:** the separate informational top-level `typescript[]` array (JSON) and the
     `riskratchet.typescript-function` SARIF note rule are **removed** — TypeScript functions are now
     ordinary scored entries in `functions[]` / regular `riskratchet.function-risk` SARIF results,

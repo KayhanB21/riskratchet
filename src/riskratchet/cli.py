@@ -103,6 +103,33 @@ VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
 VALID_FAIL_SEVERITIES = ("low", "medium", "high", "critical")
 
+# Shared TypeScript-backend options (since 0.3.0), reused by check/diff (scan declares its own so it
+# can also carry the deprecated --experimental-typescript alias).
+TypescriptOption = Annotated[
+    bool,
+    typer.Option(
+        "--typescript",
+        help="Also analyze and score TypeScript functions (since 0.3.0), mixed into the scored "
+        "functions with `language: \"typescript\"`. Needs `pip install 'riskratchet[typescript]'`.",
+    ),
+]
+TsCoverageOption = Annotated[
+    list[Path] | None,
+    typer.Option(
+        "--ts-coverage",
+        help="Istanbul/nyc/LCOV coverage report(s) to give TypeScript functions line/branch coverage "
+        "(format auto-detected). Repeatable. Only used with --typescript.",
+    ),
+]
+TsEntryOption = Annotated[
+    list[Path] | None,
+    typer.Option(
+        "--ts-entry",
+        help="TypeScript package entry file(s) (e.g. src/index.ts) to narrow public surface to what "
+        "is reachable through barrel re-exports. Repeatable. Only used with --typescript.",
+    ),
+]
+
 app = typer.Typer(
     help="A maintainability ratchet for AI-assisted Python.",
     no_args_is_help=True,
@@ -678,6 +705,9 @@ def check(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    typescript: TypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg, config_dir = _discover_config(config)
@@ -771,20 +801,30 @@ def check(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-    )
+    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -1107,6 +1147,9 @@ def diff(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    typescript: TypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Show full baseline diff; does not fail."""
     cfg, config_dir = _discover_config(config)
@@ -1172,20 +1215,30 @@ def diff(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
-        resolved_paths,
-        root=config_dir,
-        coverage_path=coverage_path,
-        coverage_map=resolved_coverage_map or None,
-        include=resolved_include,
-        exclude=resolved_exclude,
-        allow=resolved_allow,
-        use_git=not no_git,
-        churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-    )
+    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
+    try:
+        report = build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=resolved_coverage_map or None,
+            include=resolved_include,
+            exclude=resolved_exclude,
+            allow=resolved_allow,
+            use_git=not no_git,
+            churn_days=resolved_churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+        )
+    except ImportError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
     _populate_run_diagnostics(
         diag,
         report=report,
