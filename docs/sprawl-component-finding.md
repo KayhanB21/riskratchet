@@ -179,7 +179,63 @@ Concrete outcomes:
    flags grew `cli.py` and lifted the file-line term for its functions — a live
    instance of this artifact, recorded in the baseline bump rationale.
 
+## Decision for 0.3.0 — drop the file-line term
+
+**The front-runner is candidate (1): drop the file-line term.** `sprawl` becomes the
+function-length term only. This ships as part of the `0.3.0` breaking release with the
+baseline regenerated. Below is the outcome evidence that closes the "tune in the dark" gate
+the 0.2.9 decision deferred.
+
+Three independent labelled-outcome analyses now agree the file-line half carries **no
+predictive signal**, so the 0.2.9 "no data to choose" objection is resolved:
+
+| outcome study | corpus | file-line term |
+| --- | --- | --- |
+| SZZ defect ablation (0.2.10) | 34 polished | net-negative on average (raises AUC to drop it in 25/34, sign-test p≈0.0045) |
+| change-proneness ablation (phase 4) | 34 polished | net-noise (standardized coef +0.039, 95% CI spans zero) |
+| **change-proneness gradient (0.3.0)** | **34 polished + 9 messy** | **net-noise (coef +0.024, 95% CI [−0.054, +0.118])** |
+
+The `0.3.0` run added a **messy/AI-side-project cohort** (9 actively-developed, untested
+repos: `comfyui`, `gpt4free`, `text-generation-webui`, `gpt-sovits`, `gpt_academic`,
+`kohya_ss`, `rsactftool`, `proxy_pool`, `hackingtool`) scored coverage-free
+(`data/calibration/proneness-ablation.json`). This is the target-population end of the
+gradient the polished corpus is *not*. Two results settle the two-clause decision rule:
+
+1. **The structural signals earn their keep** — the full model beats a past-churn null by
+   Δ AUC = +0.086 (39/43 repos, sign-test p≈0), driven overwhelmingly by
+   `structural_complexity` (consistent with prior runs).
+2. **The Lanza-Marinescu god-module reading does not reassert toward the messy end.** The
+   per-tier structural lift is nearly identical (polished +0.088 vs messy +0.080), and adding
+   the messy cohort did not move the file-line coefficient toward signal — it *fell* (+0.039
+   polished-only → +0.024 with messy included). If big messy files were a genuine
+   maintainability axis, the messy cohort is exactly where the file-line term should have
+   fired; it did not.
+
+**Why (1) drop over (2) shrink or (3) raise-the-band:** the god-module reading (which alone
+would favour raising the band, and which the 0.2.9 doc kept alive) is the specific hypothesis
+the messy cohort tested and failed to support. With the file-line term inert-to-negative
+across every outcome and every tier, the minimal evidence-supported correction is to remove
+it, not to re-weight noise. The consequence — `sprawl` fires for ~1% of functions (only
+genuinely long ones) — is a feature, not a regression: the component becomes an honest
+**long-function penalty** rather than a big-file confound that rewards cosmetic module splits.
+It is also **language-neutral** (a pure per-function line count), so the TypeScript backend
+inherits it unchanged when it enters scoring at `0.3.0`. The other component weights are left
+as-is; the ablation supports removing the file-line term, not redistributing the freed weight,
+and no silent re-tune ships without its own outcome evidence.
+
+**The review-comment construct anchor came back empty — a limitation, not support.** The
+`review-flags` mining (`harness review-flags`, 19 repos across both tiers,
+`data/calibration/repos/*/review-flags.json`) found **0 function-mapped "split this" flags**
+from ~8 borderline maintainability comments out of ~1,400 review comments scanned. Such
+comments are vanishingly rare and rarely blame-map to a single function — on messy repos (no
+review culture) and on well-reviewed polished repos (`click` 3/239, `sqlglot` 2/242) alike. So
+the construct gap (edits ≠ maintenance pain) is **anchored-by-attempt, not closed**; the
+change-proneness proxy remains the load-bearing external-validity evidence. This is recorded
+honestly rather than treated as corroboration.
+
 ## Honest limitations
+
+Of the original 0.2.9 correlation experiment:
 
 - 4 repos, all mainstream Python libraries — not generalizable to applications,
   notebooks, or other languages.
@@ -187,3 +243,17 @@ Concrete outcomes:
 - The split simulation halves line counts; it does not model what splitting does
   to coupling or import graphs (which a real refactor changes and this metric
   ignores entirely).
+
+Of the 0.3.0 outcome evidence:
+
+- Change-proneness is a **proxy** (a function *got edited* later, not that it *was
+  painful*); it is a maintainability proxy, not maintainability.
+- The 43-repo corpus is a **gradient toward** the AI-side-project target population, not
+  a sample *at* it — the 9 messy repos are established-but-untested projects, closer to
+  the target than the polished libraries but still real open-source software, not the
+  solo-dev/Cursor persona itself.
+- The review-comment construct anchor returned **empty**, so the edits-≠-maintenance-pain
+  construct gap is anchored-by-attempt, not closed.
+- The messy repos are scored **coverage-free** (source + git only), so the two
+  coverage-derived components are constant and drop out — the file-line finding rests on
+  the four static signals, which is the honest basis for an untested population.

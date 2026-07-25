@@ -9,6 +9,32 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.0] - unreleased
+
+The first breaking minor. **In progress** — this entry accumulates until release. So far it
+carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands here too.
+
+### Breaking
+
+- **The `sprawl` component no longer counts file length.** `sprawl` is now the function-length
+  term only; the file-line half was **dropped**. Previously `sprawl = (function_length_term +
+  file_length_term) / 2`, which meant every function in a large file inherited a size penalty it
+  did not earn — a short helper in a 1,200-line module scored the same sprawl as a genuinely
+  sprawling function, and cosmetically splitting a file lowered scores with no real maintainability
+  gain. Three independent labelled-outcome analyses agree the file-line half carries **no
+  predictive signal** (the 0.2.10 SZZ defect ablation, the phase-4 change-proneness ablation, and a
+  new 0.3.0 change-proneness gradient that added a messy/AI-side-project cohort and still found it
+  net-noise, with no god-module regime reasserting). See
+  [`docs/sprawl-component-finding.md`](docs/sprawl-component-finding.md) "Decision for 0.3.0".
+  - **Effect on scores:** functions in large files score **lower** (the confound is gone); a small
+    minority of genuinely long functions score **higher** (they are no longer averaged-down by
+    their file). Component weights are unchanged — only the `sprawl` definition changed.
+  - **Baselines must be regenerated.** Because per-function `score` and the `sprawl` component
+    change, existing `.riskratchet.json` baselines no longer match; regenerate with
+    `riskratchet baseline <paths> --coverage <coverage.json>` and record a bump rationale.
+  - `sprawl` is now a pure per-function signal (a function-length count), independent of the file —
+    which also makes it **language-neutral** for the TypeScript backend entering scoring in 0.3.0.
+
 ## [0.2.16] - 2026-07-18
 
 LCOV coverage support for the experimental TypeScript track. Still **informational only** — no

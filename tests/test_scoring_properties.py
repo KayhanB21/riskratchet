@@ -148,12 +148,13 @@ def test_sprawl_monotonic_in_function_length(a: int, b: int, file_lines: int) ->
     st.integers(min_value=1, max_value=2_000),
     st.integers(min_value=10, max_value=500),
 )
-def test_sprawl_monotonic_in_file_length(a: int, b: int, function_lines: int) -> None:
-    lo, hi = sorted((a, b))
+def test_sprawl_invariant_to_file_length(a: int, b: int, function_lines: int) -> None:
+    # 0.3.0: the file-line half was dropped, so sprawl no longer depends on file size at
+    # all — the same function scores identically regardless of the enclosing file's length.
     span = FunctionSpan(start_line=1, end_line=function_lines)
-    file_lo = FileStats(path="x.py", total_lines=lo, function_count=1)
-    file_hi = FileStats(path="x.py", total_lines=hi, function_count=1)
-    assert sprawl_score(span, file_hi) >= sprawl_score(span, file_lo) - 1e-9
+    file_lo = FileStats(path="x.py", total_lines=min(a, b), function_count=1)
+    file_hi = FileStats(path="x.py", total_lines=max(a, b), function_count=1)
+    assert sprawl_score(span, file_hi) == sprawl_score(span, file_lo)
 
 
 def _zero_components() -> RiskComponents:

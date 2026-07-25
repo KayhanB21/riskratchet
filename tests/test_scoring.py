@@ -79,11 +79,14 @@ def test_public_surface_score_only_penalises_public_functions() -> None:
     assert public_surface_score(is_public=True, coverage=well_tested) == 0.0
 
 
-def test_sprawl_score_combines_function_and_file_length() -> None:
-    small = sprawl_score(_span(20), _file(100))
-    big = sprawl_score(_span(160), _file(1000))
-    assert small == 0.0
-    assert big == 100.0
+def test_sprawl_score_is_function_length_only() -> None:
+    # 0.3.0: sprawl is the function-length term only; the file-line half was dropped.
+    assert sprawl_score(_span(20), _file(100)) == 0.0
+    assert sprawl_score(_span(160), _file(1000)) == 100.0
+    # File length is irrelevant now: a short function scores 0 and a saturated-length
+    # function scores 100 regardless of how big the enclosing file is.
+    assert sprawl_score(_span(20), _file(5000)) == 0.0
+    assert sprawl_score(_span(160), _file(50)) == 100.0
 
 
 def test_total_risk_is_bounded_and_weighted() -> None:
@@ -230,15 +233,16 @@ def test_public_surface_at_coverage_boundaries() -> None:
     assert public_surface_score(is_public=True, coverage=public_full) == 0.0
 
 
-def test_sprawl_at_blending_boundaries() -> None:
-    # Below free thresholds: both halves zero -> 0.
+def test_sprawl_boundaries_track_function_length_only() -> None:
+    # 0.3.0: only the function-length band matters; file size never moves sprawl.
+    # At/below the function-length free threshold (80): 0, whatever the file size.
     assert sprawl_score(_span(80), _file(500)) == 0.0
-    # At/above saturation: both halves 100 -> 100.
+    assert sprawl_score(_span(80), _file(1000)) == 0.0
+    # At/above the function-length saturation (160): 100, whatever the file size.
     assert sprawl_score(_span(160), _file(1000)) == 100.0
-    # Big function in small file: function half saturates, file half is 0.
-    assert sprawl_score(_span(160), _file(500)) == pytest.approx(50.0)
-    # Small function in big file: symmetric.
-    assert sprawl_score(_span(80), _file(1000)) == pytest.approx(50.0)
+    assert sprawl_score(_span(160), _file(500)) == 100.0
+    # Midway up the function-length band, independent of file size.
+    assert sprawl_score(_span(120), _file(100)) == pytest.approx(50.0)
 
 
 def test_severity_bands_at_exact_boundaries() -> None:

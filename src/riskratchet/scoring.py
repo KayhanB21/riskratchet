@@ -44,6 +44,9 @@ COMPLEXITY_SATURATION_CC = 20
 CHURN_SATURATION_COMMITS = 10
 FUNCTION_LINE_FREE = 80
 FUNCTION_LINE_SATURATION = 160
+# The file-line band no longer feeds scoring (dropped in 0.3.0 — see sprawl_score). Retained
+# because the calibration harness (bin/calibration/rescore.py) still references it to compare
+# the shipped scoring against the drop/shrink/raise-band candidates.
 FILE_LINE_FREE = 500
 FILE_LINE_SATURATION = 1000
 
@@ -92,17 +95,23 @@ def public_surface_score(is_public: bool, coverage: CoverageStats) -> float:
 
 
 def sprawl_score(span: FunctionSpan, file_stats: FileStats) -> float:
-    function_score = _saturate(
+    # 0.3.0 (breaking): the file-line half of sprawl was dropped. Three independent
+    # labelled-outcome analyses agree it carries no predictive signal — the 0.2.10 SZZ
+    # defect ablation (net-negative, 25/34), the phase-4 change-proneness ablation
+    # (net-noise), and the 0.3.0 polished+messy change-proneness gradient (net-noise,
+    # coef +0.024, 95% CI spans zero) — and the messy/AI-side-project cohort did not
+    # resurface a god-module regime. `sprawl` is now a pure long-function penalty: it
+    # fires only for genuinely long functions, no longer rewards cosmetic module splits,
+    # and is language-neutral (a per-function line count), so the TypeScript backend
+    # inherits it unchanged. See docs/sprawl-component-finding.md "Decision for 0.3.0".
+    # `file_stats` is retained in the signature for pipeline/API stability (compute_components
+    # threads it uniformly) but is no longer consulted here.
+    del file_stats
+    return _saturate(
         span.line_count,
         free=FUNCTION_LINE_FREE,
         saturation=FUNCTION_LINE_SATURATION,
     )
-    file_score = _saturate(
-        file_stats.total_lines,
-        free=FILE_LINE_FREE,
-        saturation=FILE_LINE_SATURATION,
-    )
-    return (function_score + file_score) / 2.0
 
 
 class InvalidWeightsError(ValueError):
