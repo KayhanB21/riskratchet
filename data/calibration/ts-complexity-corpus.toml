@@ -1,0 +1,89 @@
+# TypeScript complexity-calibration corpus (B2, 0.3.0).
+#
+# Mid-size, actively-developed, TypeScript-heavy repos (libraries + apps, `.ts` and `.tsx`),
+# deliberately NOT the giants (TS compiler / VS Code) — enough for a stable multi-thousand-function
+# cyclomatic distribution without cloning gigabytes of history. Measured with
+# `typescript_complexity.cyclomatic_for_node` (ESLint-faithful), coverage-independent.
+#
+# Provenance: `ref` pins the branch/tag cloned with `--depth 1`; the harness records the exact
+# resolved commit SHA per repo into `data/calibration/ts-complexity-calibration.json`, so the
+# derived constant's inputs are reproducible even though `ref` tracks a moving branch.
+#
+# `paths` are repo-relative source dirs to analyze (monorepos are narrowed to one package). Test,
+# spec, story, and declaration files are excluded globally by the harness so their thin
+# `expect(...)` chains don't deflate the distribution.
+
+[[repo]]
+name = "zod"
+url = "https://github.com/colinhacks/zod"
+ref = "main"
+# zod is a monorepo; `src/v4` is the current core (excludes the frozen `src/v3` to avoid
+# double-counting legacy code with near-duplicate shapes).
+paths = ["packages/zod/src/v4"]
+
+[[repo]]
+name = "zustand"
+url = "https://github.com/pmndrs/zustand"
+ref = "main"
+paths = ["src"]
+
+[[repo]]
+name = "hono"
+url = "https://github.com/honojs/hono"
+ref = "main"
+paths = ["src"]
+
+[[repo]]
+name = "immer"
+url = "https://github.com/immerjs/immer"
+ref = "main"
+paths = ["src"]
+
+[[repo]]
+name = "ts-pattern"
+url = "https://github.com/gvergnaud/ts-pattern"
+ref = "main"
+paths = ["src"]
+
+[[repo]]
+name = "rxjs"
+url = "https://github.com/ReactiveX/rxjs"
+ref = "master"
+# rxjs migrated to an Nx monorepo; the operator/observable core lives here now.
+paths = ["packages/rxjs/src/internal"]
+
+[[repo]]
+name = "class-validator"
+url = "https://github.com/typestack/class-validator"
+ref = "develop"
+paths = ["src"]
+
+[[repo]]
+name = "jotai"
+url = "https://github.com/pmndrs/jotai"
+ref = "main"
+paths = ["src"]
+
+[[repo]]
+name = "got"
+url = "https://github.com/sindresorhus/got"
+ref = "main"
+paths = ["source"]
+
+[[repo]]
+name = "ink"
+url = "https://github.com/vadimdemedes/ink"
+ref = "master"
+paths = ["src"]
+
+[[repo]]
+name = "table-core"
+url = "https://github.com/TanStack/table"
+ref = "main"
+paths = ["packages/table-core/src"]
+
+[[repo]]
+name = "swr"
+url = "https://github.com/vercel/swr"
+ref = "main"
+paths = ["src", "_internal/src"]

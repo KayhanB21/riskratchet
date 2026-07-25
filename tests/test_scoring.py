@@ -17,6 +17,7 @@ from riskratchet.models import (
 )
 from riskratchet.scoring import (
     PYTHON_COMPLEXITY_CALIBRATION,
+    TYPESCRIPT_COMPLEXITY_CALIBRATION,
     WEIGHTS,
     branch_gap_score,
     churn_score,
@@ -75,6 +76,15 @@ def test_structural_complexity_default_calibration_is_python_literal() -> None:
         assert structural_complexity_score(stats) == structural_complexity_score(
             stats, PYTHON_COMPLEXITY_CALIBRATION
         )
+
+
+def test_typescript_complexity_calibration_is_derived_band() -> None:
+    # B2: the TS band is derived by endpoint-percentile matching (see
+    # docs/typescript-complexity-calibration.md). It happens to equal Python's (1, 21) on the
+    # 0.3.0 corpus, but is a distinct constant so a future re-derivation can move TS alone.
+    assert TYPESCRIPT_COMPLEXITY_CALIBRATION == (1.0, 21.0)
+    free, saturation = TYPESCRIPT_COMPLEXITY_CALIBRATION
+    assert free >= 1.0 and saturation > free  # honors the _saturate precondition
 
 
 def test_structural_complexity_respects_custom_calibration() -> None:

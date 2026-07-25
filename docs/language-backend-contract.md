@@ -195,13 +195,23 @@ language-fair at the gate.
 
 The TS constant is **derived, not hand-picked** — folded into the P21 calibration thread: run
 both analyzers over comparable corpora, compare the per-function cyclomatic distributions, and set
-the TS saturation so equal percentiles map to equal normalized scores. It ships at `0.3.0` (when
-TS enters scoring, possibly revisiting the Python constant) with the corpus + rationale, never as a silent
-number. This mirrors the coverage caveat in §2 (TS statement-derived vs Python line-level
-coverage): in both, the *shape* is shared but the *measurement* is not, so both feed one scoring
-model only after a data-anchored recalibration. Tradeoff accepted: two calibration surfaces
-instead of one shared counting rule, plus a TS corpus study that does not exist yet — the cost of
-not forcing one language's rules onto the other.
+the TS saturation so equal percentiles map to equal normalized scores. It ships at `0.3.0` with the
+corpus + rationale, never as a silent number. This mirrors the coverage caveat in §2 (TS
+statement-derived vs Python line-level coverage): in both, the *shape* is shared but the
+*measurement* is not, so both feed one scoring model only after a data-anchored recalibration.
+Tradeoff accepted: two calibration surfaces instead of one shared counting rule — the cost of not
+forcing one language's rules onto the other.
+
+**Derived (B2, closed).** `scoring.TYPESCRIPT_COMPLEXITY_CALIBRATION = (1, 21)`, derived by
+`bin/calibration/ts_complexity_calibration.py` via endpoint-percentile matching over a 12-repo /
+2,744-function TS corpus vs the 59,226-function Python corpus. The TS cyclomatic value at the
+percentile where Python's saturation=21 falls (~98.85th) is ~21.3 → 21, and the free anchor is 1 in
+both, so the data lands TS on the **same band as Python** — the conservative, evidence-backed
+outcome, kept as a distinct constant so a future re-derivation can move TS alone. Corpus manifest:
+`data/calibration/ts-complexity-corpus.toml`; derivation + provenance (per-repo commit SHAs):
+`data/calibration/ts-complexity-calibration.json`; full writeup with limitations:
+`docs/typescript-complexity-calibration.md`. The constant is unconsumed until the TS engine threads
+it into `compute_components` (B3).
 
 ## 4. Public surface
 

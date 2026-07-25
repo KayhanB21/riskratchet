@@ -52,6 +52,17 @@ CHURN_SATURATION_COMMITS = 10
 # `free=1, saturation=COMPLEXITY_SATURATION_CC + 1` — so the default path is byte-identical.
 ComplexityCalibration = tuple[float, float]
 PYTHON_COMPLEXITY_CALIBRATION: ComplexityCalibration = (1.0, float(COMPLEXITY_SATURATION_CC + 1))
+
+# TypeScript complexity band, DERIVED — not hand-picked — by endpoint-percentile matching against
+# the Python band (see `bin/calibration/ts_complexity_calibration.py`,
+# `data/calibration/ts-complexity-calibration.json`, and `docs/typescript-complexity-calibration.md`).
+# Over a 12-repo, 2,744-function TS corpus vs a 59,226-function Python corpus, the TS cyclomatic
+# value at the percentile where Python's saturation=21 falls (~98.85th) is ~21.3 → rounds to 21, and
+# the free anchor is 1 in both. So the data says TS needs no different band than Python at 0.3.0: the
+# shared (1, 21) is the conservative, evidence-backed outcome, not an assumption. It is a *distinct*
+# named constant so a future re-derivation (larger corpus, grammar/rule change) can move TS without
+# touching Python. Unconsumed until the TS engine threads it into `compute_components` (B3).
+TYPESCRIPT_COMPLEXITY_CALIBRATION: ComplexityCalibration = (1.0, 21.0)
 FUNCTION_LINE_FREE = 80
 FUNCTION_LINE_SATURATION = 160
 # The file-line band no longer feeds scoring (dropped in 0.3.0 — see sprawl_score). Retained

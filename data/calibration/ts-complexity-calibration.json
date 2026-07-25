@@ -1,0 +1,459 @@
+{
+  "method": "endpoint-percentile-match",
+  "python_calibration": [
+    1.0,
+    21.0
+  ],
+  "anchor_percentiles": {
+    "p_free": 0.4208,
+    "p_sat": 0.9885,
+    "note": "p_free = P(py_cc <= 1); p_sat = P(py_cc <= 21)"
+  },
+  "typescript_calibration_raw": [
+    1.0,
+    21.321
+  ],
+  "typescript_calibration": [
+    1,
+    21
+  ],
+  "typescript_distribution": {
+    "n": 2744,
+    "min": 1,
+    "max": 107,
+    "mean": 3.132,
+    "p50": 2.0,
+    "p90": 6.0,
+    "p95": 10.0,
+    "p99": 24.570000000000164
+  },
+  "python_distribution": {
+    "n": 59226,
+    "min": 1,
+    "max": 338,
+    "mean": 3.43,
+    "p50": 2.0,
+    "p90": 7.0,
+    "p95": 11.0,
+    "p99": 23.0
+  },
+  "fairness_check": [
+    {
+      "percentile": 0.1,
+      "py_cc": 1.0,
+      "ts_cc": 1.0,
+      "py_norm": 0.0,
+      "ts_norm": 0.0
+    },
+    {
+      "percentile": 0.25,
+      "py_cc": 1.0,
+      "ts_cc": 1.0,
+      "py_norm": 0.0,
+      "ts_norm": 0.0
+    },
+    {
+      "percentile": 0.5,
+      "py_cc": 2.0,
+      "ts_cc": 2.0,
+      "py_norm": 5.0,
+      "ts_norm": 5.0
+    },
+    {
+      "percentile": 0.75,
+      "py_cc": 4.0,
+      "ts_cc": 3.0,
+      "py_norm": 15.0,
+      "ts_norm": 10.0
+    },
+    {
+      "percentile": 0.9,
+      "py_cc": 7.0,
+      "ts_cc": 6.0,
+      "py_norm": 30.0,
+      "ts_norm": 25.0
+    },
+    {
+      "percentile": 0.95,
+      "py_cc": 11.0,
+      "ts_cc": 10.0,
+      "py_norm": 50.0,
+      "ts_norm": 45.0
+    },
+    {
+      "percentile": 0.99,
+      "py_cc": 23.0,
+      "ts_cc": 24.57,
+      "py_norm": 100.0,
+      "ts_norm": 100.0
+    }
+  ],
+  "typescript_corpus": [
+    {
+      "name": "zod",
+      "ref": "main",
+      "sha": "912f0f51b0ced654d0069741e7160834dca742ee",
+      "files": 90,
+      "functions": 415
+    },
+    {
+      "name": "zustand",
+      "ref": "main",
+      "sha": "beca84e600e4e250f6b244d22878e72948f331c7",
+      "files": 15,
+      "functions": 25
+    },
+    {
+      "name": "hono",
+      "ref": "main",
+      "sha": "26d8e42bfff7eb78fc323a01e1d02d63b9dbcc72",
+      "files": 185,
+      "functions": 582
+    },
+    {
+      "name": "immer",
+      "ref": "main",
+      "sha": "a3be9df762c1dbe9959a011ddbab0ce838cbc468",
+      "files": 16,
+      "functions": 122
+    },
+    {
+      "name": "ts-pattern",
+      "ref": "main",
+      "sha": "c92ca435c7e1827e0fd55c539080ef1bfd6fe3f0",
+      "files": 18,
+      "functions": 80
+    },
+    {
+      "name": "rxjs",
+      "ref": "master",
+      "sha": "c15b37f81ba5f5abea8c872b0189a70b150df4cb",
+      "files": 201,
+      "functions": 355
+    },
+    {
+      "name": "class-validator",
+      "ref": "develop",
+      "sha": "2e1a5c27dbd65b80e27fe96b49bd6e6641fa3603",
+      "files": 136,
+      "functions": 273
+    },
+    {
+      "name": "jotai",
+      "ref": "main",
+      "sha": "86e74bd5789489801fe1d9f7d550bc4211268fe7",
+      "files": 36,
+      "functions": 119
+    },
+    {
+      "name": "got",
+      "ref": "main",
+      "sha": "e3924aa1e53a6ca3eb93a43618ce532442a89b40",
+      "files": 25,
+      "functions": 436
+    },
+    {
+      "name": "ink",
+      "ref": "master",
+      "sha": "70af033dbd2b126a16f144164685612b2c1fd554",
+      "files": 61,
+      "functions": 176
+    },
+    {
+      "name": "table-core",
+      "ref": "main",
+      "sha": "d08af367e11c539bb7e18c2472aa761149ef6db6",
+      "files": 37,
+      "functions": 100
+    },
+    {
+      "name": "swr",
+      "ref": "main",
+      "sha": "fc7ac116b2a2bfdfa43ec8b08753a77d6c3de93e",
+      "files": 42,
+      "functions": 61
+    }
+  ],
+  "python_corpus": [
+    {
+      "name": "arrow",
+      "tier": "polished",
+      "functions": 161
+    },
+    {
+      "name": "arviz",
+      "tier": "polished",
+      "functions": 12
+    },
+    {
+      "name": "attrs",
+      "tier": "polished",
+      "functions": 209
+    },
+    {
+      "name": "babel",
+      "tier": "polished",
+      "functions": 486
+    },
+    {
+      "name": "bayesian-optimization",
+      "tier": "polished",
+      "functions": 168
+    },
+    {
+      "name": "boltons",
+      "tier": "polished",
+      "functions": 916
+    },
+    {
+      "name": "category-encoders",
+      "tier": "polished",
+      "functions": 156
+    },
+    {
+      "name": "cattrs",
+      "tier": "polished",
+      "functions": 276
+    },
+    {
+      "name": "click",
+      "tier": "polished",
+      "functions": 521
+    },
+    {
+      "name": "comfyui",
+      "tier": "messy",
+      "functions": 7859
+    },
+    {
+      "name": "croniter",
+      "tier": "polished",
+      "functions": 285
+    },
+    {
+      "name": "dateutil",
+      "tier": "polished",
+      "functions": 306
+    },
+    {
+      "name": "deepdiff",
+      "tier": "polished",
+      "functions": 377
+    },
+    {
+      "name": "emcee",
+      "tier": "polished",
+      "functions": 209
+    },
+    {
+      "name": "feature-engine",
+      "tier": "polished",
+      "functions": 414
+    },
+    {
+      "name": "featuretools",
+      "tier": "polished",
+      "functions": 2606
+    },
+    {
+      "name": "flask",
+      "tier": "polished",
+      "functions": 369
+    },
+    {
+      "name": "formulaic",
+      "tier": "polished",
+      "functions": 446
+    },
+    {
+      "name": "gpt-sovits",
+      "tier": "messy",
+      "functions": 1091
+    },
+    {
+      "name": "gpt4free",
+      "tier": "messy",
+      "functions": 1527
+    },
+    {
+      "name": "gpt_academic",
+      "tier": "messy",
+      "functions": 1756
+    },
+    {
+      "name": "hackingtool",
+      "tier": "messy",
+      "functions": 134
+    },
+    {
+      "name": "hyperopt",
+      "tier": "polished",
+      "functions": 871
+    },
+    {
+      "name": "imbalanced-learn",
+      "tier": "polished",
+      "functions": 718
+    },
+    {
+      "name": "jsonschema",
+      "tier": "polished",
+      "functions": 684
+    },
+    {
+      "name": "kohya_ss",
+      "tier": "messy",
+      "functions": 382
+    },
+    {
+      "name": "lifelines",
+      "tier": "polished",
+      "functions": 1307
+    },
+    {
+      "name": "loguru",
+      "tier": "polished",
+      "functions": 234
+    },
+    {
+      "name": "markdown",
+      "tier": "polished",
+      "functions": 388
+    },
+    {
+      "name": "marshmallow",
+      "tier": "polished",
+      "functions": 228
+    },
+    {
+      "name": "mlxtend",
+      "tier": "polished",
+      "functions": 1210
+    },
+    {
+      "name": "more-itertools",
+      "tier": "polished",
+      "functions": 274
+    },
+    {
+      "name": "networkx",
+      "tier": "polished",
+      "functions": 7397
+    },
+    {
+      "name": "optuna",
+      "tier": "polished",
+      "functions": 1434
+    },
+    {
+      "name": "packaging",
+      "tier": "polished",
+      "functions": 387
+    },
+    {
+      "name": "patsy",
+      "tier": "polished",
+      "functions": 575
+    },
+    {
+      "name": "pingouin",
+      "tier": "polished",
+      "functions": 158
+    },
+    {
+      "name": "pint",
+      "tier": "polished",
+      "functions": 1764
+    },
+    {
+      "name": "proxy_pool",
+      "tier": "messy",
+      "functions": 159
+    },
+    {
+      "name": "pygments",
+      "tier": "polished",
+      "functions": 936
+    },
+    {
+      "name": "pyod",
+      "tier": "polished",
+      "functions": 2635
+    },
+    {
+      "name": "pyparsing",
+      "tier": "polished",
+      "functions": 479
+    },
+    {
+      "name": "requests",
+      "tier": "polished",
+      "functions": 244
+    },
+    {
+      "name": "rich",
+      "tier": "polished",
+      "functions": 900
+    },
+    {
+      "name": "rsactftool",
+      "tier": "messy",
+      "functions": 394
+    },
+    {
+      "name": "scikit-optimize",
+      "tier": "polished",
+      "functions": 482
+    },
+    {
+      "name": "sqlglot",
+      "tier": "polished",
+      "functions": 3096
+    },
+    {
+      "name": "sqlparse",
+      "tier": "polished",
+      "functions": 213
+    },
+    {
+      "name": "tenacity",
+      "tier": "polished",
+      "functions": 168
+    },
+    {
+      "name": "text-generation-webui",
+      "tier": "messy",
+      "functions": 737
+    },
+    {
+      "name": "tomlkit",
+      "tier": "polished",
+      "functions": 443
+    },
+    {
+      "name": "tsfresh",
+      "tier": "polished",
+      "functions": 233
+    },
+    {
+      "name": "typer",
+      "tier": "polished",
+      "functions": 554
+    },
+    {
+      "name": "werkzeug",
+      "tier": "polished",
+      "functions": 1020
+    },
+    {
+      "name": "wrapt",
+      "tier": "polished",
+      "functions": 283
+    },
+    {
+      "name": "xarray",
+      "tier": "polished",
+      "functions": 7955
+    }
+  ]
+}
