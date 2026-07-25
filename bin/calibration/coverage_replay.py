@@ -30,7 +30,15 @@ _FAILED_RE = re.compile(r"(\d+) failed")
 
 
 def _default_runner(argv: list[str], cwd: Path | None, timeout: int) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(argv, cwd=cwd, timeout=timeout, capture_output=True, text=True, check=False)
+    # errors="replace": git diff/log output can carry non-UTF-8 bytes from files in
+    # other encodings (common in international repos — e.g. GB2312/Latin-1 source).
+    # The structural output we parse (hunk headers, SHAs) is ASCII, so replacing
+    # undecodable content bytes is lossless for our purposes and avoids crashing the
+    # whole run on one repo. Without this the polished all-English corpus never tripped,
+    # but the messy/international cohort does.
+    return subprocess.run(
+        argv, cwd=cwd, timeout=timeout, capture_output=True, text=True, errors="replace", check=False
+    )
 
 
 @dataclass(frozen=True)

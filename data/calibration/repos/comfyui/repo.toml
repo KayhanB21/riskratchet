@@ -1,0 +1,8 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Very actively developed and famously light on tests relative to its size (a token
+# tests dir only); core logic in comfy/ + comfy_extras/ + execution/app.
+name = "comfyui"
+url = "https://github.com/comfyanonymous/ComfyUI"
+paths = ["comfy", "comfy_extras", "comfy_execution", "app"]
+pr_branch = "master"
+coverage_free = true

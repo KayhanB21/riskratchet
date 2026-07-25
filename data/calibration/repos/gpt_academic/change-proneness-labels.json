@@ -1,0 +1,4347 @@
+{
+  "snapshot_sha": "a7a56b5058fc8e69641e113f615aed8ab3a59a64",
+  "head_sha": "d6bde0fa54373309bd05823a49bda8da019d2c77",
+  "window_days": 365,
+  "n_functions": 1168,
+  "n_change_prone": 39,
+  "n_future_commits": 7,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.save_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.save_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.save_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.save_txt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file.save_word",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 141,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::write_chat_to_file_legacy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::\u5bf9\u8bdd\u5386\u53f2\u5b58\u6863",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 14,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Conversation_To_File.py::\u8f7d\u5165\u5bf9\u8bdd\u5386\u53f2\u5b58\u6863",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::ImageEditState.lock_plugin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::edit_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::gen_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::\u56fe\u7247\u4fee\u6539_DALLE2",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::\u56fe\u7247\u751f\u6210_DALLE2",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/Image_Generate.py::\u56fe\u7247\u751f\u6210_DALLE3",
+      "future_commits": 1,
+      "future_lines": 195,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/Image_Generate_Wrap.py::ImageGen_Wrap.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Image_Generate_Wrap.py::ImageGen_Wrap.define_arg_selection_menu",
+      "future_commits": 1,
+      "future_lines": 15,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/Image_Generate_Wrap.py::ImageGen_Wrap.execute",
+      "future_commits": 1,
+      "future_lines": 9,
+      "past_commits": 1,
+      "past_lines": 56,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::get_auth_ip",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::internet_search_with_analysis_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::jina_scrape_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::scrape_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::search_optimizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 110,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::searxng_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 23,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT.py::\u8fde\u63a5\u7f51\u7edc\u56de\u7b54\u95ee\u9898",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 88,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT_Wrap.py::NetworkGPT_Wrap.define_arg_selection_menu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Internet_GPT_Wrap.py::NetworkGPT_Wrap.execute",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::Latex\u7ffb\u8bd1\u4e2d\u6587\u5e76\u91cd\u65b0\u7f16\u8bd1PDF",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 100,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::Latex\u82f1\u6587\u7ea0\u9519\u52a0PDF\u5bf9\u6bd4",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::PDF\u7ffb\u8bd1\u4e2d\u6587\u5e76\u91cd\u65b0\u7f16\u8bd1PDF",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::arxiv_download",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 61,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::arxiv_download.fix_url_and_download",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::descend_to_extracted_folder_if_exist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function.py::pdf2tex_project",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function_Wrap.py::Arxiv_Localize.define_arg_selection_menu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Latex_Function_Wrap.py::Arxiv_Localize.execute",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Markdown_Translate.py::PaperFileGroup.run_file_split",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Markdown_Translate.py::get_files_from_everything",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Markdown_Translate.py::\u591a\u6587\u4ef6\u7ffb\u8bd1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/PDF_Translate.py::\u6279\u91cf\u7ffb\u8bd1PDF\u6587\u6863",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/PDF_Translate_Wrap.py::PDF_Tran.define_arg_selection_menu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Rag_Interface.py::Rag\u95ee\u7b54",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 11,
+      "past_lines": 235,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Rag_Interface.py::handle_document_upload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 77,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::I\u4eba\u52a9\u624b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 70,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SaveAndLoad.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SaveAndLoad.does_checkpoint_exist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SaveAndLoad.load_from_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SaveAndLoad.save_to_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetwork.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 65,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.add_friend",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.ai_add_multi_friends",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.ai_list_friends",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.ai_remove_friend",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.ai_socail_advice",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/Social_Helper.py::SocialNetworkWorker.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 100,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Analyse.py::\u89e3\u6790\u6e90\u4ee3\u7801\u65b0",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment.py::\u6ce8\u91caPython\u9879\u76ee",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment.py::\u6ce8\u91ca\u6e90\u4ee3\u7801",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 186,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment.py::\u6ce8\u91ca\u6e90\u4ee3\u7801._task_multi_threading",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 31,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment.py::\u6ce8\u91ca\u6e90\u4ee3\u7801._task_multi_threading.observe_window_update",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment.py::\u6ce8\u91ca\u6e90\u4ee3\u7801.bark_fn",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment_Wrap.py::SourceCodeComment_Wrap.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment_Wrap.py::SourceCodeComment_Wrap.define_arg_selection_menu",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/SourceCode_Comment_Wrap.py::SourceCodeComment_Wrap.execute",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/VideoResource_GPT.py::debug",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/VideoResource_GPT.py::download_video",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 144,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/VideoResource_GPT.py::get_video_resource",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 118,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/VideoResource_GPT.py::\u591a\u5a92\u4f53\u4efb\u52a1",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 212,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/echo_agent.py::EchoDemo.subprocess_worker",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/general.py::gpt_academic_generate_oai_reply",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/pipe.py::PluginMultiprocessManager.terminate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 389,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment._get_next_window",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.begin_comment_source_code",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 388,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.dedent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.find_next_function_begin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 380,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.find_next_function_begin.extract_number",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.generate_tagged_code_from_full_context",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.get_markdown_block_in_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.get_next_batch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.read_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 380,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.sync_and_patch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.sync_and_patch.count_leading_empty_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.tag_code",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 382,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.tag_code.get_code_block",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/python_comment_agent.py::PythonCodeComment.verify_successful",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 379,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/agent_fns/watchdog.py::WatchDog.watch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/ast_fns/comment_remove.py::remove_python_comments",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 90,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/ast_fns/comment_remove.py::remove_python_comments.get_char_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/ast_fns/comment_remove.py::remove_python_comments.replace_char_between",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 44,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::can_multi_process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::can_multi_process.default_condition",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::input_clipping",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 20,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::nougat_interface.NOUGAT_parse_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::nougat_interface.nougat_with_timeout",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::read_and_clean_pdf_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::read_and_clean_pdf_text.primary_ffsize",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::request_gpt_model_in_new_thread_with_ui_alive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::request_gpt_model_in_new_thread_with_ui_alive._req_gpt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::request_gpt_model_multi_threads_with_very_awesome_ui_and_high_efficiency",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/crazy_utils.py::request_gpt_model_multi_threads_with_very_awesome_ui_and_high_efficiency._req_gpt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/diagram_fns/file_tree.py::FileNode.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/diagram_fns/file_tree.py::FileNode.add_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/diagram_fns/file_tree.py::FileNode.print_files_recursively",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::DocumentFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::DocumentFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::DocumentFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::DocumentFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::HtmlFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::HtmlFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::HtmlFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::HtmlFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::MarkdownFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::MarkdownFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::MarkdownFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._add_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._add_heading",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._create_heading_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._create_styles",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._get_heading_number",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._get_run_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter._setup_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/AI_review_doc.py::WordFormatter.save_as_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::DocumentFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::DocumentFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::DocumentFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::DocumentFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::HtmlFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::HtmlFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::HtmlFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::HtmlFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::MarkdownFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::MarkdownFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::MarkdownFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._add_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._add_heading",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._create_heading_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._create_styles",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._get_heading_number",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._get_run_style",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter._setup_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter.format_failed_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter.format_file_summaries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/batch_file_query_doc.py::WordFormatter.save_as_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 812,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::BaseMetadata._validate_non_empty_str",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::BaseMetadata.validate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFoldingManager.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFoldingManager._guess_language",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFoldingManager._register_default_formatters",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFoldingManager.format_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFoldingManager.register_formatter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFormatter._add_indent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFormatter._create_summary",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFormatter._format_content_block",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::ContentFormatter.format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::FileContentFormatter.format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/content_folder.py::FileMetadata.validate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 237,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter._create_sheet",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter._extract_tables_from_text",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter._is_separator_row",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter._normalize_table_row",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter._parse_table",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::ExcelTableFormatter.create_document",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/excel_doc.py::save_chat_tables",
+      "future_commits": 1,
+      "future_lines": 211,
+      "past_commits": 1,
+      "past_lines": 211,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/html_doc.py::HtmlFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 190,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/html_doc.py::HtmlFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 190,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/html_doc.py::HtmlFormatter.format_chat_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 190,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/html_doc.py::HtmlFormatter.format_history_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 190,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/markdown_doc.py::MarkdownFormatter.__init__",
+      "future_commits": 1,
+      "future_lines": 87,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/markdown_doc.py::MarkdownFormatter._add_content",
+      "future_commits": 1,
+      "future_lines": 87,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/markdown_doc.py::MarkdownFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 39,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter._create_styles",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter._get_reportlab_lib",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter._get_reportlab_platypus",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter._init_reportlab",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter._register_fonts",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::PDFFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/pdf_doc.py::convert_markdown_to_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 172,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/txt_doc.py::TxtFormatter.__init__",
+      "future_commits": 1,
+      "future_lines": 69,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/txt_doc.py::TxtFormatter._format_header",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/txt_doc.py::TxtFormatter._setup_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/txt_doc.py::TxtFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/txt_doc.py::convert_markdown_to_txt",
+      "future_commits": 1,
+      "future_lines": 69,
+      "past_commits": 1,
+      "past_lines": 79,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word2pdf.py::WordToPdfConverter.batch_convert",
+      "future_commits": 1,
+      "future_lines": 125,
+      "past_commits": 1,
+      "past_lines": 155,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word2pdf.py::WordToPdfConverter.convert_doc_to_pdf",
+      "future_commits": 1,
+      "future_lines": 125,
+      "past_commits": 1,
+      "past_lines": 155,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word2pdf.py::WordToPdfConverter.convert_to_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 155,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word_doc.py::WordFormatter.__init__",
+      "future_commits": 1,
+      "future_lines": 482,
+      "past_commits": 1,
+      "past_lines": 177,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word_doc.py::WordFormatter._create_styles",
+      "future_commits": 1,
+      "future_lines": 246,
+      "past_commits": 1,
+      "past_lines": 177,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word_doc.py::WordFormatter._setup_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 177,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word_doc.py::WordFormatter.create_document",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 177,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/conversation_doc/word_doc.py::convert_markdown_to_word",
+      "future_commits": 1,
+      "future_lines": 236,
+      "past_commits": 1,
+      "past_lines": 177,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._detect_encoding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._format_value",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._process_chunk",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._read_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor._validate_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor.extract_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::ExcelTextExtractor.get_supported_formats",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/excel_reader.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 286,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter._check_markitdown_installation",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter._cleanup_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter._validate_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter.batch_convert",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter.convert_to_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter.convert_to_markdown_and_save",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::MarkdownConverter.get_supported_formats",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 359,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._cleanup_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._evaluate_title_candidate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._extract_abstract_and_keywords",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._extract_additional_metadata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._extract_title_and_authors",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor._validate_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor.extract_metadata",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::PaperMetadataExtractor.get_supported_formats",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 493,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._build_section_hierarchy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._calculate_followup_content_length",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._cleanup_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._estimate_title_level",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_content_after_index",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_content_between_indices",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_figures_and_tables",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_formulas",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_full_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_references",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._extract_sections",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._format_formula_content",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._format_sections_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._identify_section_type",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._is_in_references_section",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._is_likely_section_title",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor._surrounding_has_math_symbols",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor.extract_paper_structure",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor.generate_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::PaperStructureExtractor.get_supported_formats",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1220,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_md.py::extract_and_save_as_markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 86,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor._cleanup_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor._should_extract_element",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor._validate_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor.extract_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::UnstructuredTextExtractor.get_supported_formats",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_reader.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 275,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor._cleanup_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor._download_webpage",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor._setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor._validate_url",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::WebTextExtractor.extract_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/doc_fns/read_fns/web_reader.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 219,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/game_fns/game_ascii_art.py::MiniGame_ASCII_Art.step",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/game_fns/game_interactive_story.py::MiniGame_ResumeStory.generate_story_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/game_fns/game_interactive_story.py::MiniGame_ResumeStory.step",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/json_fns/pydantic_io.py::GptJsonIO.generate_output_auto_repair",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/json_fns/select_tool.py::select_tool",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/json_fns/select_tool.py::structure_output",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::LatexPaperSplit.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::LatexPaperSplit.split",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::Latex\u7cbe\u7ec6\u5206\u89e3\u4e0e\u8f6c\u5316",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::check_gptac_cloud",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 126,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::remove_buggy_lines",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::split_subprocess",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::upload_to_gptac_cloud_if_user_allow",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 130,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::write_html",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::\u7f16\u8bd1Latex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 60,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::\u7f16\u8bd1Latex.check_if_need_xelatex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_actions.py::\u7f16\u8bd1Latex.get_compile_command",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 36,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_pickle_io.py::SafeUnpickler.find_class",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_pickle_io.py::SafeUnpickler.get_safe_classes",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::_merge_pdfs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 185,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::_merge_pdfs_legacy",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 185,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::_merge_pdfs_ng",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 228,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::compile_latex_with_timeout",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::find_main_tex_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 13,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::merge_tex_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::merge_tex_files_",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::post_process",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::post_process.break_check",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::reverse_forbidden_text",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::reverse_forbidden_text_careful_brace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/latex_fns/latex_toolbox.py::set_forbidden_text_careful_brace",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/live_audio/aliyunASR.py::AliyunASR.get_token",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/media_fns/get_media.py::download_video",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/media_fns/get_media.py::search_videos",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 42,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/breakdown_txt.py::breakdown_text_to_satisfy_token_limit_",
+      "future_commits": 1,
+      "future_lines": 275,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/pdf_fns/breakdown_txt.py::breakdown_text_to_satisfy_token_limit_.get_token_fn",
+      "future_commits": 1,
+      "future_lines": 825,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/pdf_fns/breakdown_txt.py::cut",
+      "future_commits": 1,
+      "future_lines": 275,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/pdf_fns/breakdown_txt.py::force_breakdown",
+      "future_commits": 1,
+      "future_lines": 275,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/pdf_fns/breakdown_txt.py::maintain_storage",
+      "future_commits": 1,
+      "future_lines": 275,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf.py::translate_pdf",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf.py::translate_pdf.break_down",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_legacy.py::\u89e3\u6790PDF_\u7b80\u5355\u62c6\u89e3",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::doc2x_api_response_status",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::make_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::retry_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 59,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::retry_request.decorator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::retry_request.decorator.wrapper",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::\u89e3\u6790PDF_DOC2X",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 281,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::\u89e3\u6790PDF_DOC2X_\u5355\u6587\u4ef6",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 63,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::\u89e3\u6790PDF_DOC2X_\u5355\u6587\u4ef6.deliver_to_markdown_plugin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::\u89e3\u6790PDF_DOC2X_\u5355\u6587\u4ef6.pdf2markdown",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_pdf_via_doc2x.py::\u89e3\u6790PDF_DOC2X_\u8f6cLatex",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/pdf_fns/parse_word.py::extract_text_from_files",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 17,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.add_documents_to_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 46,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.add_text_to_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.assign_embedding_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 149,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.build_prompt",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.generate_node_array_preview",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.inspect_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 35,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.purge_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.remember_qa",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 32,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::LlamaIndexRagWorker.retrieve_from_store_with_query",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::SaveLoad.create_new_vs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::SaveLoad.does_checkpoint_exist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 24,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::SaveLoad.load_from_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::SaveLoad.purge",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/llama_index_worker.py::SaveLoad.save_to_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusRagWorker.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusRagWorker.inspect_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusSaveLoad.create_new_vs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 97,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusSaveLoad.does_checkpoint_exist",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 94,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusSaveLoad.load_from_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusSaveLoad.purge",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/milvus_worker.py::MilvusSaveLoad.save_to_checkpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 95,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/rag_fns/rag_file_support.py::extract_text",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 4,
+      "past_lines": 86,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/rag_fns/vector_store_index.py::GptacVectorStoreIndex.default_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 58,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::LocalDocQA.get_knowledge_based_content_test",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::LocalDocQA.init_knowledge_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::construct_vector_store",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::knowledge_archive_interface.answer_with_archive_by_id",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::knowledge_archive_interface.feed_archive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::knowledge_archive_interface.get_chinese_text2vec",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::similarity_search_with_score_by_vector",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vector_fns/vector_database.py::similarity_search_with_score_by_vector.separate_list",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_call_plugin.py::execute_plugin",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_call_plugin.py::read_avail_plugin_enum",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_modify_config.py::modify_configuration_hot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_modify_config.py::modify_configuration_reboot",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_state.py::VoidTerminalState.lock_plugin",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/vt_fns/vt_state.py::VoidTerminalState.reset_state",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::DFA.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::DFA.build_dfa",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::DFA.is_at_word_end",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::DFA.search",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::Term.__str__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/word_dfa/dfa_algo.py::main",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2706,
+      "change_prone": false
+    },
+    {
+      "target": "crazy_functions/\u51fd\u6570\u52a8\u6001\u751f\u6210.py::\u51fd\u6570\u52a8\u6001\u751f\u6210",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u547d\u4ee4\u884c\u52a9\u624b.py::\u547d\u4ee4\u884c\u52a9\u624b",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u7406\u89e3PDF\u6587\u6863\u5185\u5bb9.py::\u7406\u89e3PDF\u6587\u6863\u5185\u5bb9\u6807\u51c6\u6587\u4ef6\u8f93\u5165",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u751f\u6210\u51fd\u6570\u6ce8\u91ca.py::\u751f\u6210\u51fd\u6570\u6ce8\u91ca",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u751f\u6210\u591a\u79cdMermaid\u56fe\u8868.py::\u751f\u6210\u591a\u79cdMermaid\u56fe\u8868",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u8bed\u97f3\u52a9\u624b.py::\u8bed\u97f3\u52a9\u624b",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u8bfb\u6587\u7ae0\u5199\u6458\u8981.py::\u8bfb\u6587\u7ae0\u5199\u6458\u8981",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "crazy_functions/\u8c37\u6b4c\u68c0\u7d22\u5c0f\u52a9\u624b.py::\u8c37\u6b4c\u68c0\u7d22\u5c0f\u52a9\u624b",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "request_llms/bridge_all.py::LLM_CATCH_EXCEPTION",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_all.py::LLM_CATCH_EXCEPTION.decorated",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_all.py::LazyloadTiktoken.get_encoder",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_all.py::predict",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": true
+    },
+    {
+      "target": "request_llms/bridge_all.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm3.py::GetGLM3Handle.load_model_and_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm4.py::GetGLM4Handle.llm_stream_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm4.py::GetGLM4Handle.llm_stream_generator.adaptor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm4.py::GetGLM4Handle.load_model_and_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm4.py::GetGLM4Handle.load_model_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglm4.py::GetGLM4Handle.try_to_import_special_deps",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglmft.py::GetGLMFTHandle.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatglmft.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt.py::generate_payload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 19,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt.py::handle_error",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": true
+    },
+    {
+      "target": "request_llms/bridge_chatgpt.py::handle_o1_model_special",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 12,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 70,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 33,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt_vision.py::generate_payload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt_vision.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_chatgpt_vision.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_claude.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_claude.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 4,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_cohere.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_cohere.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_deepseekcoder.py::GetCoderLMHandle.load_model_and_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_deepseekcoder.py::download_huggingface_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_google_gemini.py::make_media_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_google_gemini.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_google_gemini.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_internlm.py::GetInternlmHandle.llm_stream_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_llama.py::GetGLMHandle.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_llama.py::GetGLMHandle.run.load_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_llama.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_pangualpha.py::GetGLMHandle.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_pangualpha.py::GetGLMHandle.run.load_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_pangualpha.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_rwkv.py::GetGLMHandle.run",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_rwkv.py::GetGLMHandle.run.load_model",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_jittorllms_rwkv.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_llama2.py::GetLlamaHandle.llm_stream_generator",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_llama2.py::GetLlamaHandle.llm_stream_generator.adaptor",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_llama2.py::GetLlamaHandle.load_model_and_tokenizer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_moonshot.py::MoonShotInit.__converter_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_moonshot.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_moss.py::GetGLMHandle.moss_init",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_moss.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_newbingfree.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_ollama.py::generate_payload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_ollama.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_ollama.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::append_image_if_contain_base64",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::contain_base64",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::decode_chunk",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::generate_payload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 542,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::get_full_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::handle_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::handle_o1_model_special",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::make_multimodal_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 543,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 544,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::remove_image_if_contain_base64",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::reverse_base64_from_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_openrouter.py::verify_endpoint",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 541,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_qianfan.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_qwen.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_qwen.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_skylark2.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_skylark2.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_spark.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_spark.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_stackclaude.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_taichu.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_taichu.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_tgui.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_tgui.py::predict.run_coroutine",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_tgui.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_tgui.py::predict_no_ui_long_connection.run_coroutine",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_zhipu.py::predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/bridge_zhipu.py::predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::GoogleChatInit.__conversation_history",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::GoogleChatInit.__conversation_user",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::GoogleChatInit.generate_chat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::GoogleChatInit.generate_message_payload",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::contain_base64",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_google.py::reverse_base64_from_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_qwenapi.py::QwenRequestInstance.format_reasoning",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_qwenapi.py::QwenRequestInstance.generate",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_sparkapi.py::SparkRequestInstance.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_sparkapi.py::SparkRequestInstance.create_blocking_request",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_sparkapi.py::SparkRequestInstance.create_blocking_request.on_error",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_sparkapi.py::SparkRequestInstance.create_blocking_request.on_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_sparkapi.py::gen_params",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_taichu.py::TaichuChatInit.generate_chat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 2,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_zhipuglm.py::ZhipuChatInit.__conversation_user",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/com_zhipuglm.py::ZhipuChatInit.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::EmbeddingModel.get_agg_embedding_from_queries",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::EmbeddingModel.get_text_embedding_batch",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 87,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::OpenAiEmbeddingModel.__init__",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 60,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::OpenAiEmbeddingModel.compute_embedding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 63,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::OpenAiEmbeddingModel.embedding_dimension",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 3,
+      "past_lines": 68,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::OpenAiEmbeddingModel.get_query_embedding",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/embed_models/openai_embed.py::mean_agg",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 27,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::LocalLLMHandle.stream_chat",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::get_local_llm_predict_fns",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::get_local_llm_predict_fns.predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::reset_tqdm_output",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::reset_tqdm_output.status_printer",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/local_llm_class.py::reset_tqdm_output.status_printer.fp_write",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::decode_chunk",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 6,
+      "past_lines": 29,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::generate_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::get_predict_function",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 98,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::get_predict_function.predict",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 8,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::get_predict_function.predict_no_ui_long_connection",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 7,
+      "past_lines": 43,
+      "change_prone": false
+    },
+    {
+      "target": "request_llms/oai_std_model_template.py::get_predict_function.remove_prefix",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 10,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::close_up_code_segment_during_stream",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 11,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::code_block_title_replace_format",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::compat_non_markdown_input",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 6,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::compress_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::contain_html_tag",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::contain_image",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::decompress_string",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::fix_dollar_sticking_bug",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::get_last_backticks_indent",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 18,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::markdown_convertion",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 3,
+      "past_lines": 8,
+      "change_prone": true
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::markdown_convertion_for_file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/advanced_markdown_format.py::simple_markdown_convertion",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/char_visual_effect.py::scrolling_visual_effect",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u7d2b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u7ea2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u7eff",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u84dd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u975b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u4eae\u9ec4",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u7d2b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u7ea2",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u7eff",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u84dd",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u975b",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/colorful.py::log\u9ec4",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/config_loader.py::read_env_variable",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 5,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/config_loader.py::read_single_conf_with_lru_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/connect_void_terminal.py::get_chat_default_kwargs",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/context_clip_policy.py::auto_context_clip_each_message",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 296,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/context_clip_policy.py::auto_context_clip_search_optimal",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 296,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/context_clip_policy.py::clip_history",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 296,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/context_clip_policy.py::get_model_info",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 296,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/context_clip_policy.py::get_token_num",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 296,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/cookie_manager.py::make_history_cache",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/docker_as_service_api.py::process_received",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 73,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/docker_as_service_api.py::stream_daas",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 81,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/fastapi_server.py::start_app",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 2,
+      "past_lines": 38,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/fastapi_server.py::start_app.file",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 25,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/fastapi_server.py::start_app.logout",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/fastapi_server.py::validate_path_safety",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/handle_upload.py::extract_archive",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 4,
+      "past_lines": 22,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/handle_upload.py::safe_extract_rar",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 26,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::is_any_api_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 7,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::is_o_family_for_openai",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 8,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::is_openai_api_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 1,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::is_openroute_api_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 3,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::select_api_key",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 5,
+      "past_lines": 9,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/key_pattern_manager.py::select_api_key_for_embed_models",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 16,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/logging.py::chat_log_filter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/logging.py::formatter_with_clip",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/logging.py::not_chat_log_filter",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": false
+    },
+    {
+      "target": "shared_utils/logging.py::setup_logging",
+      "future_commits": 0,
+      "future_lines": 0,
+      "past_commits": 1,
+      "past_lines": 69,
+      "change_prone": false
+    }
+  ]
+}

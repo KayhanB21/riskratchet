@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Actively-developed, untested ML/TTS app; the GPT_SoVITS/ package holds the source.
+name = "gpt-sovits"
+url = "https://github.com/RVC-Boss/GPT-SoVITS"
+paths = ["GPT_SoVITS"]
+pr_branch = "main"
+coverage_free = true

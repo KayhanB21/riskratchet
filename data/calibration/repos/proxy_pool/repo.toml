@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Middle-of-gradient small service; nominal tests. Source split across the app packages.
+name = "proxy_pool"
+url = "https://github.com/jhao104/proxy_pool"
+paths = ["api", "db", "fetcher", "handler", "helper", "util"]
+pr_branch = "master"
+coverage_free = true

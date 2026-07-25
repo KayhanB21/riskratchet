@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Middle-of-gradient CTF tool: has a tests dir but weak coverage discipline; source in src/.
+name = "rsactftool"
+url = "https://github.com/RsaCtfTool/RsaCtfTool"
+paths = ["src"]
+pr_branch = "master"
+coverage_free = true

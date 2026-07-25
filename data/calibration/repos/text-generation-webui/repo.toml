@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Actively-developed, untested AI app (no top-level tests dir); core logic in modules/.
+name = "text-generation-webui"
+url = "https://github.com/oobabooga/text-generation-webui"
+paths = ["modules"]
+pr_branch = "main"
+coverage_free = true

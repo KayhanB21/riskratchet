@@ -1,0 +1,8 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Middle-of-gradient: actively developed LLM tool, nominal tests; source across
+# crazy_functions/ request_llms/ shared_utils/.
+name = "gpt_academic"
+url = "https://github.com/binary-husky/gpt_academic"
+paths = ["crazy_functions", "request_llms", "shared_utils"]
+pr_branch = "master"
+coverage_free = true

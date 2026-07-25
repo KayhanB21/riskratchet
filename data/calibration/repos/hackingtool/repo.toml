@@ -1,0 +1,7 @@
+# Messy-gradient cohort (0.3.0 sprawl external-validity gate). Scored coverage-free.
+# Small untested CLI tool aggregator; source is tiny (~2 MB), so the whole repo is
+# scanned (no paths filter) — generated/vendored code is negligible.
+name = "hackingtool"
+url = "https://github.com/Z4nzu/hackingtool"
+pr_branch = "master"
+coverage_free = true

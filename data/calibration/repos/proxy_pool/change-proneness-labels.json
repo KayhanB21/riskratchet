@@ -1,0 +1,131 @@
+{
+  "snapshot_sha": "e0fa4de1f59aaf3e287e6d166cee7b020bbe1578",
+  "head_sha": "9cc0cad4c47e84e34aaec2eead099421960dcd07",
+  "window_days": 365,
+  "n_functions": 150,
+  "n_change_prone": 15,
+  "n_future_commits": 14,
+  "insufficient_past_history": false,
+  "functions": [
+    {
+      "target": "api/proxyApi.py::get",
+      "future_commits": 2,
+      "future_lines": 12,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "api/proxyApi.py::getAll",
+      "future_commits": 2,
+      "future_lines": 5,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "api/proxyApi.py::getCount",
+      "future_commits": 2,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "api/proxyApi.py::pop",
+      "future_commits": 2,
+      "future_lines": 10,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "db/redisClient.py::RedisClient.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "db/ssdbClient.py::SsdbClient.__init__",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "fetcher/proxyFetcher.py::ProxyFetcher.freeProxy01",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "fetcher/proxyFetcher.py::ProxyFetcher.freeProxy08",
+      "future_commits": 1,
+      "future_lines": 44,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/check.py::DoValidator.regionGetter",
+      "future_commits": 3,
+      "future_lines": 6,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/fetch.py::Fetcher.run",
+      "future_commits": 2,
+      "future_lines": 13,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/fetch.py::_ThreadFetcher.__init__",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/fetch.py::_ThreadFetcher.run",
+      "future_commits": 1,
+      "future_lines": 7,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/launcher.py::__showConfigure",
+      "future_commits": 1,
+      "future_lines": 4,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "helper/scheduler.py::runScheduler",
+      "future_commits": 1,
+      "future_lines": 1,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    },
+    {
+      "target": "util/webRequest.py::WebRequest.tree",
+      "future_commits": 1,
+      "future_lines": 2,
+      "past_commits": 0,
+      "past_lines": 0,
+      "change_prone": true
+    }
+  ]
+}
