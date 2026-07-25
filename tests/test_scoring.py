@@ -16,6 +16,7 @@ from riskratchet.models import (
     Severity,
 )
 from riskratchet.scoring import (
+    PYTHON_COMPLEXITY_CALIBRATION,
     WEIGHTS,
     branch_gap_score,
     churn_score,
@@ -63,6 +64,41 @@ def test_structural_complexity_saturates_at_cc_21() -> None:
 def test_structural_complexity_is_monotonic() -> None:
     values = [structural_complexity_score(ComplexityStats(cyclomatic=cc)) for cc in range(1, 25)]
     assert values == sorted(values)
+
+
+def test_structural_complexity_default_calibration_is_python_literal() -> None:
+    # B0: the default calibration must reproduce the pre-0.3.0 hardcoded band exactly,
+    # so passing PYTHON_COMPLEXITY_CALIBRATION explicitly is byte-identical to omitting it.
+    assert PYTHON_COMPLEXITY_CALIBRATION == (1.0, 21.0)
+    for cc in range(1, 30):
+        stats = ComplexityStats(cyclomatic=cc)
+        assert structural_complexity_score(stats) == structural_complexity_score(
+            stats, PYTHON_COMPLEXITY_CALIBRATION
+        )
+
+
+def test_structural_complexity_respects_custom_calibration() -> None:
+    # A wider band saturates later: CC=21 is fully saturated under the Python band but only
+    # partway up a (1, 41) band. The knob is threaded as a value; no language branching.
+    stats = ComplexityStats(cyclomatic=21)
+    assert structural_complexity_score(stats, (1.0, 21.0)) == 100.0
+    assert structural_complexity_score(stats, (1.0, 41.0)) == pytest.approx(50.0)
+
+
+def test_compute_components_threads_complexity_calibration() -> None:
+    # compute_components must forward the calibration to structural_complexity_score.
+    kwargs = dict(
+        is_public=True,
+        span=_span(10),
+        complexity=ComplexityStats(cyclomatic=21),
+        coverage=CoverageStats(line_coverage=1.0, branch_coverage=None),
+        churn=ChurnStats(commits=0),
+        file_stats=_file(100),
+    )
+    default = compute_components(**kwargs)  # type: ignore[arg-type]
+    widened = compute_components(**kwargs, complexity_calibration=(1.0, 41.0))  # type: ignore[arg-type]
+    assert default.structural_complexity == 100.0
+    assert widened.structural_complexity == pytest.approx(50.0)
 
 
 def test_churn_score_saturates() -> None:

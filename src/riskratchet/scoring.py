@@ -42,6 +42,16 @@ COMPONENT_NAMES: frozenset[str] = frozenset(DEFAULT_WEIGHTS)
 # Saturation thresholds. A value at or above the saturation point scores 100.
 COMPLEXITY_SATURATION_CC = 20
 CHURN_SATURATION_COMMITS = 10
+
+# Cyclomatic-complexity normalization band as a `(free, saturation)` pair. It is threaded
+# through the scoring functions as a plain *value*, never branched on a language string, so
+# scoring.py stays language-agnostic: the Python backend passes `PYTHON_COMPLEXITY_CALIBRATION`
+# and the TypeScript backend (0.3.0) passes its own corpus-derived band, so equal complexity
+# percentiles map to equal normalized scores across languages. `PYTHON_COMPLEXITY_CALIBRATION`
+# is exactly today's literal — `structural_complexity_score` was hardcoded to
+# `free=1, saturation=COMPLEXITY_SATURATION_CC + 1` — so the default path is byte-identical.
+ComplexityCalibration = tuple[float, float]
+PYTHON_COMPLEXITY_CALIBRATION: ComplexityCalibration = (1.0, float(COMPLEXITY_SATURATION_CC + 1))
 FUNCTION_LINE_FREE = 80
 FUNCTION_LINE_SATURATION = 160
 # The file-line band no longer feeds scoring (dropped in 0.3.0 — see sprawl_score). Retained
@@ -74,8 +84,12 @@ def coverage_gap_score(coverage: CoverageStats) -> float:
     return max(0.0, min(1.0, 1.0 - coverage.line_coverage)) * 100.0
 
 
-def structural_complexity_score(complexity: ComplexityStats) -> float:
-    return _saturate(complexity.cyclomatic, free=1, saturation=COMPLEXITY_SATURATION_CC + 1)
+def structural_complexity_score(
+    complexity: ComplexityStats,
+    calibration: ComplexityCalibration = PYTHON_COMPLEXITY_CALIBRATION,
+) -> float:
+    free, saturation = calibration
+    return _saturate(complexity.cyclomatic, free=free, saturation=saturation)
 
 
 def branch_gap_score(coverage: CoverageStats) -> float:
@@ -191,10 +205,11 @@ def compute_components(
     coverage: CoverageStats,
     churn: ChurnStats,
     file_stats: FileStats,
+    complexity_calibration: ComplexityCalibration = PYTHON_COMPLEXITY_CALIBRATION,
 ) -> RiskComponents:
     return RiskComponents(
         coverage_gap=coverage_gap_score(coverage),
-        structural_complexity=structural_complexity_score(complexity),
+        structural_complexity=structural_complexity_score(complexity, complexity_calibration),
         branch_gap=branch_gap_score(coverage),
         churn=churn_score(churn),
         public_surface=public_surface_score(is_public, coverage),
