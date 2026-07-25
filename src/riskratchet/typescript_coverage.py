@@ -49,6 +49,23 @@ Istanbul, has no `(src_line, dst_line)` arc).
 
 Format is auto-detected per file (extension `.info`/`.lcov` or a leading `TN:`/`SF:` line → LCOV;
 a leading `{` → Istanbul JSON), so a single `--ts-coverage` list may mix both and merges them.
+
+**`FN`/`FNDA` — cross-check only (B2c decision, 0.3.0).** LCOV's `FN:<line>,<name>` /
+`FNDA:<hits>,<name>` (and Istanbul's own `fnMap`/`f`) are parsed into a synthetic `fnMap`/`f` and
+exposed via `fn_declaration_lines()` / `spans_cover_any_function_decl()` as a *second* source-map
+misalignment signal — a function-level anchor independent of statement-start lines. They deliberately
+do **not** feed the scored coverage fraction: `FNDA` is binary called/not (it can't express partial
+within-function coverage), and `FN`-name→span matching is fragile (arrows, anonymous, mangling). The
+scored fraction stays the producer-agnostic line-span reconstruction. `LF`/`LH`/`BRF`/`BRH` file
+totals remain parsed-and-ignored. `missing_branches` (the Python `(src_line, dst_line)` arc field)
+stays empty for TS — neither LCOV nor Istanbul has that arc; TS uncovered arms go **only** in
+`missing_branch_arms` as `(branch_line, arm_index)`.
+
+The parser is validated against **real** output from all five supported producers (c8, nyc, Jest,
+Vitest, Karma) — see `tests/fixtures/typescript/real_producers/` and
+`tests/test_typescript_coverage_real_producers.py`; their `DA`/`BRDA` conventions genuinely differ
+(c8 emits whole-file `DA` + single-arm `BRDA`; the Istanbul family emits statement-line `DA` +
+two-arm `BRDA`), so equal percentages across producers are not interchangeable (contract §2).
 """
 
 from __future__ import annotations
@@ -302,17 +319,19 @@ def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[st
     current_path: str | None = None
     da: list[tuple[int, int]] = []
     brda: list[tuple[int, str, int]] = []
+    fn: list[tuple[int, str]] = []  # (declaration line, name) from `FN:`
+    fnda: dict[str, int] = {}  # name -> hit count from `FNDA:`
     da_seen = 0  # `DA:` lines encountered (parsed or not), to detect an all-corrupt record
 
     def _flush() -> None:
-        nonlocal current_path, da, brda, da_seen
+        nonlocal current_path, da, brda, fn, fnda, da_seen
         # Drop a record whose DA lines were all corrupt; keep a genuinely DA-less (empty) record.
         if current_path is not None and not (da_seen > 0 and not da):
             normalized = current_path.replace("\\", "/")
             if normalized not in files:
                 by_suffix.setdefault(_basename(normalized), []).append(normalized)
-            files[normalized] = _lcov_record_to_istanbul(da, brda)
-        current_path, da, brda, da_seen = None, [], [], 0
+            files[normalized] = _lcov_record_to_istanbul(da, brda, fn, fnda)
+        current_path, da, brda, fn, fnda, da_seen = None, [], [], [], {}, 0
 
     for raw_line in text.lstrip("\ufeff").splitlines():
         line = raw_line.strip()
@@ -333,6 +352,14 @@ def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[st
             brda_record = _parse_lcov_brda(line[5:])
             if brda_record is not None:
                 brda.append(brda_record)
+        elif line.startswith("FN:") and current_path is not None:
+            fn_record = _parse_lcov_fn(line[3:])
+            if fn_record is not None:
+                fn.append(fn_record)
+        elif line.startswith("FNDA:") and current_path is not None:
+            fnda_record = _parse_lcov_fnda(line[5:])
+            if fnda_record is not None:
+                fnda[fnda_record[1]] = fnda_record[0]
     _flush()
     return files, by_suffix, saw_sf
 
@@ -340,8 +367,17 @@ def _parse_lcov(text: str) -> tuple[dict[str, dict[str, Any]], dict[str, list[st
 def _lcov_record_to_istanbul(
     da: list[tuple[int, int]],
     brda: list[tuple[int, str, int]],
+    fn: list[tuple[int, str]],
+    fnda: dict[str, int],
 ) -> dict[str, Any]:
-    """Build one synthetic Istanbul-shaped file dict from parsed `DA`/`BRDA` records."""
+    """Build one synthetic Istanbul-shaped file dict from parsed `DA`/`BRDA`/`FN`/`FNDA` records.
+
+    `FN`/`FNDA` populate a synthetic `fnMap`/`f` in the same shape real Istanbul JSON carries, so the
+    function-level cross-check (`fn_declaration_lines` / `spans_cover_any_function_decl`) reads one
+    uniform structure across LCOV and Istanbul. Per the B2c decision these feed a source-map
+    misalignment cross-check only — never the scored coverage fraction, which stays the
+    producer-agnostic line-span reconstruction (`FNDA` is binary called/not, and `FN`-name→span
+    matching is fragile)."""
     statement_map: dict[str, Any] = {}
     hits: dict[str, Any] = {}
     for index, (line, count) in enumerate(da):
@@ -371,7 +407,78 @@ def _lcov_record_to_istanbul(
         branch_map[bid] = {"loc": {"start": {"line": key[0]}}}
         b[bid] = list(groups[key])
 
-    return {"statementMap": statement_map, "s": hits, "branchMap": branch_map, "b": b}
+    fn_map: dict[str, Any] = {}
+    f: dict[str, Any] = {}
+    for index, (line, name) in enumerate(fn):
+        fid = str(index)
+        fn_map[fid] = {"name": name, "decl": {"start": {"line": line}}}
+        f[fid] = fnda.get(name, 0)
+
+    return {
+        "statementMap": statement_map,
+        "s": hits,
+        "branchMap": branch_map,
+        "b": b,
+        "fnMap": fn_map,
+        "f": f,
+    }
+
+
+def _parse_lcov_fn(fields: str) -> tuple[int, str] | None:
+    """`FN:<line>,<name>` (or the newer `FN:<start>,<end>,<name>`) → `(decl_line, name)`; None if
+    the declaration line is malformed. The extra `end` line in the 3-field form is dropped — only the
+    declaration line anchors the cross-check."""
+    parts = fields.split(",")
+    if len(parts) < 2:
+        return None
+    name = parts[-1].strip()
+    if not name:
+        return None
+    try:
+        return int(parts[0]), name
+    except ValueError:
+        return None
+
+
+def _parse_lcov_fnda(fields: str) -> tuple[int, str] | None:
+    """`FNDA:<hits>,<name>` → `(hits, name)`; None if the hit count is malformed."""
+    parts = fields.split(",")
+    if len(parts) < 2:
+        return None
+    name = parts[-1].strip()
+    if not name:
+        return None
+    try:
+        return int(parts[0]), name
+    except ValueError:
+        return None
+
+
+def fn_declaration_lines(file_coverage: dict[str, Any]) -> list[int]:
+    """Declaration lines from `fnMap` (real Istanbul or synthetic-from-LCOV), a function-level anchor
+    independent of the statement-start lines `spans_cover_any_statement` uses. Used only for the B2c
+    source-map-misalignment cross-check, never for the scored coverage fraction."""
+    fn_map = file_coverage.get("fnMap")
+    if not isinstance(fn_map, dict):
+        return []
+    lines = [_start_line(entry.get("decl")) for entry in fn_map.values() if isinstance(entry, dict)]
+    return [line for line in lines if line is not None]
+
+
+def spans_cover_any_function_decl(
+    file_coverage: dict[str, Any],
+    spans: list[FunctionSpan],
+) -> bool:
+    """True if at least one `FN` declaration line falls inside a discovered span.
+
+    A second, independent misalignment signal complementing `spans_cover_any_statement`: if a
+    report's `FN` declaration lines land in *no* discovered span (yet both exist), the coverage line
+    numbers likely describe compiled JS, not the `.ts` we parsed. Returns True (aligned / nothing to
+    check) when the report carries no `FN` records, so a producer that omits `FN` is never flagged."""
+    lines = fn_declaration_lines(file_coverage)
+    if not lines:
+        return True
+    return any(span.start_line <= line <= span.end_line for line in lines for span in spans)
 
 
 def _parse_lcov_da(fields: str) -> tuple[int, int] | None:

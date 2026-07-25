@@ -121,15 +121,22 @@ leading `TN:`/`SF:` line → LCOV; a leading `{` → Istanbul JSON), so one `--t
 mix both. A record whose `DA:` lines are all unparseable is rejected rather than silently read as
 "100% covered".
 
-LCOV `FN`/`FNDA` (function hit counts) and the `LF`/`LH`/`BRF`/`BRH` file totals have no home in
-`CoverageStats` and are parsed-and-ignored today. **Open 0.3.0 question:** `FNDA` is LCOV's one
-*function-level* signal ("was this function ever called"), which is exactly this tool's unit of
-analysis — the current line-span reconstruction ignores it. Before TS coverage feeds scoring at
-`0.3.0`, decide whether to consume `FNDA` directly (and whether `FN` declaration lines make a
-better source-map misalignment check than the statement-based one). **Pre-0.3.0 validation gate:**
-the current test fixtures other than `c8_real/` are hand-authored; before promotion, validate the
-parser against real output from each supported producer (c8, nyc, Jest, Vitest, Karma), since their
-`BRDA`/`DA` conventions differ.
+The `LF`/`LH`/`BRF`/`BRH` file totals have no home in `CoverageStats` and stay parsed-and-ignored.
+**FNDA decision (B2c, closed):** `FN`/`FNDA` are LCOV's one *function-level* signal ("was this
+function ever called") — exactly this tool's unit — but they feed a **source-map-misalignment
+cross-check only**, never the scored coverage fraction. They are parsed into a synthetic `fnMap`/`f`
+(the same shape real Istanbul JSON carries) and exposed as `fn_declaration_lines()` /
+`spans_cover_any_function_decl()`, a function-level alignment anchor independent of the statement
+lines `spans_cover_any_statement` uses. The scored fraction stays the producer-agnostic line-span
+reconstruction, because `FNDA` is binary called/not (it cannot express partial within-function
+coverage) and `FN`-name→span matching is fragile (arrows/anonymous/mangling). `missing_branches` (the
+Python `(src_line, dst_line)` arc field) stays empty for TS; uncovered arms go **only** in
+`missing_branch_arms` as `(branch_line, arm_index)`. **Validation gate (B2c, closed):** the parser is
+validated against **real** output from all five supported producers — `tests/fixtures/typescript/real_producers/`
+holds live c8/nyc/Jest/Vitest/Karma reports (LCOV + the two distinct Istanbul-JSON shapes), and
+`tests/test_typescript_coverage_real_producers.py` pins that each parses and that c8's raw-V8 shape
+(whole-file `DA`, single-arm `BRDA`) legitimately diverges from the Istanbul family's (statement-line
+`DA`, two-arm `BRDA`) on identical source.
 
 **Semantics are not identical across backends — do not treat the percentages as
 interchangeable.** TS `line_coverage` from Istanbul is *statement-start-derived* (a line counts as
