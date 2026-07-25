@@ -89,8 +89,8 @@ def test_scan_json_matches_report_schema(tmp_path: Path) -> None:
 
 
 def test_scan_json_with_typescript_matches_report_schema(tmp_path: Path) -> None:
-    # Slice 5 (0.2.15): `scan --json --experimental-typescript` adds a top-level `typescript`
-    # array of unscored functions; the whole payload must still validate against the schema.
+    # 0.3.0: `scan --json --typescript` mixes scored TS functions into functions[] with
+    # language:"typescript"; the whole payload must still validate against the report schema.
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     src = _project(tmp_path)
@@ -99,11 +99,13 @@ def test_scan_json_with_typescript_matches_report_schema(tmp_path: Path) -> None
     )
     result = runner.invoke(
         app,
-        ["scan", str(src), "--json", "--experimental-typescript", "--no-auto-cov", "--no-git"],
+        ["scan", str(src), "--json", "--typescript", "--no-auto-cov", "--no-git"],
     )
     assert result.exit_code == 0, result.output
     payload = json.loads(result.stdout)
-    assert payload["typescript"][0]["language"] == "typescript"
+    assert "typescript" not in payload
+    langs = {fn["language"] for fn in payload["functions"]}
+    assert "typescript" in langs
     Draft202012Validator(_load_schema("report.schema.json")).validate(payload)
 
 

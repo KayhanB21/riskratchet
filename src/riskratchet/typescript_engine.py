@@ -92,6 +92,7 @@ def analyze_typescript(
     modules: dict[str, Any] = {}
     file_line_counts: dict[str, int] = {}
     file_fn_counts: dict[str, int] = {}
+    unmeasured_files = 0
     for path in files:
         found, exports = ts.analyze_ts_file(path, root=root_path, on_error=on_error)
         rel = relative_posix(path, root_path)
@@ -99,8 +100,13 @@ def analyze_typescript(
         file_line_counts[rel] = _count_lines(path)
         file_fn_counts[rel] = len(found)
         if has_coverage:
-            found = _enrich_coverage(found, coverage.lookup(rel), rel, on_warning)
+            file_cov = coverage.lookup(rel)
+            if file_cov is None and found:
+                unmeasured_files += 1
+            found = _enrich_coverage(found, file_cov, rel, on_warning)
         discovered.extend(found)
+    if unmeasured_files:
+        _warn(on_warning, f"{unmeasured_files} file(s) had no coverage entry (scored without coverage)")
 
     discovered = _narrow_public(discovered, files, root_path, ts_entries, modules, on_warning)
 
@@ -239,6 +245,9 @@ def _narrow_public(
                 "public surface: --ts-entry did not match any scanned file; keeping export flags",
             )
         return functions
+    if entries and len(resolved_entries) < len(entries):
+        unmatched = len(entries) - len(resolved_entries)
+        _warn(on_warning, f"public surface: {unmatched} --ts-entry path(s) matched no scanned file")
     result = tsx.resolve_entry_reachable(modules, resolved_entries)
     if result.poison_all:
         _warn(

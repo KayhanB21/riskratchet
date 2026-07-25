@@ -35,6 +35,24 @@ carries the sprawl scoring recalibration; the TypeScript-scoring promotion lands
   - `sprawl` is now a pure per-function signal (a function-length count), independent of the file —
     which also makes it **language-neutral** for the TypeScript backend entering scoring in 0.3.0.
 
+- **TypeScript is now a scored backend (`scan --typescript`).** After six informational slices
+  (0.2.11–0.2.16), TypeScript is promoted from discovery to first-class scoring. `scan --typescript`
+  analyzes and **scores** TypeScript functions, mixing them into the shared `functions[]` array with
+  `language: "typescript"`, using a corpus-derived TS complexity calibration (equal complexity
+  percentiles map to equal normalized scores across languages) and optional `--ts-coverage`
+  (Istanbul/nyc/c8/Jest/Vitest/Karma; LCOV or Istanbul JSON, validated against real output).
+  - **Output break:** the separate informational top-level `typescript[]` array (JSON) and the
+    `riskratchet.typescript-function` SARIF note rule are **removed** — TypeScript functions are now
+    ordinary scored entries in `functions[]` / regular `riskratchet.function-risk` SARIF results,
+    tagged `language: "typescript"`. `functions[].language` in the report/explain schemas relaxes
+    from `const "python"` to `enum ["python", "typescript"]`.
+  - **Flag rename:** `--experimental-typescript` is deprecated (hidden alias for `--typescript`, one
+    release) and now **scores** rather than merely listing; the experimental stderr banner and
+    listing are gone.
+  - The Python-only path is byte-for-byte unchanged — `engine.py` never imports tree-sitter, and a
+    scan without `--typescript` imports neither the TypeScript backend nor tree-sitter. The
+    `[typescript]` extra (`pip install 'riskratchet[typescript]'`) is still required to use it.
+
 ## [0.2.16] - 2026-07-18
 
 LCOV coverage support for the experimental TypeScript track. Still **informational only** — no

@@ -248,8 +248,16 @@ def _scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:
 
     monkeypatch.chdir(app_dir)
     return CliRunner().invoke(
-        app, ["scan", ".", "--experimental-typescript", "--no-auto-cov", "--no-git", *extra]
+        app, ["scan", ".", "--typescript", "--json", "--no-auto-cov", "--no-git", *extra]
     )
+
+
+def _visibility(result: Any) -> dict[str, bool]:
+    """{qualname: is_public} for the scored TypeScript functions in a --typescript --json scan."""
+    import json
+
+    payload = json.loads(result.stdout)
+    return {fn["qualname"]: fn["is_public"] for fn in payload["functions"] if fn["language"] == "typescript"}
 
 
 def test_barrel_narrowing_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -257,13 +265,12 @@ def test_barrel_narrowing_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyP
     pytest.importorskip("tree_sitter_typescript")
     result = _scan(_isolated_barrel(tmp_path), monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    err = result.stderr
-    assert "exposed  [public]" in err  # re-exported by name
-    assert "alsoExposed  [internal]" in err  # file-exported, not re-exported → narrowed
-    assert "helper  [public]" in err  # via `export *`
-    assert "hidden  [internal]" in err  # unreferenced module → narrowed
-    assert "cx 1" in err  # complexity column present alongside
-    assert "narrowed to entry index.ts" in err  # R4: the driving entry is announced
+    vis = _visibility(result)
+    assert vis["exposed"] is True  # re-exported by name
+    assert vis["alsoExposed"] is False  # file-exported, not re-exported → narrowed
+    assert vis["helper"] is True  # via `export *`
+    assert vis["hidden"] is False  # unreferenced module → narrowed
+    assert "narrowed to entry index.ts" in result.stderr  # R4: the driving entry is announced
 
 
 def test_no_entry_keeps_file_export_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -273,9 +280,9 @@ def test_no_entry_keeps_file_export_flags(tmp_path: Path, monkeypatch: pytest.Mo
     (app_dir / "index.ts").unlink()  # remove the only barrel → no entry → no narrowing
     result = _scan(app_dir, monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    # Every file-exported function keeps its public flag (safety fallback).
-    assert "alsoExposed  [public]" in result.stderr
-    assert "hidden  [public]" in result.stderr
+    vis = _visibility(result)
+    assert vis["alsoExposed"] is True  # every file-exported function keeps its public flag
+    assert vis["hidden"] is True
 
 
 def test_unresolved_wildcard_poisons_and_keeps_flags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -290,7 +297,7 @@ def test_unresolved_wildcard_poisons_and_keeps_flags(tmp_path: Path, monkeypatch
     result = _scan(app_dir, monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "surface can't be bounded" in result.stderr
-    assert "alsoExposed  [public]" in result.stderr  # not demoted on an unproven graph
+    assert _visibility(result)["alsoExposed"] is True  # not demoted on an unproven graph
 
 
 def test_external_named_reexport_still_narrows(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -304,9 +311,10 @@ def test_external_named_reexport_still_narrows(tmp_path: Path, monkeypatch: pyte
     )
     result = _scan(app_dir, monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "exposed  [public]" in result.stderr
-    assert "alsoExposed  [internal]" in result.stderr  # still narrowed despite the external re-export
-    assert "hidden  [internal]" in result.stderr
+    vis = _visibility(result)
+    assert vis["exposed"] is True
+    assert vis["alsoExposed"] is False  # still narrowed despite the external re-export
+    assert vis["hidden"] is False
 
 
 def test_uncertain_name_behind_alias_is_kept_public(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -321,8 +329,9 @@ def test_uncertain_name_behind_alias_is_kept_public(tmp_path: Path, monkeypatch:
     (app_dir / "other.ts").write_text("export function unrelated() { return 2; }\n", encoding="utf-8")
     result = _scan(app_dir, monkeypatch)
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "helper  [public]" in result.stderr  # binding matches the uncertain source name
-    assert "unrelated  [internal]" in result.stderr  # unrelated → narrowed
+    vis = _visibility(result)
+    assert vis["helper"] is True  # binding matches the uncertain source name
+    assert vis["unrelated"] is False  # unrelated → narrowed
 
 
 def test_partial_unmatched_ts_entry_warns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -333,7 +342,7 @@ def test_partial_unmatched_ts_entry_warns(tmp_path: Path, monkeypatch: pytest.Mo
     result = _scan(app_dir, monkeypatch, "--ts-entry", "public_api.ts", "--ts-entry", "nope.ts")
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "1 --ts-entry path(s) matched no scanned file" in result.stderr
-    assert "exposed  [public]" in result.stderr  # narrowing still runs on the matched entry
+    assert _visibility(result)["exposed"] is True  # narrowing still runs on the matched entry
 
 
 def test_explicit_ts_entry_overrides_detection(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -344,7 +353,8 @@ def test_explicit_ts_entry_overrides_detection(tmp_path: Path, monkeypatch: pyte
     result = _scan(app_dir, monkeypatch, "--ts-entry", "public_api.ts")
     assert result.exit_code == 0, (result.stdout, result.stderr)
     # public_api.ts is the entry, so both its exports are public; helpers/internal narrow.
-    assert "exposed  [public]" in result.stderr
-    assert "alsoExposed  [public]" in result.stderr
-    assert "helper  [internal]" in result.stderr
-    assert "hidden  [internal]" in result.stderr
+    vis = _visibility(result)
+    assert vis["exposed"] is True
+    assert vis["alsoExposed"] is True
+    assert vis["helper"] is False
+    assert vis["hidden"] is False

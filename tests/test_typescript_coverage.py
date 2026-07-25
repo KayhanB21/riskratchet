@@ -302,31 +302,10 @@ def _isolated_app(tmp_path: Path) -> Path:
     return dest
 
 
-def test_scan_ts_coverage_annotates_stderr_listing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    # In the human (table) format the coverage lands on the stderr TS listing, incl. missing lines.
-    pytest.importorskip("tree_sitter")
-    pytest.importorskip("tree_sitter_typescript")
-    from typer.testing import CliRunner
-
-    from riskratchet.cli import app
-
-    runner = CliRunner()
-    monkeypatch.chdir(_isolated_app(tmp_path))
-    result = runner.invoke(
-        app,
-        ["scan", ".", "--experimental-typescript", "--ts-coverage", "coverage-final.json", "--no-auto-cov"],
-    )
-    assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "cov 100% line" in result.stderr  # covered()
-    assert "cov 80% line / 50% branch" in result.stderr  # partial()
-    assert "miss-lines 11" in result.stderr
-
-
-def test_scan_ts_coverage_embedded_in_json_and_keeps_stdout_valid(
+def test_scan_ts_coverage_scores_functions_with_coverage(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # Since slice 5, `--json` carries the coverage in the embedded `typescript` section (stdout),
-    # and the human listing is suppressed so it never pollutes the machine-readable contract.
+    # 0.3.0: --ts-coverage feeds the scored functions[] (covered → 100%, partial → 80%/50%).
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     from typer.testing import CliRunner
@@ -340,23 +319,52 @@ def test_scan_ts_coverage_embedded_in_json_and_keeps_stdout_valid(
         [
             "scan",
             ".",
-            "--experimental-typescript",
+            "--typescript",
             "--ts-coverage",
             "coverage-final.json",
             "--json",
             "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    by_name = {
+        fn["qualname"]: fn for fn in json.loads(result.stdout)["functions"] if fn["language"] == "typescript"
+    }
+    assert by_name["covered"]["line_coverage"] == 1.0
+    assert by_name["partial"]["line_coverage"] == 0.8
+    assert by_name["partial"]["branch_coverage"] == 0.5
+
+
+def test_scan_ts_coverage_json_stdout_is_clean(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    from typer.testing import CliRunner
+
+    from riskratchet.cli import app
+
+    runner = CliRunner()
+    monkeypatch.chdir(_isolated_app(tmp_path))
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            ".",
+            "--typescript",
+            "--ts-coverage",
+            "coverage-final.json",
+            "--json",
+            "--no-auto-cov",
+            "--no-git",
         ],
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
     payload = json.loads(result.stdout)  # raises if stdout was polluted
-    by_name = {fn["qualname"]: fn for fn in payload["typescript"]}
-    assert by_name["covered"]["line_coverage"] == 1.0
-    assert by_name["partial"]["line_coverage"] == 0.8
-    assert by_name["partial"]["branch_coverage"] == 0.5
-    assert "cov 100% line" not in result.stderr  # human listing suppressed in --json
+    assert "typescript" not in payload  # the separate informational array was removed
+    assert any(fn["language"] == "typescript" for fn in payload["functions"])
 
 
-def test_scan_ts_coverage_without_experimental_flag_warns(
+def test_scan_ts_coverage_without_typescript_flag_warns(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     from typer.testing import CliRunner
@@ -370,7 +378,7 @@ def test_scan_ts_coverage_without_experimental_flag_warns(
         ["scan", ".", "--ts-coverage", "coverage-final.json", "--no-auto-cov"],
     )
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "--ts-coverage / --ts-entry have no effect without --experimental-typescript" in result.stderr
+    assert "--ts-coverage / --ts-entry have no effect without --typescript" in result.stderr
 
 
 def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) -> Any:
@@ -379,7 +387,9 @@ def _run_ts_scan(app_dir: Path, monkeypatch: pytest.MonkeyPatch, *extra: str) ->
     from riskratchet.cli import app
 
     monkeypatch.chdir(app_dir)
-    return CliRunner().invoke(app, ["scan", ".", "--experimental-typescript", "--no-auto-cov", *extra])
+    return CliRunner().invoke(
+        app, ["scan", ".", "--typescript", "--json", "--no-auto-cov", "--no-git", *extra]
+    )
 
 
 def test_scan_warns_and_omits_coverage_when_line_numbers_misaligned(
@@ -442,4 +452,7 @@ def test_scan_accepts_multiple_ts_coverage_files(tmp_path: Path, monkeypatch: py
     )
     result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "a.json", "--ts-coverage", "b.json")
     assert result.exit_code == 0, (result.stdout, result.stderr)
-    assert "cov 100% line" in result.stderr  # sample.ts::covered resolved via report a
+    by_name = {
+        fn["qualname"]: fn for fn in json.loads(result.stdout)["functions"] if fn["language"] == "typescript"
+    }
+    assert by_name["covered"]["line_coverage"] == 1.0  # sample.ts::covered resolved via report a
