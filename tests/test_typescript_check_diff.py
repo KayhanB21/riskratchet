@@ -31,7 +31,16 @@ def _project(tmp_path: Path) -> Path:
 def _baseline(tmp_path: Path) -> Path:
     out = tmp_path / ".rr.json"
     result = runner.invoke(
-        app, ["baseline", str(tmp_path), "--output", str(out), "--no-git", "--no-auto-cov"]
+        app,
+        [
+            "baseline",
+            str(tmp_path),
+            "--output",
+            str(out),
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
     )
     assert result.exit_code == 0, result.stderr
     return out
@@ -52,6 +61,7 @@ def test_diff_typescript_reports_new_ts_function(tmp_path: Path) -> None:
             str(baseline),
             "--no-git",
             "--no-auto-cov",
+            "--allow-missing-coverage",
             "--json",
         ],
     )
@@ -77,6 +87,7 @@ def test_check_typescript_new_function_is_gated(tmp_path: Path) -> None:
             str(baseline),
             "--no-git",
             "--no-auto-cov",
+            "--allow-missing-coverage",
             "--fail-new-above",
             "10",
         ],
@@ -91,7 +102,17 @@ def test_baseline_typescript_writes_v3_with_identity(tmp_path: Path) -> None:
     _project(tmp_path)
     out = tmp_path / ".rr.json"
     result = runner.invoke(
-        app, ["baseline", str(tmp_path), "--typescript", "--output", str(out), "--no-git", "--no-auto-cov"]
+        app,
+        [
+            "baseline",
+            str(tmp_path),
+            "--typescript",
+            "--output",
+            str(out),
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
     )
     assert result.exit_code == 0, result.stderr
     raw = json.loads(out.read_text(encoding="utf-8"))
@@ -110,7 +131,16 @@ def test_check_warns_and_id_matches_on_stale_grammar(tmp_path: Path) -> None:
     assert (
         runner.invoke(
             app,
-            ["baseline", str(tmp_path), "--typescript", "--output", str(out), "--no-git", "--no-auto-cov"],
+            [
+                "baseline",
+                str(tmp_path),
+                "--typescript",
+                "--output",
+                str(out),
+                "--no-git",
+                "--no-auto-cov",
+                "--allow-missing-coverage",
+            ],
         ).exit_code
         == 0
     )
@@ -119,7 +149,17 @@ def test_check_warns_and_id_matches_on_stale_grammar(tmp_path: Path) -> None:
     data["identity"]["typescript"]["grammar"] = "0.0.1-stale"
     out.write_text(json.dumps(data), encoding="utf-8")
     result = runner.invoke(
-        app, ["check", str(tmp_path), "--typescript", "--baseline", str(out), "--no-git", "--no-auto-cov"]
+        app,
+        [
+            "check",
+            str(tmp_path),
+            "--typescript",
+            "--baseline",
+            str(out),
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
     )
     assert result.exit_code == 0
     assert "re-baseline recommended" in result.stderr
@@ -140,6 +180,7 @@ def test_check_without_typescript_ignores_ts(tmp_path: Path) -> None:
             str(baseline),
             "--no-git",
             "--no-auto-cov",
+            "--allow-missing-coverage",
             "--fail-new-above",
             "10",
         ],
