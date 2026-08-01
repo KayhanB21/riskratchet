@@ -146,7 +146,7 @@ jobs:
           name: dist
           path: dist/
       - name: Publish via OIDC
-        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247  # v1.14.1
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
         with:
           # PEP 740 attestations are already ON BY DEFAULT under Trusted
           # Publishing; set explicitly so the requirement is visible and survives
