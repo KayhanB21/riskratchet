@@ -15,7 +15,7 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-from riskratchet.cli import app
+from riskratchet.cli import _ts_rebaseline_command, app
 
 runner = CliRunner()
 
@@ -163,6 +163,34 @@ def test_check_warns_and_id_matches_on_stale_grammar(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     assert "re-baseline recommended" in result.stderr
+    # Assisted re-baseline: the exact regen command is printed, copy-pasteable as-is.
+    assert f"re-baseline: riskratchet baseline {tmp_path} --typescript --output {out}" in result.stderr
+
+
+def test_ts_rebaseline_command_renders_paths_coverage_and_output() -> None:
+    # No coverage: bare `--typescript --output`.
+    assert (
+        _ts_rebaseline_command(
+            [Path("src"), Path("app")],
+            baseline_file=Path(".riskratchet.json"),
+            ts_coverage=None,
+        )
+        == "riskratchet baseline src app --typescript --output .riskratchet.json"
+    )
+    # With coverage: each `--ts-coverage` report is threaded through (loop-body branch).
+    assert (
+        _ts_rebaseline_command(
+            [Path("src")],
+            baseline_file=Path("b.json"),
+            ts_coverage=[Path("c8.info"), Path("nyc.json")],
+        )
+        == "riskratchet baseline src --typescript --ts-coverage c8.info --ts-coverage nyc.json --output b.json"
+    )
+    # Empty path list falls back to a placeholder rather than an unrunnable command.
+    assert (
+        _ts_rebaseline_command([], baseline_file=Path("b.json"), ts_coverage=None)
+        == "riskratchet baseline <paths> --typescript --output b.json"
+    )
 
 
 def test_check_without_typescript_ignores_ts(tmp_path: Path) -> None:

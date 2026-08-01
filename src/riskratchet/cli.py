@@ -841,7 +841,14 @@ def check(
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
     if old is not None:
-        old, report = _apply_ts_identity_guard(old, report, ts_enabled=ts_enabled)
+        old, report = _apply_ts_identity_guard(
+            old,
+            report,
+            ts_enabled=ts_enabled,
+            paths=resolved_paths,
+            baseline_file=baseline_file,
+            ts_coverage=ts_coverage,
+        )
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -1256,7 +1263,14 @@ def diff(
     except ImportError as exc:
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
         raise typer.Exit(code=2) from exc
-    old, report = _apply_ts_identity_guard(old, report, ts_enabled=ts_enabled)
+    old, report = _apply_ts_identity_guard(
+        old,
+        report,
+        ts_enabled=ts_enabled,
+        paths=resolved_paths,
+        baseline_file=baseline_file,
+        ts_coverage=ts_coverage,
+    )
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -1726,20 +1740,51 @@ def _ts_warn(message: str) -> None:
     typer.secho(f"typescript: {message}", fg=typer.colors.YELLOW, err=True)
 
 
+def _ts_rebaseline_command(
+    paths: list[Path],
+    *,
+    baseline_file: Path,
+    ts_coverage: list[Path] | None,
+) -> str:
+    """The exact `riskratchet baseline` invocation that regenerates a stale-TS baseline.
+
+    Reuses the scanned paths, `--typescript`, any `--ts-coverage` reports from this
+    run, and `--output <baseline_file>` so the printed line is copy-pasteable as-is.
+    """
+    paths_str = " ".join(str(path) for path in paths) or "<paths>"
+    command = f"riskratchet baseline {paths_str} --typescript"
+    for coverage in ts_coverage or []:
+        command += f" --ts-coverage {coverage}"
+    command += f" --output {baseline_file}"
+    return command
+
+
 def _apply_ts_identity_guard(
     old: Baseline,
     report: RiskReport,
     *,
     ts_enabled: bool,
+    paths: list[Path],
+    baseline_file: Path,
+    ts_coverage: list[Path] | None = None,
 ) -> tuple[Baseline, RiskReport]:
     """When TS is analyzed against a baseline whose recorded TS grammar/scheme differs from the
     runtime's, the persisted TS fingerprints are stale — match TypeScript by id only (never by a
-    cross-grammar fingerprint) and tell the user to re-baseline. Python matching is unaffected."""
+    cross-grammar fingerprint) and tell the user to re-baseline. Python matching is unaffected.
+
+    Beyond warning, print the exact `riskratchet baseline ... --output <baseline_file>` command so
+    an adopter who bumped `tree-sitter-typescript` can re-baseline in one paste. Stderr-only, so a
+    `--json` stdout stays clean."""
     if not ts_enabled or not typescript_identity_stale(old):
         return old, report
     _ts_warn(
         "baseline TypeScript grammar/scheme differs from the runtime; matching TypeScript functions "
         "by id only (a grammar bump changes every fingerprint) — re-baseline recommended"
+    )
+    typer.secho(
+        "  re-baseline: "
+        + _ts_rebaseline_command(paths, baseline_file=baseline_file, ts_coverage=ts_coverage),
+        err=True,
     )
     return suppress_stale_typescript_renames(old, report)
 
