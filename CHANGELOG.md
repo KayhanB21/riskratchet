@@ -9,6 +9,20 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.1] - unreleased
+
+A non-breaking stabilization patch on the `0.3.x` line.
+
+### Added
+
+- **Assisted re-baseline on a TypeScript grammar bump.** When `check`/`diff` run `--typescript` against a
+  baseline whose recorded `tree-sitter-typescript` grammar or fingerprint scheme differs from the runtime
+  (the normal consequence of upgrading the `[typescript]` extra), riskratchet already falls back to
+  id-only matching for TypeScript entries and warns "re-baseline recommended." It now also prints the exact,
+  copy-pasteable regeneration command — `riskratchet baseline <paths> --typescript [--ts-coverage …]
+  --output <baseline_file>` — reusing the current run's paths and coverage reports, so adopters no longer
+  reconstruct it by hand. Stderr-only; `--json` stdout is unaffected. No flag, field, or schema change.
+
 ## [0.3.0] - 2026-07-25
 
 The first breaking minor — "final calibration before 1.0." Two independent fronts land together: the
