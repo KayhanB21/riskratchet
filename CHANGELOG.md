@@ -9,7 +9,7 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
-## [0.3.1] - unreleased
+## [0.3.1] - 2026-08-01
 
 A non-breaking stabilization patch on the `0.3.x` line.
 
