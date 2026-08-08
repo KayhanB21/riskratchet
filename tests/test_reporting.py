@@ -341,3 +341,72 @@ def test_remediation_lists_triggers_for_high_risk() -> None:
     assert "cyclomatic complexity" in out
     assert "recent commits" in out
     assert "spans" in out
+
+
+def _regressions(count: int, *, qualname_len: int = 3) -> list[Regression]:
+    """Build `count` regressions with distinct qualnames, longest-first by score."""
+    out = []
+    for index in range(count):
+        fn = _fn(f"fn{index:0{qualname_len}d}", 90.0 - index * 0.01)
+        out.append(
+            Regression(
+                id=fn.id,
+                kind=RegressionKind.ABOVE_THRESHOLD,
+                current_score=fn.score,
+                previous_score=None,
+                delta=None,
+                reason="above threshold",
+                current=fn,
+            )
+        )
+    return out
+
+
+def test_render_regressions_pr_comment_collapses_beyond_limit() -> None:
+    """The Action's no-baseline mode reports every function above threshold.
+
+    Unbounded, riskratchet's own repo produced 345 rows / ~49k chars, so a
+    larger repo crossed GitHub's 65,536-char limit and failed the Action.
+    """
+    out = render_regressions_pr_comment(_regressions(45))
+
+    # 20 visible rows, the rest collapsed with 20 shown and the remainder counted.
+    assert out.count("| above_threshold |") == 40
+    assert "<details><summary>Lower-priority regressions (25)</summary>" in out
+    assert "_... 5 more hidden._" in out
+    assert "`m.py::fn044`" not in out
+    assert out.count("<details>") == out.count("</details>")
+
+
+def test_render_regressions_pr_comment_limit_none_shows_all() -> None:
+    out = render_regressions_pr_comment(_regressions(30), limit=None)
+
+    assert out.count("| above_threshold |") == 30
+    assert "<details>" not in out
+
+
+def test_render_regressions_pr_comment_under_limit_has_no_details() -> None:
+    out = render_regressions_pr_comment(_regressions(5))
+
+    assert out.count("| above_threshold |") == 5
+    assert "<details>" not in out
+    assert "more hidden" not in out
+
+
+def test_pr_comment_stays_under_github_comment_limit() -> None:
+    """The row cap can be disabled (`--limit 0`); the byte cap cannot.
+
+    Guards the Action against a 422 on a repo with many very long qualnames.
+    """
+    out = render_regressions_pr_comment(_regressions(3000, qualname_len=200), limit=None)
+
+    assert len(out) < 65_536
+    assert out.startswith("<!-- riskratchet-report -->")
+    assert out.count("<details>") == out.count("</details>")
+    assert "truncated to fit GitHub's comment size limit" in out
+
+
+def test_pr_comment_under_budget_is_returned_unmodified() -> None:
+    out = render_regressions_pr_comment(_regressions(2))
+
+    assert "truncated to fit" not in out

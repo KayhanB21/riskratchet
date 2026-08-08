@@ -125,6 +125,11 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          # Full history: churn uses `git log --since`, which on the default
+          # shallow (depth-1) clone sees only HEAD and silently scores every
+          # function's churn as zero — so CI would disagree with your baseline.
+          fetch-depth: 0
       - uses: KayhanB21/riskratchet@v0.3.1
         with:
           coverage: coverage.json
@@ -751,6 +756,56 @@ baseline per package is useful when packages release independently. Every
 command prints a diagnostic banner to stderr summarizing the resolved root,
 scan paths, and coverage source.
 
+## Configuration reference
+
+Every key `[tool.riskratchet]` accepts. Unknown keys warn rather than fail, so a typo is
+visible without breaking a build; `riskratchet config validate` is the strict check and
+`riskratchet doctor` reports the same problems as warnings.
+
+| Key | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `paths` | list[str] | `["."]` | Files/directories to scan. |
+| `include` / `exclude` | list[str] | `[]` | Glob filters over root-relative POSIX paths. |
+| `allow` | list[str] | `[]` | Suppress matching functions or path globs from reporting **and** gating. |
+| `baseline` | str | `.riskratchet.json` | Baseline file path. |
+| `coverage` | str | — | Single coverage.json path. |
+| `coverage_map` | table | — | Per-prefix coverage, e.g. `"packages/a" = "a/cov.json"`. Mutually exclusive with `coverage`. |
+| `coverage_cache` | str | `.riskratchet/coverage.json` | Where `auto_coverage` writes. |
+| `auto_coverage` | bool | `true` | Run `test_command` to produce coverage when none is fresh. |
+| `test_command` | str | pytest invocation | Command `auto_coverage` runs; `{output}` is substituted. |
+| `allow_missing_coverage` | bool | `false` | Continue when coverage is absent instead of exiting 2. |
+| `missing_coverage` | str | `pessimistic` | Policy for files absent from coverage: `pessimistic`, `optimistic`, or `skip`. |
+| `churn_window_days` | int | `90` | Churn lookback window. |
+| `weights` | table | see below | Per-component weight overrides; non-zero weights are renormalized. |
+| `groups` | table | — | Named path prefixes for monorepo reporting. |
+| `fail_above` | float | — | Fail when any function's score exceeds N. Makes `--baseline` optional. |
+| `fail_new_above` | float | — | Fail when a function absent from the baseline scores above N. |
+| `fail_regression_above` | float | — | Fail when a function's score grows by more than N. |
+| `fail_existing_above` | float | — | Fail when a function already in the baseline scores above N. |
+| `fail_component_regression_above` | float | `15` | Fail when a single component grows by more than N. |
+| `component_regression_gate` | bool | `true` | **On by default.** Enables the per-component check above. |
+| `redact_paths` / `redact_qualnames` | bool | `false` | Hash paths/qualnames in output. |
+| `private_comment` | bool | `false` | Redact the PR comment. |
+| `redact_salt` | str | — | Salt for the redaction hash, so digests are stable across runs. |
+
+### Component gates
+
+`component_regression_gate` is enabled by default. Beyond the overall-score checks, `check`
+fails when any *single* risk component (`coverage_gap`, `structural_complexity`, `branch_gap`,
+`churn`, `public_surface`, `sprawl`) grows by more than `fail_component_regression_above`
+(default 15) — even if the total score moved little. This catches a function that quietly
+loses its tests while getting simpler. Disable per-run with `--no-component-regression-gate`.
+
+### Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Clean — no gate tripped. |
+| `1` | A gate tripped: `check` found regressions, `scan --fail-above`/`--fail-severity` matched, or `doctor` reported a FAIL. |
+| `2` | Setup or usage error: missing/malformed coverage or baseline, a bad flag, or invalid config. |
+
+`scan` never exits 1 unless you ask it to with `--fail-above` or `--fail-severity`.
+
 ## TypeScript
 
 riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`
@@ -881,6 +936,31 @@ supported** (silently skipped): generator functions and async iterators. The par
 is tree-sitter; the rationale and the contract a future backend must fill live in
 [`docs/typescript-parser-decision.md`](docs/typescript-parser-decision.md) and
 [`docs/language-backend-contract.md`](docs/language-backend-contract.md).
+
+## Baseline format
+
+The baseline (`.riskratchet.json`, format **v3** since 0.3.0) is the ratchet's memory: one entry
+per function, recording the score and components at the time it was written. `check` and `diff`
+compare today's report against it. It is a reviewed artifact — commit it, and treat a bump the way
+you'd treat a snapshot update. Its shape is validated by
+[`schemas/baseline.schema.json`](schemas/baseline.schema.json).
+
+Each entry carries `path`, `qualname`, `score`, `components`, plus a `fingerprint` (body) and
+`signature`. Those two are stable across formatter whitespace/quote/paren choices and change on
+real edits, which is what lets a renamed or moved function be tracked as *the same* function
+instead of reported as one removal plus one new high-risk arrival.
+
+**The `identity` block (v3).** When a baseline contains TypeScript entries it also records
+`identity.typescript` — the `tree-sitter-typescript` grammar version and the fingerprint scheme
+version. Fingerprints hash grammar node-type strings, so a grammar upgrade legitimately changes
+them. On a mismatch riskratchet does *not* treat that as a mass rename: it falls back to id-only
+matching for TypeScript entries, warns, and (since 0.3.1) prints the exact regeneration command.
+`riskratchet doctor` reports the same mismatch proactively. A Python-only baseline carries no
+`identity` block and is byte-identical to v2, so upgrading changes nothing for Python-only users.
+
+Regenerate with `riskratchet baseline` (add `--typescript` if you scan TypeScript). If churn is
+part of your scoring, regenerate in the same environment your gate runs in — churn depends on git
+history, so a shallow clone or a different history produces different numbers.
 
 ## Sample output on real libraries
 

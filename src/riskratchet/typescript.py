@@ -1,8 +1,10 @@
-"""EXPERIMENTAL TypeScript function discovery (P20, slice 2, since 0.2.12).
+"""TypeScript function discovery (P20, slice 2, since 0.2.12; supported since 0.3.0).
 
-Discovery only — no scoring, no baseline, no gating. The output is informational and its
-shape may change. The Python analyzer is unaffected: this module is never imported by
-`engine.analyze`; it is reached solely through the `scan --experimental-typescript` path.
+Discovery only — this module locates functions and computes no risk itself. Since 0.3.0 its
+output *is* scored, baselined (format v3), and gated like Python: `pipeline.build_report`
+merges it in behind `--typescript`, and `typescript_engine` owns the scoring. The Python
+analyzer is unaffected — `engine.analyze` never imports this module, so a Python-only run
+neither imports tree-sitter nor changes behavior.
 
 Per-function coverage is *not* computed here — discovery stays parser-only. Slice 3
 (`0.2.13`) maps Istanbul `coverage-final.json` onto the spans this module returns; that lives

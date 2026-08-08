@@ -581,42 +581,34 @@ def _ensure_coverage_map_exists(
     *,
     allow_missing: bool,
 ) -> None:
-    """Verify every coverage-map path exists; warn or fail depending on policy."""
+    """Fail when a coverage-map path is missing and the policy forbids it.
+
+    When `allow_missing`, this is a no-op: the loader skips unusable shards and
+    warns from `cli._coverage_shard_warn`, which fires where the shard is
+    actually dropped and covers malformed files too — not just absent ones.
+    Warning here as well would double-report the same shard.
+    """
+    if allow_missing:
+        return
     missing = [(prefix, path) for prefix, path in coverage_map.items() if not path.exists()]
     if not missing:
         return
     for prefix, path in missing:
-        if allow_missing:
-            typer.secho(
-                _format_setup_error(
-                    f"riskratchet: coverage-map[{prefix}] file not found: {path}; treating as no coverage.",
-                    [
-                        (
-                            "Generate coverage at this path:",
-                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
-                        ),
-                    ],
-                ),
-                fg=typer.colors.YELLOW,
-                err=True,
-            )
-        else:
-            typer.secho(
-                _format_setup_error(
-                    f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
-                    [
-                        (
-                            "Generate coverage at this path:",
-                            f"pytest --cov --cov-branch --cov-report=json:{path} -q",
-                        ),
-                        ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
-                    ],
-                ),
-                fg=typer.colors.RED,
-                err=True,
-            )
-    if not allow_missing:
-        raise typer.Exit(code=2)
+        typer.secho(
+            _format_setup_error(
+                f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
+                [
+                    (
+                        "Generate coverage at this path:",
+                        f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                    ),
+                    ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                ],
+            ),
+            fg=typer.colors.RED,
+            err=True,
+        )
+    raise typer.Exit(code=2)
 
 
 def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:

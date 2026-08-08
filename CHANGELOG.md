@@ -9,6 +9,58 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.2] - unreleased
+
+A non-breaking stabilization patch on the `0.3.x` line. Theme: **the adopter's first hour** — every
+fix below is on the path a new user actually walks. No CLI flag, JSON field, schema field, or import
+was removed or renamed.
+
+### Fixed
+
+- **The GitHub Action could fail on first adoption.** With no baseline yet, the Action runs
+  `check --fail-above --format pr-comment`, which emitted *every* function above the threshold with no
+  cap — riskratchet's own repo produced 345 rows / ~49k characters. Past GitHub's 65,536-character
+  comment limit the upsert step got a 422 and failed the job instead of posting a report. The
+  regressions comment now shows 20 rows and collapses the rest into `<details>` (matching the report
+  and diff comments), and all three PR-comment renderers are hard-capped below the limit so
+  `--limit 0` can't reintroduce the failure. `action.yml` also now truncates rather than appends its
+  comment file, closing the same failure from the other end.
+- **The documented CI snippet silently zeroed churn.** The README snippet and `riskratchet init`
+  both used a bare `actions/checkout`, which defaults to a depth-1 clone. `git log --since` then sees
+  only HEAD, so every function's churn component scored as zero and CI disagreed with a
+  locally-generated baseline — with no error anywhere. Both now request `fetch-depth: 0`, a test pins
+  the README and `init` snippets together so they can't drift again, and a shallow clone is now
+  reported at runtime and by `doctor`.
+- **An unreadable coverage file crashed with a traceback.** `scan`/`check`/`diff`/`baseline` wrapped
+  report-building in `except ImportError` only, so a malformed, truncated, or unreadable coverage
+  report escaped as a raw `ValueError`. All four now share one error boundary and exit 2 with a
+  copy-pasteable remediation.
+- **`--coverage-map` crashed on a missing shard despite promising not to.** riskratchet printed
+  "treating as no coverage" and then raised `FileNotFoundError` anyway, so every `scan --coverage-map`
+  run with one absent shard died. Unusable shards (missing *or* malformed) are now skipped with one
+  warning, matching how the TypeScript coverage loader already behaved.
+- **`--help` was visibly broken.** Typer renders help through Rich, which parses `[...]` as a style
+  tag and dropped it: `[tool.riskratchet]` vanished ("Falls back to  paths if omitted.") and the
+  TypeScript hint rendered as `pip install 'riskratchet'` — a wrong, copy-pasteable command. Both now
+  render correctly. Separately, ~12 options each on `check`/`diff`/`baseline` shipped with no help
+  text at all; every option is now documented, `--format` and friends list their valid values, and a
+  test fails the next undocumented flag.
+
+### Added
+
+- **`doctor` gained checks**, all additive and all WARN except one. New: shallow-clone detection,
+  coverage/scan-path overlap ("0 of 214 scanned files appear in coverage" — the most common real
+  misconfiguration), missing branch data (which zeroes `branch_gap`, 15% of the weight), and a
+  TypeScript grammar-vs-baseline identity check. `doctor` now also parses the coverage file rather
+  than only stat-ing it — the one new **FAIL**, and only where `check` was already crashing. It also
+  no longer reports "no coverage configured" for projects using `coverage_map` or `auto_coverage`,
+  and validates config *values*, not just key names. The `checks[]` `name` enum in
+  `schemas/doctor.schema.json` gained the new names; a healthy project's exit code is unchanged.
+- **Documentation**: a full `[tool.riskratchet]` configuration reference (13 keys, including the
+  entire `fail_*` family, had zero README coverage), an exit-code table, an explanation of the
+  component-regression gate (on by default and previously undocumented), and a "Baseline format"
+  section covering v3 and the `identity` block — which the README already linked to but never had.
+
 ## [0.3.1] - 2026-08-01
 
 A non-breaking stabilization patch on the `0.3.x` line.

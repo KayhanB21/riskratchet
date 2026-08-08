@@ -107,6 +107,11 @@ def render_ci_snippet(ref: str = ACTION_REF) -> str:
     return (
         "# Add this to .github/workflows/riskratchet.yml:\n"
         f"- uses: actions/checkout@{_CHECKOUT_PIN}  # {_CHECKOUT_TAG}\n"
+        "  with:\n"
+        "    # Full history: churn uses `git log --since`, which on the default\n"
+        "    # shallow (depth-1) clone sees only HEAD and silently scores every\n"
+        "    # function's churn as zero — so CI would disagree with your baseline.\n"
+        "    fetch-depth: 0\n"
         f"- uses: KayhanB21/riskratchet@{ref}\n"
         "  with:\n"
         "    coverage: coverage.json\n"

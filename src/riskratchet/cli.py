@@ -15,6 +15,7 @@ from typing import Annotated, Any
 import typer
 
 from riskratchet import __version__
+from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
     baseline_from_report,
     load_baseline,
@@ -50,7 +51,7 @@ from riskratchet.config import (
 from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 from riskratchet.engine import analyze
-from riskratchet.git import head_sha
+from riskratchet.git import head_sha, is_shallow_repo
 from riskratchet.init import (
     InitOutcome,
     RunnerKind,
@@ -105,6 +106,67 @@ VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
 VALID_FAIL_SEVERITIES = ("low", "medium", "high", "critical")
 
+# Typer renders help through Rich, which parses `[...]` as a style tag and drops it: the paths help
+# used to render as "Falls back to  paths if omitted." and the TypeScript hint as the *wrong* command
+# `pip install 'riskratchet'`. `\[` escapes the bracket. Interpolating these from the tuples above
+# also keeps the documented choices from drifting when a format is added.
+_CONFIG_TABLE = "\\[tool.riskratchet]"
+_TYPESCRIPT_EXTRA = "riskratchet\\[typescript]"
+_PATHS_HELP = "Files or directories to {action}. Falls back to " + _CONFIG_TABLE + " paths if omitted."
+FORMAT_HELP = f"Output format. One of: {', '.join(VALID_FORMATS)}."
+BASELINE_FORMAT_HELP = (
+    f"Baseline input format. Currently only {' or '.join(VALID_BASELINE_FORMATS)!r} is supported."
+)
+FAIL_SEVERITY_HELP = (
+    f"Fail when any function reaches this severity. One of: {', '.join(VALID_FAIL_SEVERITIES)}."
+)
+
+# Shared analysis options. `scan` documented these from the start while check/diff/baseline declared
+# bare `typer.Option("--flag")` with no help at all, so ~12 flags per command rendered blank in
+# `--help`. Declaring the wording once keeps the four commands from drifting apart again.
+CoverageOption = Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")]
+ConfigOption = Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")]
+FormatOption = Annotated[str, typer.Option("--format", help=FORMAT_HELP)]
+OutputOption = Annotated[Path | None, typer.Option("--output", help="Write output to file.")]
+IncludeOption = Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")]
+ExcludeOption = Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")]
+AllowOption = Annotated[
+    list[str] | None,
+    typer.Option("--allow", help="Suppress matching functions or path globs from reporting/gating."),
+]
+NoGitOption = Annotated[
+    bool, typer.Option("--no-git", help="Skip git history; churn scores as zero for every function.")
+]
+FailNewAboveOption = Annotated[
+    float | None,
+    typer.Option("--fail-new-above", help="Fail when a function absent from the baseline scores above N."),
+]
+FailRegressionAboveOption = Annotated[
+    float | None,
+    typer.Option("--fail-regression-above", help="Fail when a function's score grows by more than N."),
+]
+FailExistingAboveOption = Annotated[
+    float | None,
+    typer.Option(
+        "--fail-existing-above",
+        help="Fail when a function already in the baseline scores above N.",
+    ),
+]
+FailComponentRegressionAboveOption = Annotated[
+    float | None,
+    typer.Option(
+        "--fail-component-regression-above",
+        help="Fail when any single risk component grows by more than N. Default 15.",
+    ),
+]
+NoComponentRegressionGateOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-component-regression-gate",
+        help="Disable per-component regression checks.",
+    ),
+]
+
 # Shared TypeScript-backend options (since 0.3.0), reused by check/diff (scan declares its own so it
 # can also carry the deprecated --experimental-typescript alias).
 TypescriptOption = Annotated[
@@ -112,7 +174,8 @@ TypescriptOption = Annotated[
     typer.Option(
         "--typescript",
         help="Also analyze and score TypeScript functions (since 0.3.0), mixed into the scored "
-        "functions with `language: \"typescript\"`. Needs `pip install 'riskratchet[typescript]'`.",
+        'functions with `language: "typescript"`. Needs '
+        f"`pip install '{_TYPESCRIPT_EXTRA}'`.",
     ),
 ]
 TsCoverageOption = Annotated[
@@ -160,7 +223,7 @@ def config_validate(
         "pyproject.toml"
     ),
 ) -> None:
-    """Validate `[tool.riskratchet]` configuration."""
+    """Validate `\\[tool.riskratchet]` configuration."""
     try:
         _load_config_strict(config)
     except ValueError as exc:
@@ -202,11 +265,9 @@ def config_show(
 def scan(
     paths: Annotated[
         list[Path] | None,
-        typer.Argument(
-            help="Files or directories to scan. Falls back to [tool.riskratchet] paths if omitted."
-        ),
+        typer.Argument(help=_PATHS_HELP.format(action="scan")),
     ] = None,
-    coverage: Annotated[Path | None, typer.Option("--coverage", help="Path to coverage.json.")] = None,
+    coverage: CoverageOption = None,
     coverage_map: Annotated[
         list[str] | None,
         typer.Option(
@@ -214,8 +275,8 @@ def scan(
             help="Per-prefix coverage path, repeatable: --coverage-map packages/a=cov-a.json.",
         ),
     ] = None,
-    config: Annotated[Path | None, typer.Option("--config", help="Path to pyproject.toml.")] = None,
-    format: Annotated[str, typer.Option("--format", help="Output format.")] = "table",
+    config: ConfigOption = None,
+    format: FormatOption = "table",
     json_output: Annotated[
         bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
     ] = False,
@@ -227,15 +288,15 @@ def scan(
             help="Suppress the trailing summary line on table output (pipe-friendly).",
         ),
     ] = False,
-    output: Annotated[Path | None, typer.Option("--output", help="Write output to file.")] = None,
+    output: OutputOption = None,
     summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
-    include: Annotated[list[str] | None, typer.Option("--include", help="Glob include patterns.")] = None,
-    exclude: Annotated[list[str] | None, typer.Option("--exclude", help="Glob exclude patterns.")] = None,
+    include: IncludeOption = None,
+    exclude: ExcludeOption = None,
     allow: Annotated[
         list[str] | None,
         typer.Option("--allow", help="Suppress matching functions or path globs from reporting/gating."),
     ] = None,
-    no_git: Annotated[bool, typer.Option("--no-git", help="Disable churn collection.")] = False,
+    no_git: NoGitOption = False,
     churn_days: Annotated[
         int | None,
         typer.Option("--churn-days", help="Churn window in days. Default 90."),
@@ -255,7 +316,7 @@ def scan(
     ] = None,
     fail_severity: Annotated[
         str | None,
-        typer.Option("--fail-severity", help="Exit 1 if any emitted function is at least this severity."),
+        typer.Option("--fail-severity", help=FAIL_SEVERITY_HELP),
     ] = None,
     missing_coverage: Annotated[
         str | None,
@@ -312,7 +373,8 @@ def scan(
         typer.Option(
             "--typescript",
             help="Also analyze and SCORE TypeScript functions (since 0.3.0), mixed into the scored "
-            "functions with `language: \"typescript\"`. Needs `pip install 'riskratchet[typescript]'`.",
+            'functions with `language: "typescript"`. Needs '
+            f"`pip install '{_TYPESCRIPT_EXTRA}'`.",
         ),
     ] = False,
     experimental_typescript: Annotated[
@@ -395,29 +457,22 @@ def scan(
     ts_enabled = _resolve_typescript_flag(
         typescript, experimental_typescript, ts_coverage=ts_coverage, ts_entry=ts_entry
     )
-    try:
-        report = build_report(
-            resolved_paths,
-            root=config_dir,
-            coverage_path=coverage_path,
-            coverage_map=resolved_coverage_map or None,
-            include=resolved_include,
-            exclude=resolved_exclude,
-            allow=resolved_allow,
-            use_git=not no_git,
-            churn_days=resolved_churn_days,
-            weights=_resolved_weights(cfg),
-            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-            groups=_resolved_groups(cfg),
-            typescript=ts_enabled,
-            ts_coverage_paths=ts_coverage or [],
-            ts_entries=ts_entry or [],
-            on_ts_warning=_ts_warn,
-            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
-        )
-    except ImportError as exc:  # missing [typescript] extra, surfaced during TS discovery
-        typer.secho(str(exc), fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2) from exc
+    report = _build_report_or_exit(
+        resolved_paths,
+        config_dir=config_dir,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        cfg=cfg,
+        missing_coverage=missing_coverage,
+        ts_enabled=ts_enabled,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+    )
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
     _populate_run_diagnostics(
         diag,
@@ -459,21 +514,19 @@ def scan(
 def baseline(
     paths: Annotated[
         list[Path] | None,
-        typer.Argument(
-            help="Files or directories to baseline. Falls back to [tool.riskratchet] paths if omitted."
-        ),
+        typer.Argument(help=_PATHS_HELP.format(action="baseline")),
     ] = None,
-    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage: CoverageOption = None,
     coverage_map: Annotated[
         list[str] | None,
         typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
     ] = None,
-    config: Annotated[Path | None, typer.Option("--config")] = None,
+    config: ConfigOption = None,
     output: Annotated[Path | None, typer.Option("--output", help="Where to write the baseline JSON.")] = None,
-    include: Annotated[list[str] | None, typer.Option("--include")] = None,
-    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
-    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
-    no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    include: IncludeOption = None,
+    exclude: ExcludeOption = None,
+    allow: AllowOption = None,
+    no_git: NoGitOption = False,
     churn_days: Annotated[
         int | None,
         typer.Option("--churn-days", help="Churn window in days. Default 90."),
@@ -557,29 +610,22 @@ def baseline(
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
-    try:
-        report = build_report(
-            resolved_paths,
-            root=config_dir,
-            coverage_path=coverage_path,
-            coverage_map=resolved_coverage_map or None,
-            include=resolved_include,
-            exclude=resolved_exclude,
-            allow=resolved_allow,
-            use_git=not no_git,
-            churn_days=resolved_churn_days,
-            weights=_resolved_weights(cfg),
-            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-            groups=_resolved_groups(cfg),
-            typescript=ts_enabled,
-            ts_coverage_paths=ts_coverage or [],
-            ts_entries=ts_entry or [],
-            on_ts_warning=_ts_warn,
-            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
-        )
-    except ImportError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2) from exc
+    report = _build_report_or_exit(
+        resolved_paths,
+        config_dir=config_dir,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        cfg=cfg,
+        missing_coverage=missing_coverage,
+        ts_enabled=ts_enabled,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+    )
     _populate_run_diagnostics(
         diag,
         report=report,
@@ -607,18 +653,16 @@ def baseline(
 def check(
     paths: Annotated[
         list[Path] | None,
-        typer.Argument(
-            help="Files or directories to check. Falls back to [tool.riskratchet] paths if omitted."
-        ),
+        typer.Argument(help=_PATHS_HELP.format(action="check")),
     ] = None,
-    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage: CoverageOption = None,
     coverage_map: Annotated[
         list[str] | None,
         typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
     ] = None,
     baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
-    config: Annotated[Path | None, typer.Option("--config")] = None,
-    format: Annotated[str, typer.Option("--format")] = "table",
+    config: ConfigOption = None,
+    format: FormatOption = "table",
     json_output: Annotated[
         bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
     ] = False,
@@ -626,10 +670,10 @@ def check(
         str,
         typer.Option(
             "--baseline-format",
-            help="Baseline input format. Currently only 'riskratchet' is supported.",
+            help=BASELINE_FORMAT_HELP,
         ),
     ] = "riskratchet",
-    output: Annotated[Path | None, typer.Option("--output")] = None,
+    output: OutputOption = None,
     summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
     fail_above: Annotated[
         float | None,
@@ -641,24 +685,15 @@ def check(
             ),
         ),
     ] = None,
-    fail_new_above: Annotated[float | None, typer.Option("--fail-new-above")] = None,
-    fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
-    fail_existing_above: Annotated[float | None, typer.Option("--fail-existing-above")] = None,
-    fail_component_regression_above: Annotated[
-        float | None,
-        typer.Option("--fail-component-regression-above"),
-    ] = None,
-    no_component_regression_gate: Annotated[
-        bool,
-        typer.Option(
-            "--no-component-regression-gate",
-            help="Disable per-component regression checks.",
-        ),
-    ] = False,
-    include: Annotated[list[str] | None, typer.Option("--include")] = None,
-    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
-    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
-    no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    fail_new_above: FailNewAboveOption = None,
+    fail_regression_above: FailRegressionAboveOption = None,
+    fail_existing_above: FailExistingAboveOption = None,
+    fail_component_regression_above: FailComponentRegressionAboveOption = None,
+    no_component_regression_gate: NoComponentRegressionGateOption = False,
+    include: IncludeOption = None,
+    exclude: ExcludeOption = None,
+    allow: AllowOption = None,
+    no_git: NoGitOption = False,
     churn_days: Annotated[
         int | None,
         typer.Option("--churn-days", help="Churn window in days. Default 90."),
@@ -817,29 +852,22 @@ def check(
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
-    try:
-        report = build_report(
-            resolved_paths,
-            root=config_dir,
-            coverage_path=coverage_path,
-            coverage_map=resolved_coverage_map or None,
-            include=resolved_include,
-            exclude=resolved_exclude,
-            allow=resolved_allow,
-            use_git=not no_git,
-            churn_days=resolved_churn_days,
-            weights=_resolved_weights(cfg),
-            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-            groups=_resolved_groups(cfg),
-            typescript=ts_enabled,
-            ts_coverage_paths=ts_coverage or [],
-            ts_entries=ts_entry or [],
-            on_ts_warning=_ts_warn,
-            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
-        )
-    except ImportError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2) from exc
+    report = _build_report_or_exit(
+        resolved_paths,
+        config_dir=config_dir,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        cfg=cfg,
+        missing_coverage=missing_coverage,
+        ts_enabled=ts_enabled,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+    )
     if old is not None:
         old, report = _apply_ts_identity_guard(
             old,
@@ -941,8 +969,8 @@ def check(
 @app.command()
 def explain(
     target: Annotated[str, typer.Argument(help="Function target as `path/to/file.py::qualname`.")],
-    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
-    config: Annotated[Path | None, typer.Option("--config")] = None,
+    coverage: CoverageOption = None,
+    config: ConfigOption = None,
     json_output: Annotated[
         bool,
         typer.Option("--json", help="Emit JSON envelope (since 0.2.8 P9). Pairs with --summary."),
@@ -954,7 +982,7 @@ def explain(
             help="Emit aggregate summary only (since 0.2.8 P9). Pairs with --json.",
         ),
     ] = False,
-    no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    no_git: NoGitOption = False,
     churn_days: Annotated[
         int | None,
         typer.Option("--churn-days", help="Churn window in days. Default 90."),
@@ -1083,39 +1111,28 @@ def explain(
 def diff(
     paths: Annotated[
         list[Path] | None,
-        typer.Argument(
-            help=(
-                "Files or directories to diff against baseline. "
-                "Falls back to [tool.riskratchet] paths if omitted."
-            )
-        ),
+        typer.Argument(help=_PATHS_HELP.format(action="diff against baseline")),
     ] = None,
-    coverage: Annotated[Path | None, typer.Option("--coverage")] = None,
+    coverage: CoverageOption = None,
     coverage_map: Annotated[
         list[str] | None,
         typer.Option("--coverage-map", help="Per-prefix coverage path, repeatable."),
     ] = None,
     baseline_path: Annotated[Path | None, typer.Option("--baseline", help="Path to baseline JSON.")] = None,
-    config: Annotated[Path | None, typer.Option("--config")] = None,
-    format: Annotated[str, typer.Option("--format")] = "table",
+    config: ConfigOption = None,
+    format: FormatOption = "table",
     json_output: Annotated[
         bool, typer.Option("--json", help="Shortcut for --format json. Overrides --format.")
     ] = False,
-    output: Annotated[Path | None, typer.Option("--output")] = None,
+    output: OutputOption = None,
     summary: Annotated[bool, typer.Option("--summary", help="Emit aggregate summary only.")] = False,
-    fail_regression_above: Annotated[float | None, typer.Option("--fail-regression-above")] = None,
-    fail_component_regression_above: Annotated[
-        float | None,
-        typer.Option("--fail-component-regression-above"),
-    ] = None,
-    no_component_regression_gate: Annotated[
-        bool,
-        typer.Option("--no-component-regression-gate"),
-    ] = False,
-    include: Annotated[list[str] | None, typer.Option("--include")] = None,
-    exclude: Annotated[list[str] | None, typer.Option("--exclude")] = None,
-    allow: Annotated[list[str] | None, typer.Option("--allow")] = None,
-    no_git: Annotated[bool, typer.Option("--no-git")] = False,
+    fail_regression_above: FailRegressionAboveOption = None,
+    fail_component_regression_above: FailComponentRegressionAboveOption = None,
+    no_component_regression_gate: NoComponentRegressionGateOption = False,
+    include: IncludeOption = None,
+    exclude: ExcludeOption = None,
+    allow: AllowOption = None,
+    no_git: NoGitOption = False,
     churn_days: Annotated[
         int | None,
         typer.Option("--churn-days", help="Churn window in days. Default 90."),
@@ -1240,29 +1257,22 @@ def diff(
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
-    try:
-        report = build_report(
-            resolved_paths,
-            root=config_dir,
-            coverage_path=coverage_path,
-            coverage_map=resolved_coverage_map or None,
-            include=resolved_include,
-            exclude=resolved_exclude,
-            allow=resolved_allow,
-            use_git=not no_git,
-            churn_days=resolved_churn_days,
-            weights=_resolved_weights(cfg),
-            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-            groups=_resolved_groups(cfg),
-            typescript=ts_enabled,
-            ts_coverage_paths=ts_coverage or [],
-            ts_entries=ts_entry or [],
-            on_ts_warning=_ts_warn,
-            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
-        )
-    except ImportError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2) from exc
+    report = _build_report_or_exit(
+        resolved_paths,
+        config_dir=config_dir,
+        coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
+        include=resolved_include,
+        exclude=resolved_exclude,
+        allow=resolved_allow,
+        use_git=not no_git,
+        churn_days=resolved_churn_days,
+        cfg=cfg,
+        missing_coverage=missing_coverage,
+        ts_enabled=ts_enabled,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+    )
     old, report = _apply_ts_identity_guard(
         old,
         report,
@@ -1350,7 +1360,7 @@ def init_command(
         bool,
         typer.Option(
             "--force",
-            help="Replace an existing [tool.riskratchet] block in place.",
+            help=f"Replace an existing {_CONFIG_TABLE} block in place.",
         ),
     ] = False,
     no_snippet: Annotated[
@@ -1372,7 +1382,7 @@ def init_command(
         ),
     ] = None,
 ) -> None:
-    """Scaffold `[tool.riskratchet]` config + print the CI snippet.
+    """Scaffold `\\[tool.riskratchet]` config + print the CI snippet.
 
     Idempotent: re-running on a configured project is a no-op unless
     `--force`. Detects the test runner so the suggested test command
@@ -1480,6 +1490,10 @@ def doctor(
 ) -> None:
     """Diagnose setup: paths, baseline, coverage, git, config, suppressions.
 
+    Some checks are conditional: the coverage-derived ones need a loadable
+    coverage file, and the TypeScript identity check only appears when the
+    baseline actually records TypeScript entries.
+
     Exits 0 only when every check is `pass` or `warn`. A single `fail` exits 1
     with the remediation command in the per-check row, so a user can
     copy-paste the fix instead of guessing.
@@ -1488,16 +1502,14 @@ def doctor(
     _warn_unknown_config_keys(cfg)
     paths = _resolved_paths(None, cfg, config_dir)
     baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
-    coverage_value = cfg.get("coverage")
-    coverage_path: Path | None = None
-    if isinstance(coverage_value, str):
-        coverage_path = _anchor_config_path(Path(coverage_value), config_dir)
+    coverage_path, coverage_origin = _doctor_coverage_source(cfg, config_dir)
     checks = diagnose(
         config_dir=config_dir,
         cfg=cfg,
         paths=paths,
         baseline_file=baseline_file,
         coverage_path=coverage_path,
+        coverage_origin=coverage_origin,
     )
     if json_output:
         payload: dict[str, object] = {
@@ -1511,6 +1523,26 @@ def doctor(
         _emit_doctor_table(checks)
     if any(c.status is CheckStatus.FAIL for c in checks):
         raise typer.Exit(code=1)
+
+
+def _doctor_coverage_source(cfg: Mapping[str, Any], config_dir: Path) -> tuple[Path | None, str]:
+    """Resolve which coverage file `doctor` should inspect, mirroring `check`.
+
+    Reading only `coverage` used to mis-report a project configured purely with
+    `coverage_map`, or one relying on `auto_coverage` + `coverage_cache`, as
+    "no coverage configured" — riskratchet's own pyproject.toml included.
+    """
+    coverage_value = cfg.get("coverage")
+    if isinstance(coverage_value, str):
+        return _anchor_config_path(Path(coverage_value), config_dir), "coverage"
+    coverage_map = cfg.get("coverage_map")
+    if isinstance(coverage_map, dict) and coverage_map:
+        first = next(iter(coverage_map.values()))
+        return _anchor_config_path(Path(str(first)), config_dir), "coverage_map"
+    if cfg.get("auto_coverage") is not False:
+        cache = cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH))
+        return _anchor_config_path(Path(str(cache)), config_dir), "coverage_cache"
+    return None, "coverage"
 
 
 def _doctor_check_payload(check: DoctorCheck) -> dict[str, object]:
@@ -1533,7 +1565,7 @@ def _emit_doctor_table(checks: list[DoctorCheck]) -> None:
     }
     typer.echo("riskratchet doctor")
     for check in checks:
-        typer.echo(f"  {status_glyph[check.status]}  {check.name:<13} {check.summary}")
+        typer.echo(f"  {status_glyph[check.status]}  {check.name:<17} {check.summary}")
         if check.status is not CheckStatus.PASS and check.remediation:
             # Remediation on stderr so `2>/dev/null` filters to status only.
             typer.echo(f"        → fix:    {check.remediation}", err=True)
@@ -1823,6 +1855,111 @@ def _load_baseline_or_exit(baseline_file: Path) -> Baseline:
             err=True,
         )
         raise typer.Exit(code=2) from exc
+
+
+def _build_report_or_exit(
+    resolved_paths: list[Path],
+    *,
+    config_dir: Path,
+    coverage_path: Path | None,
+    coverage_map: Mapping[str, Path] | None,
+    include: list[str],
+    exclude: list[str],
+    allow: list[str],
+    use_git: bool,
+    churn_days: int,
+    cfg: dict[str, Any],
+    missing_coverage: str | None,
+    ts_enabled: bool,
+    ts_coverage: list[Path] | None,
+    ts_entry: list[Path] | None,
+) -> RiskReport:
+    """Build a report for `scan`/`check`/`diff`/`baseline`, converting setup
+    failures into actionable stderr.
+
+    The four commands used to inline this identical `build_report` call plus a
+    lone `except ImportError`, which meant an unreadable coverage file escaped
+    as a raw `ValueError` traceback (`engine.analyze` -> `load_coverage`). One
+    boundary keeps the error handling honest in all four places at once, and
+    mirrors `_load_baseline_or_exit`: a bad file is a setup problem, so it
+    exits 2 with the command to run next, never a traceback.
+    """
+    if use_git and is_shallow_repo(config_dir):
+        typer.secho(
+            "riskratchet: shallow clone detected; churn signals score as zero. "
+            "Use actions/checkout with 'fetch-depth: 0' (or run 'git fetch --unshallow').",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    try:
+        return build_report(
+            resolved_paths,
+            root=config_dir,
+            coverage_path=coverage_path,
+            coverage_map=coverage_map,
+            include=include,
+            exclude=exclude,
+            allow=allow,
+            use_git=use_git,
+            churn_days=churn_days,
+            weights=_resolved_weights(cfg),
+            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+            groups=_resolved_groups(cfg),
+            typescript=ts_enabled,
+            ts_coverage_paths=ts_coverage or [],
+            ts_entries=ts_entry or [],
+            on_ts_warning=_ts_warn,
+            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+            on_coverage_error=_coverage_shard_warn,
+        )
+    except ImportError as exc:  # missing [typescript] extra, surfaced during TS discovery
+        typer.secho(str(exc), fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2) from exc
+    except (FileNotFoundError, ValueError) as exc:
+        # Unreadable/malformed coverage, or mutually exclusive coverage flags.
+        # `exc` already names the offending path, so it stands as the headline.
+        typer.secho(
+            _format_setup_error(
+                f"riskratchet: {exc}",
+                [
+                    (
+                        "Regenerate the coverage report:",
+                        f"pytest --cov --cov-branch --cov-report=json:{coverage_path or 'coverage.json'} -q",
+                    ),
+                    (
+                        "Or run without coverage (every function scores as uncovered):",
+                        "riskratchet scan --no-auto-cov",
+                    ),
+                ],
+            ),
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2) from exc
+
+
+def _coverage_shard_warn(path: Path, message: str) -> None:
+    """Report a `--coverage-map` shard that could not be loaded.
+
+    `_ensure_coverage_map_exists` promises "treating as no coverage" for a
+    missing shard, but the loader used to raise anyway. The warning now fires
+    where the shard is actually dropped, so a missing *and* a malformed shard
+    get the same one message with the same remediation.
+    """
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: coverage-map shard unusable: {path} ({message}); "
+            "treating that prefix as no coverage.",
+            [
+                (
+                    "Generate coverage at this path:",
+                    f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                ),
+            ],
+        ),
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
 
 
 def _check_paths_exist(

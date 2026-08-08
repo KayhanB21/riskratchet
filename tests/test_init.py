@@ -280,3 +280,21 @@ def test_init_against_monorepo_fixture_force_replaces_block(tmp_path: Path) -> N
     # Subtables under [tool.riskratchet.*] are intentionally removed.
     assert "[tool.riskratchet.coverage_map]" not in text
     assert "[tool.riskratchet.groups]" not in text
+
+
+def test_render_ci_snippet_requests_full_history() -> None:
+    """The scaffolded snippet must defeat actions/checkout's depth-1 default.
+
+    On a shallow clone `git log --since` sees only HEAD, so every function's
+    churn scores as zero and CI silently disagrees with a locally-generated
+    baseline. The failure is invisible without this line.
+    """
+    import yaml  # type: ignore[import-untyped]
+
+    snippet = render_ci_snippet()
+    assert "fetch-depth: 0" in snippet
+
+    body = "\n".join(line for line in snippet.splitlines() if not line.lstrip().startswith("#"))
+    steps = yaml.safe_load(body)
+    assert steps[0]["with"]["fetch-depth"] == 0
+    assert "actions/checkout" in steps[0]["uses"]

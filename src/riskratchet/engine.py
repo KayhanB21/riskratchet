@@ -11,6 +11,7 @@ import sys
 from collections.abc import Mapping, Sequence
 from fnmatch import fnmatch
 from pathlib import Path
+from typing import Any
 
 from riskratchet.analysis import ParsedFile, ParseError, iter_python_files, parse_file
 from riskratchet.complexity import complexity_for_file
@@ -49,6 +50,7 @@ def analyze(
     weights: Mapping[str, float] | None = None,
     missing_coverage_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
     groups: Mapping[str, Sequence[str]] | None = None,
+    on_coverage_error: Any = None,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -73,7 +75,7 @@ def analyze(
     resolved_weights = resolve_weights(weights)
     coverage_data: CoverageData | MultiCoverageData
     if coverage_map:
-        coverage_data = load_coverage_map(coverage_map)
+        coverage_data = load_coverage_map(coverage_map, on_error=on_coverage_error)
         coverage_present = True
     elif coverage_path is not None:
         coverage_data = load_coverage(Path(coverage_path))

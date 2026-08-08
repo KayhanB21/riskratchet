@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/KayhanB21/riskratchet/schemas/doctor.schema.json",
   "title": "riskratchet doctor",
-  "description": "Output of `riskratchet doctor --json`. Six setup checks plus an aggregate summary; exit 0 only when every check is pass or warn.",
+  "description": "Output of `riskratchet doctor --json`. Setup checks plus an aggregate summary; exit 0 only when every check is pass or warn.",
   "type": "object",
   "required": ["$schema", "version", "checks", "summary"],
   "additionalProperties": false,
@@ -17,7 +17,18 @@
         "additionalProperties": false,
         "properties": {
           "name": {
-            "enum": ["paths", "baseline", "coverage", "git", "config", "suppressions"]
+            "enum": [
+              "paths",
+              "baseline",
+              "coverage",
+              "coverage-overlap",
+              "branch-data",
+              "git",
+              "shallow-clone",
+              "typescript",
+              "config",
+              "suppressions"
+            ]
           },
           "status": { "enum": ["pass", "warn", "fail"] },
           "summary": { "type": "string" },

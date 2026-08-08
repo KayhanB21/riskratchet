@@ -41,6 +41,7 @@ def build_report(
     ts_entries: Sequence[Path] | None = None,
     on_ts_warning: Any = None,
     on_ts_error: Any = None,
+    on_coverage_error: Any = None,
 ) -> RiskReport:
     """Build one `RiskReport` across enabled backends.
 
@@ -62,6 +63,7 @@ def build_report(
         weights=weights,
         missing_coverage_policy=missing_coverage_policy,
         groups=groups,
+        on_coverage_error=on_coverage_error,
     )
     if not typescript:
         return report

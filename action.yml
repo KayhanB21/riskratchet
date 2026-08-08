@@ -107,7 +107,10 @@ runs:
         echo "::group::riskratchet command"
         printf '%s\n' "riskratchet ${args[*]}"
         echo "::endgroup::"
-        riskratchet "${args[@]}" >> riskratchet-comment.md
+        # Truncate, not append: a re-run in the same job would otherwise stack
+        # two reports into one body and double its size toward GitHub's
+        # 65,536-char comment limit.
+        riskratchet "${args[@]}" > riskratchet-comment.md
         status=$?
         echo "status=$status" >> "$GITHUB_OUTPUT"
         echo "::group::riskratchet output"

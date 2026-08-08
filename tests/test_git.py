@@ -11,7 +11,13 @@ from pathlib import Path
 
 import pytest
 
-from riskratchet.git import churn_for_file, churn_for_function, collect_file_churn, collect_function_churn
+from riskratchet.git import (
+    churn_for_file,
+    churn_for_function,
+    collect_file_churn,
+    collect_function_churn,
+    is_shallow_repo,
+)
 from riskratchet.models import FunctionId, FunctionSpan
 
 
@@ -127,3 +133,21 @@ def test_collect_handles_renamed_and_deleted_files(tmp_path: Path) -> None:
     # "perfectly attribute churn across renames" (that is v0.3+ work).
     assert "c.py" in counts
     assert counts["c.py"] >= 1
+
+
+def test_is_shallow_repo_detects_shallow_marker(tmp_path: Path) -> None:
+    """`.git/shallow` is git's own marker for a truncated history.
+
+    Churn degrades silently on a shallow clone (every git helper collapses a
+    failure to an empty result), so this predicate is what makes the condition
+    reportable instead of invisible.
+    """
+    (tmp_path / ".git").mkdir()
+    assert is_shallow_repo(tmp_path) is False
+
+    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+    assert is_shallow_repo(tmp_path) is True
+
+
+def test_is_shallow_repo_false_without_git_dir(tmp_path: Path) -> None:
+    assert is_shallow_repo(tmp_path) is False
