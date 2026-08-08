@@ -167,3 +167,54 @@ def test_multi_coverage_data_normalizes_prefix(tmp_path: Path) -> None:
     multi = load_coverage_map({"./pkg/": cov})
     # Lookup uses normalized prefix matching
     assert multi.lookup("pkg/foo.py") is not None
+
+
+def test_load_coverage_map_skips_missing_shard_with_callback(tmp_path: Path) -> None:
+    """A missing shard is dropped, not raised.
+
+    `config._ensure_coverage_map_exists` already told the user "treating as no
+    coverage" for this case; the loader used to raise `FileNotFoundError`
+    anyway, so every `scan --coverage-map` run with one absent shard crashed.
+    """
+    good = _write(
+        tmp_path,
+        {"files": {"pkg/foo.py": {"executed_lines": [1], "missing_lines": []}}},
+    )
+    errors: list[tuple[Path, str]] = []
+    multi = load_coverage_map(
+        {"pkg": good, "gone": tmp_path / "absent.json"},
+        on_error=lambda path, message: errors.append((path, message)),
+    )
+
+    assert multi.lookup("pkg/foo.py") is not None
+    assert errors == [(tmp_path / "absent.json", "file not found")]
+
+
+def test_load_coverage_map_skips_unreadable_shard(tmp_path: Path) -> None:
+    good = _write(
+        tmp_path,
+        {"files": {"pkg/foo.py": {"executed_lines": [1], "missing_lines": []}}},
+    )
+    junk = tmp_path / "junk.json"
+    junk.write_text("not json", encoding="utf-8")
+    errors: list[tuple[Path, str]] = []
+    multi = load_coverage_map(
+        {"pkg": good, "bad": junk},
+        on_error=lambda path, message: errors.append((path, message)),
+    )
+
+    assert multi.lookup("pkg/foo.py") is not None
+    assert len(errors) == 1
+    assert errors[0][0] == junk
+    assert "could not read" in errors[0][1]
+
+
+def test_load_coverage_map_without_callback_skips_silently(tmp_path: Path) -> None:
+    """`on_error` is optional: unusable shards are simply absent."""
+    junk = tmp_path / "junk.json"
+    junk.write_text("not json", encoding="utf-8")
+
+    multi = load_coverage_map({"bad": junk, "gone": tmp_path / "absent.json"})
+
+    assert multi.lookup("bad/foo.py") is None
+    assert multi.prefixes == ()

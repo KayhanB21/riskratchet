@@ -130,3 +130,23 @@ def test_action_uses_entries_are_pinned_to_sha() -> None:
     assert uses_values, "composite action should pin at least one nested action"
     for value in uses_values:
         assert _PINNED_USES_RE.match(value), f"unpinned uses: {value!r}"
+
+
+def test_action_check_step_truncates_the_comment_file() -> None:
+    """`>` not `>>`: appending would stack two reports on a re-run and push the
+    body toward GitHub's 65,536-char comment limit (a 422 fails the job)."""
+    steps = _load()["runs"]["steps"]
+    check = next((s for s in steps if s.get("id") == "ratchet"), None)
+    assert check is not None
+    run = check["run"]
+    assert ">> riskratchet-comment.md" not in run
+    assert "> riskratchet-comment.md" in run
+
+
+def test_action_step_outputs_still_append() -> None:
+    """Guard against over-correcting the redirect fix: $GITHUB_OUTPUT must be
+    appended, or other steps' outputs are clobbered."""
+    steps = _load()["runs"]["steps"]
+    check = next((s for s in steps if s.get("id") == "ratchet"), None)
+    assert check is not None
+    assert '>> "$GITHUB_OUTPUT"' in check["run"]

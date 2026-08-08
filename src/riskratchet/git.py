@@ -20,6 +20,18 @@ _HUNK_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
 FunctionChurnTarget = tuple[FunctionId, FunctionSpan]
 
 
+def is_shallow_repo(root: Path) -> bool:
+    """True when `root` is a shallow clone.
+
+    Worth surfacing because the failure is silent: every git helper here
+    collapses a failure to an empty result, and on a depth-1 clone
+    `git log --since` simply sees one commit — so churn scores as zero rather
+    than erroring. `actions/checkout` defaults to depth 1, which is how CI ends
+    up disagreeing with a locally-generated baseline.
+    """
+    return (root / ".git" / "shallow").is_file()
+
+
 def collect_function_churn(
     root: Path,
     functions: Sequence[FunctionChurnTarget],

@@ -175,3 +175,145 @@ def test_stale_coverage_test_command_failure_emits_remediation(
     assert "Fix one of:" in result.stderr
     assert "pytest --cov" in result.stderr
     assert "--no-auto-cov" in result.stderr
+
+
+def _seed_baseline(src: Path) -> None:
+    """Write a real baseline so `check`/`diff` get past their baseline gate.
+
+    Both commands resolve the baseline before touching coverage, so without
+    this they exit 2 on "baseline file not found" and never reach the coverage
+    boundary under test.
+    """
+    result = runner.invoke(
+        app, ["baseline", str(src), "--allow-missing-coverage", "--no-auto-cov", "--no-git"]
+    )
+    assert result.exit_code == 0, result.output
+
+
+@pytest.mark.parametrize("command", ["scan", "check", "diff", "baseline"])
+def test_malformed_coverage_emits_setup_error(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A coverage file that won't parse is a setup problem, not a crash.
+
+    Before 0.3.2 every command wrapped `build_report` in `except ImportError`
+    only, so `load_coverage`'s `ValueError` escaped as a raw traceback. All
+    four commands now share one boundary (`cli._build_report_or_exit`).
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    _seed_baseline(src)
+    bad = tmp_path / "coverage.json"
+    bad.write_text("not json at all", encoding="utf-8")
+
+    result = runner.invoke(app, [command, str(src), "--coverage", str(bad), "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "could not read coverage file" in result.stderr
+    assert "Fix one of:" in result.stderr
+    assert "pytest --cov" in result.stderr
+
+
+@pytest.mark.parametrize("command", ["scan", "check", "diff", "baseline"])
+def test_coverage_file_without_files_section_emits_setup_error(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Valid JSON, wrong shape — the other `ValueError` branch in `load_coverage`."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    _seed_baseline(src)
+    bad = tmp_path / "coverage.json"
+    bad.write_text('{"meta": {}}', encoding="utf-8")
+
+    result = runner.invoke(app, [command, str(src), "--coverage", str(bad), "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "has no `files` section" in result.stderr
+    assert "Fix one of:" in result.stderr
+
+
+def test_scan_with_missing_coverage_map_shard_continues(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`scan` passes `allow_missing=True`, so an absent shard must warn, not crash."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--coverage-map", f"src={tmp_path / 'absent.json'}", "--no-auto-cov", "--no-git"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "Traceback" not in result.output
+    assert "treating that prefix as no coverage" in result.stderr
+    assert "pytest --cov" in result.stderr
+
+
+def test_scan_with_malformed_coverage_map_shard_continues(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    junk = tmp_path / "junk.json"
+    junk.write_text("not json", encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        ["scan", str(src), "--coverage-map", f"src={junk}", "--no-auto-cov", "--no-git"],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "coverage-map shard unusable" in result.stderr
+    assert "could not read" in result.stderr
+
+
+def test_strict_missing_coverage_map_shard_still_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`check` does not allow missing coverage, so the strict path is unchanged."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    _seed_baseline(src)
+
+    result = runner.invoke(
+        app,
+        ["check", str(src), "--coverage-map", f"src={tmp_path / 'absent.json'}", "--no-auto-cov", "--no-git"],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "coverage-map[src] file not found" in result.stderr
+    assert "--allow-missing-coverage" in result.stderr
+
+
+def test_shallow_clone_emits_churn_warning(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A shallow clone silently zeroes churn, so say so.
+
+    This is the runtime half of the `fetch-depth: 0` fix: an adopter whose CI
+    still uses a depth-1 checkout gets told why their scores disagree with the
+    baseline instead of silently getting different numbers.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov"])
+
+    assert result.exit_code == 0, result.output
+    assert "shallow clone detected" in result.stderr
+    assert "fetch-depth: 0" in result.stderr
+
+
+def test_no_git_suppresses_shallow_clone_warning(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+
+    result = runner.invoke(app, ["scan", str(src), "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 0, result.output
+    assert "shallow clone detected" not in result.stderr

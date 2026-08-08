@@ -1,25 +1,41 @@
 """Tests for `riskratchet doctor` (P13).
 
-Six checks: paths, baseline, coverage, git, config, suppressions. The
-JSON envelope is validated against `schemas/doctor.schema.json` in
+The JSON envelope is validated against `schemas/doctor.schema.json` in
 test_schemas.py; here we drive the diagnose() function and the CLI
 command end-to-end to verify per-check outcomes and remediation text.
+
+Some checks are conditional — the coverage-derived ones need a loadable
+coverage file and the TypeScript one needs a baseline that records
+TypeScript entries — so assertions here pin the *set* of names against
+the schema enum rather than a frozen count.
 """
 
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from pathlib import Path
 from textwrap import dedent
+from typing import Any
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
-from riskratchet.doctor import CheckStatus, diagnose, summarize
+from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 
 runner = CliRunner()
+
+# Emitted on every run, in this order, regardless of project shape.
+ALWAYS_PRESENT_CHECKS = ("paths", "baseline", "coverage", "git", "shallow-clone", "config", "suppressions")
+
+# Read from the schema so the code and the published contract cannot drift.
+SCHEMA_CHECK_NAMES: tuple[str, ...] = tuple(
+    json.loads((Path(__file__).resolve().parents[1] / "schemas" / "doctor.schema.json").read_text())[
+        "properties"
+    ]["checks"]["items"]["properties"]["name"]["enum"]
+)
 
 
 def _project(tmp_path: Path) -> Path:
@@ -39,10 +55,13 @@ def test_diagnose_pass_pass_path() -> None:
         baseline_file=Path(".riskratchet.json"),
         coverage_path=Path("coverage.json"),
     )
-    # We just check the shape — values depend on the cwd state.
-    assert len(checks) == 6
+    # We just check the shape — values depend on the cwd state. Coverage-derived
+    # and TypeScript checks are conditional, so assert the unconditional core in
+    # declaration order rather than freezing a count.
     names = [c.name for c in checks]
-    assert names == ["paths", "baseline", "coverage", "git", "config", "suppressions"]
+    assert set(ALWAYS_PRESENT_CHECKS).issubset(names)
+    assert [n for n in names if n in ALWAYS_PRESENT_CHECKS] == list(ALWAYS_PRESENT_CHECKS)
+    assert set(names) <= set(SCHEMA_CHECK_NAMES)
 
 
 def test_doctor_cli_fails_when_baseline_missing(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -102,18 +121,15 @@ def test_doctor_json_envelope_has_expected_shape(tmp_path: Path, monkeypatch: py
     payload = json.loads(result.stdout)
     assert payload["$schema"].endswith("doctor.schema.json")
     assert isinstance(payload["version"], str)
-    assert len(payload["checks"]) == 6
-    assert {c["name"] for c in payload["checks"]} == {
-        "paths",
-        "baseline",
-        "coverage",
-        "git",
-        "config",
-        "suppressions",
-    }
+    names = {c["name"] for c in payload["checks"]}
+    assert set(ALWAYS_PRESENT_CHECKS).issubset(names)
+    # Every emitted name must be declared in the schema enum, or `--json`
+    # validation breaks for consumers.
+    assert names <= set(SCHEMA_CHECK_NAMES)
+    total = len(payload["checks"])
     summary = payload["summary"]
-    assert summary["total"] == 6
-    assert summary["passed"] + summary["warned"] + summary["failed"] == 6
+    assert summary["total"] == total
+    assert summary["passed"] + summary["warned"] + summary["failed"] == total
     # baseline missing should be among the failures
     failed = [c for c in payload["checks"] if c["status"] == "fail"]
     assert any(c["name"] == "baseline" for c in failed)
@@ -225,17 +241,17 @@ def test_check_coverage_covers_all_branches(tmp_path: Path) -> None:
     base = 1_000_000.0
 
     # 1. no coverage configured → WARN
-    assert _check_coverage(None, source_paths=[src_dir]).status is CheckStatus.WARN
+    assert _check_coverage(None, source_paths=[src_dir])[0].status is CheckStatus.WARN
     # 2. configured but the file doesn't exist → FAIL
-    assert _check_coverage(tmp_path / "absent.json", source_paths=[src_dir]).status is CheckStatus.FAIL
+    assert _check_coverage(tmp_path / "absent.json", source_paths=[src_dir])[0].status is CheckStatus.FAIL
     # 3. coverage older than a source file → WARN (stale)
     os.utime(cov, (base, base))
     os.utime(src_file, (base + 100, base + 100))
-    assert _check_coverage(cov, source_paths=[src_dir]).status is CheckStatus.WARN
+    assert _check_coverage(cov, source_paths=[src_dir])[0].status is CheckStatus.WARN
     # 4. coverage newer than every source file → PASS (fresh) — the previously-flaky branch
     os.utime(src_file, (base - 100, base - 100))
     os.utime(cov, (base, base))
-    fresh = _check_coverage(cov, source_paths=[src_dir])
+    fresh, _ = _check_coverage(cov, source_paths=[src_dir])
     assert fresh.status is CheckStatus.PASS
     assert "fresh" in fresh.summary
 
@@ -323,3 +339,172 @@ def test_doctor_with_fail_stderr_snapshot(
     result = runner.invoke(app, ["doctor"])
     assert result.exit_code == 1, (result.stdout, result.stderr)
     assert _normalise(result.stderr, tmp_path) == snapshot
+
+
+def _checks_by_name(checks: Sequence[DoctorCheck]) -> dict[str, DoctorCheck]:
+    return {c.name: c for c in checks}
+
+
+def _diagnose(
+    tmp_path: Path,
+    *,
+    cfg: dict[str, Any] | None = None,
+    coverage: Path | None = None,
+) -> dict[str, DoctorCheck]:
+    src = tmp_path / "src"
+    if not src.exists():
+        src.mkdir()
+        (src / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    return _checks_by_name(
+        diagnose(
+            config_dir=tmp_path,
+            cfg=cfg if cfg is not None else {"paths": ["src"]},
+            paths=[src],
+            baseline_file=tmp_path / ".riskratchet.json",
+            coverage_path=coverage,
+        )
+    )
+
+
+def test_malformed_coverage_fails_instead_of_passing(tmp_path: Path) -> None:
+    """The one new FAIL: doctor used to report PASS on a file that crashed `check`.
+
+    It cannot regress a working setup — anything that fails to parse here was
+    already breaking `check`.
+    """
+    cov = tmp_path / "coverage.json"
+    cov.write_text("not json", encoding="utf-8")
+
+    check = _diagnose(tmp_path, coverage=cov)["coverage"]
+
+    assert check.status is CheckStatus.FAIL
+    assert "malformed" in check.summary
+    assert "pytest --cov" in (check.remediation or "")
+
+
+def test_coverage_without_files_section_fails(tmp_path: Path) -> None:
+    cov = tmp_path / "coverage.json"
+    cov.write_text('{"meta": {}}', encoding="utf-8")
+
+    assert _diagnose(tmp_path, coverage=cov)["coverage"].status is CheckStatus.FAIL
+
+
+def test_coverage_overlap_warns_when_measuring_a_different_tree(tmp_path: Path) -> None:
+    """0% for everything with no error is the most common real misconfiguration."""
+    cov = tmp_path / "coverage.json"
+    cov.write_text(
+        json.dumps({"files": {"somewhere/else/z.py": {"executed_lines": [1], "missing_lines": []}}}),
+        encoding="utf-8",
+    )
+
+    check = _diagnose(tmp_path, coverage=cov)["coverage-overlap"]
+
+    assert check.status is CheckStatus.WARN
+    assert "0 of 1" in check.summary
+
+
+def test_coverage_overlap_passes_when_files_match(tmp_path: Path) -> None:
+    cov = tmp_path / "coverage.json"
+    cov.write_text(
+        json.dumps({"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}}),
+        encoding="utf-8",
+    )
+
+    assert _diagnose(tmp_path, coverage=cov)["coverage-overlap"].status is CheckStatus.PASS
+
+
+def test_branch_data_warns_without_cov_branch(tmp_path: Path) -> None:
+    """Missing branch data zeroes branch_gap, so scores come out too low."""
+    cov = tmp_path / "coverage.json"
+    cov.write_text(
+        json.dumps({"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}}),
+        encoding="utf-8",
+    )
+
+    check = _diagnose(tmp_path, coverage=cov)["branch-data"]
+
+    assert check.status is CheckStatus.WARN
+    assert "--cov-branch" in (check.remediation or "")
+
+
+def test_branch_data_passes_with_cov_branch(tmp_path: Path) -> None:
+    cov = tmp_path / "coverage.json"
+    cov.write_text(
+        json.dumps(
+            {
+                "files": {
+                    "src/m.py": {
+                        "executed_lines": [1],
+                        "missing_lines": [],
+                        "executed_branches": [[1, 2]],
+                        "missing_branches": [],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert _diagnose(tmp_path, coverage=cov)["branch-data"].status is CheckStatus.PASS
+
+
+def test_shallow_clone_warns(tmp_path: Path) -> None:
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+
+    check = _diagnose(tmp_path)["shallow-clone"]
+
+    assert check.status is CheckStatus.WARN
+    assert "fetch-depth: 0" in (check.remediation or "")
+
+
+def test_shallow_clone_passes_on_full_history(tmp_path: Path) -> None:
+    assert _diagnose(tmp_path)["shallow-clone"].status is CheckStatus.PASS
+
+
+@pytest.mark.parametrize(
+    "cfg",
+    [
+        {"paths": "src"},
+        {"paths": ["src"], "fail_new_above": "50"},
+        {"paths": ["src"], "fail_above": 150},
+    ],
+)
+def test_config_check_warns_on_invalid_values(tmp_path: Path, cfg: dict[str, Any]) -> None:
+    """`_check_config` only looked for unknown keys, so wrong *types* passed."""
+    check = _diagnose(tmp_path, cfg=cfg)["config"]
+
+    assert check.status is CheckStatus.WARN
+    assert "invalid config" in check.summary
+    assert "config validate" in (check.remediation or "")
+
+
+def test_config_check_passes_on_valid_config(tmp_path: Path) -> None:
+    assert _diagnose(tmp_path, cfg={"paths": ["src"]})["config"].status is CheckStatus.PASS
+
+
+def test_typescript_check_absent_for_python_only_baseline(tmp_path: Path) -> None:
+    """A Python-only baseline records no identity, so no new row appears."""
+    (tmp_path / ".riskratchet.json").write_text(json.dumps({"version": 3, "entries": []}), encoding="utf-8")
+
+    assert "typescript" not in _diagnose(tmp_path)
+
+
+def test_typescript_check_warns_on_grammar_mismatch(tmp_path: Path) -> None:
+    (tmp_path / ".riskratchet.json").write_text(
+        json.dumps(
+            {
+                "version": 3,
+                "entries": [],
+                "identity": {"typescript": {"scheme": 1, "grammar": "0.0.1"}},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    check = _diagnose(tmp_path).get("typescript")
+
+    assert check is not None
+    assert check.status is CheckStatus.WARN
+    assert "0.0.1" in check.summary
+    assert "--typescript" in (check.remediation or "")

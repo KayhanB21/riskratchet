@@ -84,3 +84,20 @@ def test_package_version_falls_back_to_pyproject(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(version_mod, "version", missing_metadata)
 
     assert version_mod.package_version() == _project_version()
+
+
+def test_readme_ci_snippet_matches_render_ci_snippet() -> None:
+    """The README's copy-paste snippet and `riskratchet init`'s output are the
+    two things an adopter actually pastes into CI. They drifted once already:
+    both shipped without `fetch-depth: 0`, silently zeroing churn. Assert every
+    meaningful line of the rendered snippet appears in the README so a fix to
+    one can't leave the other stale.
+    """
+    from riskratchet.init import render_ci_snippet
+
+    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
+    for line in render_ci_snippet().splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        assert stripped in readme, f"README is missing the CI-snippet line: {stripped!r}"

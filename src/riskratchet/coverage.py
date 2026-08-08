@@ -116,10 +116,36 @@ class MultiCoverageData:
         return tuple(prefix for prefix, _ in self._shards)
 
 
-def load_coverage_map(coverage_map: Mapping[str, Path]) -> MultiCoverageData:
-    """Load one CoverageData per prefix and wrap them in a MultiCoverageData."""
-    shards = {prefix: load_coverage(path) for prefix, path in coverage_map.items()}
-    return MultiCoverageData.from_map(shards)
+def load_coverage_map(
+    coverage_map: Mapping[str, Path],
+    *,
+    on_error: Any = None,
+) -> MultiCoverageData:
+    """Load one CoverageData per prefix and wrap them in a MultiCoverageData.
+
+    A shard that is missing or malformed is skipped and reported through
+    `on_error(path, message)` rather than aborting the whole run — the caller
+    (`config._ensure_coverage_map_exists`) may have already promised the user
+    "treating as no coverage", and a raise here would break that promise. This
+    mirrors `typescript_coverage.load_istanbul_coverage_files`, so both backends
+    degrade the same way. Without `on_error`, unusable shards are skipped
+    silently.
+    """
+    loaded = ((prefix, _load_shard(path, on_error)) for prefix, path in coverage_map.items())
+    return MultiCoverageData.from_map({prefix: data for prefix, data in loaded if data is not None})
+
+
+def _load_shard(path: Path, on_error: Any) -> CoverageData | None:
+    """Load one coverage shard, or report why it is unusable and return None."""
+    try:
+        return load_coverage(path)
+    except FileNotFoundError:
+        message = "file not found"
+    except ValueError as exc:
+        message = str(exc)
+    if on_error is not None:
+        on_error(path, message)
+    return None
 
 
 def _normalize_prefix(raw: str) -> str:

@@ -23,6 +23,61 @@ from riskratchet.reporting.summary import (
 )
 from riskratchet.scoring import severity
 
+# Rows shown inside a collapsed `<details>` block before the rest are summarized.
+_PR_COMMENT_ROW_CAP = 20
+
+# GitHub rejects an issue-comment body over 65,536 characters with a 422, which
+# fails the Action's upsert step (`action.yml`, `set -euo pipefail`). Budget
+# headroom for the truncation notice and for GitHub's CRLF normalization.
+_PR_COMMENT_MAX_CHARS = 60_000
+
+_TRUNCATION_NOTICE = "_... truncated to fit GitHub's comment size limit._"
+
+
+def _collapsed_section(
+    rows: list[str],
+    *,
+    title: str,
+    header: list[str],
+    cap: int = _PR_COMMENT_ROW_CAP,
+) -> list[str]:
+    """Render pre-built `rows` as a collapsed `<details>` block, capped at `cap`.
+
+    Taking already-rendered row strings lets the report, regression, and diff
+    renderers share this despite their different column shapes.
+    """
+    lines = ["", f"<details><summary>{title} ({len(rows)})</summary>", "", *header]
+    lines.extend(rows[:cap])
+    if len(rows) > cap:
+        lines.append(f"_... {len(rows) - cap} more hidden._")
+    lines.extend(["", "</details>"])
+    return lines
+
+
+def _fit_pr_comment(body: str) -> str:
+    """Trim `body` to GitHub's comment-size limit on a line boundary.
+
+    A row cap alone is not enough: `--limit 0` legitimately disables it, and a
+    repo with thousands of findings (or very long qualnames) would still exceed
+    the limit and fail the Action rather than post a partial report. The marker
+    on line 1 is preserved so the sticky-comment upsert still matches.
+    """
+    if len(body) <= _PR_COMMENT_MAX_CHARS:
+        return body
+    budget = _PR_COMMENT_MAX_CHARS - len(_TRUNCATION_NOTICE) - 2
+    kept: list[str] = []
+    used = 0
+    for line in body.split("\n"):
+        if used + len(line) + 1 > budget:
+            break
+        kept.append(line)
+        used += len(line) + 1
+    # Close any `<details>` the cut left open, or GitHub renders the rest collapsed.
+    unclosed = "\n".join(kept).count("<details>") - "\n".join(kept).count("</details>")
+    kept.extend(["</details>"] * max(unclosed, 0))
+    kept.append(_TRUNCATION_NOTICE)
+    return "\n".join(kept) + "\n"
+
 
 def render_report_markdown(
     report: RiskReport,
@@ -82,18 +137,17 @@ def render_report_pr_comment(
     hidden_high_priority = high_priority[len(displayed) :]
     collapsed = hidden_high_priority + lower_priority
     if collapsed:
-        lines.extend(["", f"<details><summary>Lower-priority findings ({len(collapsed)})</summary>", ""])
         lines.extend(
-            [
-                "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |",
-                "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |",
-            ]
+            _collapsed_section(
+                [_markdown_row(fn, links=links, include_group=True) for fn in collapsed],
+                title="Lower-priority findings",
+                header=[
+                    "| Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |",
+                    "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |",
+                ],
+            )
         )
-        lines.extend(_markdown_row(fn, links=links, include_group=True) for fn in collapsed[:20])
-        if len(collapsed) > 20:
-            lines.append(f"_... {len(collapsed) - 20} more hidden._")
-        lines.extend(["", "</details>"])
-    return "\n".join(lines) + "\n"
+    return _fit_pr_comment("\n".join(lines) + "\n")
 
 
 def render_regressions_markdown(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
@@ -113,8 +167,21 @@ def render_regressions_markdown(regressions: list[Regression], *, links: SourceL
 def render_regressions_pr_comment(
     regressions: list[Regression],
     *,
+    limit: int | None = _PR_COMMENT_ROW_CAP,
     links: SourceLinks | None = None,
 ) -> str:
+    """Render the regressions PR comment, showing `limit` rows before collapsing.
+
+    This is the comment the Action posts in no-baseline (`--fail-above`) mode —
+    a first-adoption run, where every function above the threshold is reported.
+    It used to emit every row unbounded: riskratchet's own repo produced 345
+    rows / ~49k characters, so a moderately larger repo crossed GitHub's 65,536
+    limit and failed the Action instead of posting a report.
+    """
+    header = [
+        "| Kind | Function | Before | After | Delta | Reason |",
+        "| --- | --- | ---: | ---: | ---: | --- |",
+    ]
     lines = [
         PR_COMMENT_MARKER,
         "# riskratchet",
@@ -125,14 +192,19 @@ def render_regressions_pr_comment(
     if not regressions:
         lines.append("_No risk regressions detected._")
         return "\n".join(lines) + "\n"
-    lines.extend(
-        [
-            "| Kind | Function | Before | After | Delta | Reason |",
-            "| --- | --- | ---: | ---: | ---: | --- |",
-        ]
-    )
-    lines.extend(_regression_markdown_row(reg, links=links) for reg in regressions)
-    return "\n".join(lines) + "\n"
+    displayed = regressions if limit is None else regressions[:limit]
+    lines.extend(header)
+    lines.extend(_regression_markdown_row(reg, links=links) for reg in displayed)
+    collapsed = regressions[len(displayed) :]
+    if collapsed:
+        lines.extend(
+            _collapsed_section(
+                [_regression_markdown_row(reg, links=links) for reg in collapsed],
+                title="Lower-priority regressions",
+                header=header,
+            )
+        )
+    return _fit_pr_comment("\n".join(lines) + "\n")
 
 
 def render_diff_markdown(report: DiffReport, *, links: SourceLinks | None = None) -> str:
@@ -186,18 +258,17 @@ def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = No
     ):
         entries = [entry for entry in report.entries if entry.status is status]
         if entries:
-            lines.extend(["", f"<details><summary>{title} ({len(entries)})</summary>", ""])
             lines.extend(
-                [
-                    "| Status | Function | Before | After | Delta | Reason |",
-                    "| --- | --- | ---: | ---: | ---: | --- |",
-                ]
+                _collapsed_section(
+                    [_diff_markdown_row(entry, links=links) for entry in entries],
+                    title=title,
+                    header=[
+                        "| Status | Function | Before | After | Delta | Reason |",
+                        "| --- | --- | ---: | ---: | ---: | --- |",
+                    ],
+                )
             )
-            lines.extend(_diff_markdown_row(entry, links=links) for entry in entries[:20])
-            if len(entries) > 20:
-                lines.append(f"_... {len(entries) - 20} more hidden._")
-            lines.extend(["", "</details>"])
-    return "\n".join(lines) + "\n"
+    return _fit_pr_comment("\n".join(lines) + "\n")
 
 
 def _markdown_row(

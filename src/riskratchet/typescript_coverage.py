@@ -1,5 +1,5 @@
-"""EXPERIMENTAL: map Istanbul/nyc or LCOV coverage onto discovered TypeScript function spans
-(P20, slice 3, since 0.2.13; LCOV since 0.2.16).
+"""Map Istanbul/nyc or LCOV coverage onto discovered TypeScript function spans
+(P20, slice 3, since 0.2.13; LCOV since 0.2.16; feeds scoring since 0.3.0).
 
 Discovery (`typescript.py`) tells us *where* each TypeScript function is; this module
 answers *how well tested* it is, by reading an Istanbul `coverage-final.json` (the dominant
@@ -19,9 +19,9 @@ cross-language scoring pipeline — it must be recalibrated first (see
 analog, so they go in `CoverageStats.missing_branch_arms` as `(line, arm_index)`, never in
 the Python `missing_branches`.
 
-This is informational only — like discovery, it never feeds scoring, baseline, or gating in
-0.2.x. It is reached solely through the `scan --experimental-typescript --ts-coverage` path
-and imports no tree-sitter (it is pure JSON), so a Python-only install is unaffected.
+Since 0.3.0 this feeds scoring: the stats produced here drive `coverage_gap`/`branch_gap` for
+TypeScript functions, reached through the `--typescript --ts-coverage` path. It imports no
+tree-sitter (it is pure JSON), so a Python-only install is unaffected.
 
 When coverage was collected on *compiled JS* (c8/V8, or nyc instrumenting built output
 without `babel-plugin-istanbul`) and not source-map-remapped, the report's line numbers
