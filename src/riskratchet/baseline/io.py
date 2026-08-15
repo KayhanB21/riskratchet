@@ -23,6 +23,22 @@ from riskratchet.models import (
 
 BASELINE_VERSION = "3"
 
+# Every baseline version this build can *read*. `BASELINE_VERSION` is only what it
+# writes; older files stay readable so upgrading riskratchet never forces a
+# re-baseline. Keep in lockstep with the `version` enum in
+# `schemas/baseline.schema.json` — `test_schemas.py` asserts the two agree.
+SUPPORTED_BASELINE_VERSIONS = ("1", "2", "3")
+
+
+class BaselineVersionError(ValueError):
+    """The baseline's format version is one this build cannot read.
+
+    A `ValueError` subclass so every existing error boundary keeps catching it,
+    but distinguishable by type for the one caller that needs to: a baseline from
+    a *newer* riskratchet is fixed by upgrading, not by regenerating, and telling
+    the user to regenerate would destroy the newer file for no reason.
+    """
+
 
 def baseline_from_report(report: RiskReport) -> Baseline:
     entries: dict[FunctionId, BaselineEntry] = {}
@@ -55,7 +71,20 @@ def save_baseline(baseline: Baseline, path: Path) -> None:
     path.write_text(_dumps(baseline), encoding="utf-8")
 
 
-def load_baseline(path: Path) -> Baseline:
+def load_baseline(path: Path, *, on_dropped: Any = None) -> Baseline:
+    """Read a baseline, refusing one that cannot be trusted as a ratchet.
+
+    Structural problems raise `ValueError` instead of degrading to an empty
+    baseline. That distinction matters more here than anywhere else in the tool:
+    an empty baseline means *every* gate passes, so a truncated or wrong-version
+    `.riskratchet.json` used to silently switch the ratchet off and report a
+    clean run. Failing loudly is the only safe direction for a gate.
+
+    `on_dropped(count)`, if given, is called once when individual entries were
+    unreadable but the file as a whole was usable — those functions are missing
+    from the ratchet, which is worth saying out loud. Mirrors the `on_error`
+    callback on `coverage.load_coverage_map`.
+    """
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -63,15 +92,48 @@ def load_baseline(path: Path) -> Baseline:
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not read baseline {path}: {exc}") from exc
 
-    version = str(raw.get("version", BASELINE_VERSION))
+    version = _baseline_version(raw)
     entries: dict[FunctionId, BaselineEntry] = {}
-    for raw_entry in raw.get("entries", []):
+    dropped = 0
+    for raw_entry in raw["entries"]:
         entry = _entry_from_dict(raw_entry)
-        if entry is not None:
+        if entry is None:
+            dropped += 1
+        else:
             entries[entry.id] = entry
+    if dropped and on_dropped is not None:
+        on_dropped(dropped)
     raw_identity = raw.get("identity")
     identity = raw_identity if isinstance(raw_identity, dict) else {}
     return Baseline(version=version, entries=entries, identity=identity)
+
+
+def _baseline_version(raw: Any) -> str:
+    """Validate the baseline envelope and return its schema version.
+
+    A missing `version` is read as the current one — some early files predate the
+    field — but an *unknown* one is fatal, because a future entry shape would
+    parse to zero usable entries and look like a clean baseline.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError(f"baseline root must be a JSON object, got {type(raw).__name__}")
+    if not isinstance(raw.get("entries"), list):
+        raise ValueError("baseline has no 'entries' array")
+    version = str(raw.get("version", BASELINE_VERSION))
+    if version not in SUPPORTED_BASELINE_VERSIONS:
+        raise BaselineVersionError(_unsupported_version_message(version))
+    return version
+
+
+def _unsupported_version_message(version: str) -> str:
+    newest = SUPPORTED_BASELINE_VERSIONS[-1]
+    if version.isdigit() and int(version) > int(newest):
+        return (
+            f"baseline v{version} was written by a newer riskratchet; "
+            f"this build reads up to v{newest}. Upgrade riskratchet"
+        )
+    supported = ", ".join(f"v{value}" for value in SUPPORTED_BASELINE_VERSIONS)
+    return f"unrecognized baseline version {version!r}; this build reads {supported}"
 
 
 def runtime_typescript_identity() -> dict[str, Any]:

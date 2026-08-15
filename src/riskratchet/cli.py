@@ -17,6 +17,7 @@ import typer
 from riskratchet import __version__
 from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
+    BaselineVersionError,
     baseline_from_report,
     load_baseline,
     regressions_above_threshold,
@@ -1839,18 +1840,26 @@ def _load_baseline_or_exit(baseline_file: Path) -> Baseline:
     """Load a baseline, converting parse failures into actionable stderr.
 
     `load_baseline` raises `ValueError` on a malformed file (junk JSON,
-    truncated write, etc.); rather than dump that traceback on the user,
-    re-emit it as a remediation-form setup error pointing at the next
-    command to run.
+    truncated write, a version this build cannot read, etc.); rather than dump
+    that traceback on the user, re-emit it as a remediation-form setup error
+    pointing at the next command to run.
+
+    Individually unreadable entries are survivable, so they warn instead of
+    exiting — but they must not pass in silence, because a dropped entry means
+    that function is no longer ratcheted.
     """
     try:
-        return load_baseline(baseline_file)
+        return load_baseline(baseline_file, on_dropped=_warn_dropped_baseline_entries)
     except ValueError as exc:
+        # A baseline from a *newer* riskratchet is fixed by upgrading; offering
+        # "regenerate" first would talk the user into overwriting a good file.
+        fixes = [("Regenerate the baseline from current risk:", "riskratchet baseline")]
+        if isinstance(exc, BaselineVersionError):
+            fixes.insert(
+                0, ("Upgrade riskratchet to a build that reads it:", "pip install --upgrade riskratchet")
+            )
         typer.secho(
-            _format_setup_error(
-                f"riskratchet: cannot read baseline {baseline_file}: {exc}",
-                [("Regenerate the baseline from current risk:", "riskratchet baseline")],
-            ),
+            _format_setup_error(f"riskratchet: cannot read baseline {baseline_file}: {exc}", fixes),
             fg=typer.colors.RED,
             err=True,
         )
@@ -1936,6 +1945,22 @@ def _build_report_or_exit(
             err=True,
         )
         raise typer.Exit(code=2) from exc
+
+
+def _warn_dropped_baseline_entries(count: int) -> None:
+    """Report baseline entries that were present but unreadable.
+
+    The file itself parsed, so the run continues — but a dropped entry silently
+    leaves that function unratcheted, which is exactly the kind of quiet gap a
+    ratchet must never keep to itself.
+    """
+    plural = "entry" if count == 1 else "entries"
+    typer.secho(
+        f"riskratchet: baseline: skipped {count} malformed {plural}; those functions are not "
+        "ratcheted. Run 'riskratchet baseline' to regenerate.",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
 
 
 def _coverage_shard_warn(path: Path, message: str) -> None:

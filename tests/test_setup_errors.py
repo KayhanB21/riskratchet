@@ -108,6 +108,124 @@ def test_malformed_baseline_emits_regenerate_command(tmp_path: Path, monkeypatch
     assert "riskratchet baseline" in result.stderr
 
 
+# Each payload is a baseline that riskratchet cannot honestly ratchet against.
+# Before 0.3.3 every one of them loaded as *zero entries* and reported a clean
+# run — a corrupt `.riskratchet.json` silently switched the gate off. The
+# non-dict root was worse still: a raw `AttributeError` traceback and exit 1.
+_UNUSABLE_BASELINES = {
+    "non_dict_root": ("[1, 2, 3]", "must be a JSON object"),
+    "entries_not_a_list": ('{"version": "3", "entries": "nope"}', "'entries'"),
+    "entries_missing": ('{"version": "3"}', "'entries'"),
+    "version_from_the_future": ('{"version": "99", "entries": []}', "newer riskratchet"),
+    "version_unrecognized": ('{"version": "nope", "entries": []}', "unrecognized baseline version"),
+}
+
+
+@pytest.mark.parametrize("command", ("check", "diff"))
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    list(_UNUSABLE_BASELINES.values()),
+    ids=list(_UNUSABLE_BASELINES),
+)
+def test_unusable_baseline_exits_two_instead_of_passing_silently(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    command: str,
+    payload: str,
+    expected: str,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    baseline = tmp_path / "bad.json"
+    baseline.write_text(payload, encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            command,
+            str(src),
+            "--baseline",
+            str(baseline),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert expected in result.stderr
+    assert "riskratchet baseline" in result.stderr
+    # The non-dict root used to reach the user as an unhandled AttributeError.
+    assert "Traceback" not in result.stderr
+
+
+def test_future_baseline_offers_upgrade_before_regenerate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The one baseline error where "regenerate" is the wrong first answer.
+
+    A baseline from a newer riskratchet is still a good file; regenerating would
+    downgrade it for no reason. Upgrading must be offered first.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    baseline = tmp_path / "future.json"
+    baseline.write_text('{"version": "99", "entries": []}', encoding="utf-8")
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    stderr = result.stderr
+    assert "pip install --upgrade riskratchet" in stderr
+    assert stderr.index("pip install --upgrade") < stderr.index("riskratchet baseline")
+
+
+def test_malformed_entries_warn_but_do_not_stop_the_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A dropped entry leaves that function unratcheted — say so, don't exit."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    baseline = tmp_path / "partial.json"
+    # The surviving entry is scored generously so nothing regresses and the exit
+    # code isolates the one thing under test: a dropped entry is not fatal.
+    baseline.write_text(
+        '{"version": "3", "entries": ['
+        '{"path": "src/m.py", "qualname": "trivial", "score": 100.0, "components": {}},'
+        '{"path": "src/m.py", "qualname": "broken", "score": "not-a-number", "components": {}}'
+        "]}",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "skipped 1 malformed entry" in result.stderr
+    assert "not ratcheted" in result.stderr
+
+
 def test_missing_scan_path_arg_emits_remediation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     # Path that does not exist on disk — today's behaviour is a silent empty

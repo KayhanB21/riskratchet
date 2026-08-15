@@ -17,6 +17,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import pytest
 
+    from riskratchet.models import Baseline
+
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     group = parser.getgroup("riskratchet", "maintainability ratchet")
@@ -90,7 +92,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # Imported lazily so that enabling the plugin entry point does not pull the
     # whole package in before pytest-cov has a chance to start coverage. Without
     # this, all module-level lines in riskratchet/* show as "missing".
-    from riskratchet.baseline import compare, load_baseline
+    from riskratchet.baseline import compare
     from riskratchet.engine import analyze
     from riskratchet.reporting import render_regressions_table
 
@@ -116,6 +118,10 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         session.exitstatus = 1
         return
 
+    baseline = _loaded_baseline(session, baseline_path)
+    if baseline is None:
+        return
+
     report = analyze(
         paths,
         root=rootdir,
@@ -124,7 +130,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     )
     regressions = compare(
         report,
-        load_baseline(baseline_path),
+        baseline,
         fail_new_above=float(config.getoption("--riskratchet-fail-new-above")),
         fail_regression_above=float(config.getoption("--riskratchet-fail-regression-above")),
         fail_existing_above=config.getoption("--riskratchet-fail-existing-above"),
@@ -139,6 +145,26 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     _emit(session, "riskratchet: regressions detected")
     _emit(session, render_regressions_table(regressions))
     session.exitstatus = 1
+
+
+def _loaded_baseline(session: pytest.Session, path: Path) -> Baseline | None:
+    """Read the baseline, or fail the session explaining why it could not be read.
+
+    `None` means "already reported, stop here". A baseline this build cannot
+    parse must not fall through to a comparison — an empty baseline passes every
+    gate, so a silent pass is the one outcome worse than a failed session.
+
+    The import stays lazy for the same reason as its caller's: the `pytest11`
+    entry point loads this module before pytest-cov starts its tracer.
+    """
+    from riskratchet.baseline import load_baseline
+
+    try:
+        return load_baseline(path)
+    except ValueError as exc:
+        _emit(session, f"riskratchet: cannot read baseline {path}: {exc}")
+        session.exitstatus = 1
+        return None
 
 
 def _resolve(rootdir: Path, value: object) -> Path:

@@ -24,6 +24,8 @@ from riskratchet.baseline.compare import compare
 from riskratchet.baseline.diff import diff
 from riskratchet.baseline.io import (
     BASELINE_VERSION,
+    SUPPORTED_BASELINE_VERSIONS,
+    BaselineVersionError,
     baseline_from_report,
     load_baseline,
     runtime_typescript_identity,
@@ -38,6 +40,8 @@ from riskratchet.baseline.regressions import (
 
 __all__ = [
     "BASELINE_VERSION",
+    "SUPPORTED_BASELINE_VERSIONS",
+    "BaselineVersionError",
     "baseline_from_report",
     "compare",
     "diff",

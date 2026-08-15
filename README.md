@@ -806,6 +806,10 @@ loses its tests while getting simpler. Disable per-run with `--no-component-regr
 
 `scan` never exits 1 unless you ask it to with `--fail-above` or `--fail-severity`.
 
+A baseline riskratchet cannot read is always exit `2`, never `0`. An empty baseline passes every
+gate, so degrading a broken one to "no entries" would silently switch the ratchet off — see
+[Baseline format](#baseline-format).
+
 ## TypeScript
 
 riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`
@@ -957,6 +961,16 @@ them. On a mismatch riskratchet does *not* treat that as a mass rename: it falls
 matching for TypeScript entries, warns, and (since 0.3.1) prints the exact regeneration command.
 `riskratchet doctor` reports the same mismatch proactively. A Python-only baseline carries no
 `identity` block and is byte-identical to v2, so upgrading changes nothing for Python-only users.
+
+**Version compatibility.** This build reads baseline formats **v1, v2, and v3**, and writes v3, so
+upgrading riskratchet never forces a re-baseline. Three cases are hard errors (exit `2`) rather than
+warnings, because each would otherwise leave the gate silently disengaged:
+
+| Baseline | Result |
+| --- | --- |
+| A version newer than this build reads (e.g. v4) | Exit `2`, telling you to **upgrade riskratchet** — a future entry shape would parse as zero entries and look clean. |
+| Not a JSON object, or no `entries` array | Exit `2` — an unreadable baseline ratchets nothing. |
+| Valid file, some individual entries unreadable | Runs, with a warning naming the count. Those functions are **not** ratcheted until you regenerate. |
 
 Regenerate with `riskratchet baseline` (add `--typescript` if you scan TypeScript). If churn is
 part of your scoring, regenerate in the same environment your gate runs in — churn depends on git
