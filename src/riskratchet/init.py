@@ -29,7 +29,7 @@ paths = ["src"]
 # Action ref written into the CI snippet. Bump alongside the release tag
 # (not `__version__`) — `init` is run against an installed version, but
 # the snippet pins the *Action tag*, which only exists after publish.
-ACTION_REF = "v0.3.2"
+ACTION_REF = "v0.3.3"
 
 # SHA-pinned third-party Actions referenced by the snippet. Pinning to a
 # full 40-char SHA prevents tag-mutation supply-chain attacks; the
