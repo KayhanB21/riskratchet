@@ -16,6 +16,7 @@ import pytest
 from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
 from typer.testing import CliRunner
 
+from riskratchet.baseline import SUPPORTED_BASELINE_VERSIONS, load_baseline
 from riskratchet.cli import app
 
 SCHEMAS_DIR = Path(__file__).resolve().parent.parent / "schemas"
@@ -407,3 +408,65 @@ def test_diff_json_with_ambiguous_rename_matches_schema(tmp_path: Path) -> None:
     Draft202012Validator(_load_schema("diff.schema.json")).validate(payload)
     statuses = {e["status"] for e in payload["entries"]}
     assert "ambiguous_rename" in statuses
+
+
+# --- 0.3.3: the loader and the published schema must agree on `version` ------
+
+
+def test_supported_versions_match_the_baseline_schema_enum() -> None:
+    """`SUPPORTED_BASELINE_VERSIONS` and the schema's `version` enum are one fact.
+
+    They live in two files, and the loader now *rejects* anything outside its
+    list — so a version added to one and not the other means riskratchet refuses
+    a baseline its own schema calls valid.
+    """
+    schema = _load_schema("baseline.schema.json")
+    enum = schema["properties"]["version"]["enum"]
+
+    assert list(SUPPORTED_BASELINE_VERSIONS) == sorted(enum, key=int)
+
+
+def test_loader_accepts_every_baseline_the_schema_accepts(tmp_path: Path) -> None:
+    """Schema-valid in, loadable out — asserted in that one direction only.
+
+    The loader is deliberately the more permissive of the two (it tolerates an
+    absent `version` and unknown top-level keys) so an additive field from a
+    future writer cannot brick an older reader. What must never happen is the
+    reverse: a file the schema blesses that the loader rejects.
+    """
+    validator = Draft202012Validator(_load_schema("baseline.schema.json"))
+    entry = {
+        "path": "src/m.py",
+        "qualname": "trivial",
+        "score": 12.5,
+        "components": {
+            "coverage_gap": 1.0,
+            "structural_complexity": 2.0,
+            "branch_gap": 3.0,
+            "churn": 4.0,
+            "public_surface": 5.0,
+            "sprawl": 6.0,
+        },
+    }
+    payloads: list[dict[str, Any]] = [
+        {"version": version, "entries": entries}
+        for version in SUPPORTED_BASELINE_VERSIONS
+        for entries in ([], [entry], [entry, {**entry, "qualname": "other"}])
+    ]
+    payloads.append(
+        {
+            "version": "3",
+            "entries": [{**entry, "fingerprint": "fp", "signature": "sig", "language": "typescript"}],
+            "identity": {"typescript": {"scheme": 2, "grammar": "0.23.2"}},
+        }
+    )
+
+    for payload in payloads:
+        validator.validate(payload)  # the fixture is genuinely schema-valid
+        path = tmp_path / "b.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+        loaded = load_baseline(path)
+
+        assert loaded.version == payload["version"]
+        assert len(loaded.entries) == len(cast(list[Any], payload["entries"]))

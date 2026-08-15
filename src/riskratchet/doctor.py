@@ -27,7 +27,7 @@ from typing import Any
 
 from riskratchet._paths import relative_posix
 from riskratchet.analysis import iter_python_files
-from riskratchet.baseline import load_baseline
+from riskratchet.baseline import BaselineVersionError, load_baseline
 from riskratchet.baseline.io import runtime_typescript_identity
 from riskratchet.config import CONFIG_ALLOWED_KEYS, _validate_config
 from riskratchet.coverage import CoverageData, load_coverage
@@ -138,6 +138,15 @@ def _check_baseline(baseline_file: Path) -> DoctorCheck:
         )
     try:
         baseline = load_baseline(baseline_file)
+    except BaselineVersionError as exc:
+        # Regenerating would overwrite a newer, still-valid baseline with an older
+        # format — the opposite of the fix.
+        return DoctorCheck(
+            name="baseline",
+            status=CheckStatus.FAIL,
+            summary=f"baseline is unreadable: {exc}",
+            remediation="pip install --upgrade riskratchet",
+        )
     except ValueError as exc:
         return DoctorCheck(
             name="baseline",

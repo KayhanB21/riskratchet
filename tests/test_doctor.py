@@ -23,7 +23,7 @@ from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
-from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
+from riskratchet.doctor import CheckStatus, DoctorCheck, _check_baseline, diagnose, summarize
 
 runner = CliRunner()
 
@@ -508,3 +508,16 @@ def test_typescript_check_warns_on_grammar_mismatch(tmp_path: Path) -> None:
     assert check.status is CheckStatus.WARN
     assert "0.0.1" in check.summary
     assert "--typescript" in (check.remediation or "")
+
+
+def test_future_baseline_version_tells_doctor_to_upgrade_not_regenerate(tmp_path: Path) -> None:
+    """Regenerating would overwrite a newer, still-valid baseline with an older format."""
+    baseline = tmp_path / "future.json"
+    baseline.write_text('{"version": "99", "entries": []}', encoding="utf-8")
+
+    check = _check_baseline(baseline)
+
+    assert check.status is CheckStatus.FAIL
+    assert "newer riskratchet" in check.summary
+    assert "upgrade" in (check.remediation or "").lower()
+    assert "riskratchet baseline" not in (check.remediation or "")

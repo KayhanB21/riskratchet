@@ -9,6 +9,31 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+### Fixed
+
+- **A corrupt baseline silently switched the ratchet off.** `load_baseline` trusted
+  `.riskratchet.json` completely: a file that was not a JSON object, had no `entries` array, or
+  declared a `version` this build cannot read all degraded to *zero entries* — and an empty baseline
+  passes every gate. `check` and `diff` reported "No risk regressions detected" and exited `0` on a
+  baseline that ratcheted nothing. All of these are now exit `2` with a remediation command. A
+  baseline written by a *newer* riskratchet says so specifically and tells you to upgrade, since
+  regenerating would be the wrong fix. Reading v1/v2/v3 baselines is unchanged, so upgrading still
+  never forces a re-baseline.
+- **A non-dict baseline crashed with a raw traceback.** `[1,2,3]` as a baseline reached the user as
+  an unhandled `AttributeError` and exit `1`; it is now a normal setup error.
+- **Individually malformed baseline entries vanished without a word.** They were skipped silently,
+  quietly leaving those functions unratcheted. The run still continues, but now warns with the
+  count. The pytest plugin, which had no error boundary at all around the baseline, now fails the
+  session with a message instead of raising.
+
+### Changed
+
+- A structurally invalid baseline is now a hard error (exit `2`) where it previously exited `0`.
+  This can only turn CI red for a repository whose ratchet was already not working. No CLI flag,
+  JSON field, schema field, or import was removed or renamed.
+
 ## [0.3.2] - 2026-08-08
 
 A non-breaking stabilization patch on the `0.3.x` line. Theme: **the adopter's first hour** — every

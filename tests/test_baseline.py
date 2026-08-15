@@ -8,6 +8,8 @@ from typing import Any
 import pytest
 
 from riskratchet.baseline import (
+    BASELINE_VERSION,
+    SUPPORTED_BASELINE_VERSIONS,
     baseline_from_report,
     compare,
     load_baseline,
@@ -705,3 +707,92 @@ def test_classify_against_baseline_returns_ambiguous_for_near_ties() -> None:
     classification = _classify(fn, old)
     assert classification.previous is None
     assert classification.ambiguous is None
+
+
+# --- 0.3.3: an unreadable baseline must fail loudly, never load as empty -----
+#
+# `load_baseline` returning an empty `Baseline` is indistinguishable from "no
+# regressions", so every structural defect below used to produce a green gate.
+# These are unit-level; the CLI exit codes are pinned in `test_setup_errors.py`.
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    [
+        ("[1, 2, 3]", "must be a JSON object"),
+        ('"a string"', "must be a JSON object"),
+        ('{"version": "3", "entries": "nope"}', "'entries'"),
+        ('{"version": "3", "entries": {}}', "'entries'"),
+        ('{"version": "3"}', "'entries'"),
+        ('{"version": "99", "entries": []}', "newer riskratchet"),
+        ('{"version": "4", "entries": []}', "newer riskratchet"),
+        ('{"version": "nope", "entries": []}', "unrecognized baseline version"),
+    ],
+)
+def test_load_baseline_rejects_untrustworthy_files(tmp_path: Path, payload: str, expected: str) -> None:
+    path = tmp_path / "b.json"
+    path.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(ValueError, match=expected):
+        load_baseline(path)
+
+
+def test_future_version_message_names_both_versions(tmp_path: Path) -> None:
+    """The remediation differs from every other baseline error: upgrade, don't regenerate."""
+    path = tmp_path / "b.json"
+    path.write_text('{"version": "99", "entries": []}', encoding="utf-8")
+
+    with pytest.raises(ValueError) as excinfo:
+        load_baseline(path)
+
+    message = str(excinfo.value)
+    assert "v99" in message
+    assert f"v{BASELINE_VERSION}" in message
+    assert "Upgrade riskratchet" in message
+
+
+@pytest.mark.parametrize("version", SUPPORTED_BASELINE_VERSIONS)
+def test_every_supported_version_still_loads(tmp_path: Path, version: str) -> None:
+    """Reading stays backward-compatible: upgrading never forces a re-baseline."""
+    path = tmp_path / "b.json"
+    path.write_text(f'{{"version": "{version}", "entries": []}}', encoding="utf-8")
+
+    assert load_baseline(path).version == version
+
+
+def test_absent_version_is_read_as_the_current_one(tmp_path: Path) -> None:
+    path = tmp_path / "b.json"
+    path.write_text('{"entries": []}', encoding="utf-8")
+
+    assert load_baseline(path).version == BASELINE_VERSION
+
+
+def test_on_dropped_reports_unreadable_entries_once(tmp_path: Path) -> None:
+    path = tmp_path / "b.json"
+    path.write_text(
+        '{"version": "3", "entries": ['
+        '{"path": "m.py", "qualname": "ok", "score": 1.0, "components": {}},'
+        '{"path": "m.py", "qualname": "bad", "score": "x", "components": {}},'
+        '"not even an object"'
+        "]}",
+        encoding="utf-8",
+    )
+    seen: list[int] = []
+
+    baseline = load_baseline(path, on_dropped=seen.append)
+
+    assert seen == [2]
+    assert len(baseline.entries) == 1
+
+
+def test_on_dropped_is_silent_when_every_entry_loads(tmp_path: Path) -> None:
+    path = tmp_path / "b.json"
+    path.write_text(
+        '{"version": "3", "entries": [{"path": "m.py", "qualname": "ok", "score": 1.0, "components": {}}]}',
+        encoding="utf-8",
+    )
+    seen: list[int] = []
+
+    load_baseline(path, on_dropped=seen.append)
+
+    assert seen == []
