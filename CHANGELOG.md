@@ -34,6 +34,23 @@ release; renames or removals are called out below under **Breaking**.
   This can only turn CI red for a repository whose ratchet was already not working. No CLI flag,
   JSON field, schema field, or import was removed or renamed.
 
+### Internal
+
+- **riskratchet was mismeasuring its own coverage by 7.6 points.** The `pytest11` entry point makes
+  pytest import `riskratchet.pytest_plugin` — and through it `riskratchet/__init__.py`'s eager
+  re-exports — during plugin registration, before pytest-cov starts its tracer. Every module-level
+  line in `src/riskratchet/**` had therefore already executed by the time measurement began and read
+  back as "missing". Adding `-p no:riskratchet` to `addopts` takes the measured total from 83.3% to
+  91.1% and fixes all six coverage producers at once, since each inherits it. `fail_under` rises
+  74 → 85 to match, and the baseline was regenerated: 120 of 400 entries move, **every one of them
+  downward**, because better measurement can only add executed lines. **No adopter impact** — an
+  adopter's `[tool.coverage.run] source` never includes riskratchet's own modules, so this only ever
+  affected riskratchet measuring itself.
+- `pytest_addoption` gained direct unit tests pinning the whole option table (names, defaults, types,
+  help text). It had never been measured under either the old or the new setup; it drops 43.0 → 3.0.
+- `docs/top-risk.{md,json}` refreshed. They had been stale since May and were publishing this very
+  bug — ranking `pytest_addoption` at 43.0 with "0% LCov", alongside functions since moved or deleted.
+
 ## [0.3.2] - 2026-08-08
 
 A non-breaking stabilization patch on the `0.3.x` line. Theme: **the adopter's first hour** — every

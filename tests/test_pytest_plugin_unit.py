@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from riskratchet.pytest_plugin import _emit, _resolve, pytest_sessionfinish
+from riskratchet.pytest_plugin import _emit, _resolve, pytest_addoption, pytest_sessionfinish
 
 
 class _StubReporter:
@@ -181,3 +181,99 @@ def test_sessionfinish_marks_failure_on_regression(tmp_path: Path) -> None:
     pytest_sessionfinish(session, 0)  # type: ignore[arg-type]
     assert session.exitstatus == 1
     assert any("regressions detected" in line for line in reporter.lines)
+
+
+# --- pytest_addoption ---------------------------------------------------------
+#
+# This function is never exercised by our own suite: `-p no:riskratchet` in
+# `[tool.pytest.ini_options] addopts` blocks the plugin so it cannot distort our
+# coverage measurement, and before that the entry point ran it *before* the
+# tracer started. Either way it read as uncovered. Calling it directly is what
+# gives the option table its first real assertion — every default below is a
+# documented part of the plugin's contract.
+
+
+class _StubGroup:
+    def __init__(self) -> None:
+        self.options: dict[str, dict[str, Any]] = {}
+
+    def addoption(self, name: str, **kwargs: Any) -> None:
+        self.options[name] = kwargs
+
+
+class _StubParser:
+    def __init__(self) -> None:
+        self.groups: dict[str, _StubGroup] = {}
+
+    def getgroup(self, name: str, description: str = "") -> _StubGroup:
+        self.groups.setdefault(name, _StubGroup())
+        self.group_description = description
+        return self.groups[name]
+
+
+def _registered_options() -> dict[str, dict[str, Any]]:
+    parser = _StubParser()
+    pytest_addoption(parser)  # type: ignore[arg-type]
+    assert list(parser.groups) == ["riskratchet"]
+    return parser.groups["riskratchet"].options
+
+
+def test_addoption_registers_every_documented_flag() -> None:
+    assert set(_registered_options()) == {
+        "--riskratchet",
+        "--riskratchet-paths",
+        "--riskratchet-baseline",
+        "--riskratchet-coverage",
+        "--riskratchet-fail-new-above",
+        "--riskratchet-fail-regression-above",
+        "--riskratchet-fail-existing-above",
+        "--riskratchet-fail-component-regression-above",
+        "--riskratchet-no-component-regression-gate",
+    }
+
+
+@pytest.mark.parametrize(
+    ("flag", "default"),
+    [
+        ("--riskratchet", False),
+        ("--riskratchet-paths", None),
+        ("--riskratchet-baseline", ".riskratchet.json"),
+        ("--riskratchet-coverage", "coverage.json"),
+        ("--riskratchet-fail-new-above", 50.0),
+        ("--riskratchet-fail-regression-above", 5.0),
+        ("--riskratchet-fail-existing-above", None),
+        ("--riskratchet-fail-component-regression-above", 15.0),
+        ("--riskratchet-no-component-regression-gate", False),
+    ],
+)
+def test_addoption_defaults_match_the_cli(flag: str, default: Any) -> None:
+    """Plugin defaults mirror the CLI's, so switching entry points changes nothing."""
+    assert _registered_options()[flag]["default"] == default
+
+
+def test_addoption_gives_every_flag_help_text() -> None:
+    undocumented = [flag for flag, spec in _registered_options().items() if not spec.get("help")]
+
+    assert not undocumented, f"flags without help text: {undocumented}"
+
+
+def test_threshold_flags_parse_as_floats() -> None:
+    """Without `type=float` these arrive as strings and the comparisons misbehave."""
+    options = _registered_options()
+    for flag in (
+        "--riskratchet-fail-new-above",
+        "--riskratchet-fail-regression-above",
+        "--riskratchet-fail-existing-above",
+        "--riskratchet-fail-component-regression-above",
+    ):
+        assert options[flag]["type"] is float, flag
+
+
+def test_boolean_flags_are_store_true() -> None:
+    options = _registered_options()
+    for flag in ("--riskratchet", "--riskratchet-no-component-regression-gate"):
+        assert options[flag]["action"] == "store_true", flag
+
+
+def test_paths_flag_appends_so_it_can_repeat() -> None:
+    assert _registered_options()["--riskratchet-paths"]["action"] == "append"

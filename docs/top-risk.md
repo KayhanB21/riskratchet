@@ -1,22 +1,25 @@
 # riskratchet report
 
-**Functions analyzed:** 12
-**Files analyzed:** 22
+**Functions analyzed:** 15
+**Files analyzed:** 40
 **Coverage:** present
 
 | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
 | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
-| medium | 47.8 | 47.9 | 23 | 64% | 67% | `src/riskratchet/cli.py::_validate_config` | 891-931 |
-| medium | 45.0 | 4.1 | 3 | 50% | 50% | `src/riskratchet/cli.py::config_show` | 139-164 |
-| medium | 44.6 | 17.6 | 7 | 40% | 12% | `src/riskratchet/cli.py::_ensure_coverage_map_exists` | 1260-1286 |
-| medium | 43.0 | 2.0 | 1 | 0% | n/a | `src/riskratchet/pytest_plugin.py::pytest_addoption` | 21-80 |
-| medium | 42.2 | 6.0 | 2 | 0% | n/a | `src/riskratchet/models.py::RiskReport.by_id` | 137-138 |
-| medium | 41.0 | 2.0 | 1 | 0% | n/a | `src/riskratchet/complexity.py::complexity_for_function` | 35-37 |
-| medium | 41.0 | 2.0 | 1 | 0% | n/a | `src/riskratchet/models.py::DiffReport.ambiguous_renames` | 232-233 |
-| medium | 38.9 | 11.8 | 6 | 45% | 25% | `src/riskratchet/cli.py::_resolved_churn_days` | 1247-1257 |
-| medium | 37.7 | 21.0 | 21 | 98% | 100% | `src/riskratchet/engine.py::analyze` | 38-145 |
-| medium | 36.5 | 16.1 | 16 | 94% | 94% | `src/riskratchet/cli.py::diff` | 594-744 |
-| medium | 32.9 | 17.4 | 17 | 89% | 93% | `src/riskratchet/baseline.py::regressions_from_diff` | 259-343 |
-| medium | 32.0 | 13.0 | 13 | 100% | 100% | `src/riskratchet/cli.py::check` | 383-543 |
+| high | 56.6 | 22.6 | 5 | 11% | 0% | `src/riskratchet/redaction.py::redact_regressions` | 202-217 |
+| medium | 47.9 | 17.2 | 4 | 6% | 0% | `src/riskratchet/cli.py::_run_baseline_from_init` | 1441-1484 |
+| medium | 46.2 | 29.0 | 29 | 99% | 96% | `src/riskratchet/cli.py::check` | 654-967 |
+| medium | 45.2 | 13.6 | 5 | 30% | 25% | `src/riskratchet/git.py::head_sha` | 77-98 |
+| medium | 42.2 | 32.2 | 18 | 65% | 38% | `src/riskratchet/init.py::_mentions_pytest` | 172-190 |
+| medium | 41.4 | 41.9 | 25 | 70% | 71% | `src/riskratchet/config.py::_validate_config` | 209-261 |
+| medium | 40.4 | 16.7 | 6 | 33% | 12% | `src/riskratchet/typescript_engine.py::_is_allowed` | 281-290 |
+| medium | 40.0 | 4.1 | 3 | 50% | 50% | `src/riskratchet/cli.py::config_show` | 237-262 |
+| medium | 38.6 | 21.0 | 21 | 100% | 100% | `src/riskratchet/engine.py::analyze` | 39-147 |
+| medium | 37.2 | 18.0 | 18 | 100% | 100% | `src/riskratchet/cli.py::diff` | 1112-1348 |
+| medium | 35.0 | 13.0 | 13 | 100% | 100% | `src/riskratchet/cli.py::scan` | 266-511 |
+| medium | 34.9 | 11.8 | 6 | 45% | 25% | `src/riskratchet/config.py::_resolved_churn_days` | 566-576 |
+| medium | 34.8 | 13.1 | 7 | 50% | 25% | `src/riskratchet/typescript.py::_anon_class_name` | 265-277 |
+| medium | 33.0 | 18.7 | 11 | 60% | 50% | `src/riskratchet/doctor.py::_check_paths` | 105-128 |
+| medium | 32.5 | 18.2 | 18 | 92% | 88% | `src/riskratchet/typescript_engine.py::analyze_typescript` | 56-176 |
 
-_Generated 2026-05-27T01:59:00Z by bin/dogfood-top-risk.sh_
+_Generated 2026-08-15T06:53:32Z by bin/dogfood-top-risk.sh_
