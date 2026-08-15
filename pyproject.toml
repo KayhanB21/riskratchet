@@ -152,14 +152,37 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = ["--strict-markers", "-ra"]
+# `-p no:riskratchet` disables *our own* pytest plugin while we test ourselves.
+#
+# The `pytest11` entry point makes pytest import `riskratchet.pytest_plugin`
+# during plugin registration, which pulls in `riskratchet/__init__.py` and its
+# eager re-exports — all before pytest-cov starts its tracer. Every module-level
+# line in `src/riskratchet/**` was therefore already executed by the time
+# measurement began, and read back as "missing": 83.3% measured vs 91.0% real.
+# (`conftest.py` is not the culprit; pytest-cov's `pytest_load_initial_conftests`
+# is `tryfirst`, so conftest *is* measured.)
+#
+# One line fixes every coverage producer at once — the pre-commit hook, `ci.yml`,
+# `regenerate-baseline.yml`, `dogfood-action.yml`, both `bin/dogfood-*.sh`, and
+# the `test_command` below — because each runs pytest from this directory and
+# inherits these addopts.
+#
+# Zero effect on adopters: their `[tool.coverage.run] source` never includes
+# riskratchet's own modules, so this only ever distorted riskratchet measuring
+# itself. The plugin's own behaviour is covered by `tests/test_pytest_plugin.py`,
+# which drives real sub-pytest sessions that do not inherit this setting.
+addopts = ["--strict-markers", "-ra", "-p", "no:riskratchet"]
 
 [tool.coverage.run]
 source = ["src/riskratchet"]
 branch = true
 
 [tool.coverage.report]
-fail_under = 74
+# Raised 74 -> 85 alongside the `-p no:riskratchet` fix above, which took the
+# measured total from 83.3% to 91.0%. This is a floor against collapse, not a
+# ratchet — `riskratchet check` is the ratchet — so it sits ~6pp below the real
+# number rather than tracking it.
+fail_under = 85
 exclude_lines = [
     "pragma: no cover",
     "raise NotImplementedError",
