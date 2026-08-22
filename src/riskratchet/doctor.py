@@ -29,7 +29,7 @@ from riskratchet._paths import relative_posix
 from riskratchet.analysis import iter_python_files
 from riskratchet.baseline import BaselineVersionError, load_baseline
 from riskratchet.baseline.io import runtime_typescript_identity
-from riskratchet.config import CONFIG_ALLOWED_KEYS, _validate_config
+from riskratchet.config import invalid_config_values, unknown_config_keys
 from riskratchet.coverage import CoverageData, load_coverage
 from riskratchet.git import is_shallow_repo
 
@@ -405,27 +405,34 @@ def _check_config(cfg: Mapping[str, Any]) -> DoctorCheck:
             summary="no [tool.riskratchet] in pyproject.toml",
             remediation='add [tool.riskratchet] with at least `paths = ["src"]`',
         )
-    unknown = sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
-    if unknown:
-        return DoctorCheck(
-            name="config",
-            status=CheckStatus.WARN,
-            summary=f"unknown keys: {', '.join(unknown)}",
-            remediation="remove the keys or check for typos (e.g. fail_new_above vs fail_new_abvoe)",
-        )
-    # Reuse the real validator rather than duplicating type rules: `paths = "src"`
+    # Reuse the real collectors rather than duplicating type rules: `paths = "src"`
     # (a string, not a list) used to pass doctor and fail later. WARN, not FAIL —
-    # `config validate` is the strict exit-2 gate; doctor only reports.
-    try:
-        _validate_config(dict(cfg))
-    except ValueError as exc:
-        return DoctorCheck(
-            name="config",
-            status=CheckStatus.WARN,
-            summary=f"invalid config: {exc}",
-            remediation="riskratchet config validate  # strict check, exits 2",
-        )
+    # `config validate` is the strict exit-2 gate; doctor only reports. Both classes
+    # are reported together: returning early on an unknown key used to hide every
+    # type error behind a single typo, so fixing one revealed the next.
+    unknown = unknown_config_keys(cfg)
+    problems = invalid_config_values(cfg)
+    if unknown or problems:
+        return _config_problem_check(unknown, problems)
     return DoctorCheck(name="config", status=CheckStatus.PASS, summary=f"{len(cfg)} key(s)")
+
+
+def _config_problem_check(unknown: list[str], problems: list[str]) -> DoctorCheck:
+    parts = [f"unknown keys: {', '.join(unknown)}"] if unknown else []
+    if problems:
+        parts.append(f"invalid config: {'; '.join(problems)}")
+    return DoctorCheck(
+        name="config",
+        status=CheckStatus.WARN,
+        summary="; ".join(parts),
+        # A typo is the likelier cause when the *only* problem is an unrecognized key,
+        # so keep pointing at that before reaching for the general validator.
+        remediation=(
+            "riskratchet config validate  # strict check, exits 2"
+            if problems
+            else "remove the keys or check for typos (e.g. fail_new_above vs fail_new_abvoe)"
+        ),
+    )
 
 
 def _check_suppressions(cfg: Mapping[str, Any]) -> DoctorCheck:

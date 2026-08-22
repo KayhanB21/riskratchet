@@ -136,6 +136,13 @@ success and `2` on usage errors.
   *rejects* versions outside its list, so updating only the schema makes
   riskratchet refuse a baseline its own schema calls valid.
   `test_supported_versions_match_the_baseline_schema_enum` is the trip-wire.
+- Adding a `[tool.riskratchet]` key is a **three-place** change: `CONFIG_ALLOWED_KEYS`
+  (so it is not warned about as unknown), a type rule in `config.invalid_config_values`
+  (so a wrong-typed value is rejected rather than silently dropped), and
+  `schemas/config.schema.json`. Since 0.3.4 the analysis commands and
+  `config validate` share those collectors, and
+  `test_analysis_commands_reject_every_config_that_config_validate_rejects`
+  is the trip-wire if the two paths ever drift apart again.
   Add to the list rather than replacing it — reading old baselines is what keeps
   an upgrade from forcing every adopter to re-baseline.
 - `--format sarif` emits a SARIF 2.1.0 log. The output references

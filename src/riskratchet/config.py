@@ -95,6 +95,25 @@ CONFIG_ALLOWED_KEYS = {
     "weights",
 }
 
+# Value-type groups for `invalid_config_values`. Every name here must also be in
+# CONFIG_ALLOWED_KEYS; `test_config.py` asserts that, so adding a key in one place
+# and forgetting the other is a test failure rather than a silently unvalidated key.
+_NUMBER_KEYS = (
+    "fail_above",
+    "fail_new_above",
+    "fail_regression_above",
+    "fail_existing_above",
+    "fail_component_regression_above",
+)
+_BOOL_KEYS = (
+    "allow_missing_coverage",
+    "component_regression_gate",
+    "auto_coverage",
+    "redact_paths",
+    "redact_qualnames",
+    "private_comment",
+)
+
 
 def _discover_config(config_path: Path | None) -> tuple[dict[str, Any], Path]:
     """Resolve the config section and the directory it lives in.
@@ -145,21 +164,15 @@ def _riskratchet_section(path: Path) -> dict[str, Any] | None:
     return section if isinstance(section, dict) else None
 
 
-def _warn_unknown_config_keys(cfg: Mapping[str, Any]) -> None:
-    """Warn (on stderr) about unrecognized `[tool.riskratchet]` keys.
+def unknown_config_keys(cfg: Mapping[str, Any]) -> list[str]:
+    """Return the `[tool.riskratchet]` keys this build does not recognize.
 
-    The main commands tolerate unknown keys so a config written for a newer
-    riskratchet still runs, but a typo like `fail_new_abvoe` silently
-    disabling a policy is a real trap, so we surface it. `config validate`
-    is the strict (exit 2) gate for anyone who wants to enforce it in CI.
+    Deliberately *not* an error on the main commands: an unknown key may come
+    from a config written for a newer riskratchet, so it warns and the run
+    continues. A known key with a wrong-typed value is the opposite case —
+    it can never be right — and is collected by `invalid_config_values`.
     """
-    unknown = sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
-    if unknown:
-        typer.secho(
-            f"warning: ignoring unknown [tool.riskratchet] key(s): {', '.join(unknown)}",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
+    return sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
 
 
 def _anchor_config_path(path: Path, config_dir: Path) -> Path:
@@ -207,58 +220,100 @@ def _load_config_strict(config_path: Path) -> dict[str, Any]:
 
 
 def _validate_config(cfg: dict[str, Any]) -> None:
-    unknown = sorted(set(cfg) - CONFIG_ALLOWED_KEYS)
+    """Raise `ValueError` on the first problem, if any.
+
+    The strict (exit 2) face of the collectors below, kept so `config
+    validate` and `doctor._check_config` read unchanged. The collectors are
+    the shared source of truth: the analysis commands route into them too,
+    which is what stops `fail_new_above = "50"` from being dropped in
+    silence while `config validate` rejects it.
+    """
+    unknown = unknown_config_keys(cfg)
     if unknown:
         raise ValueError(f"unknown [tool.riskratchet] key(s): {', '.join(unknown)}")
-    _validate_string_list(cfg, "paths")
-    _validate_string_list(cfg, "include")
-    _validate_string_list(cfg, "exclude")
-    _validate_string_list(cfg, "allow")
+    problems = invalid_config_values(cfg)
+    if problems:
+        raise ValueError(problems[0])
+
+
+def invalid_config_values(cfg: Mapping[str, Any]) -> list[str]:
+    """Return one message per `[tool.riskratchet]` value this build cannot use.
+
+    Pure and total — it never raises, so both the warning path and the
+    exit-2 path can call it. Ordered to match the sequence `_validate_config`
+    used to check in, so the first element is the message it used to raise.
+    """
+    return [
+        *_string_list_problems(cfg),
+        *_scalar_type_problems(cfg),
+        *_bounded_value_problems(cfg),
+        *_table_problems(cfg),
+    ]
+
+
+def _string_list_problems(cfg: Mapping[str, Any]) -> list[str]:
+    out = []
+    for key in ("paths", "include", "exclude", "allow"):
+        value = cfg.get(key, [])
+        if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+            out.append(f"{key} must be a list of strings.")
+    return out
+
+
+def _scalar_type_problems(cfg: Mapping[str, Any]) -> list[str]:
+    out = []
     for key in ("coverage", "baseline", "coverage_cache", "test_command", "redact_salt"):
         if key in cfg and not isinstance(cfg[key], str):
-            raise ValueError(f"{key} must be a string.")
-    for key in (
-        "fail_above",
-        "fail_new_above",
-        "fail_regression_above",
-        "fail_existing_above",
-        "fail_component_regression_above",
-    ):
+            out.append(f"{key} must be a string.")
+    for key in _NUMBER_KEYS:
         if key in cfg and not _is_number(cfg[key]):
-            raise ValueError(f"{key} must be a number.")
-    if "fail_above" in cfg:
-        value = cfg["fail_above"]
-        if not (0 < value <= 100):
-            raise ValueError("fail_above must be a number in (0, 100].")
-    for key in (
-        "allow_missing_coverage",
-        "component_regression_gate",
-        "auto_coverage",
-        "redact_paths",
-        "redact_qualnames",
-        "private_comment",
-    ):
+            out.append(f"{key} must be a number.")
+    for key in _BOOL_KEYS:
         if key in cfg and not isinstance(cfg[key], bool):
-            raise ValueError(f"{key} must be a boolean.")
-    if "churn_window_days" in cfg:
-        value = cfg["churn_window_days"]
-        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
-            raise ValueError("churn_window_days must be an integer >= 1.")
-    if "missing_coverage" in cfg:
-        value = cfg["missing_coverage"]
-        if not isinstance(value, str) or value not in VALID_MISSING_COVERAGE:
-            raise ValueError(f"missing_coverage must be one of {', '.join(VALID_MISSING_COVERAGE)}.")
+            out.append(f"{key} must be a boolean.")
+    return out
+
+
+def _bounded_value_problems(cfg: Mapping[str, Any]) -> list[str]:
+    """Range/enum rules, each guarded by its own type check.
+
+    `_scalar_type_problems` used to raise before these ran; collecting means
+    they now see wrong-typed values too, and `0 < "50" <= 100` is a
+    `TypeError`, not a validation message.
+    """
+    out = []
+    if _is_number(cfg.get("fail_above")) and not (0 < cfg["fail_above"] <= 100):
+        out.append("fail_above must be a number in (0, 100].")
+    days = cfg.get("churn_window_days")
+    if "churn_window_days" in cfg and (not isinstance(days, int) or isinstance(days, bool) or days < 1):
+        out.append("churn_window_days must be an integer >= 1.")
+    policy = cfg.get("missing_coverage")
+    if "missing_coverage" in cfg and (not isinstance(policy, str) or policy not in VALID_MISSING_COVERAGE):
+        out.append(f"missing_coverage must be one of {', '.join(VALID_MISSING_COVERAGE)}.")
+    return out
+
+
+def _table_problems(cfg: Mapping[str, Any]) -> list[str]:
+    out = []
     if "weights" in cfg:
         if not isinstance(cfg["weights"], dict):
-            raise ValueError("[tool.riskratchet.weights] must be a table.")
-        try:
-            resolve_weights(cfg["weights"])
-        except InvalidWeightsError as exc:
-            raise ValueError(str(exc)) from exc
+            out.append("[tool.riskratchet.weights] must be a table.")
+        else:
+            try:
+                resolve_weights(cfg["weights"])
+            except InvalidWeightsError as exc:
+                out.append(str(exc))
     if "groups" in cfg:
-        normalize_groups(cfg["groups"])
+        try:
+            normalize_groups(cfg["groups"])
+        except ValueError as exc:
+            out.append(str(exc))
     if "coverage_map" in cfg:
-        _validate_coverage_map(cfg["coverage_map"])
+        try:
+            _validate_coverage_map(cfg["coverage_map"])
+        except ValueError as exc:
+            out.append(str(exc))
+    return out
 
 
 def _validate_coverage_map(raw: Any) -> None:
@@ -269,14 +324,6 @@ def _validate_coverage_map(raw: Any) -> None:
             raise ValueError("coverage_map keys must be non-empty strings (repo-relative prefixes).")
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"coverage_map[{key!r}] must be a non-empty path string.")
-
-
-def _validate_string_list(cfg: dict[str, Any], key: str) -> None:
-    if key not in cfg:
-        return
-    value = cfg[key]
-    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
-        raise ValueError(f"{key} must be a list of strings.")
 
 
 def _is_number(value: Any) -> bool:
@@ -321,6 +368,13 @@ def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
 
     Returning `None` (no table or empty table) lets `engine.analyze` use its
     default weights without an extra branch in each command.
+
+    Since 0.3.4 the analysis commands run `cli._enforce_config_or_exit` first, so
+    in practice the two error branches below are unreachable from them. They stay
+    as the boundary's own guarantee: `_resolved_weights` is called from five sites
+    and only one of them (`_build_report_or_exit`) sits inside a `ValueError`
+    handler, so dropping them would trade a clean exit 2 for a traceback the day
+    a new caller forgets to validate.
     """
     raw = cfg.get("weights")
     if raw is None:
