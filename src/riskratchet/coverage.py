@@ -66,6 +66,13 @@ def load_coverage(path: Path) -> CoverageData:
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not read coverage file {path}: {exc}") from exc
 
+    # A non-object root (`[]`, `"x"`, `null`) used to reach `.get` and escape as a
+    # raw AttributeError traceback, exit 1. The other three JSON loaders already
+    # guarded this — and `typescript_coverage.load_istanbul_coverage`'s docstring
+    # says it "mirrors coverage.load_coverage", so the mirror was the broken one.
+    if not isinstance(raw, dict):
+        raise ValueError(f"coverage file {path} must be a JSON object, got {type(raw).__name__}")
+
     files_section = raw.get("files")
     if not isinstance(files_section, dict):
         raise ValueError(f"coverage file {path} has no `files` section")

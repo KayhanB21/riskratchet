@@ -487,6 +487,7 @@ def scan(
         churn_days=resolved_churn_days,
         root=config_dir,
     )
+    _warn_empty_scan(filtered, command="scan")
     links = _links_for(repo_url, commit_ref, redaction)
     filtered = redact_report(filtered, redaction)
     _emit_report(
@@ -640,6 +641,7 @@ def baseline(
         root=config_dir,
     )
     target = output or _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    _refuse_to_erase_baseline(report, target)
     save_baseline(baseline_from_report(report), target)
     _emit_diagnostics(
         diag,
@@ -889,6 +891,9 @@ def check(
         use_git=not no_git,
         churn_days=resolved_churn_days,
         root=config_dir,
+    )
+    _require_gateable_functions(
+        report, command="check", baseline_entries=len(old.entries) if old is not None else 0
     )
     fail_new_above_val = _resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0)
     fail_existing_above_val = _resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above"))
@@ -1294,6 +1299,7 @@ def diff(
         churn_days=resolved_churn_days,
         root=config_dir,
     )
+    _warn_empty_scan(report, command="diff")
     diff_report = diff_baseline(
         report,
         old,
@@ -1957,9 +1963,9 @@ def _warn_dropped_baseline_entries(count: int) -> None:
     leaves that function unratcheted, which is exactly the kind of quiet gap a
     ratchet must never keep to itself.
     """
-    plural = "entry" if count == 1 else "entries"
     typer.secho(
-        f"riskratchet: baseline: skipped {count} malformed {plural}; those functions are not "
+        f"riskratchet: baseline: skipped {_count(count, 'malformed entry', 'malformed entries')}; "
+        "those functions are not "
         "ratcheted. Run 'riskratchet baseline' to regenerate.",
         fg=typer.colors.YELLOW,
         err=True,
@@ -2038,6 +2044,111 @@ def _enforce_config_or_exit(cfg: Mapping[str, Any]) -> None:
                 ("Check the whole config, with the offending line:", "riskratchet config validate"),
                 ("See every supported key and its type:", "riskratchet config show"),
             ],
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
+
+
+def _count(n: int, singular: str, plural: str | None = None) -> str:
+    """Render a count with a correctly pluralized noun: "1 entry", "3 entries"."""
+    return f"{n} {singular if n == 1 else (plural or singular + 's')}"
+
+
+def _empty_scan_cause(report: RiskReport) -> tuple[str, list[tuple[str, str]]] | None:
+    """Describe why a scan produced nothing to gate, or `None` if it did.
+
+    The two causes need different remediations, and `RiskReport` already
+    distinguishes them: `analyzed_functions` counts what discovery found,
+    `functions` what survived the `allow` patterns (`engine.py`).
+    """
+    if report.functions:
+        return None
+    if report.analyzed_functions:
+        return (
+            f"{_count(report.analyzed_functions, 'function')} found, all suppressed by an allow pattern",
+            [
+                ("Narrow the suppressions:", '[tool.riskratchet] allow = ["src/legacy/**"]'),
+                ("List the patterns in effect:", "riskratchet doctor"),
+            ],
+        )
+    return (
+        "no functions were found to analyze",
+        [
+            ("Point at the package root:", "<command> src/"),
+            ("Widen the filters:", "[tool.riskratchet] exclude / include"),
+            ("See what would be scanned:", "riskratchet doctor"),
+        ],
+    )
+
+
+def _warn_empty_scan(report: RiskReport, *, command: str) -> None:
+    """Say that a scan found nothing, without changing the exit code.
+
+    For the inspection commands and for the degenerate zero-functions-against-an-
+    empty-baseline case, where there is no gate to protect: a monorepo sweep over
+    a package that is legitimately empty must not start failing.
+    """
+    cause = _empty_scan_cause(report)
+    if cause is not None:
+        typer.secho(f"riskratchet: {command}: {cause[0]}.", fg=typer.colors.YELLOW, err=True)
+
+
+def _require_gateable_functions(report: RiskReport, *, command: str, baseline_entries: int) -> None:
+    """Exit 2 when nothing was scanned but the baseline has entries to protect.
+
+    A scan yielding zero functions used to report "No risk regressions detected"
+    and exit 0, so a typo'd `paths`, a `src/`->`lib/` restructure, or an
+    over-broad `exclude` switched the ratchet off and passed green forever. A
+    *nonexistent* path was already exit 2 (`_check_paths_exist`); an existing one
+    matching nothing was not.
+
+    Zero functions plus a populated baseline cannot arise from a working config,
+    which is what makes this safe to fail hard on: a legitimate subset run
+    (`riskratchet check src/onepackage`) still yields functions.
+    """
+    cause = _empty_scan_cause(report)
+    if cause is None:
+        return
+    if not baseline_entries:
+        _warn_empty_scan(report, command=command)
+        return
+    headline, fixes = cause
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: {command}: {headline}, but the baseline has "
+            f"{_count(baseline_entries, 'entry', 'entries')} to protect — the ratchet would check nothing",
+            fixes,
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
+
+
+def _refuse_to_erase_baseline(report: RiskReport, target: Path) -> None:
+    """Never replace a populated baseline with an empty one.
+
+    The destructive twin of the `check` hole above: the same misconfiguration
+    that made `check` pass silently made `baseline` overwrite a good 400-entry
+    file with nothing, discarding the ratchet outright. Writing a *new*
+    zero-function baseline is still fine.
+    """
+    if report.functions or not target.exists():
+        return
+    try:
+        existing = len(load_baseline(target).entries)
+    except (OSError, ValueError):
+        return  # Unreadable already; `_load_baseline_or_exit` owns that error.
+    if not existing:
+        return
+    headline, fixes = _empty_scan_cause(report) or ("", [])
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: baseline: {headline}; refusing to overwrite {target} "
+            f"and discard its {_count(existing, 'entry', 'entries')}",
+            fixes,
         ),
         fg=typer.colors.RED,
         err=True,
