@@ -9,6 +9,72 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.4] - 2026-08-22
+
+A gate that checks nothing must say so. `0.3.3` stopped a corrupt *baseline file* from
+silently disengaging the ratchet; this release closes the same failure one layer out, in the
+config and the scan inputs. In every case below the correct handling already existed
+somewhere in riskratchet — one path simply never routed into it.
+
+### Fixed
+
+- **A scan that found nothing passed the gate.** `check` reported "No risk regressions
+  detected" and exited `0` whenever the scan produced zero functions, however that happened.
+  A *nonexistent* scan path was already exit `2`; an existing path matching nothing was not,
+  so a typo'd `paths`, a `src/`→`lib/` restructure, an over-broad `exclude`, or `allow`
+  patterns that swallowed everything switched the ratchet off and passed green forever. A
+  regression that exits `1` could be hidden to `0` by adding `--exclude 'src/**'`. `diff`
+  already reported those entries as `removed`; `check` never acted on it.
+- **A known config key with an unusable value was silently dropped.** `fail_new_above = 1`
+  applied the gate; `fail_new_above = "1"` exited `0` — the value was discarded and the
+  *default* `50` used instead, so a repo that thought it had tightened its gate had not.
+  Confirmed across all nine gate-affecting keys: `config validate` caught 9/9 with exact
+  messages, the analysis commands warned on 0/9. Note the asymmetry that made it easy to
+  miss: a *misspelled key* warned, a correctly-spelled key with a bad value did not.
+- **`riskratchet baseline` could erase the ratchet.** The same misconfiguration that made
+  `check` pass silently made `baseline` overwrite a populated baseline with a zero-function
+  one, discarding every entry. It now refuses and leaves the file byte-identical. Writing a
+  *new* zero-function baseline still works — only erasing entries is refused.
+- **A non-object coverage file crashed instead of erroring.** `coverage.load_coverage` went
+  straight to `raw.get("files")`, so a top-level JSON array reached the user as a raw
+  `AttributeError` traceback and exit `1`. It was the only one of the four JSON loaders
+  missing the guard — while `typescript_coverage.load_istanbul_coverage`'s docstring claimed
+  to *mirror* it. Now exit `2` with a remediation, like every other unreadable input.
+
+### Changed
+
+- **Exit `2` on a `[tool.riskratchet]` value this build cannot use**, from `scan`, `check`,
+  `diff`, `baseline`, and `explain`. Every unusable value is reported in one run. This
+  restores consistency rather than adding a policy: `weights`, `groups`, `missing_coverage`,
+  and `churn_window_days` already exited `2` in those same commands.
+  **Unknown keys still only warn** — one may come from a config written for a newer
+  riskratchet, and refusing to run would make upgrading riskratchet the only way to downgrade
+  it. A known key with a wrong-typed value has no such forward-compatibility story.
+  `doctor` is the one exception and keeps reporting without exiting: bailing out before the
+  table rendered would make the command whose job is explaining a broken setup the one command
+  that refuses to look at it.
+- **Exit `2` when `check` scans zero functions and the baseline has entries.** Scoped to that
+  combination, which no working config produces — a legitimate subset run
+  (`check src/onepackage`) still yields functions and is untouched, and zero functions against
+  an *empty* baseline is a legitimately empty project that only warns. The message names which
+  of the two causes applies (nothing discovered vs everything suppressed) because the fixes
+  differ. `scan` and `diff` warn without changing their exit code.
+
+Both exit-code changes can only turn CI red for a repo whose gate was already not doing what
+its config said.
+
+### Internal
+
+- `config._validate_config` is split into two pure, total collectors (`unknown_config_keys`,
+  `invalid_config_values`) shared by the analysis commands, `config validate`, and `doctor`,
+  with `_validate_config` kept as a shim so its exit codes and messages are unchanged. A
+  parity test asserts everything `config validate` rejects, the analysis commands reject.
+- `doctor`'s `config` row no longer returns early on an unknown key, which used to hide every
+  type error behind a single typo.
+- A loader-parity test pins all three raising JSON loaders together, so
+  `load_istanbul_coverage`'s "mirrors `coverage.load_coverage`" docstring stays true.
+- Test suite 920 → 990; coverage 91.12% → 91.62% against `fail_under = 85`.
+
 ## [0.3.3] - 2026-08-15
 
 ### Fixed
