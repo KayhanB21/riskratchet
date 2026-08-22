@@ -824,6 +824,15 @@ gate, so degrading a broken one to "no entries" would silently switch the ratche
 For the same reason, a `[tool.riskratchet]` key whose value this build cannot use is exit `2` rather
 than a silently-applied default — see [Config validation](#config-validation-groups-and-monorepos).
 
+And a `check` that scans **zero functions** while the baseline holds entries is exit `2`, not `0`. A
+scan path that does not exist was already an error; one that exists but matches nothing — a typo'd
+`paths`, a `src/`→`lib/` move, an over-broad `exclude`, or `allow` patterns that swallow everything —
+used to report "No risk regressions detected" and pass forever. The message names which of the two
+causes applies, because the fixes differ. Zero functions against an *empty* baseline is a legitimately
+empty project and only warns, so a monorepo sweep over a package with no source yet still passes.
+`riskratchet baseline` likewise refuses to overwrite a populated baseline with a zero-function scan
+rather than discarding the ratchet; writing a fresh empty baseline still works.
+
 ## TypeScript
 
 riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`

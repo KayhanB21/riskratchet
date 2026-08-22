@@ -545,3 +545,172 @@ def test_analysis_commands_reject_every_config_that_config_validate_rejects(
         src = _config_project(case, body)
         assert runner.invoke(app, ["config", "validate"]).exit_code == 2, f"{body}: validate accepted it"
         assert _invoke("check", src).exit_code == 2, f"{body}: check accepted it"
+
+
+# --- 0.3.4: a scan that finds nothing must not pass the gate -------------------
+#
+# A *nonexistent* path was already exit 2 (`_check_paths_exist`). An existing one
+# matching no functions was not: `check` reported "No risk regressions detected"
+# and exited 0, so a typo'd `paths`, a src/->lib/ restructure, or an over-broad
+# `exclude` switched the ratchet off and passed green forever.
+
+_RISKY = (
+    "def trivial(a, b, c, d, e):\n"
+    "    if a > 1:\n"
+    "        if b > 2:\n"
+    "            if c > 3:\n"
+    "                if d > 4:\n"
+    "                    if e > 5:\n"
+    "                        return a + b + c + d + e\n"
+    "    for i in range(a):\n"
+    "        if i % 2:\n"
+    "            return i\n"
+    "    return 0\n"
+)
+
+
+def _project_with_regression(tmp_path: Path) -> Path:
+    """Seed a baseline, then make `src/m.py` genuinely riskier than it."""
+    src = _project(tmp_path)
+    _seed_baseline(src)
+    (src / "m.py").write_text(_RISKY, encoding="utf-8")
+    return src
+
+
+def _check(src: Path, *extra: str) -> Result:
+    return runner.invoke(
+        app, ["check", str(src), "--allow-missing-coverage", "--no-auto-cov", "--no-git", *extra]
+    )
+
+
+def test_the_regression_fires_before_anything_hides_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Control for the two tests below: without a filter, the gate does trip."""
+    monkeypatch.chdir(tmp_path)
+    assert _check(_project_with_regression(tmp_path)).exit_code == 1
+
+
+@pytest.mark.parametrize(
+    ("flags", "cause"),
+    [
+        (("--exclude", "**"), "no functions were found to analyze"),
+        (("--allow", "*"), "all suppressed by an allow pattern"),
+    ],
+    ids=["excluded_away", "suppressed_away"],
+)
+def test_a_filter_that_hides_everything_cannot_hide_a_regression(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, flags: tuple[str, ...], cause: str
+) -> None:
+    """The bug in one assertion: exit 1 must not become exit 0.
+
+    Both filters empty the report, and the two causes carry different
+    remediations, so the message must name which one happened.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project_with_regression(tmp_path)
+
+    result = _check(src, *flags)
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert cause in result.stderr
+    assert "the ratchet would check nothing" in result.stderr
+
+
+def test_scanning_an_empty_directory_does_not_disengage_the_ratchet(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    _project_with_regression(tmp_path)
+    (tmp_path / "elsewhere").mkdir()
+
+    result = _check(tmp_path / "elsewhere")
+
+    assert result.exit_code == 2, result.output
+    assert "baseline has 1 entry to protect" in result.stderr
+
+
+def test_an_empty_baseline_has_nothing_to_protect_so_it_only_warns(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Zero functions against zero entries is a legitimately empty project.
+
+    A monorepo CI that sweeps a package with no source yet must not start
+    failing, so the hard error is scoped to a baseline that has entries.
+    """
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "empty").mkdir()
+    assert (
+        runner.invoke(
+            app,
+            ["baseline", str(tmp_path / "empty"), "--allow-missing-coverage", "--no-auto-cov", "--no-git"],
+        ).exit_code
+        == 0
+    )
+
+    result = _check(tmp_path / "empty")
+
+    assert result.exit_code == 0, result.output
+    assert "no functions were found to analyze" in result.stderr
+
+
+@pytest.mark.parametrize("command", ["scan", "diff"])
+def test_inspection_commands_warn_without_changing_their_exit_code(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`scan` and `diff` have no gate to protect; they report, they don't fail."""
+    monkeypatch.chdir(tmp_path)
+    _project_with_regression(tmp_path)
+    (tmp_path / "elsewhere").mkdir()
+
+    args = [command, str(tmp_path / "elsewhere"), "--no-auto-cov", "--no-git"]
+    if command != "scan":  # `scan` has no --allow-missing-coverage; it never hard-fails without coverage
+        args.append("--allow-missing-coverage")
+    result = runner.invoke(app, args)
+
+    assert result.exit_code == 0, result.output
+    assert f"riskratchet: {command}: no functions were found to analyze." in result.stderr
+
+
+def test_baseline_refuses_to_overwrite_a_populated_baseline_with_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The destructive twin: the same typo used to erase the ratchet outright."""
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    _seed_baseline(tmp_path / "src")
+    baseline = tmp_path / ".riskratchet.json"
+    before = baseline.read_bytes()
+    (tmp_path / "elsewhere").mkdir()
+
+    result = runner.invoke(
+        app,
+        [
+            "baseline",
+            str(tmp_path / "elsewhere"),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "refusing to overwrite" in result.stderr
+    assert "discard its 1 entry" in result.stderr
+    assert baseline.read_bytes() == before, "the baseline was modified despite the refusal"
+
+
+def test_writing_a_fresh_zero_function_baseline_still_works(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Only *erasing* entries is refused; a new empty baseline is legitimate."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "empty").mkdir()
+
+    result = runner.invoke(
+        app, ["baseline", str(tmp_path / "empty"), "--allow-missing-coverage", "--no-auto-cov", "--no-git"]
+    )
+
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / ".riskratchet.json").exists()

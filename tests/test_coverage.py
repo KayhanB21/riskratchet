@@ -8,6 +8,7 @@ from typing import Any
 
 import pytest
 
+from riskratchet.baseline import load_baseline
 from riskratchet.coverage import (
     MultiCoverageData,
     coverage_for_span,
@@ -16,6 +17,7 @@ from riskratchet.coverage import (
     load_coverage_map,
 )
 from riskratchet.models import FunctionSpan
+from riskratchet.typescript_coverage import load_istanbul_coverage
 
 
 def _write(tmp_path: Path, payload: dict[str, Any]) -> Path:
@@ -218,3 +220,39 @@ def test_load_coverage_map_without_callback_skips_silently(tmp_path: Path) -> No
 
     assert multi.lookup("bad/foo.py") is None
     assert multi.prefixes == ()
+
+
+# --- 0.3.4: every JSON loader that raises must reject a non-object root --------
+
+_RAISING_LOADERS = {
+    "coverage": load_coverage,
+    "istanbul": load_istanbul_coverage,
+    "baseline": load_baseline,
+}
+
+
+@pytest.mark.parametrize("loader", sorted(_RAISING_LOADERS), ids=sorted(_RAISING_LOADERS))
+@pytest.mark.parametrize("payload", ["[]", '"nope"', "null", "3"], ids=["list", "str", "null", "int"])
+def test_a_non_object_root_is_a_value_error_not_an_attribute_error(
+    tmp_path: Path, loader: str, payload: str
+) -> None:
+    """`coverage.load_coverage` was the one loader missing this guard.
+
+    It went straight to `raw.get("files")`, so a top-level JSON array reached the
+    user as a raw `AttributeError` traceback and exit 1 — while
+    `load_istanbul_coverage`'s docstring claimed to *mirror* it. Pinning all
+    three together is what keeps the claim true.
+    """
+    path = tmp_path / "payload.json"
+    path.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        _RAISING_LOADERS[loader](path)
+
+
+def test_the_non_object_message_names_the_file_and_what_it_got(tmp_path: Path) -> None:
+    path = tmp_path / "coverage.json"
+    path.write_text("[]", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=r"coverage\.json must be a JSON object, got list"):
+        load_coverage(path)
