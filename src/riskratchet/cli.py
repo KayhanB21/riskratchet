@@ -47,7 +47,8 @@ from riskratchet.config import (
     _resolved_optional_float,
     _resolved_paths,
     _resolved_weights,
-    _warn_unknown_config_keys,
+    invalid_config_values,
+    unknown_config_keys,
 )
 from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
@@ -409,7 +410,7 @@ def scan(
 ) -> None:
     """Scan files and report risk; never fails."""
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    _enforce_config_or_exit(cfg)
     effective_format = _effective_format(format, json_output)
     redaction = _resolve_redaction(
         redact_paths=redact_paths,
@@ -572,7 +573,7 @@ def baseline(
     the source of truth for future rename matching and must never be hashed.
     """
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    _enforce_config_or_exit(cfg)
     diag = Diagnostics(command="baseline")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
@@ -762,7 +763,7 @@ def check(
 ) -> None:
     """Fail (exit 1) when risk regresses past tolerance."""
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    _enforce_config_or_exit(cfg)
     effective_format = _effective_format(format, json_output)
     redaction = _resolve_redaction(
         redact_paths=redact_paths,
@@ -1039,7 +1040,7 @@ def explain(
     if "::" not in target:
         raise typer.BadParameter("target must be `path::qualname` (e.g. src/foo.py::Bar.baz)")
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    _enforce_config_or_exit(cfg)
     diag = Diagnostics(command="explain")
     file_part, _ = target.split("::", 1)
     file_path = Path(file_part)
@@ -1195,7 +1196,7 @@ def diff(
 ) -> None:
     """Show full baseline diff; does not fail."""
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    _enforce_config_or_exit(cfg)
     effective_format = _effective_format(format, json_output)
     redaction = _resolve_redaction(
         redact_paths=redact_paths,
@@ -1500,7 +1501,9 @@ def doctor(
     copy-paste the fix instead of guessing.
     """
     cfg, config_dir = _discover_config(config)
-    _warn_unknown_config_keys(cfg)
+    # Warn, never exit: `doctor` must not bail out on the very thing it exists to
+    # diagnose. A bad value is reported as its own `config` WARN row instead.
+    _warn_config_problems(cfg)
     paths = _resolved_paths(None, cfg, config_dir)
     baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
     coverage_path, coverage_origin = _doctor_coverage_source(cfg, config_dir)
@@ -1985,6 +1988,61 @@ def _coverage_shard_warn(path: Path, message: str) -> None:
         fg=typer.colors.YELLOW,
         err=True,
     )
+
+
+def _warn_unknown_keys(cfg: Mapping[str, Any]) -> None:
+    """One yellow line naming `[tool.riskratchet]` keys this build ignores.
+
+    Always a warning, never fatal: an unknown key may simply come from a
+    config written for a newer riskratchet, and refusing to run would make
+    upgrading riskratchet the only way to downgrade it.
+    """
+    unknown = unknown_config_keys(cfg)
+    if unknown:
+        typer.secho(
+            f"warning: ignoring unknown [tool.riskratchet] key(s): {', '.join(unknown)}",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+
+
+def _warn_config_problems(cfg: Mapping[str, Any]) -> None:
+    """Report both classes of config problem without changing the exit code."""
+    _warn_unknown_keys(cfg)
+    for problem in invalid_config_values(cfg):
+        typer.secho(f"warning: [tool.riskratchet] {problem}", fg=typer.colors.YELLOW, err=True)
+
+
+def _enforce_config_or_exit(cfg: Mapping[str, Any]) -> None:
+    """Warn on unknown keys; exit 2 on a known key this build cannot use.
+
+    The asymmetry is the point. An unknown key is forward-compatible, but a
+    known key with a wrong-typed value can never become right: `fail_new_above
+    = "50"` was silently discarded and the *default* 50 applied, so a repo that
+    thought it had tightened its gate had not. `weights`, `groups`,
+    `missing_coverage`, and `churn_window_days` already exited 2 here; this
+    extends the same treatment to the keys that were quietly dropped.
+
+    Every bad value is reported at once — fixing a config with two typos should
+    not take two runs.
+    """
+    _warn_unknown_keys(cfg)
+    problems = invalid_config_values(cfg)
+    if not problems:
+        return
+    detail = "\n".join(f"  - {problem}" for problem in problems)
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: unusable [tool.riskratchet] value(s):\n{detail}",
+            [
+                ("Check the whole config, with the offending line:", "riskratchet config validate"),
+                ("See every supported key and its type:", "riskratchet config show"),
+            ],
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
 
 
 def _check_paths_exist(

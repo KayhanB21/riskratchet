@@ -21,6 +21,13 @@ from click.testing import Result
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
+from riskratchet.config import (
+    _BOOL_KEYS,
+    _NUMBER_KEYS,
+    CONFIG_ALLOWED_KEYS,
+    invalid_config_values,
+    unknown_config_keys,
+)
 
 runner = CliRunner()
 
@@ -203,3 +210,104 @@ def test_config_validate_rejects_unknown_key(tmp_path: Path, monkeypatch: pytest
 
     assert result.exit_code == 2
     assert "fail_new_abvoe" in result.stderr
+
+
+# --- 0.3.4: the collectors behind both the warning and the exit-2 path ---------
+
+
+def test_valid_config_collects_no_problems() -> None:
+    cfg = {
+        "paths": ["src"],
+        "exclude": ["tests/**"],
+        "baseline": ".riskratchet.json",
+        "fail_new_above": 50,
+        "fail_above": 80.5,
+        "auto_coverage": True,
+        "churn_window_days": 90,
+        "missing_coverage": "pessimistic",
+        "weights": {"churn": 0.5},
+        "groups": {"api": "src/api"},
+        "coverage_map": {"src": "coverage.json"},
+    }
+    assert unknown_config_keys(cfg) == []
+    assert invalid_config_values(cfg) == []
+
+
+@pytest.mark.parametrize(
+    ("cfg", "expected"),
+    [
+        ({"paths": "src"}, "paths must be a list of strings."),
+        ({"exclude": [1]}, "exclude must be a list of strings."),
+        ({"baseline": 3}, "baseline must be a string."),
+        ({"fail_new_above": "50"}, "fail_new_above must be a number."),
+        ({"fail_new_above": True}, "fail_new_above must be a number."),
+        ({"auto_coverage": "yes"}, "auto_coverage must be a boolean."),
+        ({"fail_above": 0}, "fail_above must be a number in (0, 100]."),
+        ({"churn_window_days": 0}, "churn_window_days must be an integer >= 1."),
+        ({"missing_coverage": "bogus"}, "missing_coverage must be one of"),
+        ({"weights": "heavy"}, "[tool.riskratchet.weights] must be a table."),
+        ({"groups": "api"}, "[tool.riskratchet.groups] must be a table."),
+        ({"coverage_map": []}, "[tool.riskratchet.coverage_map] must be a table"),
+    ],
+)
+def test_invalid_config_values_collects_each_kind(cfg: dict[str, object], expected: str) -> None:
+    problems = invalid_config_values(cfg)
+    assert problems, f"{cfg} was accepted"
+    assert any(expected in problem for problem in problems)
+
+
+def test_invalid_config_values_never_raises_on_a_wrong_typed_bound() -> None:
+    """`0 < "50" <= 100` is a TypeError, not a validation message.
+
+    The range and enum rules used to run only after the type rules had *raised*,
+    so collecting instead of raising put them in front of values they had never
+    seen. This is the case that would crash the warning path.
+    """
+    assert invalid_config_values({"fail_above": "50"}) == ["fail_above must be a number."]
+
+
+def test_invalid_config_values_reports_every_problem() -> None:
+    problems = invalid_config_values({"paths": "src", "fail_new_above": "1", "auto_coverage": 1})
+    assert len(problems) == 3
+
+
+def test_every_type_checked_key_is_an_allowed_key() -> None:
+    """A key validated but not allowed (or vice versa) is a silently dead rule."""
+    assert set(_NUMBER_KEYS) <= CONFIG_ALLOWED_KEYS
+    assert set(_BOOL_KEYS) <= CONFIG_ALLOWED_KEYS
+
+
+def test_config_show_still_reports_a_bad_weights_table(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Every entry point rejects a bad weights table, by whichever route.
+
+    `config show` reaches it through `_load_config_strict`; the analysis
+    commands now reach it through `_enforce_config_or_exit`. Pinning both keeps
+    the two routes from drifting to different exit codes.
+    """
+    _make_project(
+        tmp_path,
+        pyproject='[tool.riskratchet]\npaths = ["src"]\n\n[tool.riskratchet.weights]\nchurn = -1.0\n',
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, ["config", "show"])
+
+    assert result.exit_code == 2, result.output
+    assert "must be non-negative" in result.stderr
+
+
+def test_analysis_commands_report_the_same_weights_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _make_project(
+        tmp_path,
+        pyproject='[tool.riskratchet]\npaths = ["src"]\n\n[tool.riskratchet.weights]\nchurn = -1.0\n',
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, ["scan", "--no-git", "--no-auto-cov"])
+
+    assert result.exit_code == 2, result.output
+    assert "must be non-negative" in result.stderr

@@ -19,6 +19,7 @@ from pathlib import Path
 from textwrap import dedent
 
 import pytest
+from click.testing import Result
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -435,3 +436,112 @@ def test_no_git_suppresses_shallow_clone_warning(tmp_path: Path, monkeypatch: py
 
     assert result.exit_code == 0, result.output
     assert "shallow clone detected" not in result.stderr
+
+
+# --- 0.3.4: a known config key with a wrong-typed value ------------------------
+#
+# `fail_new_above = "1"` used to be dropped in silence and the *default* 50
+# applied, so a repo that thought it had tightened its gate had not. `config
+# validate` always caught it; the analysis commands never did.
+
+_ANALYSIS_COMMANDS = ("scan", "check", "diff", "baseline", "explain")
+
+_UNUSABLE_VALUES: dict[str, tuple[str, str]] = {
+    "number": ('fail_new_above = "1"', "fail_new_above must be a number."),
+    "bool": ('auto_coverage = "yes"', "auto_coverage must be a boolean."),
+    "string": ("baseline = 3", "baseline must be a string."),
+    "string_list": ('exclude = "tests/**"', "exclude must be a list of strings."),
+    "int_range": ("churn_window_days = 0", "churn_window_days must be an integer >= 1."),
+}
+
+
+def _config_project(tmp_path: Path, body: str) -> Path:
+    """Seed a working project, *then* break its config.
+
+    Order matters: `_seed_baseline` runs the real `baseline` command, which is
+    itself one of the commands now rejecting a bad config, so writing the bad
+    value first would fail the fixture rather than the assertion.
+    """
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    _seed_baseline(src)
+    with (tmp_path / "pyproject.toml").open("a", encoding="utf-8") as handle:
+        handle.write(f"{body}\n")
+    return src
+
+
+def _invoke(command: str, src: Path) -> Result:
+    """Run one analysis command with the flags it actually accepts.
+
+    `scan` and `explain` have no `--allow-missing-coverage` (neither hard-fails
+    without coverage), and `explain` takes a function target rather than a path.
+    """
+    if command == "explain":
+        return runner.invoke(app, ["explain", f"{src.name}/m.py::trivial", "--no-auto-cov", "--no-git"])
+    args = [command, str(src), "--no-auto-cov", "--no-git"]
+    if command != "scan":
+        args.append("--allow-missing-coverage")
+    return runner.invoke(app, args)
+
+
+@pytest.mark.parametrize("command", _ANALYSIS_COMMANDS)
+@pytest.mark.parametrize("kind", sorted(_UNUSABLE_VALUES))
+def test_unusable_config_value_exits_two_instead_of_being_dropped(
+    command: str, kind: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    body, message = _UNUSABLE_VALUES[kind]
+    src = _config_project(tmp_path, body)
+
+    result = _invoke(command, src)
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert message in result.stderr
+    assert "riskratchet config validate" in result.stderr
+
+
+def test_every_unusable_value_is_reported_in_one_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fixing a config with four typos must not take four runs."""
+    monkeypatch.chdir(tmp_path)
+    src = _config_project(tmp_path, "\n".join(body for body, _ in _UNUSABLE_VALUES.values()))
+
+    result = _invoke("check", src)
+
+    assert result.exit_code == 2, result.output
+    for _, message in _UNUSABLE_VALUES.values():
+        assert message in result.stderr
+
+
+def test_unknown_key_still_only_warns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The deliberate asymmetry: an unknown key may come from a newer riskratchet.
+
+    Refusing to run on one would make upgrading riskratchet the only way to
+    downgrade it, so unknown keys warn and the run continues. A *known* key with
+    a wrong-typed value has no such forward-compatibility story.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _config_project(tmp_path, "fail_new_abvoe = 1")
+
+    result = _invoke("check", src)
+
+    assert result.exit_code == 0, result.output
+    assert "ignoring unknown [tool.riskratchet] key(s): fail_new_abvoe" in result.stderr
+
+
+def test_analysis_commands_reject_every_config_that_config_validate_rejects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Parity gate: the two paths must not drift apart again.
+
+    The bug was exactly this drift — `config validate` knew `fail_new_above =
+    "1"` was unusable and `check` did not. Asserting the two agree on a corpus
+    is what keeps a future key from being added to one path only.
+    """
+    for index, (body, _) in enumerate(_UNUSABLE_VALUES.values()):
+        case = tmp_path / f"case{index}"
+        case.mkdir()
+        monkeypatch.chdir(case)
+        src = _config_project(case, body)
+        assert runner.invoke(app, ["config", "validate"]).exit_code == 2, f"{body}: validate accepted it"
+        assert _invoke("check", src).exit_code == 2, f"{body}: check accepted it"

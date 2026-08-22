@@ -521,3 +521,40 @@ def test_future_baseline_version_tells_doctor_to_upgrade_not_regenerate(tmp_path
     assert "newer riskratchet" in check.summary
     assert "upgrade" in (check.remediation or "").lower()
     assert "riskratchet baseline" not in (check.remediation or "")
+
+
+def test_config_check_reports_unknown_keys_and_bad_values_together(tmp_path: Path) -> None:
+    """Returning early on an unknown key used to hide every type error behind it.
+
+    A config with a typo *and* a wrong-typed value showed only the typo, so
+    fixing it revealed the next problem one run at a time.
+    """
+    check = _diagnose(tmp_path, cfg={"paths": ["src"], "fail_new_abvoe": 1, "auto_coverage": "yes"})["config"]
+
+    assert check.status is CheckStatus.WARN
+    assert "fail_new_abvoe" in check.summary
+    assert "auto_coverage must be a boolean." in check.summary
+
+
+def test_doctor_never_exits_on_a_config_it_exists_to_diagnose(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The analysis commands exit 2 on a bad value; `doctor` must still report.
+
+    Bailing out before the table rendered would make the one command whose job
+    is explaining a broken setup the one command that refuses to look at it.
+    """
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\nfail_new_above = "1"\n', encoding="utf-8"
+    )
+
+    result = runner.invoke(app, ["doctor"])
+
+    # 2 is the "refused to run" code the analysis commands now use for this
+    # config; doctor reports instead. (1 here is its normal "a check FAILed"
+    # exit — this bare project has no baseline yet.)
+    assert result.exit_code != 2, result.output
+    assert "fail_new_above must be a number." in result.output

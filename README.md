@@ -712,11 +712,22 @@ coverage cache) resolve against that file's directory, and auto-generated
 coverage runs from there too, so running from a nested package directory gives
 the same result as running from the project root. An explicit `--coverage`,
 positional path arguments, and the no-argument default all stay relative to
-your current directory. The scanning commands only *warn* on an unknown
-`[tool.riskratchet]` key (and on a `pyproject.toml` that fails to parse during
-the walk), so a config written for a newer version still runs; reach for
-`config validate` when you want that typo to fail (exit `2`) in CI. Wire it in
-as a one-line strict gate ahead of the ratchet check:
+your current directory.
+
+The scanning commands treat the two ways a config can be wrong differently:
+
+| | behavior |
+| --- | --- |
+| An **unknown key** (`fail_new_abvoe = 1`) | *warns*, run continues |
+| A **known key with an unusable value** (`fail_new_above = "50"`) | exit `2` |
+
+An unknown key may simply come from a config written for a newer riskratchet, so
+refusing to run on one would make upgrading riskratchet the only way to downgrade
+it. A known key with a wrong-typed value has no such story — and since 0.3.4 it is
+a hard error, because the value was previously discarded and the *default* applied,
+so a repo that thought it had tightened its gate had not. Every unusable value is
+reported in one run. `doctor` reports both classes as a `config` row without
+exiting, and `config validate` remains the strict gate that also fails on a typo:
 
 ```yaml
 - run: riskratchet config validate   # exit 2 on unknown keys / malformed config
@@ -809,6 +820,9 @@ loses its tests while getting simpler. Disable per-run with `--no-component-regr
 A baseline riskratchet cannot read is always exit `2`, never `0`. An empty baseline passes every
 gate, so degrading a broken one to "no entries" would silently switch the ratchet off — see
 [Baseline format](#baseline-format).
+
+For the same reason, a `[tool.riskratchet]` key whose value this build cannot use is exit `2` rather
+than a silently-applied default — see [Config validation](#config-validation-groups-and-monorepos).
 
 ## TypeScript
 
