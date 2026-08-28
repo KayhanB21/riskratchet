@@ -528,3 +528,36 @@ def test_scan_ts_coverage_lcov_hints_when_file_has_no_entry(
     result = _run_ts_scan(app_dir, monkeypatch, "--ts-coverage", "cov.lcov")
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "1 file(s) had no coverage entry" in result.stderr
+
+
+# --- 0.3.5: the scoring path loads named reports strictly --------------------------
+
+
+def test_strict_refuses_a_missing_report_instead_of_degrading(tmp_path: Path) -> None:
+    """`analyze_typescript` passes `strict=True`; the CLI is not the only caller.
+
+    `_ensure_ts_coverage_exists` catches this earlier for CLI users, so without a direct
+    test the branch would be unreachable from the command line and read as dead code —
+    but `analyze_typescript` is a library entry point, and degrading there is what let an
+    unreadable report score as "measured nothing".
+    """
+    with pytest.raises(ValueError, match="not found"):
+        load_ts_coverage_files([tmp_path / "absent.info"], strict=True)
+
+
+def test_strict_propagates_a_malformed_report(tmp_path: Path) -> None:
+    junk = tmp_path / "coverage-final.json"
+    junk.write_text("not json at all", encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        load_ts_coverage_files([junk], strict=True)
+
+
+def test_the_informational_listing_still_degrades(tmp_path: Path) -> None:
+    """The default stays forgiving: its callers promised the user "treating as no coverage"."""
+    messages: list[str] = []
+
+    data = load_ts_coverage_files([tmp_path / "absent.info"], on_error=lambda path, msg: messages.append(msg))
+
+    assert data.file_paths == ()
+    assert messages == ["file not found"]
