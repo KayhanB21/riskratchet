@@ -19,7 +19,7 @@ from typing import Any
 
 import pytest
 
-from riskratchet.coverage import MissingCoveragePolicy
+from riskratchet.coverage import MissingCoveragePolicy, coverage_for_span
 from riskratchet.models import FunctionSpan
 from riskratchet.typescript_coverage import (
     coverage_for_ts_span,
@@ -93,11 +93,27 @@ def test_missing_file_pessimistic_is_uncovered() -> None:
     assert stats.branch_coverage is None
 
 
-@pytest.mark.parametrize("policy", [MissingCoveragePolicy.OPTIMISTIC, MissingCoveragePolicy.SKIP])
-def test_missing_file_optimistic_and_skip_do_not_penalize(policy: MissingCoveragePolicy) -> None:
-    stats = coverage_for_ts_span(None, PARTIAL_SPAN, missing_policy=policy)
+def test_only_optimistic_treats_an_unmeasured_file_as_covered() -> None:
+    stats = coverage_for_ts_span(None, PARTIAL_SPAN, missing_policy=MissingCoveragePolicy.OPTIMISTIC)
     assert stats.line_coverage == 1.0
     assert stats.branch_coverage is None
+
+
+@pytest.mark.parametrize("policy", list(MissingCoveragePolicy))
+def test_an_unmeasured_file_scores_the_same_in_both_backends(policy: MissingCoveragePolicy) -> None:
+    """The TypeScript span mapper must agree with `coverage.coverage_for_span`.
+
+    This module's docstring claims to mirror the Python mapper. It did not for SKIP,
+    which fell through to the OPTIMISTIC branch — so a `--typescript` run with no TS
+    report scored every function 100% covered while Python scored the same situation
+    0%, zeroing `coverage_gap` and `public_surface` for TypeScript only. Parametrizing
+    over the whole enum, rather than naming the policies, is what keeps a fourth policy
+    from being added to one backend alone.
+    """
+    ts_stats = coverage_for_ts_span(None, PARTIAL_SPAN, missing_policy=policy)
+    py_stats = coverage_for_span(None, PARTIAL_SPAN, missing_policy=policy)
+    assert ts_stats.line_coverage == py_stats.line_coverage
+    assert ts_stats.branch_coverage == py_stats.branch_coverage
 
 
 def test_no_measurable_statements_in_span_is_fully_covered() -> None:

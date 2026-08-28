@@ -196,6 +196,20 @@ def _check_coverage(
                 ),
                 None,
             )
+        # Same reasoning for a configured `coverage` path auto-coverage will fill:
+        # `config._report_missing_coverage` warns and continues there, so FAILing
+        # here would make `doctor` exit 1 on a setup `check` runs happily. When
+        # auto-coverage is off there is no substitute and it stays a FAIL.
+        if origin == "coverage_auto":
+            return (
+                DoctorCheck(
+                    name="coverage",
+                    status=CheckStatus.WARN,
+                    summary=f"coverage file not found: {coverage_path}; auto-coverage will substitute",
+                    remediation=regenerate,
+                ),
+                None,
+            )
         return (
             DoctorCheck(
                 name="coverage",

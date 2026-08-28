@@ -207,9 +207,19 @@ def discover_typescript(
 
 
 def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> Node | None:
-    """Shared loader: read + parse a TS file to its root node, or None for a generated or broken
-    file (invoking `on_error` for broken)."""
-    source = path.read_bytes()
+    """Shared loader: read + parse a TS file to its root node, or None for a generated, unreadable,
+    or broken file (invoking `on_error` for the latter two).
+
+    `analysis.parse_file` catches the same read errors and turns them into a skipped file with a
+    warning; here they used to escape as an uncaught `PermissionError` and exit 1 — "a gate
+    tripped" — for a dangling symlink or a directory named `*.ts`, both of which `rglob` returns.
+    """
+    try:
+        source = path.read_bytes()
+    except OSError as exc:
+        if on_error is not None:
+            on_error(path, f"cannot read file: {exc}")
+        return None
     head = source[:2000].decode("utf-8", "replace")
     if is_generated_typescript(path, head):
         return None

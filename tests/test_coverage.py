@@ -256,3 +256,39 @@ def test_the_non_object_message_names_the_file_and_what_it_got(tmp_path: Path) -
 
     with pytest.raises(ValueError, match=r"coverage\.json must be a JSON object, got list"):
         load_coverage(path)
+
+
+# --- 0.3.5: the same loaders must also reject a structurally wrong payload ------
+
+_STRUCTURAL_REJECTS = {
+    # Each loader is given the *other* backend's report: valid JSON, right shape
+    # for somebody, wrong shape for this loader.
+    "coverage": (load_coverage, '{"a.ts": {"statementMap": {}, "s": {}}}'),
+    "istanbul": (load_istanbul_coverage, '{"meta": {}, "files": {"a.py": {}}, "totals": {}}'),
+}
+
+
+@pytest.mark.parametrize("loader", sorted(_STRUCTURAL_REJECTS), ids=sorted(_STRUCTURAL_REJECTS))
+def test_a_report_from_the_other_backend_is_rejected_not_silently_empty(tmp_path: Path, loader: str) -> None:
+    """A well-formed JSON object of the wrong shape must not load as "measured nothing".
+
+    `load_coverage` already rejected an Istanbul report — no `files` section — but
+    `load_istanbul_coverage` accepted a coverage.py report as three files named
+    `meta`/`files`/`totals`, matched nothing, and produced a silently useless coverage
+    view. Under `missing_coverage = skip` that dropped every function and exited 0.
+    Swapping `--coverage` and `--ts-coverage` is the way users reach this.
+    """
+    load, payload = _STRUCTURAL_REJECTS[loader]
+    path = tmp_path / "report.json"
+    path.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        load(path)
+
+
+def test_an_empty_report_is_still_valid(tmp_path: Path) -> None:
+    """`{}` is a real report that measured nothing — the structural guard must not eat it."""
+    path = tmp_path / "coverage-final.json"
+    path.write_text("{}", encoding="utf-8")
+
+    assert load_istanbul_coverage(path).file_paths == ()

@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, NoReturn
 
 import typer
 
@@ -34,6 +34,7 @@ from riskratchet.config import (
     _anchor_config_path,
     _discover_config,
     _ensure_coverage_map_exists,
+    _ensure_ts_coverage_exists,
     _format_setup_error,
     _load_config_strict,
     _resolve_coverage,
@@ -423,6 +424,7 @@ def scan(
     diag = Diagnostics(command="scan")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    _ensure_ts_coverage_exists(ts_coverage, allow_missing=False)
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
@@ -440,7 +442,10 @@ def scan(
             sources=resolved_paths,
             no_auto_cov=no_auto_cov,
             required=False,
-            allow_missing=True,
+            # Not `allow_missing=True`: that is redundant with `required=False` and would
+            # also excuse a *typo'd* --coverage path, which is a usage error here as much
+            # as a nonexistent scan path is.
+            allow_missing=False,
             config_dir=config_dir,
             diagnostics=diag,
         )
@@ -579,6 +584,7 @@ def baseline(
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
@@ -642,7 +648,7 @@ def baseline(
     )
     target = output or _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
     _refuse_to_erase_baseline(report, target)
-    save_baseline(baseline_from_report(report), target)
+    _save_baseline_or_exit(baseline_from_report(report), target)
     _emit_diagnostics(
         diag,
         verbose=verbose,
@@ -822,6 +828,7 @@ def check(
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
@@ -1055,7 +1062,7 @@ def explain(
         sources=[file_path],
         no_auto_cov=no_auto_cov,
         required=False,
-        allow_missing=True,
+        allow_missing=False,  # see the note in `scan`
         config_dir=config_dir,
         diagnostics=diag,
     )
@@ -1230,6 +1237,7 @@ def diff(
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path: Path | None
     if resolved_coverage_map:
@@ -1484,7 +1492,7 @@ def _run_baseline_from_init(config_dir: Path) -> None:
     scan_paths = [src_dir] if src_dir.exists() else [config_dir]
     report = analyze(scan_paths, root=config_dir, coverage_path=coverage_path)
     baseline_file = config_dir / ".riskratchet.json"
-    save_baseline(baseline_from_report(report), baseline_file)
+    _save_baseline_or_exit(baseline_from_report(report), baseline_file)
     typer.secho(
         f"wrote baseline with {len(report.functions)} functions to {baseline_file}",
         fg=typer.colors.GREEN,
@@ -1542,14 +1550,19 @@ def _doctor_coverage_source(cfg: Mapping[str, Any], config_dir: Path) -> tuple[P
     `coverage_map`, or one relying on `auto_coverage` + `coverage_cache`, as
     "no coverage configured" — riskratchet's own pyproject.toml included.
     """
+    auto_on = cfg.get("auto_coverage") is not False
     coverage_value = cfg.get("coverage")
     if isinstance(coverage_value, str):
-        return _anchor_config_path(Path(coverage_value), config_dir), "coverage"
+        # `coverage_auto` means "named in config, but auto-coverage would fill it"
+        # — the case `config._report_missing_coverage` treats as a warning.
+        return _anchor_config_path(Path(coverage_value), config_dir), (
+            "coverage_auto" if auto_on else "coverage"
+        )
     coverage_map = cfg.get("coverage_map")
     if isinstance(coverage_map, dict) and coverage_map:
         first = next(iter(coverage_map.values()))
         return _anchor_config_path(Path(str(first)), config_dir), "coverage_map"
-    if cfg.get("auto_coverage") is not False:
+    if auto_on:
         cache = cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH))
         return _anchor_config_path(Path(str(cache)), config_dir), "coverage_cache"
     return None, "coverage"
@@ -1750,8 +1763,47 @@ def _write(rendered: str, output: Path | None) -> None:
     if output is None:
         typer.echo(rendered, nl=False)
         return
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(rendered, encoding="utf-8")
+    _write_or_exit(output, rendered, what="report")
+
+
+def _write_or_exit(destination: Path, payload: str, *, what: str) -> None:
+    """Write `payload` to `destination`, or exit 2 explaining why it could not be written.
+
+    Unguarded, `--output` at a directory or under a read-only path escaped as an
+    `IsADirectoryError`/`PermissionError` traceback and **exit 1** — the code reserved
+    for "a gate tripped", from a command whose own docstring says it never fails. Every
+    other I/O boundary here (`_load_baseline_or_exit`, `_build_report_or_exit`) already
+    converts to a setup error, so this one does too.
+    """
+    try:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(payload, encoding="utf-8")
+    except OSError as exc:
+        _exit_unwritable(destination, exc, what=what)
+
+
+def _exit_unwritable(destination: Path, exc: OSError, *, what: str) -> NoReturn:
+    """Report an unwritable output path as a setup error and exit 2."""
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: could not write {what} to {destination}: {exc}.",
+            [
+                ("Point it at a writable file:", f"<command> --output path/to/{destination.name}"),
+                ("Or drop the flag to write to stdout:", "<command>"),
+            ],
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2) from exc
+
+
+def _save_baseline_or_exit(baseline: Baseline, destination: Path) -> None:
+    """Persist the baseline, or exit 2 rather than tracebacking out with exit 1."""
+    try:
+        save_baseline(baseline, destination)
+    except OSError as exc:
+        _exit_unwritable(destination, exc, what="baseline")
 
 
 def _resolve_typescript_flag(
@@ -2302,7 +2354,10 @@ def _emit_diagnostics(
         for line in diag.to_lines():
             typer.secho(line, err=True)
     if debug_json or debug_json_file is not None:
-        payload = write_debug_json(diag, debug_json_file)
+        try:
+            payload = write_debug_json(diag, debug_json_file)
+        except OSError as exc:  # an unwritable --debug-json-file is a setup error, not exit 1
+            _exit_unwritable(debug_json_file or Path("-"), exc, what="debug JSON")
         if payload is not None:
             typer.echo(payload, err=True)
 
