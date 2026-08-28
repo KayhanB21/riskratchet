@@ -21,11 +21,13 @@ pytest.importorskip("tree_sitter_typescript")
 
 from riskratchet import pipeline
 from riskratchet import typescript_engine as te
-from riskratchet.coverage import MissingCoveragePolicy
+from riskratchet.coverage import MissingCoveragePolicy, coverage_for_span
 from riskratchet.engine import analyze
+from riskratchet.models import FunctionSpan
 from riskratchet.scoring import TYPESCRIPT_COMPLEXITY_CALIBRATION, structural_complexity_score
 
 APP = Path(__file__).parent / "fixtures" / "typescript" / "app"
+SPAN = FunctionSpan(start_line=1, end_line=4)
 
 
 def test_analyze_typescript_scores_with_language_tag() -> None:
@@ -113,3 +115,45 @@ def test_import_isolation_python_only_never_imports_tree_sitter(tmp_path: Path) 
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "clean" in result.stdout
+
+
+# --- 0.3.5: the two backends must score an absent report identically ----------------
+
+
+@pytest.mark.parametrize("policy", list(MissingCoveragePolicy))
+def test_an_absent_report_scores_the_same_in_both_backends(policy: MissingCoveragePolicy) -> None:
+    """`analyze_typescript`'s docstring claims this parity; SKIP broke it.
+
+    SKIP fell through to the OPTIMISTIC branch, so a `--typescript` run with no TS
+    report scored every function 100% covered while Python scored the same situation
+    0% — zeroing `coverage_gap` and `public_surface`, 40% of the weight, for TypeScript
+    only. Parametrizing over the whole enum is what stops a fourth policy landing on
+    one backend alone.
+    """
+    ts_stats = te._resolve_coverage(None, has_coverage=False, policy=policy)
+    py_stats = coverage_for_span(None, SPAN, missing_policy=policy)
+
+    assert ts_stats is not None, "an absent *report* must never drop a function"
+    assert ts_stats.line_coverage == py_stats.line_coverage
+
+
+def test_skip_only_drops_a_function_when_a_report_actually_loaded() -> None:
+    """SKIP means "this file is not measured by a report I have", not "I have no report"."""
+    assert te._resolve_coverage(None, has_coverage=True, policy=MissingCoveragePolicy.SKIP) is None
+    assert te._resolve_coverage(None, has_coverage=False, policy=MissingCoveragePolicy.SKIP) is not None
+
+
+def test_an_unreadable_report_is_fatal_rather_than_an_empty_coverage_view(tmp_path: Path) -> None:
+    """`has_coverage` used to key off the *request*, so an unreadable report read as
+    "a report that measured nothing" — and under SKIP that dropped every function."""
+    junk = tmp_path / "coverage-final.json"
+    junk.write_text("not json", encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        te.analyze_typescript(
+            [APP],
+            root=APP,
+            use_git=False,
+            ts_coverage_paths=[junk],
+            missing_coverage_policy=MissingCoveragePolicy.SKIP,
+        )

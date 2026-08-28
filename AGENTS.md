@@ -143,6 +143,24 @@ success and `2` on usage errors.
   `config validate` share those collectors, and
   `test_analysis_commands_reject_every_config_that_config_validate_rejects`
   is the trip-wire if the two paths ever drift apart again.
+- A path the user **named** must exist, and the answer cannot depend on which
+  fallback happens to succeed. `--coverage` / `--ts-coverage` that do not exist are
+  exit 2 (`config._report_missing_coverage`, `config._ensure_ts_coverage_exists`);
+  a path from `[tool.riskratchet] coverage` warns and names its substitute, because
+  auto-coverage may legitimately fill it. `doctor._check_coverage` keys off the same
+  rule via the `coverage_auto` origin — before 0.3.5 it said FAIL where `check` said
+  nothing at all, so the two commands disagreed about whether a project was usable.
+  Keep them in step: `test_doctor_and_check_agree_about_a_missing_configured_coverage_path`.
+- The TypeScript backend mirrors the Python one, and "mirrors" is a claim tests must
+  hold to. `missing_coverage` handling is pinned across both backends by
+  `test_an_absent_report_scores_the_same_in_both_backends` (parametrized over the whole
+  `MissingCoveragePolicy` enum, so a new policy cannot land on one backend alone), and
+  every raising JSON loader is pinned for non-object roots *and* structurally wrong
+  payloads in `tests/test_coverage.py`. Two docstrings claimed this parity before 0.3.5
+  while SKIP scored TypeScript 100% covered and Python 0%.
+- Never let an I/O failure exit 1. Exit 1 means a gate tripped; an unwritable
+  `--output`, an unreadable source file, or a full disk is exit 2 with a remediation.
+  Route writes through `cli._write_or_exit` / `cli._exit_unwritable`.
   Add to the list rather than replacing it — reading old baselines is what keeps
   an upgrade from forcing every adopter to re-baseline.
 - `--format sarif` emits a SARIF 2.1.0 log. The output references

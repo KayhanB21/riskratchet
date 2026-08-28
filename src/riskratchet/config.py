@@ -23,7 +23,7 @@ lives outside `cli.py`).
 from __future__ import annotations
 
 import sys
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -503,6 +503,49 @@ def _record_coverage_diag(
         diagnostics.set_coverage(mode=mode, source=source, path=path, command=command, returncode=returncode)
 
 
+def _report_missing_coverage(
+    path: Path,
+    *,
+    from_cli: bool,
+    allow_missing: bool,
+    substitute: Path | None,
+) -> None:
+    """Refuse, or announce, a coverage file the user named that does not exist.
+
+    A `--coverage` path is an assertion about *this run*, so a missing file can
+    never be right: exit 2, the same answer `_ensure_coverage_map_exists` gives
+    for a coverage-map shard and `_check_paths_exist` gives for a scan path, and
+    the same verdict `doctor._check_coverage` already prints as FAIL. A path from
+    `[tool.riskratchet] coverage` is a *default* that auto-coverage may
+    legitimately fill on a fresh clone, so that one continues — but it still has
+    to say what it used instead.
+
+    Falling through in silence is what made a one-character typo turn a real
+    exit-1 regression into "No risk regressions detected", and made `baseline`
+    anchor the ratchet to coverage the user never asked for. This runs before the
+    test command does, so a wrong path costs a message rather than a full test run.
+    """
+    fixes = [
+        ("Generate coverage at this path:", f"pytest --cov --cov-branch --cov-report=json:{path} -q"),
+    ]
+    if from_cli and not allow_missing:
+        fixes.append(("Let riskratchet generate it instead:", "<command>  # drop --coverage"))
+        fixes.append(("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"))
+        typer.secho(
+            _format_setup_error(f"riskratchet: coverage file not found: {path}.", fixes),
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    tail = f"using {substitute} instead" if substitute is not None else "continuing without coverage"
+    typer.secho(
+        _format_setup_error(f"riskratchet: coverage file not found: {path}; {tail}.", fixes),
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+
+
 def _resolve_coverage(
     value: Path | None,
     cfg: dict[str, Any],
@@ -537,6 +580,14 @@ def _resolve_coverage(
     )
     test_command = str(cfg.get("test_command", DEFAULT_TEST_COMMAND))
 
+    if requested is not None:
+        _report_missing_coverage(
+            requested,
+            from_cli=value is not None,
+            allow_missing=allow_missing,
+            substitute=cache_path if auto_enabled else None,
+        )
+
     result: AutoCoverageResult = ensure_coverage(
         requested=requested if was_configured else None,
         sources=sources,
@@ -557,20 +608,9 @@ def _resolve_coverage(
         return result.path
 
     if not required or allow_missing:
-        if requested is not None and value is not None and not requested.exists():
-            typer.secho(
-                _format_setup_error(
-                    f"riskratchet: coverage file not found: {requested}; continuing without coverage.",
-                    [
-                        (
-                            "Generate coverage at this path:",
-                            f"pytest --cov --cov-branch --cov-report=json:{requested} -q",
-                        ),
-                    ],
-                ),
-                fg=typer.colors.YELLOW,
-                err=True,
-            )
+        # A missing named path was already reported by `_report_missing_coverage`,
+        # which runs before auto-coverage so it fires whether or not the fallback
+        # produced anything.
         return None
 
     resolved_test_command = test_command.format(output=str(cache_path))
@@ -656,6 +696,39 @@ def _ensure_coverage_map_exists(
                         "Generate coverage at this path:",
                         f"pytest --cov --cov-branch --cov-report=json:{path} -q",
                     ),
+                    ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+                ],
+            ),
+            fg=typer.colors.RED,
+            err=True,
+        )
+    raise typer.Exit(code=2)
+
+
+def _ensure_ts_coverage_exists(
+    paths: Sequence[Path] | None,
+    *,
+    allow_missing: bool,
+) -> None:
+    """Fail when a `--ts-coverage` report the user named does not exist.
+
+    The TypeScript counterpart of `_report_missing_coverage`, and the same rule:
+    a report named on the command line is an assertion about this run. Without this,
+    `typescript_engine` reported the miss through `on_error` and carried on with an
+    empty coverage view — which under `missing_coverage = skip` dropped every
+    TypeScript function and still exited 0.
+    """
+    if allow_missing or not paths:
+        return
+    missing = [path for path in paths if not Path(path).exists()]
+    if not missing:
+        return
+    for path in missing:
+        typer.secho(
+            _format_setup_error(
+                f"riskratchet: TypeScript coverage report not found: {path}.",
+                [
+                    ("Generate it with your test runner:", "npx vitest run --coverage  # or nyc/c8/jest"),
                     ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
                 ],
             ),

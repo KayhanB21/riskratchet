@@ -714,3 +714,215 @@ def test_writing_a_fresh_zero_function_baseline_still_works(
 
     assert result.exit_code == 0, result.output
     assert (tmp_path / ".riskratchet.json").exists()
+
+
+# --- 0.3.5: a coverage file the user named must exist -------------------------------
+#
+# `doctor` reported FAIL on a setup `check` ran happily: a named coverage path that
+# did not exist fell through to auto-coverage, which generated a *different* file and
+# gated against that. One typo turned a real exit-1 regression into exit 0, and
+# `baseline` anchored the ratchet to coverage nobody asked for.
+
+
+def _invoke_with_coverage(command: str, src: Path, coverage: str) -> Result:
+    """`_invoke`, plus an explicit `--coverage` path, minus `--no-auto-cov`.
+
+    Dropping `--no-auto-cov` is the point: with auto-coverage *on* — the default —
+    the fallback used to succeed and hide the bad path entirely. `--allow-missing-coverage`
+    is omitted too; it is the deliberate downgrade for this check, pinned separately.
+    """
+    if command == "explain":
+        return runner.invoke(
+            app, ["explain", f"{src.name}/m.py::trivial", "--no-git", "--coverage", coverage]
+        )
+    return runner.invoke(app, [command, str(src), "--no-git", "--coverage", coverage])
+
+
+@pytest.mark.parametrize("command", _ANALYSIS_COMMANDS)
+def test_a_coverage_file_named_on_the_command_line_must_exist(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    _seed_baseline(src)
+
+    result = _invoke_with_coverage(command, src, "absent-coverage.json")
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "coverage file not found: absent-coverage.json" in result.stderr
+    assert "Fix one of:" in result.stderr
+    assert "pytest --cov" in result.stderr
+
+
+def test_a_missing_coverage_path_cannot_hide_a_regression(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The bug in two assertions: the same `check`, one character apart.
+
+    Coverage is the largest single input to the score, so substituting a different
+    file does not merely lose information — it changes every number the gate compares.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    coverage = tmp_path / "coverage.json"
+    coverage.write_text(
+        '{"files": {"src/m.py": {"executed_lines": [], "missing_lines": [1, 2]}}}', encoding="utf-8"
+    )
+    seed = runner.invoke(
+        app, ["baseline", str(src), "--coverage", str(coverage), "--no-auto-cov", "--no-git"]
+    )
+    assert seed.exit_code == 0, seed.output
+    (src / "m.py").write_text(
+        "def trivial():\n"
+        + "".join(f"    if {i}:\n        return {i}\n" for i in range(12))
+        + "    return 1\n",
+        encoding="utf-8",
+    )
+
+    fired = runner.invoke(app, ["check", str(src), "--coverage", str(coverage), "--no-auto-cov", "--no-git"])
+    typo = runner.invoke(app, ["check", str(src), "--coverage", f"{coverage}x", "--no-git"])
+
+    assert fired.exit_code == 1, fired.output  # control: the gate does fire
+    assert typo.exit_code == 2, typo.output  # and a typo cannot turn that into 0
+    assert "No risk regressions detected" not in typo.output
+
+
+def test_a_configured_coverage_path_warns_and_names_its_substitute(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A config path is a default auto-coverage may fill, so it continues — but says so.
+
+    Silence is what made this dangerous; the warning has to name the file actually
+    used, or "continuing" is indistinguishable from "using what you asked for".
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ncoverage = "ci-coverage.json"\nauto_coverage = false\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["scan", str(src), "--no-git"])
+
+    assert result.exit_code == 0, result.output
+    assert "coverage file not found: ci-coverage.json" in result.stderr
+    assert "continuing without coverage" in result.stderr
+
+
+def test_doctor_and_check_agree_about_a_missing_configured_coverage_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The two must not disagree about whether a setup is usable.
+
+    `doctor` FAILed (exit 1) on the very setup `check` passed (exit 0). Both now key
+    off the same rule: auto-coverage can substitute, so it is a warning; it cannot, so
+    it is fatal.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    config = tmp_path / "pyproject.toml"
+    config.write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    _seed_baseline(src)  # else doctor FAILs on the baseline check instead
+
+    # Auto-coverage can substitute: a fresh cache exists, so no test command runs.
+    cache = tmp_path / ".riskratchet" / "coverage.json"
+    cache.parent.mkdir()
+    cache.write_text(
+        '{"files": {"src/m.py": {"executed_lines": [1, 2], "missing_lines": []}}}', encoding="utf-8"
+    )
+    config.write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ncoverage = "ci-coverage.json"\n', encoding="utf-8"
+    )
+    assert runner.invoke(app, ["doctor"]).exit_code == 0
+    assert runner.invoke(app, ["scan", str(src), "--no-git"]).exit_code == 0
+
+    config.write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ncoverage = "ci-coverage.json"\nauto_coverage = false\n',
+        encoding="utf-8",
+    )
+    assert runner.invoke(app, ["doctor"]).exit_code == 1
+    assert runner.invoke(app, ["check", str(src), "--no-git"]).exit_code == 2
+
+
+@pytest.mark.parametrize(
+    "payload", [None, '{"meta": {}, "files": {}, "totals": {}}'], ids=["absent", "wrong-format"]
+)
+def test_a_typescript_coverage_report_the_user_named_must_be_usable(
+    payload: str | None, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An unreadable `--ts-coverage` used to warn and score on an empty coverage view.
+
+    Under `missing_coverage = skip` that dropped every TypeScript function and still
+    exited 0 — the gate switched off by a typo, which is what `0.3.4` closed for the
+    Python side.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    report = tmp_path / "ts-coverage.json"
+    if payload is not None:
+        report.write_text(payload, encoding="utf-8")
+
+    result = runner.invoke(
+        app, ["scan", str(src), "--typescript", "--ts-coverage", str(report), "--no-auto-cov", "--no-git"]
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["scan", "--format", "sarif", "--output"],
+        ["scan", "--debug-json-file"],
+        ["baseline", "--allow-missing-coverage", "--output"],
+    ],
+    ids=["report", "debug-json", "baseline"],
+)
+def test_an_unwritable_output_path_is_a_setup_error_not_a_gate_failure(
+    args: list[str], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Exit 1 means "a gate tripped". An `IsADirectoryError` is not a gate tripping.
+
+    `scan`'s own docstring says it never fails, and it was returning 1 with a raw
+    traceback whenever `--output` pointed at a directory or a read-only location.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    blocked = tmp_path / "blocked"
+    blocked.mkdir()
+
+    result = runner.invoke(app, [args[0], str(src), *args[1:], str(blocked), "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "could not write" in result.stderr
+
+
+def test_allow_missing_coverage_downgrades_the_named_path_check(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The escape hatch stays an escape hatch: it warns and continues, never silently."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    _seed_baseline(src)
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--coverage",
+            "absent.json",
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "coverage file not found: absent.json" in result.stderr

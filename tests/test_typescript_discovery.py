@@ -174,3 +174,26 @@ def test_iter_typescript_files_finds_ts_tsx_and_mts() -> None:
 def test_exclude_glob_is_respected() -> None:
     files = iter_typescript_files([FIXTURES], root=FIXTURES, exclude=["*.tsx"])
     assert all(p.suffix in (".ts", ".mts", ".cts") for p in files)
+
+
+# --- 0.3.5: an unreadable file is skipped with a warning, never a traceback ---------
+
+
+def test_an_unreadable_file_is_skipped_with_a_warning_not_an_exit_one_traceback(
+    tmp_path: Path,
+) -> None:
+    """`analysis.parse_file` has always caught this; the TypeScript reader did not.
+
+    `path.read_bytes()` was unguarded, so a dangling symlink under `node_modules` or a
+    directory named `*.ts` — both of which `rglob` returns — escaped as an uncaught
+    `OSError` and exit 1, the code reserved for "a gate tripped". A directory with a
+    `.ts` name reproduces it without mocking anything.
+    """
+    unreadable = tmp_path / "looks-like-a-module.ts"
+    unreadable.mkdir()
+    errors: list[tuple[Path, str]] = []
+
+    found = discover_typescript(unreadable, root=tmp_path, on_error=lambda p, m: errors.append((p, m)))
+
+    assert found == []
+    assert errors and "cannot read file" in errors[0][1]

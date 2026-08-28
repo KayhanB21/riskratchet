@@ -49,12 +49,12 @@
     {
       "path": "src/riskratchet/_version.py",
       "qualname": "_local_pyproject_version",
-      "score": 19.25,
+      "score": 17.25,
       "components": {
         "coverage_gap": 20.0,
         "structural_complexity": 15.0,
         "branch_gap": 50.0,
-        "churn": 20.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -64,12 +64,12 @@
     {
       "path": "src/riskratchet/_version.py",
       "qualname": "package_version",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -94,12 +94,12 @@
     {
       "path": "src/riskratchet/analysis.py",
       "qualname": "_FunctionCollector._record",
-      "score": 4.5,
+      "score": 3.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -334,12 +334,12 @@
     {
       "path": "src/riskratchet/auto_coverage.py",
       "qualname": "_cache_is_fresh",
-      "score": 23.9808,
+      "score": 22.9808,
       "components": {
         "coverage_gap": 30.7692,
         "structural_complexity": 35.0,
         "branch_gap": 33.3333,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -379,12 +379,12 @@
     {
       "path": "src/riskratchet/auto_coverage.py",
       "qualname": "ensure_coverage",
-      "score": 14.5,
+      "score": 13.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 50.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -394,12 +394,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_classify_against_baseline",
-      "score": 6.0,
+      "score": 5.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -409,12 +409,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_component_regression",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -424,12 +424,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_current_fingerprint_counts",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -439,12 +439,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_match_by_fingerprint",
-      "score": 6.0,
+      "score": 5.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -454,12 +454,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_unique_old_entries_by_fingerprint",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -469,12 +469,12 @@
     {
       "path": "src/riskratchet/baseline/classify.py",
       "qualname": "_unmatched_old_entries",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -484,12 +484,12 @@
     {
       "path": "src/riskratchet/baseline/compare.py",
       "qualname": "_ambiguous_regression",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -499,12 +499,12 @@
     {
       "path": "src/riskratchet/baseline/compare.py",
       "qualname": "_new_above_threshold_regression",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -514,12 +514,12 @@
     {
       "path": "src/riskratchet/baseline/compare.py",
       "qualname": "compare",
-      "score": 21.125,
+      "score": 20.125,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 70.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 26.25
       },
@@ -529,12 +529,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_ambiguous_diff_entry",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -544,12 +544,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_diff_reason",
-      "score": 13.25,
+      "score": 12.25,
       "components": {
         "coverage_gap": 6.6667,
         "structural_complexity": 35.0,
         "branch_gap": 10.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -559,12 +559,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_diff_sort_key",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -574,12 +574,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_diff_status_for_existing",
-      "score": 7.25,
+      "score": 6.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -589,12 +589,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_group_for_baseline_entry",
-      "score": 12.25,
+      "score": 11.25,
       "components": {
         "coverage_gap": 16.6667,
         "structural_complexity": 10.0,
         "branch_gap": 25.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -604,12 +604,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "_new_diff_entry",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -619,12 +619,12 @@
     {
       "path": "src/riskratchet/baseline/diff.py",
       "qualname": "diff",
-      "score": 13.75,
+      "score": 12.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 50.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 2.5
       },
@@ -634,12 +634,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "_baseline_version",
-      "score": 6.75,
+      "score": 5.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -694,12 +694,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "_identity_for",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -709,12 +709,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "_unsupported_version_message",
-      "score": 6.75,
+      "score": 5.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -724,12 +724,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "baseline_from_report",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -739,12 +739,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "load_baseline",
-      "score": 13.75,
+      "score": 12.75,
       "components": {
         "coverage_gap": 5.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 5.0,
         "sprawl": 0.0
       },
@@ -769,12 +769,12 @@
     {
       "path": "src/riskratchet/baseline/io.py",
       "qualname": "save_baseline",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -829,12 +829,12 @@
     {
       "path": "src/riskratchet/baseline/regressions.py",
       "qualname": "regressions_from_diff",
-      "score": 24.9187,
+      "score": 23.9187,
       "components": {
         "coverage_gap": 5.5556,
         "structural_complexity": 80.0,
         "branch_gap": 7.1429,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 5.5556,
         "sprawl": 6.25
       },
@@ -844,12 +844,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_apply_ts_identity_guard",
-      "score": 4.5,
+      "score": 5.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -859,12 +859,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_build_report_or_exit",
-      "score": 16.2045,
+      "score": 18.2045,
       "components": {
         "coverage_gap": 18.1818,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 40.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -919,12 +919,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_doctor_check_payload",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -934,27 +934,27 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_doctor_coverage_source",
-      "score": 19.5,
+      "score": 21.1731,
       "components": {
-        "coverage_gap": 25.0,
-        "structural_complexity": 20.0,
+        "coverage_gap": 23.0769,
+        "structural_complexity": 25.0,
         "branch_gap": 33.3333,
-        "churn": 20.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "d4b580783f9384248ed7409b9c813c46f758cfb1a10a244084a9bd98b6d658e8",
+      "fingerprint": "0cbcfa110cf6274d9af704587bd3516974e03990b1c182a779bf3966ea5e2b93",
       "signature": "83c10deb3680721e4e6a3ca58f0716b7a1a38091cd1eec4fa300c632ede97bf9"
     },
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_effective_format",
-      "score": 5.25,
+      "score": 4.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -979,16 +979,16 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_diagnostics",
-      "score": 6.25,
+      "score": 9.75,
       "components": {
         "coverage_gap": 0.0,
-        "structural_complexity": 25.0,
+        "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "c6627449b73f4e7d568f8a54ad50ca29403191cf1e896559b1145b90d1a12d8c",
+      "fingerprint": "431c02bf48668cddbaca2496addd9b46b5ca0f8bfce46d97f045693f244f04b7",
       "signature": "dc1cdb580d589057b8c75108d9d0916c59649d6b75b35f5e2cf2e33d25409e51"
     },
     {
@@ -1009,12 +1009,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_doctor_table",
-      "score": 3.75,
+      "score": 4.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1024,12 +1024,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_regression_hint",
-      "score": 14.75,
+      "score": 16.75,
       "components": {
         "coverage_gap": 10.0,
         "structural_complexity": 20.0,
         "branch_gap": 25.0,
-        "churn": 30.0,
+        "churn": 50.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1039,12 +1039,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_report",
-      "score": 14.5,
+      "score": 16.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 50.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 40.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1054,12 +1054,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_emit_scan_next_step_footer",
-      "score": 12.5,
+      "score": 10.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 50.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1128,6 +1128,21 @@
     },
     {
       "path": "src/riskratchet/cli.py",
+      "qualname": "_exit_unwritable",
+      "score": 4.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 40.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "0e9f29f4d10badafd0ee68faf85ce17446832a9502d6117bbc2b0a3c5f35ba14",
+      "signature": "3645f8d2b00a04856c932a51e8c3acb45e46d859759574ce9e4517bcf2ee1dcd"
+    },
+    {
+      "path": "src/riskratchet/cli.py",
       "qualname": "_filtered_report",
       "score": 10.0,
       "components": {
@@ -1159,12 +1174,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_load_baseline_or_exit",
-      "score": 5.5,
+      "score": 3.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1189,12 +1204,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_refuse_to_erase_baseline",
-      "score": 18.5,
+      "score": 17.5,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 25.0,
         "branch_gap": 25.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1219,12 +1234,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_render_regressions",
-      "score": 12.25,
+      "score": 11.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 60.0,
+        "churn": 50.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1294,12 +1309,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_resolve_typescript_flag",
-      "score": 10.5,
+      "score": 8.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1324,17 +1339,32 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_run_baseline_from_init",
-      "score": 47.875,
+      "score": 49.875,
       "components": {
         "coverage_gap": 93.75,
         "structural_complexity": 15.0,
         "branch_gap": 100.0,
-        "churn": 10.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "46528236d2fd952a7823b9cdbf8ead7f09eb779ec2ff6e228a6dd43b780cec0b",
+      "fingerprint": "26f2d9e2a896a90b9d78a5d37df1678fba26f51a2b533ece8818e414188e7536",
       "signature": "e3a719a77fdf1e48f6bdfec692782240e6fae9c8e1a63fcb48b2483846f1cfbf"
+    },
+    {
+      "path": "src/riskratchet/cli.py",
+      "qualname": "_save_baseline_or_exit",
+      "score": 4.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 30.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "3a1f4588ccc6a2e535b761c32bf93aa625937a7b3afcd9fb93cd195196d40177",
+      "signature": "4e184e6372a40dc9ae28c902a587fb5322d45eb75fbf6e7a1cbfd4ebb1580ab5"
     },
     {
       "path": "src/riskratchet/cli.py",
@@ -1354,12 +1384,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_ts_rebaseline_command",
-      "score": 8.0,
+      "score": 7.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1369,12 +1399,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_ts_warn",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1429,12 +1459,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_warn_dropped_baseline_entries",
-      "score": 3.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1474,57 +1504,72 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "_write",
-      "score": 6.25,
+      "score": 4.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 50.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "db89d955ba780a2cf00aee4ad6137fc4a66cb55e170ea037a64177914a06b968",
+      "fingerprint": "4b552a5ce25d5c919f7301ef7174ce97a94b6f491141f11f8a73e1ef4a5533e5",
       "signature": "8228fde74f7c7d20114a8f13f4c16ed4b66d2bf60cb6100f803faf26973d6ad5"
     },
     {
       "path": "src/riskratchet/cli.py",
+      "qualname": "_write_or_exit",
+      "score": 5.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 40.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "60d6e610b2ee5942c06a61cebc9034389ebdf1a8195913f8892942e2b15f54ad",
+      "signature": "269b341aac0f73f369b37d651618b8fbe471a2dce9ffcba695348875e224171b"
+    },
+    {
+      "path": "src/riskratchet/cli.py",
       "qualname": "baseline",
-      "score": 23.875,
+      "score": 23.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 80.0,
+        "churn": 70.0,
         "public_surface": 0.0,
-        "sprawl": 71.25
+        "sprawl": 72.5
       },
-      "fingerprint": "f9ed1121052dd738a75c676926b13eaf5dee6a7c498f52a4b20c8ba8c0d34dec",
+      "fingerprint": "ae48bd49d8107715036c72ed1d11e97b29706c5d8ec976c2101adbaa21d56809",
       "signature": "31011ca353f5184e2aea8cc9b2500c2ff10e12186bb03d83ad5746309a96c906"
     },
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "check",
-      "score": 46.1566,
+      "score": 44.1484,
       "components": {
-        "coverage_gap": 1.4493,
+        "coverage_gap": 1.4286,
         "structural_complexity": 100.0,
         "branch_gap": 3.8462,
-        "churn": 100.0,
-        "public_surface": 1.4493,
+        "churn": 80.0,
+        "public_surface": 1.4286,
         "sprawl": 100.0
       },
-      "fingerprint": "2f85896f876c6d161e97e95dbc157a783f31304e70027c43def8504b494b26c8",
+      "fingerprint": "dd419e30dbd1be6c7b687e2e9feb75d95c1853ad438e5d9100824e6f3f7a7477",
       "signature": "60112df7aca967ba2e2e51895029697bcbe36ef12b456b115a2acbcdb187a5ab"
     },
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "config_show",
-      "score": 22.0,
+      "score": 20.0,
       "components": {
         "coverage_gap": 20.0,
         "structural_complexity": 10.0,
         "branch_gap": 50.0,
-        "churn": 40.0,
+        "churn": 20.0,
         "public_surface": 20.0,
         "sprawl": 0.0
       },
@@ -1534,12 +1579,12 @@
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "config_validate",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1558,18 +1603,18 @@
         "public_surface": 0.0,
         "sprawl": 100.0
       },
-      "fingerprint": "9a82fe2c99e5fddcb86304e350284fcf4a9722a6b3f8800ccb399ea3fb1e37e8",
+      "fingerprint": "26577f69c4803dc39256bf1df67085acbff0a5e610275605c54b1203f39bf746",
       "signature": "ec019de948cb0790c58674793d73995b44c93b0d7878529e27a257a6801a8504"
     },
     {
       "path": "src/riskratchet/cli.py",
       "qualname": "doctor",
-      "score": 7.0,
+      "score": 8.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1588,7 +1633,7 @@
         "public_surface": 3.7037,
         "sprawl": 72.5
       },
-      "fingerprint": "8feb7cb0c6b59e9214f68dc8c8217f0782319e68095298f1139b5e6b2d36f676",
+      "fingerprint": "00f694c0ad3b687f9986be61b8755e968f14ebc113afb9e678fab56d94b64ee3",
       "signature": "f34b01c889a0148110062582c808f738f0f0f64e494c79edcd0543d412f1de1e"
     },
     {
@@ -1618,7 +1663,7 @@
         "public_surface": 0.0,
         "sprawl": 100.0
       },
-      "fingerprint": "64fdbc91f700a2c26abb9b92551f37aac51a7c4908f9f0e119f7131541e26fcf",
+      "fingerprint": "0d05bb3d04b36f357a8d9e93ae6cbf84daccc444f8f695577988954e8190b05a",
       "signature": "b2bff11aee8a8adaaa0747f9a220b7dcce85154f3aebd143f80fde7845d6bb65"
     },
     {
@@ -1684,12 +1729,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_anchor_config_path",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1699,12 +1744,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_bounded_value_problems",
-      "score": 14.25,
+      "score": 13.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 45.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1714,12 +1759,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_coverage_candidate",
-      "score": 12.0,
+      "score": 11.0,
       "components": {
         "coverage_gap": 12.5,
         "structural_complexity": 15.0,
         "branch_gap": 16.6667,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1729,12 +1774,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_discover_config",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1758,22 +1803,22 @@
     },
     {
       "path": "src/riskratchet/config.py",
-      "qualname": "_format_setup_error",
-      "score": 3.25,
+      "qualname": "_ensure_ts_coverage_exists",
+      "score": 8.5,
       "components": {
         "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
+        "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "f0a8c715be740aaa95c2d755990e7c1ba642dbdaa2e1d98b9a28ebf85e7ce65e",
-      "signature": "30cc4a228a03448201d4660a7b7775328f4d8f1e56163165fdd41cc53a28311a"
+      "fingerprint": "87790347b153e3d14febbbdf3db81230cc9253ec75da615183366f5e724523e2",
+      "signature": "c9c054932546d95a36f340f59d56a64255c15ff03e1f7701f85d6a23719ea70e"
     },
     {
       "path": "src/riskratchet/config.py",
-      "qualname": "_is_number",
+      "qualname": "_format_setup_error",
       "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
@@ -1783,18 +1828,33 @@
         "public_surface": 0.0,
         "sprawl": 0.0
       },
+      "fingerprint": "f0a8c715be740aaa95c2d755990e7c1ba642dbdaa2e1d98b9a28ebf85e7ce65e",
+      "signature": "30cc4a228a03448201d4660a7b7775328f4d8f1e56163165fdd41cc53a28311a"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_is_number",
+      "score": 1.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
       "fingerprint": "7e6b333f9907336176816f78e8297982a579d21daf3b07f57a6fea22925fe969",
       "signature": "61962f66aa6a6f29c838ad2816674945131da1c98a478a93bd93d47d885904e8"
     },
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_load_config",
-      "score": 6.0,
+      "score": 5.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1804,12 +1864,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_load_config_strict",
-      "score": 25.5,
+      "score": 24.5,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 20.0,
         "branch_gap": 50.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1819,12 +1879,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_parse_coverage_map_flag",
-      "score": 11.2679,
+      "score": 10.2679,
       "components": {
         "coverage_gap": 7.1429,
         "structural_complexity": 25.0,
         "branch_gap": 12.5,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1834,12 +1894,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_record_coverage_diag",
-      "score": 11.75,
+      "score": 10.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 50.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1848,17 +1908,32 @@
     },
     {
       "path": "src/riskratchet/config.py",
-      "qualname": "_resolve_coverage",
-      "score": 24.8036,
+      "qualname": "_report_missing_coverage",
+      "score": 4.75,
       "components": {
-        "coverage_gap": 4.7619,
-        "structural_complexity": 70.0,
-        "branch_gap": 10.0,
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "250d98c7d5f6ac1d42b539fdbdc316d476cb98566273418c14a7a451af2baac3",
+      "signature": "9e0103be05d6eeee38137385776e29c5399ec22b1dfcb59d5331b969425df2c5"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_resolve_coverage",
+      "score": 20.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 65.0,
+        "branch_gap": 0.0,
         "churn": 30.0,
         "public_surface": 0.0,
-        "sprawl": 13.75
+        "sprawl": 10.0
       },
-      "fingerprint": "471e9e6989d3222de2989611386288a8c7360874e1fff020f2fccfcee88a30b7",
+      "fingerprint": "330d4052be4cab6af043b9cc6807f60b0ace4913f2f5e0c2daaa850642c2682b",
       "signature": "9d8ce5c834b66cfe7931c0e30ce3e386cc02d667167a12b711d3f347bcb7d51d"
     },
     {
@@ -1894,12 +1969,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_config_payload",
-      "score": 7.25,
+      "score": 6.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1909,12 +1984,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_coverage_map",
-      "score": 15.75,
+      "score": 14.75,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1924,12 +1999,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_float",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1939,12 +2014,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_groups",
-      "score": 18.25,
+      "score": 17.25,
       "components": {
         "coverage_gap": 50.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1954,12 +2029,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_missing_coverage",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -1984,66 +2059,6 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_resolved_paths",
-      "score": 8.0,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "00dc6a64ff594fd95bf540613958dd87a96d90c700f0a7ad0b6dc968a6b1625b",
-      "signature": "19dfb105e4d5be2ea58b162259a353ad59cad39345467bef55435c01a5617751"
-    },
-    {
-      "path": "src/riskratchet/config.py",
-      "qualname": "_resolved_weights",
-      "score": 25.8571,
-      "components": {
-        "coverage_gap": 42.8571,
-        "structural_complexity": 20.0,
-        "branch_gap": 33.3333,
-        "churn": 30.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "3d8e43310719c2e762a1bc0bfb22e04d48e9057c0bbd3043eadb296b6db321eb",
-      "signature": "d11fe9fae07113d9b4503559c6addc94e4dfce3c34d42ff29c7deee6b1ca3e8b"
-    },
-    {
-      "path": "src/riskratchet/config.py",
-      "qualname": "_riskratchet_section",
-      "score": 6.0,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 20.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "b1e079b52aaa9b70fd886ddce9087f31b90182da68634ddb87bdc8f79a0c2802",
-      "signature": "0793c29f5ee6e83546e8b86cf41d3f1a356888dc8d4a07b98c4f716afe66d0fd"
-    },
-    {
-      "path": "src/riskratchet/config.py",
-      "qualname": "_scalar_type_problems",
-      "score": 13.25,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 45.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "749d7635bf5ea87502c8e1733cc9f294e119e1fa996fe85229c0ea298fabf99f",
-      "signature": "af35e9230ef026d773fb1538c766504b4965fd144508f1ebfc8f9e92ad20f3f7"
-    },
-    {
-      "path": "src/riskratchet/config.py",
-      "qualname": "_string_list_problems",
       "score": 7.0,
       "components": {
         "coverage_gap": 0.0,
@@ -2053,18 +2068,78 @@
         "public_surface": 0.0,
         "sprawl": 0.0
       },
+      "fingerprint": "00dc6a64ff594fd95bf540613958dd87a96d90c700f0a7ad0b6dc968a6b1625b",
+      "signature": "19dfb105e4d5be2ea58b162259a353ad59cad39345467bef55435c01a5617751"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_resolved_weights",
+      "score": 24.8571,
+      "components": {
+        "coverage_gap": 42.8571,
+        "structural_complexity": 20.0,
+        "branch_gap": 33.3333,
+        "churn": 20.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "3d8e43310719c2e762a1bc0bfb22e04d48e9057c0bbd3043eadb296b6db321eb",
+      "signature": "d11fe9fae07113d9b4503559c6addc94e4dfce3c34d42ff29c7deee6b1ca3e8b"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_riskratchet_section",
+      "score": 5.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "b1e079b52aaa9b70fd886ddce9087f31b90182da68634ddb87bdc8f79a0c2802",
+      "signature": "0793c29f5ee6e83546e8b86cf41d3f1a356888dc8d4a07b98c4f716afe66d0fd"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_scalar_type_problems",
+      "score": 12.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 45.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "749d7635bf5ea87502c8e1733cc9f294e119e1fa996fe85229c0ea298fabf99f",
+      "signature": "af35e9230ef026d773fb1538c766504b4965fd144508f1ebfc8f9e92ad20f3f7"
+    },
+    {
+      "path": "src/riskratchet/config.py",
+      "qualname": "_string_list_problems",
+      "score": 6.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 20.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
       "fingerprint": "2f4796746a3ca80102d42cb77da7c81822cbf6fcb2100882e055095974ef1ae9",
       "signature": "af35e9230ef026d773fb1538c766504b4965fd144508f1ebfc8f9e92ad20f3f7"
     },
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_table_problems",
-      "score": 10.75,
+      "score": 9.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2074,12 +2149,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_validate_config",
-      "score": 6.5,
+      "score": 5.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2089,12 +2164,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "_validate_coverage_map",
-      "score": 14.125,
+      "score": 13.125,
       "components": {
         "coverage_gap": 12.5,
         "structural_complexity": 30.0,
         "branch_gap": 12.5,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2104,12 +2179,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "invalid_config_values",
-      "score": 3.0,
+      "score": 2.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2119,12 +2194,12 @@
     {
       "path": "src/riskratchet/config.py",
       "qualname": "unknown_config_keys",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2164,12 +2239,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "MultiCoverageData.from_map",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2179,12 +2254,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "MultiCoverageData.lookup",
-      "score": 8.25,
+      "score": 7.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2194,12 +2269,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "MultiCoverageData.prefixes",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2284,13 +2359,13 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "coverage_for_span",
-      "score": 11.25,
+      "score": 6.25,
       "components": {
-        "coverage_gap": 6.25,
+        "coverage_gap": 0.0,
         "structural_complexity": 25.0,
-        "branch_gap": 16.6667,
+        "branch_gap": 0.0,
         "churn": 0.0,
-        "public_surface": 6.25,
+        "public_surface": 0.0,
         "sprawl": 0.0
       },
       "fingerprint": "2e5566af5cfc692cd262530545fda5a821ccd5e56b66e28311208eb2ae89a25e",
@@ -2299,12 +2374,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "empty_coverage",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2314,12 +2389,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "load_coverage",
-      "score": 13.2798,
+      "score": 12.2798,
       "components": {
         "coverage_gap": 4.7619,
         "structural_complexity": 30.0,
         "branch_gap": 12.5,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 4.7619,
         "sprawl": 0.0
       },
@@ -2329,12 +2404,12 @@
     {
       "path": "src/riskratchet/coverage.py",
       "qualname": "load_coverage_map",
-      "score": 5.75,
+      "score": 4.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2524,27 +2599,27 @@
     {
       "path": "src/riskratchet/doctor.py",
       "qualname": "_check_coverage",
-      "score": 8.25,
+      "score": 11.75,
       "components": {
         "coverage_gap": 0.0,
-        "structural_complexity": 25.0,
+        "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 30.0,
         "public_surface": 0.0,
-        "sprawl": 0.0
+        "sprawl": 12.5
       },
-      "fingerprint": "6c1bda5374bfd5dfd886e925c3e2db044adb8648998ca0c91b584dd6b988a2f8",
+      "fingerprint": "c96d3702238cb4d2a4f05d4372c8cab43d6c4e267bc3a86333a7bf18afd16453",
       "signature": "dcc9211f0627f9a52645273e64f8e755a3ea12b1ad85f4be8d2dbb951d5a662f"
     },
     {
       "path": "src/riskratchet/doctor.py",
       "qualname": "_check_coverage_overlap",
-      "score": 25.0,
+      "score": 24.0,
       "components": {
         "coverage_gap": 26.6667,
         "structural_complexity": 40.0,
         "branch_gap": 33.3333,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2554,12 +2629,12 @@
     {
       "path": "src/riskratchet/doctor.py",
       "qualname": "_check_git",
-      "score": 10.0,
+      "score": 12.0,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2629,12 +2704,12 @@
     {
       "path": "src/riskratchet/doctor.py",
       "qualname": "_config_problem_check",
-      "score": 4.75,
+      "score": 5.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2734,12 +2809,12 @@
     {
       "path": "src/riskratchet/engine.py",
       "qualname": "_risks_for_file",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -2749,12 +2824,12 @@
     {
       "path": "src/riskratchet/engine.py",
       "qualname": "analyze",
-      "score": 30.625,
+      "score": 29.625,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 100.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 36.25
       },
@@ -3094,12 +3169,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "_component_similarity",
-      "score": 9.75,
+      "score": 8.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3109,12 +3184,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "_component_vector",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3124,12 +3199,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "_qualname_tail",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3139,12 +3214,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "_similarity",
-      "score": 12.25,
+      "score": 11.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 45.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3154,12 +3229,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "match_rename",
-      "score": 15.7222,
+      "score": 14.7222,
       "components": {
         "coverage_gap": 5.5556,
         "structural_complexity": 40.0,
         "branch_gap": 16.6667,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 5.5556,
         "sprawl": 0.0
       },
@@ -3169,12 +3244,12 @@
     {
       "path": "src/riskratchet/matching.py",
       "qualname": "signature_fingerprint",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3229,12 +3304,12 @@
     {
       "path": "src/riskratchet/models.py",
       "qualname": "DiffReport.regressions",
-      "score": 8.25,
+      "score": 7.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3619,12 +3694,12 @@
     {
       "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "_escape_github",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3634,12 +3709,12 @@
     {
       "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "_github_annotation",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3649,12 +3724,12 @@
     {
       "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "render_diff_github",
-      "score": 8.5,
+      "score": 7.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 16.6667,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3664,12 +3739,12 @@
     {
       "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "render_regressions_github",
-      "score": 14.2143,
+      "score": 13.2143,
       "components": {
         "coverage_gap": 14.2857,
         "structural_complexity": 15.0,
         "branch_gap": 25.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 14.2857,
         "sprawl": 0.0
       },
@@ -3679,12 +3754,12 @@
     {
       "path": "src/riskratchet/reporting/annotations.py",
       "qualname": "render_report_github",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3709,12 +3784,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "_function_payload",
-      "score": 4.25,
+      "score": 3.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3754,12 +3829,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_diff_json",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3769,12 +3844,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_diff_summary_json",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3784,12 +3859,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_function_json",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3799,12 +3874,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_function_summary_json",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3814,12 +3889,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_regressions_json",
-      "score": 4.25,
+      "score": 3.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3829,12 +3904,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_regressions_summary_json",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3844,12 +3919,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_report_json",
-      "score": 5.25,
+      "score": 4.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3859,12 +3934,12 @@
     {
       "path": "src/riskratchet/reporting/json_payload.py",
       "qualname": "render_report_summary_json",
-      "score": 2.0,
+      "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3874,12 +3949,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "_collapsed_section",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3904,12 +3979,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "_fit_pr_comment",
-      "score": 8.25,
+      "score": 7.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 16.6667,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3949,12 +4024,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_diff_markdown",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3964,12 +4039,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_diff_pr_comment",
-      "score": 13.25,
+      "score": 12.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 45.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3979,12 +4054,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_regressions_markdown",
-      "score": 3.5,
+      "score": 2.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -3994,12 +4069,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_regressions_pr_comment",
-      "score": 8.25,
+      "score": 7.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 25.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4009,12 +4084,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_report_markdown",
-      "score": 6.0,
+      "score": 5.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4024,12 +4099,12 @@
     {
       "path": "src/riskratchet/reporting/markdown.py",
       "qualname": "render_report_pr_comment",
-      "score": 21.6029,
+      "score": 20.6029,
       "components": {
         "coverage_gap": 5.8824,
         "structural_complexity": 55.0,
         "branch_gap": 16.6667,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 5.8824,
         "sprawl": 0.0
       },
@@ -4039,12 +4114,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_function_sarif_result",
-      "score": 4.25,
+      "score": 3.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4054,12 +4129,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_regression_sarif_result",
-      "score": 10.5,
+      "score": 9.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 25.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4069,12 +4144,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_function_properties",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4099,12 +4174,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_location",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4114,12 +4189,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_log",
-      "score": 3.0,
+      "score": 2.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 30.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4129,12 +4204,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_rules",
-      "score": 4.0,
+      "score": 3.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 40.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4144,12 +4219,12 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "_sarif_uri",
-      "score": 2.25,
+      "score": 1.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4159,126 +4234,6 @@
     {
       "path": "src/riskratchet/reporting/sarif.py",
       "qualname": "render_regressions_sarif",
-      "score": 3.25,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "33eed32432e2de6369aaf0f621bf70ae6b68fefb58c83831c9d5bcd5de93ea61",
-      "signature": "48f10cbc37cf76c9671f0d6827065123377b570e45adbf704ecfdaa6b552a532"
-    },
-    {
-      "path": "src/riskratchet/reporting/sarif.py",
-      "qualname": "render_report_sarif",
-      "score": 6.5,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 10.0,
-        "branch_gap": 0.0,
-        "churn": 40.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "4ddd6c9532de3fae4a597e04a9f852a394836d5f02425e4c91cf286261bed70a",
-      "signature": "e0ffc757a652d4c22111f86e5b49007b124857a4a2283eed099819d04be28e2f"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "SourceLinks.link_for",
-      "score": 2.0,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "b55d096ff75c08ea0f2991c21ecd39c023b16e9d6c8f47c947ac6b97ec59632d",
-      "signature": "a3c408cef9b65d56dde90129635096e051ee2810d2086267522272e49ad069d9"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "SourceLinks.link_for_span",
-      "score": 2.0,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 0.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "62beef93a367cf3a59b165a30cf33006b285671d78a6833d35f2794c3eaf6e2b",
-      "signature": "846e3393846ffe4f2d9e728c5f9cffa4521f5e1e1fd87ef4de311f25daa6901d"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_branch_cell",
-      "score": 3.25,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "8b998bce5c3458239b1cde411877ec1bc32256f916ec18f2e9a18a4ec668fbf1",
-      "signature": "40a0ea416a5cef0096f97d3002684265239318486676190e5b2538b248ad9e0f"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_branch_markdown",
-      "score": 3.25,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "fea3b69d329e11c9d2761356d2c6c679ecbb30250ff622f48ceb4fca5df2c8a1",
-      "signature": "40a0ea416a5cef0096f97d3002684265239318486676190e5b2538b248ad9e0f"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_branch_pct",
-      "score": 3.25,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 5.0,
-        "branch_gap": 0.0,
-        "churn": 20.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "a8c8dbaf582b01bc58b8252ed031e9fb9929c1dc0415f8af3bdee7ae7d057916",
-      "signature": "f2663d1ca9175c62c27068dd761ebe3af66c7e5fc0665f1e7467c2c993775d9d"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_diff_group_summary",
-      "score": 4.75,
-      "components": {
-        "coverage_gap": 0.0,
-        "structural_complexity": 15.0,
-        "branch_gap": 0.0,
-        "churn": 10.0,
-        "public_surface": 0.0,
-        "sprawl": 0.0
-      },
-      "fingerprint": "3b563ff0d03102805c8f460ab5b2fc9fe78508e58fe0db28dbc6f1a4fb3afd5b",
-      "signature": "13ea1777424bf27152b6a37c89886a0b54516b423729f13031d5f946cc67b0a1"
-    },
-    {
-      "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_diff_summary",
       "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
@@ -4288,12 +4243,27 @@
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "8b2c4a32bc07f2ea3c02eedc48beb4080b2722e90a72f5a185fc4e4d7eb9333a",
-      "signature": "4192abce7674210e43ed7ccd95b5939d0cb3a1342e945769ee9b8f1055e44ed5"
+      "fingerprint": "33eed32432e2de6369aaf0f621bf70ae6b68fefb58c83831c9d5bcd5de93ea61",
+      "signature": "48f10cbc37cf76c9671f0d6827065123377b570e45adbf704ecfdaa6b552a532"
+    },
+    {
+      "path": "src/riskratchet/reporting/sarif.py",
+      "qualname": "render_report_sarif",
+      "score": 5.5,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 10.0,
+        "branch_gap": 0.0,
+        "churn": 30.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "4ddd6c9532de3fae4a597e04a9f852a394836d5f02425e4c91cf286261bed70a",
+      "signature": "e0ffc757a652d4c22111f86e5b49007b124857a4a2283eed099819d04be28e2f"
     },
     {
       "path": "src/riskratchet/reporting/summary.py",
-      "qualname": "_diff_summary_line",
+      "qualname": "SourceLinks.link_for",
       "score": 1.0,
       "components": {
         "coverage_gap": 0.0,
@@ -4303,18 +4273,123 @@
         "public_surface": 0.0,
         "sprawl": 0.0
       },
+      "fingerprint": "b55d096ff75c08ea0f2991c21ecd39c023b16e9d6c8f47c947ac6b97ec59632d",
+      "signature": "a3c408cef9b65d56dde90129635096e051ee2810d2086267522272e49ad069d9"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "SourceLinks.link_for_span",
+      "score": 1.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "62beef93a367cf3a59b165a30cf33006b285671d78a6833d35f2794c3eaf6e2b",
+      "signature": "846e3393846ffe4f2d9e728c5f9cffa4521f5e1e1fd87ef4de311f25daa6901d"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_cell",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "8b998bce5c3458239b1cde411877ec1bc32256f916ec18f2e9a18a4ec668fbf1",
+      "signature": "40a0ea416a5cef0096f97d3002684265239318486676190e5b2538b248ad9e0f"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_markdown",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "fea3b69d329e11c9d2761356d2c6c679ecbb30250ff622f48ceb4fca5df2c8a1",
+      "signature": "40a0ea416a5cef0096f97d3002684265239318486676190e5b2538b248ad9e0f"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_branch_pct",
+      "score": 2.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 10.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "a8c8dbaf582b01bc58b8252ed031e9fb9929c1dc0415f8af3bdee7ae7d057916",
+      "signature": "f2663d1ca9175c62c27068dd761ebe3af66c7e5fc0665f1e7467c2c993775d9d"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_group_summary",
+      "score": 3.75,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 15.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "3b563ff0d03102805c8f460ab5b2fc9fe78508e58fe0db28dbc6f1a4fb3afd5b",
+      "signature": "13ea1777424bf27152b6a37c89886a0b54516b423729f13031d5f946cc67b0a1"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_summary",
+      "score": 1.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "8b2c4a32bc07f2ea3c02eedc48beb4080b2722e90a72f5a185fc4e4d7eb9333a",
+      "signature": "4192abce7674210e43ed7ccd95b5939d0cb3a1342e945769ee9b8f1055e44ed5"
+    },
+    {
+      "path": "src/riskratchet/reporting/summary.py",
+      "qualname": "_diff_summary_line",
+      "score": 0.0,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 0.0,
+        "branch_gap": 0.0,
+        "churn": 0.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
       "fingerprint": "9acbd30475c626b4d0ad6d2273688f7a52744e863b603a68da16f36acc3d84f2",
       "signature": "2ce90e89c87984efd98375042bace68fc499802f1520039fcd48f4a620329167"
     },
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_fmt_optional",
-      "score": 4.5,
+      "score": 3.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 10.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4324,12 +4399,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_function_group_summary",
-      "score": 6.0,
+      "score": 5.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4354,12 +4429,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_regressions_summary",
-      "score": 9.75,
+      "score": 8.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4384,12 +4459,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_remediation",
-      "score": 9.75,
+      "score": 8.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 35.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4414,12 +4489,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_sorted_by_risk",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4429,12 +4504,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_summary_line",
-      "score": 16.8654,
+      "score": 15.8654,
       "components": {
         "coverage_gap": 15.3846,
         "structural_complexity": 25.0,
         "branch_gap": 33.3333,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4444,12 +4519,12 @@
     {
       "path": "src/riskratchet/reporting/summary.py",
       "qualname": "_summary_payload",
-      "score": 5.75,
+      "score": 4.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4459,12 +4534,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "_make_buffered_console",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4474,12 +4549,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "_regression_link",
-      "score": 18.25,
+      "score": 17.25,
       "components": {
         "coverage_gap": 25.0,
         "structural_complexity": 5.0,
         "branch_gap": 50.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4504,12 +4579,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_diff_summary_text",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4519,12 +4594,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_diff_table",
-      "score": 29.7083,
+      "score": 28.7083,
       "components": {
         "coverage_gap": 33.3333,
         "structural_complexity": 20.0,
         "branch_gap": 62.5,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 33.3333,
         "sprawl": 0.0
       },
@@ -4549,12 +4624,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_regressions_summary_text",
-      "score": 3.25,
+      "score": 2.25,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4564,12 +4639,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_regressions_table",
-      "score": 7.0,
+      "score": 6.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 20.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4579,12 +4654,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_report_summary_text",
-      "score": 1.0,
+      "score": 0.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4594,12 +4669,12 @@
     {
       "path": "src/riskratchet/reporting/text.py",
       "qualname": "render_report_table",
-      "score": 12.0,
+      "score": 11.0,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 40.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -4984,12 +5059,12 @@
     {
       "path": "src/riskratchet/typescript.py",
       "qualname": "_index_entries",
-      "score": 8.5,
+      "score": 7.5,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 30.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5134,16 +5209,16 @@
     {
       "path": "src/riskratchet/typescript.py",
       "qualname": "_parse_root",
-      "score": 8.25,
+      "score": 13.0,
       "components": {
         "coverage_gap": 0.0,
-        "structural_complexity": 15.0,
-        "branch_gap": 16.6667,
-        "churn": 20.0,
+        "structural_complexity": 25.0,
+        "branch_gap": 25.0,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "1118d29affce9818afef531df349b42cee157c05def089fc376d2b5d186bdb37",
+      "fingerprint": "cb8c35c9452ec221e81942e041e31d179103d419836a68d12b03546cf2b43c34",
       "signature": "468ecc2926885fdba0f49c6a2445debf9debf95bd1c9317eecfb0980531a26ef"
     },
     {
@@ -5359,13 +5434,13 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "IstanbulCoverageData.file_paths",
-      "score": 21.0,
+      "score": 1.0,
       "components": {
-        "coverage_gap": 50.0,
+        "coverage_gap": 0.0,
         "structural_complexity": 0.0,
         "branch_gap": 0.0,
         "churn": 10.0,
-        "public_surface": 50.0,
+        "public_surface": 0.0,
         "sprawl": 0.0
       },
       "fingerprint": "55e1215cb183084e769689094bd028334f8ee6fa2c3aab7d1500e51df5cb2cb2",
@@ -5434,12 +5509,12 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "_is_lcov_by_suffix",
-      "score": 5.75,
+      "score": 4.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5494,17 +5569,32 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "_load_one_ts_coverage",
-      "score": 20.125,
+      "score": 16.75,
       "components": {
-        "coverage_gap": 25.0,
+        "coverage_gap": 20.0,
         "structural_complexity": 35.0,
-        "branch_gap": 12.5,
+        "branch_gap": 0.0,
         "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
       "fingerprint": "6d26ba99445c436cfd9a515783e64b31a3d8bee8c46f5f223fe4bc03c91119c1",
       "signature": "86889dca336c3875cbfdc76953fbd81f2144748d46e91abc9d294b3b2c3fe393"
+    },
+    {
+      "path": "src/riskratchet/typescript_coverage.py",
+      "qualname": "_looks_like_istanbul_entry",
+      "score": 3.25,
+      "components": {
+        "coverage_gap": 0.0,
+        "structural_complexity": 5.0,
+        "branch_gap": 0.0,
+        "churn": 20.0,
+        "public_surface": 0.0,
+        "sprawl": 0.0
+      },
+      "fingerprint": "c9303587983a9c3cd63591543f6283f52cdad7075c507db57fab0384fb7ef74b",
+      "signature": "c1ff085cad0a9eee4805fa7f3216330a8a5dc4a3e5e3021c0e2ebd41989fae97"
     },
     {
       "path": "src/riskratchet/typescript_coverage.py",
@@ -5599,12 +5689,12 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "_path_looks_like_lcov_content",
-      "score": 15.25,
+      "score": 14.25,
       "components": {
         "coverage_gap": 40.0,
         "structural_complexity": 5.0,
         "branch_gap": 0.0,
-        "churn": 20.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5659,16 +5749,16 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "coverage_for_ts_span",
-      "score": 3.75,
+      "score": 4.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 0.0,
+        "churn": 10.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "77abe2946234c7e43e5de296122ff74102521f5abaf0a698be867658f06cdc99",
+      "fingerprint": "a5635dcb68856f5deee2cee454c8478e8699213dd095225c58f09a67897621f3",
       "signature": "e3ffc65814b2f555bef820a86233437a4c1dabd3e327c91a7e0996121fc1bfc2"
     },
     {
@@ -5689,12 +5779,12 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "fn_declaration_lines",
-      "score": 21.4167,
+      "score": 20.4167,
       "components": {
         "coverage_gap": 16.6667,
         "structural_complexity": 25.0,
         "branch_gap": 50.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 16.6667,
         "sprawl": 0.0
       },
@@ -5704,16 +5794,16 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "load_istanbul_coverage",
-      "score": 11.9722,
+      "score": 15.875,
       "components": {
-        "coverage_gap": 5.5556,
-        "structural_complexity": 25.0,
-        "branch_gap": 16.6667,
-        "churn": 10.0,
-        "public_surface": 5.5556,
+        "coverage_gap": 5.0,
+        "structural_complexity": 40.0,
+        "branch_gap": 12.5,
+        "churn": 20.0,
+        "public_surface": 5.0,
         "sprawl": 0.0
       },
-      "fingerprint": "12b4b7468d32c26ff9458ed43c11e56a9eba4c96340ed2d2af1a5df7e088e542",
+      "fingerprint": "bf3f06060b3179d52e621df196fc552d5ce1f27282c199f379f212a9d1e87211",
       "signature": "86889dca336c3875cbfdc76953fbd81f2144748d46e91abc9d294b3b2c3fe393"
     },
     {
@@ -5749,27 +5839,27 @@
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "load_ts_coverage_files",
-      "score": 15.25,
+      "score": 17.4643,
       "components": {
         "coverage_gap": 0.0,
-        "structural_complexity": 35.0,
-        "branch_gap": 30.0,
-        "churn": 20.0,
+        "structural_complexity": 45.0,
+        "branch_gap": 21.4286,
+        "churn": 30.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "e6559f44a49b68199097e55ac9fc0d2305bdc11aaeedb7001525817c4eb3b8cf",
-      "signature": "98a83d8569609090a86e2a634e1f2a6fd8ebb97ccf0aceb40425e1f6923629bb"
+      "fingerprint": "b72c2fbaf99651d9d5a47e78053c673dddf5cd1368ea62b33671b9682cbf181d",
+      "signature": "3dfd39b263663a7f139e6bb195f564e84ed6fcc644493262515b8aa2620969e3"
     },
     {
       "path": "src/riskratchet/typescript_coverage.py",
       "qualname": "spans_cover_any_function_decl",
-      "score": 4.75,
+      "score": 3.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 15.0,
         "branch_gap": 0.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5794,12 +5884,12 @@
     {
       "path": "src/riskratchet/typescript_engine.py",
       "qualname": "_count_lines",
-      "score": 23.5,
+      "score": 22.5,
       "components": {
         "coverage_gap": 37.5,
         "structural_complexity": 15.0,
         "branch_gap": 50.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5854,27 +5944,27 @@
     {
       "path": "src/riskratchet/typescript_engine.py",
       "qualname": "_resolve_coverage",
-      "score": 12.25,
+      "score": 7.0,
       "components": {
-        "coverage_gap": 12.5,
+        "coverage_gap": 0.0,
         "structural_complexity": 20.0,
-        "branch_gap": 16.6667,
-        "churn": 10.0,
+        "branch_gap": 0.0,
+        "churn": 20.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
-      "fingerprint": "2d206f21e4734c3579291a96b6d6c8190a1c7bba816ee62c7262760d052aa195",
+      "fingerprint": "4fcc98876b2c95d31293584f688f68eaf4a1e9a17bf3de5292826ee28deb6aaf",
       "signature": "2b581f44f56a031c35e67adcaf7f5bd7334c8554c4ebb381ad03a15ea7e7de6b"
     },
     {
       "path": "src/riskratchet/typescript_engine.py",
       "qualname": "_warn",
-      "score": 9.75,
+      "score": 8.75,
       "components": {
         "coverage_gap": 0.0,
         "structural_complexity": 5.0,
         "branch_gap": 50.0,
-        "churn": 10.0,
+        "churn": 0.0,
         "public_surface": 0.0,
         "sprawl": 0.0
       },
@@ -5884,16 +5974,16 @@
     {
       "path": "src/riskratchet/typescript_engine.py",
       "qualname": "analyze_typescript",
-      "score": 32.5153,
+      "score": 34.5153,
       "components": {
         "coverage_gap": 8.1633,
         "structural_complexity": 85.0,
         "branch_gap": 12.5,
-        "churn": 10.0,
+        "churn": 20.0,
         "public_surface": 8.1633,
-        "sprawl": 51.25
+        "sprawl": 61.25
       },
-      "fingerprint": "5e3b1925ae418c8b0c39b2f0476a83df54fe0205af5709660b965c11e6ba63b7",
+      "fingerprint": "4379111f288378fdd839bbe08ee8e29c6abf384d7813a8a91e2d9c65e60f7f96",
       "signature": "8fba9bc6f2adb5d289f496de14e2b4262c1c77a757909877a8d2dabaa61acba2"
     },
     {

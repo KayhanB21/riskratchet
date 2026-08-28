@@ -833,6 +833,20 @@ empty project and only warns, so a monorepo sweep over a package with no source 
 `riskratchet baseline` likewise refuses to overwrite a populated baseline with a zero-function scan
 rather than discarding the ratchet; writing a fresh empty baseline still works.
 
+A **coverage file you named** that does not exist is exit `2` as well. `--coverage` (and
+`--ts-coverage`) is an assertion about *this* run, so a missing file cannot be right: riskratchet used
+to fall through to auto-coverage, gate against a file it generated itself, and say nothing — which
+turned a one-character typo into "No risk regressions detected", and made `riskratchet baseline`
+anchor the ratchet to coverage nobody asked for. `doctor` already reported that setup as `FAIL`, so
+the two commands disagreed about whether the same project was usable. A path from
+`[tool.riskratchet] coverage` is different — it is a default auto-coverage may legitimately fill on a
+fresh clone — so that one **warns and names the file it used instead**, and `doctor` reports it as
+`WARN` for the same reason. `--allow-missing-coverage` downgrades the flag form to the same warning.
+
+Finally, a **report riskratchet cannot write** — `--output`, `--debug-json-file`, or
+`baseline --output` pointing at a directory or a read-only location — is exit `2`, not the exit `1`
+plus traceback it used to be. Exit `1` means a gate tripped, and a full disk is not a gate.
+
 ## TypeScript
 
 riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`

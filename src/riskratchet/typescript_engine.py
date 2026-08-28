@@ -74,7 +74,8 @@ def analyze_typescript(
 
     Mirrors `engine.analyze` for the TS backend. `ts_coverage_paths` are Istanbul/LCOV reports
     (auto-detected/merged); `ts_entries` narrow the public surface to a package entry barrel. Coverage
-    absent for a file follows `missing_coverage_policy` exactly as the Python path does.
+    absent for a file follows `missing_coverage_policy` exactly as the Python path does
+    (asserted by the cross-backend policy-parity test).
     """
     root_path = (root or Path.cwd()).resolve()
     resolved_weights = resolve_weights(weights)
@@ -83,10 +84,17 @@ def analyze_typescript(
     )
 
     coverage_paths = list(ts_coverage_paths or [])
-    has_coverage = bool(coverage_paths)
     coverage = tscov.empty_istanbul_coverage()
-    if has_coverage:
-        coverage = tscov.load_ts_coverage_files(coverage_paths, on_error=on_error)
+    if coverage_paths:
+        # strict: a report named for a *scoring* run must be readable. `_build_report_or_exit`
+        # turns the ValueError into an exit-2 setup error, as it does for `--coverage`.
+        coverage = tscov.load_ts_coverage_files(coverage_paths, on_error=on_error, strict=True)
+    # Derive this from the data actually loaded, not from the paths we were handed.
+    # `load_ts_coverage_files` reports an unreadable report through `on_error` and
+    # returns an empty view, so keying off the request made "the report could not be
+    # read" indistinguishable from "the report measured no files" — and under
+    # `missing_coverage = skip` that dropped every TypeScript function and exited 0.
+    has_coverage = bool(coverage.file_paths)
 
     discovered: list[Any] = []
     modules: dict[str, Any] = {}
@@ -199,16 +207,22 @@ def _resolve_coverage(
     """Resolve a discovered function's coverage into the stats the scorer consumes.
 
     `coverage is None` means unmeasured (no report, file absent, or misaligned). Mirrors the Python
-    `coverage.coverage_for_span` missing-file policy: PESSIMISTIC → 0%, OPTIMISTIC → not penalized,
-    SKIP → drop the function (returns None) when a report exists but the file is absent from it.
+    `coverage.coverage_for_span` missing-file policy: OPTIMISTIC → not penalized, anything else → 0%,
+    except that SKIP drops the function (returns None) when a report exists but the file is absent
+    from it.
+
+    Only OPTIMISTIC may score an unmeasured function as covered. SKIP used to fall through to the
+    same branch, so a `--typescript` run with no TS report scored every function 100% covered while
+    the Python backend scored the same situation 0% — zeroing `coverage_gap` and `public_surface`,
+    40% of the weight, for TypeScript only.
     """
     if coverage is not None:
         return coverage
     if has_coverage and policy is MissingCoveragePolicy.SKIP:
         return None
-    if policy is MissingCoveragePolicy.PESSIMISTIC:
-        return CoverageStats.uncovered()
-    return CoverageStats(line_coverage=1.0, branch_coverage=None)
+    if policy is MissingCoveragePolicy.OPTIMISTIC:
+        return CoverageStats(line_coverage=1.0, branch_coverage=None)
+    return CoverageStats.uncovered()
 
 
 def _enrich_coverage(found: list[Any], file_cov: Any, rel: str, on_warning: WarnFn) -> list[Any]:

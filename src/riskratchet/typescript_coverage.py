@@ -116,7 +116,8 @@ class IstanbulCoverageData:
 
 def load_istanbul_coverage(path: Any) -> IstanbulCoverageData:
     """Load an Istanbul `coverage-final.json` from disk. Raises FileNotFoundError if missing,
-    ValueError on unreadable/non-object content (mirrors `coverage.load_coverage`)."""
+    ValueError on unreadable, non-object, or structurally-wrong content (mirrors
+    `coverage.load_coverage`, which rejects a payload with no `files` section)."""
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -135,7 +136,23 @@ def load_istanbul_coverage(path: Any) -> IstanbulCoverageData:
         normalized = original_path.replace("\\", "/")
         files[normalized] = payload
         by_suffix.setdefault(_basename(normalized), []).append(normalized)
+
+    # Structural guard, the counterpart of `coverage.load_coverage`'s "no `files`
+    # section". Without it this accepted a coverage.py report as three files named
+    # `meta`/`files`/`totals` and then matched nothing — a silently useless coverage
+    # view — while `load_coverage` correctly rejects an Istanbul report. An empty
+    # object stays valid: that is a real report that measured nothing.
+    if files and not any(_looks_like_istanbul_entry(payload) for payload in files.values()):
+        raise ValueError(
+            f"Istanbul coverage file {path} has no file entries "
+            "(a coverage.py report belongs on --coverage, not --ts-coverage)"
+        )
     return IstanbulCoverageData(_files=files, _by_suffix=by_suffix)
+
+
+def _looks_like_istanbul_entry(payload: dict[str, Any]) -> bool:
+    """True when a payload carries the counter maps every Istanbul file entry has."""
+    return any(key in payload for key in ("statementMap", "fnMap", "branchMap", "s"))
 
 
 def load_istanbul_coverage_files(
@@ -206,6 +223,7 @@ def load_ts_coverage_files(
     paths: list[Any],
     *,
     on_error: Any = None,
+    strict: bool = False,
 ) -> IstanbulCoverageData:
     """Load and merge several TS coverage reports, auto-detecting Istanbul JSON vs LCOV per file.
 
@@ -214,17 +232,26 @@ def load_ts_coverage_files(
     and, for anything else, by content (a leading `TN:`/`SF:` line → LCOV, otherwise Istanbul
     JSON). Keys are absolute source paths, so shards contribute disjoint entries and a later report
     wins on the rare duplicate. Each path that is missing or unreadable is reported via
-    `on_error(path, message)` (when given) and skipped, rather than failing the whole listing."""
+    `on_error(path, message)` (when given) and skipped, rather than failing the whole listing.
+
+    `strict=True` raises instead. The scoring path uses it: degrading there turned an
+    unreadable report into an empty coverage view, which under `missing_coverage = skip`
+    dropped every TypeScript function and still exited 0. The informational listing keeps
+    the degrading behaviour, which is what its callers promised the user."""
     files: dict[str, dict[str, Any]] = {}
     by_suffix: dict[str, list[str]] = {}
     for path in paths:
         try:
             shard = _load_one_ts_coverage(path)
         except FileNotFoundError:
+            if strict:
+                raise ValueError(f"TypeScript coverage report not found: {path}") from None
             if on_error is not None:
                 on_error(path, "file not found")
             continue
         except ValueError as exc:
+            if strict:
+                raise
             if on_error is not None:
                 on_error(path, str(exc))
             continue
@@ -550,7 +577,7 @@ def coverage_for_ts_span(
     Line coverage keys on each statement's `start.line` only (not its end line), collapsing
     statements that share a line with `max` hit count — exactly what
     `istanbul-lib-coverage.getLineCoverage` does. A file missing from the report follows
-    `missing_policy` (PESSIMISTIC → 0%; OPTIMISTIC / SKIP → not penalized). A file present
+    `missing_policy` (OPTIMISTIC → not penalized; PESSIMISTIC and SKIP → 0%). A file present
     but with no measurable statements in the span is treated as fully covered: there is
     nothing for tests to exercise.
 
@@ -560,9 +587,11 @@ def coverage_for_ts_span(
     is reported explicitly rather than as a fabricated 0% or 100%.
     """
     if file_coverage is None:
-        if missing_policy is MissingCoveragePolicy.PESSIMISTIC:
-            return CoverageStats.uncovered()
-        return CoverageStats(line_coverage=1.0, branch_coverage=None)
+        # Only OPTIMISTIC treats an unmeasured file as covered; SKIP used to land here
+        # too, which is the opposite of `coverage.coverage_for_span` this claims to mirror.
+        if missing_policy is MissingCoveragePolicy.OPTIMISTIC:
+            return CoverageStats(line_coverage=1.0, branch_coverage=None)
+        return CoverageStats.uncovered()
 
     line_coverage, missing_lines = _line_stats(file_coverage, span)
     if line_coverage is None:
