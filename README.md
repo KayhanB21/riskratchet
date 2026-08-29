@@ -107,7 +107,7 @@ warnings → `baseline` → `check`.
 ## GitHub Action
 
 The composite action ships in `action.yml` so adopters don't have to
-copy a workflow file — `uses: KayhanB21/riskratchet@v0.3.4` is the
+copy a workflow file — `uses: KayhanB21/riskratchet@v0.3.5` is the
 canonical reference. The action installs riskratchet via `uv tool
 install`, runs `check` (`--format pr-comment` in both baseline and
 no-baseline modes), upserts a sticky PR comment, and surfaces the
@@ -130,7 +130,7 @@ jobs:
           # shallow (depth-1) clone sees only HEAD and silently scores every
           # function's churn as zero — so CI would disagree with your baseline.
           fetch-depth: 0
-      - uses: KayhanB21/riskratchet@v0.3.4
+      - uses: KayhanB21/riskratchet@v0.3.5
         with:
           coverage: coverage.json
 ```
@@ -269,7 +269,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.3.4
+    rev: v0.3.5
     hooks:
       - id: riskratchet
         args:
