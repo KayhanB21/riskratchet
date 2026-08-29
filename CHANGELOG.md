@@ -9,6 +9,117 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.5] - 2026-08-28
+
+The gate has more than one door. `0.3.3` and `0.3.4` hardened the main `check` path;
+this release closes the same class of failure at the other entrances — the coverage
+inputs, the pytest plugin, `explain`, `init --with-baseline`, the TypeScript backend,
+and the report emitters. As before, in every case the correct handling already existed
+somewhere in riskratchet; one path simply never routed into it.
+
+### Fixed
+
+- **A missing coverage file silently became a different one.** A typo'd `--coverage`
+  fell through to auto-coverage and gated against a file riskratchet generated itself,
+  turning a real exit-`1` regression into `0` — while `doctor` reported the same setup
+  as FAIL. `baseline` had the destructive twin, anchoring the ratchet to coverage
+  nobody asked for. A CLI path now exits `2` before the test command runs; a
+  config-supplied path warns and names the substitute actually used;
+  `--allow-missing-coverage` downgrades both. `doctor` and `check` now apply one rule.
+- **The TypeScript backend treated an unreadable coverage report as a readable one.**
+  `has_coverage` was derived from the *requested* paths, not the *loaded* data, so a
+  missing or corrupt `--ts-coverage` under `missing_coverage = "skip"` dropped every
+  TypeScript function and exited `0`. Separately, `skip` with no report at all scored
+  TypeScript 100% covered where Python scores 0% — 40% of the score weight. Both
+  backends now score an absent report identically under every policy, enforced by a
+  parity test.
+- **`[tool.riskratchet] include` was inert in every command** — `include or []` while
+  the adjacent `exclude` and `allow` lines correctly read config. It was validated,
+  schema'd, documented, honoured by `doctor`, and recommended by the empty-scan
+  remediation; `doctor`'s coverage-overlap check therefore evaluated a narrower file
+  set than the run it was diagnosing.
+- **The pytest plugin skipped every check the CLI runs.** It read no
+  `[tool.riskratchet]` at all: hardcoded `src`, its own thresholds, no weights, no
+  redaction (raw paths in CI logs under `private_comment = true`), no zero-function
+  guard, no shallow-clone warning. It now resolves through the same
+  `resolve_gate_settings` the CLI uses; a CLI↔plugin parity test pins verdict and
+  rendering. Its threshold options default to unset so config can win.
+- **`check` and the plugin implemented two different gates.** The diff path returned
+  `IMPROVED` before running the component check, so `check` skipped the component gate
+  exactly when the total moved the other way — the one case it exists for. A property
+  test now requires `compare` and `diff`+`regressions_from_diff` to agree.
+- **`explain` computed identity against the process cwd**, so from a nested directory
+  it rejected the very `path::qualname` that `check` had just printed. It now routes
+  through the shared report builder and gains `--coverage-map`, `--missing-coverage`,
+  and `--typescript`. `init --with-baseline` likewise ignored an existing config and
+  skipped the erase guard; both now use the same path as every other command.
+- **An `allow` pattern in canonical `path::qualname` form suppressed nothing** — the
+  one spelling riskratchet itself emits was the one that could not match. Patterns now
+  dispatch on `::`/path-like/qualname through one matcher shared by both backends, and
+  configured patterns that suppress nothing warn.
+- **`riskratchet baseline` silently erased TypeScript entries.** A run without
+  `--typescript` over a mixed baseline dropped every TS entry while the Python half
+  kept the report non-empty, so the erase guard never fired. The unit that must not
+  vanish is a language, not the file; `check`/`diff` warn on the read side.
+- **A baseline whose entries all fail to parse degraded to zero entries** — which
+  passes every gate, and then fed `0` into the empty-scan guard, one condition
+  disabling two guards. Now exit `2`; `doctor` reports dropped entries and WARNs on a
+  zero-entry baseline.
+- **The Action's sticky PR comment could contradict the exit code beside it.** In
+  baseline mode `check --format pr-comment` selected rows by diff status while the
+  gate keys on regression kind: an `existing_above_threshold` failure (exit `1`)
+  rendered "No risk regressions detected", and a new function below threshold
+  (exit `0`) rendered as a visible regression row. Both modes now render the set the
+  gate acted on; the diff attaches underneath as collapsed context with its own
+  `Since the baseline:` label. A test sweeps every regression kind and asserts body
+  and exit code agree.
+- **`--format github` had its escape sets inverted.** `:` was escaped in the message —
+  which the runner never unescapes, so every annotation ever written rendered
+  `src/m.py%3A%3Ahuge` — while the `file=` property was not escaped at all, so a path
+  containing `:` or `,` broke parsing and dropped the annotation.
+- **`--format markdown` printed the emitted count under "Functions analyzed"**
+  (`--top 5` read "5" on a 400-function repo) and was the only renderer that never
+  disclosed suppressed or skipped functions. The missing-coverage disclosure also
+  reached only the table renderer; it now lives in the summary line every format
+  shares, so the PR comment can distinguish "no data" from "no tests".
+
+### Changed
+
+- **Exit `2` for a coverage path named on the CLI that does not exist** (`--coverage`,
+  `--ts-coverage`), reported before the test command runs. A config-supplied path
+  warns instead; `--allow-missing-coverage` downgrades both.
+- **Exit `2` for a report riskratchet cannot write** — `--output`,
+  `--debug-json-file`, or `baseline --output` pointing at a directory or read-only
+  location was exit `1` plus a traceback. Exit `1` means a gate tripped; a full disk
+  is not a gate. An unreadable `.ts` file likewise warns and continues like the
+  Python backend instead of crashing.
+- **Exit `2` for a test command auto-coverage cannot start.** `pytest` missing from
+  PATH surfaced as an uncaught `FileNotFoundError` and exit `1`, indistinguishable
+  from a risk regression. An unparseable or empty `test_command` reports the same
+  way. A command that runs and *fails* is unchanged — coverage it wrote is still used.
+- **Exit `2` for a baseline whose entries all fail to parse**, and for
+  `riskratchet baseline` when writing would drop every entry of a language.
+- The pytest plugin's `--riskratchet-*` threshold options now default to unset and
+  resolve flag → config → default, so `[tool.riskratchet]` values apply. Passing a
+  flag explicitly still wins.
+
+Every exit-code change above can only turn CI red for a repo whose gate was already
+not doing what its config said.
+
+### Internal
+
+- `config.resolve_gate_settings` + `GateSettings`: one façade any entry point can use
+  to resolve the full gate configuration; the plugin is its first consumer.
+  `resolve_redaction` moved from `cli` to `config` so non-CLI entry points can reach
+  it. `pattern_matches` is shared by both engines.
+- `--format sarif` output is validated against the vendored normative SARIF 2.1.0
+  schema in the test suite (`tests/vendor/`), including the empty-`results` case —
+  previously only a `$schema` string assertion and a snapshot guarded it, which is how
+  the github-format escaping drifted undetected. Two snapshots that had frozen buggy
+  output (the `%3A%3A` annotations, an exit-0 comment showing a finding) were
+  corrected deliberately rather than regenerated blind.
+- Tests 990 → 1081; coverage 91.62% → 92.16%.
+
 ## [0.3.4] - 2026-08-22
 
 A gate that checks nothing must say so. `0.3.3` stopped a corrupt *baseline file* from
