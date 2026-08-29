@@ -214,3 +214,102 @@ def test_check_without_typescript_ignores_ts(tmp_path: Path) -> None:
         ],
     )
     assert result.exit_code == 0, result.stderr
+
+
+# --- 0.3.5: a run must not silently unratchet a language it did not analyze ---------
+#
+# `_refuse_to_erase_baseline` only asked whether the *whole* report was empty, so a
+# `baseline` run without `--typescript` over a mixed baseline sailed past it: the Python
+# half kept the report non-empty while every TypeScript entry was dropped, and it
+# reported "wrote baseline with 1 functions". The read side was worse — `compare` has no
+# "removed" concept, so those functions simply vanished from the comparison and `check`
+# gated the Python half alone and called it clean.
+
+
+def _mixed_baseline(tmp_path: Path) -> Path:
+    """A baseline holding both languages, written the way a real project would."""
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    _project(tmp_path)
+    out = tmp_path / ".rr.json"
+    result = runner.invoke(
+        app,
+        [
+            "baseline",
+            str(tmp_path),
+            "--typescript",
+            "--output",
+            str(out),
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
+    )
+    assert result.exit_code == 0, result.stderr
+    languages = {e.get("language", "python") for e in json.loads(out.read_text())["entries"]}
+    assert languages == {"python", "typescript"}, languages
+    return out
+
+
+def test_baseline_refuses_to_drop_every_typescript_entry(tmp_path: Path) -> None:
+    """A gap in 0.3.4's own fix: the unit that must not vanish is a language, not the file."""
+    out = _mixed_baseline(tmp_path)
+    before = out.read_bytes()
+
+    result = runner.invoke(
+        app,
+        [
+            "baseline",
+            str(tmp_path),
+            "--output",
+            str(out),  # note: no --typescript
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "analyzed no typescript functions" in result.stderr
+    assert out.read_bytes() == before, "the baseline must be left byte-identical"
+
+
+def test_check_says_when_it_is_gating_only_half_the_repo(tmp_path: Path) -> None:
+    """Those entries used to vanish from the comparison with no mention at all."""
+    out = _mixed_baseline(tmp_path)
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(tmp_path),
+            "--baseline",
+            str(out),  # note: no --typescript
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
+    )
+
+    assert "not being gated" in result.stderr
+    assert "--typescript" in result.stderr
+
+
+def test_writing_a_separate_baseline_is_still_allowed(tmp_path: Path) -> None:
+    """The refusal is about *erasing* entries, not about Python-only baselines."""
+    _mixed_baseline(tmp_path)
+
+    result = runner.invoke(
+        app,
+        [
+            "baseline",
+            str(tmp_path),
+            "--output",
+            str(tmp_path / "python-only.json"),
+            "--no-git",
+            "--no-auto-cov",
+            "--allow-missing-coverage",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output

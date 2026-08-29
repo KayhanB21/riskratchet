@@ -101,6 +101,17 @@ def load_baseline(path: Path, *, on_dropped: Any = None) -> Baseline:
             dropped += 1
         else:
             entries[entry.id] = entry
+    # Every entry unreadable is a *structural* problem, not a partial one: the result
+    # is a zero-entry baseline, which passes every gate — the exact outcome the
+    # docstring above says must fail loudly. It compounds, too, because `check` feeds
+    # `len(entries)` into `_require_gateable_functions`, so one condition would switch
+    # off both this guard and 0.3.4's empty-scan guard. Reachable from a hand-edited
+    # file, or from passing `diff --format json` output as `--baseline` — its entries
+    # carry no `components`, so every one of them drops.
+    if dropped and not entries:
+        raise ValueError(
+            f"baseline {path} has {dropped} entr{'y' if dropped == 1 else 'ies'} and none could be read"
+        )
     if dropped and on_dropped is not None:
         on_dropped(dropped)
     raw_identity = raw.get("identity")

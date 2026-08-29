@@ -161,6 +161,25 @@ success and `2` on usage errors.
 - Never let an I/O failure exit 1. Exit 1 means a gate tripped; an unwritable
   `--output`, an unreadable source file, or a full disk is exit 2 with a remediation.
   Route writes through `cli._write_or_exit` / `cli._exit_unwritable`.
+- **There is more than one door into the gate.** `riskratchet check` is not the only
+  entry point: the pytest plugin, `explain`, and `init --with-baseline` all gate or
+  write a baseline, and each one used to resolve its own settings. Any new entry point
+  routes through `config.discover_config` + `config.resolve_gate_settings` +
+  `pipeline.build_report`, never through `engine.analyze` directly — that is what makes
+  `[tool.riskratchet]`, redaction, and the empty-scan guards apply everywhere.
+  `test_the_plugin_and_the_cli_reach_the_same_verdict` is the trip-wire.
+- **An option default that is a real value cannot lose to config.** The plugin's
+  thresholds defaulted to `50.0` / `5.0` / `15.0`, which is indistinguishable from the
+  user passing those numbers, so config could never win. Options default to `None` and
+  resolve `flag → config → default` through the `_resolved_*` helpers.
+- **One policy, one verdict.** `check` gates via `diff` + `regressions_from_diff`; the
+  plugin gates via `compare`. They had silently diverged on the component gate.
+  `test_the_two_entry_points_reach_the_same_verdict` sweeps a function across every
+  threshold boundary and requires both to agree.
+- **A baseline must not lose a language.** `_refuse_to_erase_baseline` asks whether the
+  whole report is empty; `_refuse_to_drop_a_language` asks whether a *language* went
+  missing. A `baseline` run without `--typescript` over a mixed baseline was silently
+  dropping every TS entry while looking non-empty.
   Add to the list rather than replacing it — reading old baselines is what keeps
   an upgrade from forcing every adopter to re-baseline.
 - `--format sarif` emits a SARIF 2.1.0 log. The output references

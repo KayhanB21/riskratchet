@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from dataclasses import replace
+from typing import Any
+
+import pytest
 from syrupy.assertion import SnapshotAssertion
 
-from riskratchet.baseline import diff, regressions_from_diff
+from riskratchet.baseline import compare, diff, regressions_from_diff
 from riskratchet.models import (
     Baseline,
     BaselineEntry,
@@ -17,6 +22,7 @@ from riskratchet.models import (
     FunctionId,
     FunctionRisk,
     FunctionSpan,
+    Regression,
     RegressionKind,
     RiskComponents,
     RiskReport,
@@ -530,3 +536,108 @@ def test_render_diff_pr_comment_multi_section_snapshot(snapshot: SnapshotAsserti
     )
     rendered = render_diff_pr_comment(diff(report, old, fail_regression_above=5.0))
     assert rendered == snapshot
+
+
+# --- 0.3.5: one policy, two entry points, one verdict --------------------------------
+#
+# `check` gates through `diff` + `regressions_from_diff`; the pytest plugin gates through
+# `compare`. Nothing asserted they agreed, and they had drifted: `_diff_status_for_existing`
+# returned IMPROVED before running the component check, so `check` missed a component
+# regression exactly when the total moved the other way — which is the one case the
+# component gate exists for.
+
+
+def _kinds(regressions: Sequence[Regression]) -> set[tuple[str, str]]:
+    return {(r.id.qualname, r.kind.value) for r in regressions}
+
+
+def _both_gates(
+    new: RiskReport, old: Baseline, **thresholds: Any
+) -> tuple[set[tuple[str, str]], set[tuple[str, str]]]:
+    """Run the same policy through both entry points and return their verdicts."""
+    via_compare = compare(new, old, **thresholds)
+    via_diff = regressions_from_diff(
+        diff(
+            new,
+            old,
+            fail_regression_above=thresholds["fail_regression_above"],
+            fail_component_regression_above=thresholds.get("fail_component_regression_above", 15.0),
+        ),
+        fail_new_above=thresholds["fail_new_above"],
+        fail_existing_above=thresholds.get("fail_existing_above"),
+    )
+    return _kinds(via_compare), _kinds(via_diff)
+
+
+def test_a_component_regression_survives_an_improving_total() -> None:
+    """The bug, in one case: coverage collapses while churn ages out of the window.
+
+    The total falls, so the old ordering returned IMPROVED and never looked at the
+    components — `pytest --riskratchet` failed the session and `riskratchet check`
+    exited 0 on the same repo, same baseline, same thresholds.
+    """
+    fid = FunctionId("a.py", "hides_it")
+    old = Baseline(
+        version="3",
+        entries={
+            fid: BaselineEntry(
+                id=fid,
+                score=50.0,
+                components=RiskComponents(
+                    coverage_gap=10.0,
+                    structural_complexity=90.0,
+                    branch_gap=90.0,
+                    churn=90.0,
+                    public_surface=10.0,
+                    sprawl=10.0,
+                ),
+                fingerprint="hides_it",
+            )
+        },
+    )
+    worse_coverage = replace(
+        _fn("a.py", "hides_it", score=35.0),
+        components=RiskComponents(
+            coverage_gap=90.0,  # +80 against the baseline
+            structural_complexity=10.0,
+            branch_gap=10.0,
+            churn=10.0,  # aged out of the churn window, so the total falls
+            public_surface=10.0,
+            sprawl=10.0,
+        ),
+    )
+    new = RiskReport(functions=(worse_coverage,), files=(worse_coverage.file_stats,))
+
+    via_compare, via_diff = _both_gates(new, old, fail_new_above=50.0, fail_regression_above=5.0)
+
+    assert ("hides_it", "component_regressed") in via_diff
+    assert via_compare == via_diff
+
+
+@pytest.mark.parametrize("current_score", [10.0, 39.0, 40.0, 41.0, 60.0, 100.0])
+@pytest.mark.parametrize("fail_existing_above", [None, 45.0])
+def test_the_two_entry_points_reach_the_same_verdict(
+    current_score: float, fail_existing_above: float | None
+) -> None:
+    """Sweep a function across every side of every threshold and require agreement.
+
+    Parametrizing rather than naming the cases is the point: it covers the improving,
+    unchanged, and regressing sides without anyone having to predict which one hides a
+    divergence next time.
+    """
+    fid = FunctionId("a.py", "swept")
+    old = Baseline(
+        version="3",
+        entries={fid: BaselineEntry(id=fid, score=40.0, components=_components(40.0), fingerprint="swept")},
+    )
+    new = RiskReport(functions=(_fn("a.py", "swept", score=current_score),), files=())
+
+    via_compare, via_diff = _both_gates(
+        new,
+        old,
+        fail_new_above=50.0,
+        fail_regression_above=5.0,
+        fail_existing_above=fail_existing_above,
+    )
+
+    assert via_compare == via_diff
