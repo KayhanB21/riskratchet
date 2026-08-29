@@ -13,6 +13,7 @@ from typing import Any
 
 import pytest
 
+from riskratchet.config import resolve_gate_settings
 from riskratchet.pytest_plugin import _emit, _resolve, pytest_addoption, pytest_sessionfinish
 
 
@@ -239,16 +240,49 @@ def test_addoption_registers_every_documented_flag() -> None:
         ("--riskratchet-paths", None),
         ("--riskratchet-baseline", ".riskratchet.json"),
         ("--riskratchet-coverage", "coverage.json"),
-        ("--riskratchet-fail-new-above", 50.0),
-        ("--riskratchet-fail-regression-above", 5.0),
+        ("--riskratchet-fail-new-above", None),
+        ("--riskratchet-fail-regression-above", None),
         ("--riskratchet-fail-existing-above", None),
-        ("--riskratchet-fail-component-regression-above", 15.0),
+        ("--riskratchet-fail-component-regression-above", None),
         ("--riskratchet-no-component-regression-gate", False),
     ],
 )
-def test_addoption_defaults_match_the_cli(flag: str, default: Any) -> None:
-    """Plugin defaults mirror the CLI's, so switching entry points changes nothing."""
+def test_every_threshold_option_defaults_to_unset(flag: str, default: Any) -> None:
+    """The thresholds must default to `None`, not to their values.
+
+    An option whose default is a real number cannot be told apart from the user
+    passing that same number, so `[tool.riskratchet]` could never win — which is
+    exactly why the plugin ignored project config for twenty releases rather than
+    merely deprioritising it. The *effective* defaults are asserted below, where
+    they belong.
+    """
     assert _registered_options()[flag]["default"] == default
+
+
+@pytest.mark.parametrize(
+    ("field", "expected"),
+    [
+        ("fail_new_above", 50.0),
+        ("fail_regression_above", 5.0),
+        ("fail_existing_above", None),
+        ("fail_component_regression_above", 15.0),
+        ("component_regression_gate", True),
+    ],
+)
+def test_the_effective_defaults_still_match_the_cli(field: str, expected: Any, tmp_path: Path) -> None:
+    """With no config and no options, both entry points must land on the same numbers."""
+    settings = resolve_gate_settings({}, tmp_path)
+
+    assert getattr(settings, field) == expected
+
+
+def test_config_wins_over_the_effective_default_but_not_over_an_option(tmp_path: Path) -> None:
+    """`option > config > default` — the precedence the CLI has always used."""
+    cfg = {"fail_regression_above": 1.0}
+
+    assert resolve_gate_settings(cfg, tmp_path).fail_regression_above == 1.0
+    assert resolve_gate_settings(cfg, tmp_path, fail_regression_above=9.0).fail_regression_above == 9.0
+    assert resolve_gate_settings({}, tmp_path).fail_regression_above == 5.0
 
 
 def test_addoption_gives_every_flag_help_text() -> None:

@@ -49,12 +49,15 @@ from riskratchet.config import (
     _resolved_paths,
     _resolved_weights,
     invalid_config_values,
+    resolve_gate_settings,
     unknown_config_keys,
+)
+from riskratchet.config import (
+    resolve_redaction as _resolve_redaction,
 )
 from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
-from riskratchet.engine import analyze
-from riskratchet.git import head_sha, is_shallow_repo
+from riskratchet.git import is_shallow_repo
 from riskratchet.init import (
     InitOutcome,
     RunnerKind,
@@ -62,7 +65,15 @@ from riskratchet.init import (
     render_ci_snippet,
     write_starter_config,
 )
-from riskratchet.models import Baseline, DiffReport, Regression, RegressionKind, RiskReport, Severity
+from riskratchet.models import (
+    Baseline,
+    DiffReport,
+    FunctionRisk,
+    Regression,
+    RegressionKind,
+    RiskReport,
+    Severity,
+)
 from riskratchet.pipeline import build_report
 from riskratchet.redaction import (
     RedactionConfig,
@@ -72,7 +83,6 @@ from riskratchet.redaction import (
     redact_path_string,
     redact_regressions,
     redact_report,
-    resolve_salt,
 )
 from riskratchet.reporting import (
     SourceLinks,
@@ -457,7 +467,7 @@ def scan(
         coverage_map=resolved_coverage_map,
         redaction=redaction,
     )
-    resolved_include = include or []
+    resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
@@ -614,7 +624,7 @@ def baseline(
         coverage_map=resolved_coverage_map,
         redaction=RedactionConfig(),
     )
-    resolved_include = include or []
+    resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
@@ -858,7 +868,7 @@ def check(
         coverage_map=resolved_coverage_map,
         redaction=redaction,
     )
-    resolved_include = include or []
+    resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
@@ -956,11 +966,10 @@ def check(
     elif effective_format == "pr-comment":
         # P8 (since 0.2.8): no-baseline mode renders the regressions-only
         # PR comment instead of bailing out, so the format works in both
-        # baseline and `--fail-above` modes.
-        if diff_report is not None:
-            rendered = render_diff_pr_comment(diff_report, links=links)
-        else:
-            rendered = render_regressions_pr_comment(regressions, links=links)
+        # baseline and `--fail-above` modes. Both modes render the same thing —
+        # the set the gate acted on — because a comment posted beside the exit
+        # code must not contradict it; the diff rides along as context.
+        rendered = render_regressions_pr_comment(regressions, links=links, diff_report=diff_report)
     else:
         rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)
@@ -1047,6 +1056,21 @@ def explain(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
+    coverage_map: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--coverage-map",
+            help="Per-prefix coverage path, repeatable: --coverage-map packages/a=cov-a.json.",
+        ),
+    ] = None,
+    missing_coverage: Annotated[
+        str | None,
+        typer.Option("--missing-coverage", help="How to handle missing file coverage."),
+    ] = None,
+    typescript: Annotated[
+        bool,
+        typer.Option("--typescript", help="Explain a TypeScript function (needs the [typescript] extra)."),
+    ] = False,
 ) -> None:
     """Print full risk breakdown for one function."""
     if "::" not in target:
@@ -1055,7 +1079,15 @@ def explain(
     _enforce_config_or_exit(cfg)
     diag = Diagnostics(command="explain")
     file_part, _ = target.split("::", 1)
-    file_path = Path(file_part)
+    # The target is a repo-relative *identity* — `path::qualname` is exactly what
+    # `check` and `diff` print — so it anchors to the config directory like any other
+    # config-sourced path. Run from a nested package, the cwd-relative reading made
+    # `explain` reject the very target the other commands had just emitted. A
+    # cwd-relative spelling still resolves, so existing invocations keep working.
+    file_path = _anchor_config_path(Path(file_part), config_dir)
+    if not file_path.exists():
+        file_path = Path(file_part)
+    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     coverage_path = _resolve_coverage(
         coverage,
         cfg,
@@ -1067,13 +1099,23 @@ def explain(
         diagnostics=diag,
     )
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    report = analyze(
+    # `root=config_dir`, not the process cwd. `analyze` defaults to `Path.cwd()`, so
+    # `explain` computed `FunctionId.path` against a different root than every other
+    # command: run from a nested package it rejected the very target `check` had just
+    # printed, breaking `_discover_config`'s promise that a nested run matches a
+    # root-level one. Routing through `build_report` also gets it the `coverage_map`,
+    # `missing_coverage` policy, and TypeScript backend it silently lacked.
+    report = build_report(
         [file_path],
+        root=config_dir,
         coverage_path=coverage_path,
+        coverage_map=resolved_coverage_map or None,
         use_git=not no_git,
         churn_days=resolved_churn_days,
         weights=_resolved_weights(cfg),
+        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
         groups=_resolved_groups(cfg),
+        typescript=typescript,
     )
     _populate_run_diagnostics(
         diag,
@@ -1088,8 +1130,7 @@ def explain(
     )
     fn = report.find(target)
     if fn is None:
-        typer.secho(f"function not found: {target}", fg=typer.colors.RED, err=True)
-        raise typer.Exit(code=2)
+        _exit_target_not_found(target, report)
     redaction = _resolve_redaction(
         redact_paths=redact_paths,
         redact_qualnames=redact_qualnames,
@@ -1099,19 +1140,12 @@ def explain(
         config_dir=config_dir,
     )
     fn = redact_function(fn, redaction)
-    links = _links_for(repo_url, commit_ref, redaction)
-    if summary and json_output:
-        typer.echo(render_function_summary_json(fn), nl=False)
-    elif json_output:
-        typer.echo(render_function_json(fn, links=links), nl=False)
-    elif summary:
-        # Text summary: severity/score one-liner.
-        typer.echo(
-            f"{fn.id.as_target()}  severity={severity(fn.score).value}  "
-            f"score={fn.score:.1f}  crap={fn.crap:.1f}"
-        )
-    else:
-        typer.echo(render_function_explanation(fn), nl=False)
+    _emit_explanation(
+        fn,
+        json_output=json_output,
+        summary=summary,
+        links=_links_for(repo_url, commit_ref, redaction),
+    )
     _emit_diagnostics(
         diag,
         verbose=verbose,
@@ -1267,7 +1301,7 @@ def diff(
         coverage_map=resolved_coverage_map,
         redaction=redaction,
     )
-    resolved_include = include or []
+    resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
@@ -1488,10 +1522,30 @@ def _run_baseline_from_init(config_dir: Path) -> None:
         )
         raise typer.Exit(code=1)
     typer.secho("running: riskratchet baseline (anchored to config dir)", fg=typer.colors.CYAN)
-    src_dir = config_dir / "src"
-    scan_paths = [src_dir] if src_dir.exists() else [config_dir]
-    report = analyze(scan_paths, root=config_dir, coverage_path=coverage_path)
-    baseline_file = config_dir / ".riskratchet.json"
+    # Read the project's own config rather than guessing. `init --with-baseline` runs
+    # even when the starter block was SKIPPED — i.e. on an already-configured project —
+    # and it used to hardcode `src` and `.riskratchet.json` and pass no `weights`,
+    # `include`/`exclude`/`allow`, `groups`, `churn_days`, or coverage policy. On a
+    # project scanning `lib` with custom weights that produced a differently-scoped,
+    # differently-scored file at the wrong path, and the first `check` then saw mass
+    # new/removed entries plus spurious regressions.
+    cfg, _ = _discover_config(None)
+    settings = resolve_gate_settings(cfg, config_dir)
+    scan_paths = settings.paths or [config_dir]
+    report = build_report(
+        scan_paths,
+        root=config_dir,
+        coverage_path=coverage_path,
+        include=settings.include,
+        exclude=settings.exclude,
+        allow=settings.allow,
+        churn_days=settings.churn_days,
+        weights=settings.weights,
+        missing_coverage_policy=settings.missing_coverage,
+        groups=settings.groups,
+    )
+    baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    _refuse_to_erase_baseline(report, baseline_file)
     _save_baseline_or_exit(baseline_from_report(report), baseline_file)
     typer.secho(
         f"wrote baseline with {len(report.functions)} functions to {baseline_file}",
@@ -1806,6 +1860,48 @@ def _save_baseline_or_exit(baseline: Baseline, destination: Path) -> None:
         _exit_unwritable(destination, exc, what="baseline")
 
 
+def _emit_explanation(
+    fn: FunctionRisk,
+    *,
+    json_output: bool,
+    summary: bool,
+    links: Any,
+) -> None:
+    """Render one function in whichever of `explain`'s four output shapes was asked for."""
+    if summary and json_output:
+        typer.echo(render_function_summary_json(fn), nl=False)
+    elif json_output:
+        typer.echo(render_function_json(fn, links=links), nl=False)
+    elif summary:
+        # Text summary: severity/score one-liner.
+        typer.echo(
+            f"{fn.id.as_target()}  severity={severity(fn.score).value}  "
+            f"score={fn.score:.1f}  crap={fn.crap:.1f}"
+        )
+    else:
+        typer.echo(render_function_explanation(fn), nl=False)
+
+
+def _exit_target_not_found(target: str, report: RiskReport) -> NoReturn:
+    """Report an unresolvable `explain` target, naming the canonical spelling.
+
+    Targets are repo-relative, because that is the form `check` and `diff` print. A
+    cwd-relative spelling used to resolve here and nowhere else, so pointing at the
+    real target is more useful than repeating that it was not found.
+    """
+    _, _, qualname = target.partition("::")
+    near = [fn.id.as_target() for fn in report.functions if fn.id.qualname == qualname]
+    fixes = [("Use the target riskratchet prints:", near[0])] if near else []
+    typer.secho(
+        _format_setup_error(f"riskratchet: function not found: {target}.", fixes)
+        if fixes
+        else f"function not found: {target}",
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
+
+
 def _resolve_typescript_flag(
     typescript: bool,
     experimental_typescript: bool,
@@ -1853,6 +1949,28 @@ def _ts_rebaseline_command(
     return command
 
 
+def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
+    """Say when the baseline holds a language this run did not analyze.
+
+    The read-side twin of `_refuse_to_drop_a_language`. Those entries simply vanish from
+    the comparison — `compare` has no "removed" concept — so a `check` without
+    `--typescript` over a mixed baseline gated only the Python half and reported a clean
+    run. `doctor` already knows how to say this; the gate did not.
+    """
+    if not report.functions:
+        return  # the empty-scan guards own this case, with a better message
+    scanned = {fn.language for fn in report.functions}
+    for language in sorted(lang for lang in {e.language for e in old.entries.values()} - scanned if lang):
+        lost = sum(1 for entry in old.entries.values() if entry.language == language)
+        hint = " (pass --typescript)" if language == "typescript" else ""
+        typer.secho(
+            f"warning: the baseline holds {_count(lost, f'{language} entry', f'{language} entries')} "
+            f"but this run analyzed no {language} — those functions are not being gated{hint}.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+
+
 def _apply_ts_identity_guard(
     old: Baseline,
     report: RiskReport,
@@ -1869,6 +1987,7 @@ def _apply_ts_identity_guard(
     Beyond warning, print the exact `riskratchet baseline ... --output <baseline_file>` command so
     an adopter who bumped `tree-sitter-typescript` can re-baseline in one paste. Stderr-only, so a
     `--json` stdout stays clean."""
+    _warn_unratcheted_languages(old, report)
     if not ts_enabled or not typescript_identity_stale(old):
         return old, report
     _ts_warn(
@@ -1962,25 +2081,28 @@ def _build_report_or_exit(
             err=True,
         )
     try:
-        return build_report(
-            resolved_paths,
-            root=config_dir,
-            coverage_path=coverage_path,
-            coverage_map=coverage_map,
-            include=include,
-            exclude=exclude,
-            allow=allow,
-            use_git=use_git,
-            churn_days=churn_days,
-            weights=_resolved_weights(cfg),
-            missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-            groups=_resolved_groups(cfg),
-            typescript=ts_enabled,
-            ts_coverage_paths=ts_coverage or [],
-            ts_entries=ts_entry or [],
-            on_ts_warning=_ts_warn,
-            on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
-            on_coverage_error=_coverage_shard_warn,
+        return _warned_about_inert_allow(
+            build_report(
+                resolved_paths,
+                root=config_dir,
+                coverage_path=coverage_path,
+                coverage_map=coverage_map,
+                include=include,
+                exclude=exclude,
+                allow=allow,
+                use_git=use_git,
+                churn_days=churn_days,
+                weights=_resolved_weights(cfg),
+                missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
+                groups=_resolved_groups(cfg),
+                typescript=ts_enabled,
+                ts_coverage_paths=ts_coverage or [],
+                ts_entries=ts_entry or [],
+                on_ts_warning=_ts_warn,
+                on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+                on_coverage_error=_coverage_shard_warn,
+            ),
+            allow,
         )
     except ImportError as exc:  # missing [typescript] extra, surfaced during TS discovery
         typer.secho(str(exc), fg=typer.colors.RED, err=True)
@@ -2006,6 +2128,26 @@ def _build_report_or_exit(
             err=True,
         )
         raise typer.Exit(code=2) from exc
+
+
+def _warned_about_inert_allow(report: RiskReport, allow: list[str]) -> RiskReport:
+    """Say so when `allow` patterns are configured but suppressed nothing.
+
+    A suppression that suppresses nothing is worse than none: `allow` also removes
+    entries from the baseline, so the user believes that debt is parked while it is
+    still being ratcheted — or, the other way round, believes a function is gated when
+    the pattern silently swallowed it. The commonest cause was a pattern in canonical
+    `path::qualname` form, which matched nothing at all before 0.3.5.
+    """
+    if allow and not report.suppressed_functions:
+        typer.secho(
+            f"warning: {_count(len(allow), 'allow pattern')} configured but nothing was suppressed. "
+            "Patterns match `path::qualname`, a path glob, or a qualname — check the spelling "
+            "against a target riskratchet prints.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    return report
 
 
 def _warn_dropped_baseline_entries(count: int) -> None:
@@ -2187,12 +2329,17 @@ def _refuse_to_erase_baseline(report: RiskReport, target: Path) -> None:
     file with nothing, discarding the ratchet outright. Writing a *new*
     zero-function baseline is still fine.
     """
-    if report.functions or not target.exists():
+    if not target.exists():
         return
     try:
-        existing = len(load_baseline(target).entries)
+        old = load_baseline(target)
     except (OSError, ValueError):
         return  # Unreadable already; `_load_baseline_or_exit` owns that error.
+    if _refuse_to_drop_a_language(report, old, target):
+        return
+    if report.functions:
+        return
+    existing = len(old.entries)
     if not existing:
         return
     headline, fixes = _empty_scan_cause(report) or ("", [])
@@ -2205,6 +2352,53 @@ def _refuse_to_erase_baseline(report: RiskReport, target: Path) -> None:
         fg=typer.colors.RED,
         err=True,
     )
+    raise typer.Exit(code=2)
+
+
+def _refuse_to_drop_a_language(report: RiskReport, old: Baseline, target: Path) -> bool:
+    """Never let a run erase every entry of a language it did not analyze.
+
+    `_refuse_to_erase_baseline` only looked at whether the *whole* report was empty, so
+    `riskratchet baseline` without `--typescript` over a mixed baseline sailed past it:
+    the Python half kept it non-empty while every TypeScript entry was silently dropped,
+    and it reported "wrote baseline with 5 functions". A gap in 0.3.4's own fix — the
+    unit that must not vanish is a language, not the file.
+
+    A report with *no* functions at all is the plain empty-scan case, which
+    `_refuse_to_erase_baseline` already reports with a better message; this only fires
+    when one language was analyzed and another silently was not.
+
+    Returns False when there is nothing to refuse; otherwise it exits and never returns.
+    """
+    if not report.functions:
+        return False
+    scanned = {fn.language for fn in report.functions}
+    baselined = {entry.language for entry in old.entries.values()}
+    dropped = sorted(lang for lang in baselined - scanned if lang)
+    if not dropped:
+        return False
+    for language in dropped:
+        lost = sum(1 for entry in old.entries.values() if entry.language == language)
+        # `--typescript` opts a language in; Python is on by default, so the fix there
+        # is to scan the paths that hold it rather than to pass a flag.
+        include_it = (
+            "riskratchet baseline --typescript"
+            if language == "typescript"
+            else "riskratchet baseline <paths containing them>"
+        )
+        typer.secho(
+            _format_setup_error(
+                f"riskratchet: baseline: this run analyzed no {language} functions, but {target} "
+                f"holds {_count(lost, f'{language} entry', f'{language} entries')} — "
+                "writing it would drop them and unratchet that half of the repo",
+                [
+                    ("Analyze it too:", include_it),
+                    ("Or write to a separate file:", "riskratchet baseline --output <other.json>"),
+                ],
+            ),
+            fg=typer.colors.RED,
+            err=True,
+        )
     raise typer.Exit(code=2)
 
 
@@ -2360,56 +2554,6 @@ def _emit_diagnostics(
             _exit_unwritable(debug_json_file or Path("-"), exc, what="debug JSON")
         if payload is not None:
             typer.echo(payload, err=True)
-
-
-def _resolve_redaction(
-    *,
-    redact_paths: bool,
-    redact_qualnames: bool,
-    private_comment: bool,
-    redact_salt: str | None,
-    cfg: Mapping[str, Any],
-    config_dir: Path,
-) -> RedactionConfig:
-    """Build a RedactionConfig from CLI flags, config, and the salt sources.
-
-    `--private-comment` is a preset: it forces both path and qualname redaction
-    and suppresses source links for PR comments. When redaction is active but no
-    explicit / env / config / git-derived salt exists, warn once that unsalted
-    hashes are guessable.
-    """
-    rp = _resolved_bool(redact_paths, cfg.get("redact_paths"))
-    rq = _resolved_bool(redact_qualnames, cfg.get("redact_qualnames"))
-    pc = _resolved_bool(private_comment, cfg.get("private_comment"))
-    if pc:
-        rp = True
-        rq = True
-    if not (rp or rq):
-        # Inactive: skip salt resolution entirely so a normal run never shells
-        # out to git for a salt it will not use.
-        return RedactionConfig()
-
-    def _auto_salt() -> str | None:
-        repo = _env("GITHUB_REPOSITORY")
-        sha = _env("GITHUB_SHA")
-        if repo and sha:
-            return f"{repo}@{sha}"
-        return head_sha(config_dir)
-
-    resolution = resolve_salt(redact_salt, cfg.get("redact_salt"), auto=_auto_salt)
-    if (rp or rq) and resolution.source == "none":
-        typer.secho(
-            "warning: redacting without a salt; hashes are guessable from known paths. "
-            "Set --redact-salt or RISKRATCHET_REDACT_SALT for stronger redaction.",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
-    return RedactionConfig(
-        redact_paths=rp,
-        redact_qualnames=rq,
-        suppress_links=pc,
-        salt=resolution.salt,
-    )
 
 
 def _populate_run_diagnostics(

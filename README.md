@@ -367,6 +367,14 @@ Post regressions as a PR comment (use `--format pr-comment` for a sticky body
 that updates in place via the `<!-- riskratchet-report -->` marker; use
 `--format github` for inline workflow warnings):
 
+> **Changed in 0.3.5.** `check --format pr-comment` now renders the set the
+> gate acted on, in both baseline and `--fail-above` mode, so the comment can
+> never contradict the exit code printed beside it. In baseline mode the diff
+> rides along underneath as collapsed context. Previously the baseline-mode
+> comment selected rows by diff status, which could report
+> "No risk regressions detected" on a run that exited 1, and show a regression
+> row on a run that exited 0.
+
 ```bash
 riskratchet check src --coverage coverage.json \
   --baseline .riskratchet.json --format markdown \
@@ -457,10 +465,30 @@ pytest \
 ```
 
 The session exits non-zero when riskratchet finds regressions, so CI can gate
-on `pytest` alone. Available flags:
+on `pytest` alone.
+
+**The plugin reads `[tool.riskratchet]`**, so it gates on the same policy
+`riskratchet check` does: scan paths, thresholds, weights,
+`include`/`exclude`/`allow`, churn window, and the missing-coverage policy all
+come from your config, and its output is redacted when you have asked for that.
+A flag below overrides config for that one setting; leave it off and config
+wins. It also refuses to pass a session whose scan found nothing while the
+baseline holds entries, and warns on a shallow clone — the same guards the CLI
+has.
+
+> **Changed in 0.3.5.** Before this the plugin read no config at all. A repo
+> with `paths = ["lib"]` had it scanning a non-existent `src`; a repo that had
+> tightened `fail_regression_above` to `1` still got its hardcoded `5`; custom
+> `weights` were ignored, so its scores could not be compared with the baseline
+> the CLI wrote; and `private_comment = true` did not stop it printing raw paths
+> into CI logs. Expect it to start agreeing with `riskratchet check` — including
+> failing where it used to pass.
+
+Available flags (each defaults to the `[tool.riskratchet]` value, then to the
+value shown):
 
 - `--riskratchet` (required to enable)
-- `--riskratchet-paths` (default: `src`, repeatable)
+- `--riskratchet-paths` (default: `paths`, else `src`; repeatable)
 - `--riskratchet-baseline` (default: `.riskratchet.json`)
 - `--riskratchet-coverage` (default: `coverage.json`)
 - `--riskratchet-fail-new-above` (default: `50`)
@@ -615,6 +643,19 @@ empty `results` array. This is a deliberate divergence from cargo-crap, which
 rejects combining a baseline with SARIF output; riskratchet instead always
 emits a schema-valid SARIF 2.1.0 document (empty when there is nothing to
 report), so a code-scanning upload never fails just because the gate is green.
+Since 0.3.5 that claim is enforced by validating the output against the
+normative SARIF 2.1.0 schema in the test suite, not only against a snapshot.
+
+`--format markdown` reports the number of functions **analyzed**, alongside the
+number emitted, plus the suppressed and skipped counts. Before 0.3.5 it printed
+the emitted count under the "Functions analyzed" label, so `--top 5` on a
+400-function repo read `5` while `--json` on the same run reported `400`.
+
+`--format github` escapes the annotation message and the `file=` property with
+the escape sets the Actions runner actually reverses for each. Before 0.3.5 the
+two were swapped, so every annotation rendered `src/m.py%3A%3Ahuge` rather than
+`src/m.py::huge`, and a path containing `:` or `,` broke property parsing and
+the runner dropped the annotation.
 
 Native JSON output (truncated):
 
@@ -776,8 +817,8 @@ visible without breaking a build; `riskratchet config validate` is the strict ch
 | Key | Type | Default | What it does |
 | --- | --- | --- | --- |
 | `paths` | list[str] | `["."]` | Files/directories to scan. |
-| `include` / `exclude` | list[str] | `[]` | Glob filters over root-relative POSIX paths. |
-| `allow` | list[str] | `[]` | Suppress matching functions or path globs from reporting **and** gating. |
+| `include` / `exclude` | list[str] | `[]` | Glob filters over root-relative POSIX paths. (`include` from config was ignored before 0.3.5 — only the `--include` flag applied.) |
+| `allow` | list[str] | `[]` | Suppress matching functions from reporting **and** gating. A pattern containing `::` matches the full `path::qualname` target riskratchet prints, one containing `/` or `**` matches the path, anything else matches the qualname. Patterns that suppress nothing warn. |
 | `baseline` | str | `.riskratchet.json` | Baseline file path. |
 | `coverage` | str | — | Single coverage.json path. |
 | `coverage_map` | table | — | Per-prefix coverage, e.g. `"packages/a" = "a/cov.json"`. Mutually exclusive with `coverage`. |
@@ -846,6 +887,13 @@ fresh clone — so that one **warns and names the file it used instead**, and `d
 Finally, a **report riskratchet cannot write** — `--output`, `--debug-json-file`, or
 `baseline --output` pointing at a directory or a read-only location — is exit `2`, not the exit `1`
 plus traceback it used to be. Exit `1` means a gate tripped, and a full disk is not a gate.
+
+For the same reason, a **test command auto-coverage cannot start** is exit `2`. The default
+`test_command` shells out to `pytest`; on a machine without it — a slim CI image, a project on a
+different runner — that raised an uncaught `FileNotFoundError` and exited `1`, so a missing test
+runner was indistinguishable from a risk regression. An unparseable or empty `test_command` reports
+the same way. A command that *does* run and then fails is unchanged: whatever coverage it wrote is
+still used, because failing tests still produce a usable signal.
 
 ## TypeScript
 

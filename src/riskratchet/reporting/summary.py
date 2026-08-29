@@ -201,7 +201,14 @@ def _summary_line(report: RiskReport) -> str:
         extra.append(f"{report.skipped_missing_coverage} skipped missing coverage")
     suffix = ("; " + ", ".join(extra)) if extra else ""
     summary = f"Summary: {len(report.functions)} functions across {len(report.files)} files. "
-    return summary + ", ".join(parts) + suffix
+    line = summary + ", ".join(parts) + suffix
+    if report.coverage_status == "missing":
+        # Every caller of this line needs the disclosure, not just the table:
+        # the PR comment renders an `LCov` column reading 0% for every row, and
+        # without this there is no way to tell "no coverage data" from
+        # "no tests". It lived in `render_report_table` alone.
+        line += ". Coverage: missing (all functions are treated as uncovered)"
+    return line
 
 
 def _diff_summary_line(report: DiffReport) -> str:
@@ -215,6 +222,27 @@ def _diff_summary_line(report: DiffReport) -> str:
         f"**Removed:** {summary['removed']}",
     ]
     return " · ".join(parts)
+
+
+def _diff_context_line(report: DiffReport) -> str:
+    """The diff counts, worded to sit *beneath* a gate verdict.
+
+    `_diff_summary_line` leads with "**Regressions:**", counting diff statuses;
+    the gate's own line leads with the same label counting `RegressionKind`.
+    The two are different questions and legitimately disagree — a regression can
+    be `UNCHANGED` in the diff — so printing both under one label would restate
+    the contradiction this comment exists to remove.
+    """
+    summary = _diff_summary(report)
+    parts = [
+        f"**Changed:** {summary['regressed'] + summary['component_regressed']}",
+        f"**New:** {summary['new']}",
+        f"**Ambiguous renames:** {summary['ambiguous_rename']}",
+        f"**Improved:** {summary['improved']}",
+        f"**Moved:** {summary['moved']}",
+        f"**Removed:** {summary['removed']}",
+    ]
+    return "_Since the baseline:_ " + " · ".join(parts)
 
 
 def _regressions_summary_line(regressions: list[Regression]) -> str:

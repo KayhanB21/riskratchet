@@ -24,7 +24,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import replace
-from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +32,7 @@ from riskratchet import typescript_coverage as tscov
 from riskratchet import typescript_exports as tsx
 from riskratchet._paths import relative_posix
 from riskratchet.coverage import MissingCoveragePolicy
+from riskratchet.engine import pattern_matches
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
 from riskratchet.groups import group_for_path
 from riskratchet.models import (
@@ -293,15 +293,8 @@ def _narrow_public(
 
 
 def _is_allowed(path: str, qualname: str, patterns: Sequence[str]) -> bool:
-    """Mirror `engine._is_allowed`: a path-like pattern matches the file path, otherwise the qualname."""
-    for pattern in patterns:
-        if "/" in pattern or "**" in pattern:
-            if fnmatch(path, pattern):
-                return True
-            continue
-        if fnmatch(qualname, pattern):
-            return True
-    return False
+    """Mirror `engine._is_allowed`, sharing its per-pattern dispatch."""
+    return any(pattern_matches(p, f"{path}::{qualname}", path, qualname) for p in patterns)
 
 
 def _count_lines(path: Path) -> int:

@@ -13,9 +13,13 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
+import pytest
+
 from riskratchet.auto_coverage import (
     DEFAULT_TEST_COMMAND,
     AutoCoverageResult,
+    CoverageCommandError,
+    _default_runner,
     ensure_coverage,
 )
 
@@ -295,3 +299,58 @@ def test_explicit_path_missing_falls_through_to_cache(tmp_path: Path) -> None:
 
     assert result.path == cache
     assert result.source == "generated"
+
+
+def test_a_test_command_that_is_not_on_path_raises_rather_than_crashing() -> None:
+    """`pytest` missing from PATH used to escape as an uncaught OSError.
+
+    Typer rendered it as a traceback and exit 1 — the code reserved for "the
+    gate tripped" — so a machine without the test runner installed looked
+    exactly like a risk regression.
+    """
+    with pytest.raises(CoverageCommandError) as excinfo:
+        _default_runner("riskratchet-no-such-runner-exists --out x.json", Path("."))
+
+    assert "could not be run" in str(excinfo.value)
+    assert excinfo.value.command.startswith("riskratchet-no-such-runner-exists")
+
+
+def test_an_unparseable_test_command_raises_rather_than_crashing() -> None:
+    """An unbalanced quote in a configured `test_command` reached `shlex.split`."""
+    with pytest.raises(CoverageCommandError) as excinfo:
+        _default_runner("pytest --cov 'unclosed", Path("."))
+
+    assert "could not be parsed" in str(excinfo.value)
+
+
+def test_an_empty_test_command_raises_rather_than_crashing() -> None:
+    """`subprocess.run([])` raises IndexError, which is not a useful message."""
+    with pytest.raises(CoverageCommandError) as excinfo:
+        _default_runner("   ", Path("."))
+
+    assert "is empty" in str(excinfo.value)
+
+
+def test_a_test_command_that_runs_and_fails_is_not_a_setup_error(tmp_path: Path) -> None:
+    """The distinction the exception draws: unstartable vs. merely failing.
+
+    A command that runs and exits non-zero is survivable — whatever coverage it
+    wrote is still used — and must not be promoted to a setup error.
+    """
+    cache = tmp_path / ".riskratchet" / "coverage.json"
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "m.py").write_text("def f(): return 1\n")
+
+    result = ensure_coverage(
+        requested=None,
+        sources=[src],
+        cache_path=cache,
+        test_command="ignored",
+        enabled=True,
+        runner=_failing_runner(returncode=1),
+        log=_silent_log,
+    )
+
+    assert result.path is None
+    assert result.source == "generated_missing"

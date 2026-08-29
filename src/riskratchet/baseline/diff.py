@@ -127,14 +127,20 @@ def _diff_status_for_existing(
 ) -> DiffStatus:
     if delta > fail_regression_above:
         return DiffStatus.REGRESSED
-    if delta < -fail_regression_above:
-        return DiffStatus.IMPROVED
+    # The component gate runs before IMPROVED, not after it. Its whole purpose is to
+    # catch the case where the total hides a component — and returning IMPROVED first
+    # skipped it exactly when the total moved the *other* way, so a function whose
+    # coverage collapsed while its churn aged out of the window reported "improved" and
+    # exited 0. `compare.compare` — the path the pytest plugin uses — always ran the
+    # check, so the two entry points implemented two different gates from one policy.
     if component_regression_gate and _component_regression(
         fn.components,
         previous.components,
         tolerance=fail_component_regression_above,
     ):
         return DiffStatus.COMPONENT_REGRESSED
+    if delta < -fail_regression_above:
+        return DiffStatus.IMPROVED
     if moved:
         return DiffStatus.MOVED
     return DiffStatus.UNCHANGED
