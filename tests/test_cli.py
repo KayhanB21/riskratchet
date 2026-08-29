@@ -969,7 +969,11 @@ def test_check_pr_comment_renders_full_diff_but_keeps_failure_exit_code(tmp_path
     )
     assert result.exit_code == 1
     assert result.stdout.startswith("<!-- riskratchet-report -->")
-    assert "| new |" in result.stdout
+    # The visible table is the gate's own kinds, not diff statuses: a non-zero
+    # exit must never be paired with "no regressions detected".
+    assert "| new_above_threshold |" in result.stdout
+    assert "_No risk regressions detected._" not in result.stdout
+    # The diff still rides along as context.
     assert "<details><summary>Unchanged functions (2)</summary>" in result.stdout
 
 

@@ -6,6 +6,7 @@ from riskratchet.models import (
     DiffEntry,
     DiffReport,
     DiffStatus,
+    FunctionId,
     FunctionRisk,
     Regression,
     RiskReport,
@@ -15,11 +16,13 @@ from riskratchet.reporting.summary import (
     PR_COMMENT_MARKER,
     SourceLinks,
     _branch_markdown,
+    _diff_context_line,
     _diff_summary_line,
     _fmt_optional,
     _regressions_summary_line,
     _sorted_by_risk,
     _summary_line,
+    _summary_payload,
 )
 from riskratchet.scoring import severity
 
@@ -32,6 +35,24 @@ _PR_COMMENT_ROW_CAP = 20
 _PR_COMMENT_MAX_CHARS = 60_000
 
 _TRUNCATION_NOTICE = "_... truncated to fit GitHub's comment size limit._"
+
+_DIFF_HEADER = [
+    "| Status | Function | Before | After | Delta | Reason |",
+    "| --- | --- | ---: | ---: | ---: | --- |",
+]
+
+# Every `DiffStatus`, so attaching a diff as context beneath a gate result can
+# never silently drop one: a status missing here would vanish from the comment.
+_DIFF_CONTEXT_SECTIONS = (
+    (DiffStatus.NEW, "New functions"),
+    (DiffStatus.REGRESSED, "Regressed within tolerance"),
+    (DiffStatus.COMPONENT_REGRESSED, "Component regressions"),
+    (DiffStatus.AMBIGUOUS_RENAME, "Ambiguous renames"),
+    (DiffStatus.IMPROVED, "Improvements"),
+    (DiffStatus.MOVED, "Moved functions"),
+    (DiffStatus.REMOVED, "Removed functions"),
+    (DiffStatus.UNCHANGED, "Unchanged functions"),
+)
 
 
 def _collapsed_section(
@@ -87,12 +108,20 @@ def render_report_markdown(
 ) -> str:
     sorted_fns = _sorted_by_risk(report.functions)
     displayed = sorted_fns if limit is None else sorted_fns[:limit]
+    summary = _summary_payload(report)
     lines = [
         "# riskratchet report",
         "",
-        f"**Functions analyzed:** {len(report.functions)}",
-        f"**Files analyzed:** {len(report.files)}",
-        f"**Coverage:** {report.coverage_status}",
+        # `len(report.functions)` is the *emitted* count, which `--top`/`--limit`
+        # truncate: on a 400-function repo `--top 5` read "Functions analyzed: 5"
+        # while `--json` on the same run reported 400. This was also the only
+        # renderer that never disclosed suppressed or skipped functions.
+        f"**Functions analyzed:** {summary['analyzed_functions']}",
+        f"**Functions emitted:** {summary['emitted_functions']}",
+        f"**Files analyzed:** {summary['total_files']}",
+        f"**Coverage:** {summary['coverage_status']}",
+        f"**Suppressed:** {summary['suppressed_functions']}",
+        f"**Skipped (missing coverage):** {summary['skipped_missing_coverage']}",
         "",
         "| Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |",
@@ -164,16 +193,48 @@ def render_regressions_markdown(regressions: list[Regression], *, links: SourceL
     return "\n".join(lines) + "\n"
 
 
+def _diff_context_sections(
+    report: DiffReport,
+    *,
+    gated: frozenset[FunctionId],
+    links: SourceLinks | None,
+) -> list[str]:
+    """Render a diff as collapsed context beneath a gate result.
+
+    Entries the gate already listed are dropped, so every function in the diff
+    appears exactly once: in the visible table if it tripped the gate, here if
+    it did not.
+    """
+    lines: list[str] = []
+    for status, title in _DIFF_CONTEXT_SECTIONS:
+        rows = [
+            _diff_markdown_row(entry, links=links)
+            for entry in report.entries
+            if entry.status is status and entry.id not in gated
+        ]
+        if rows:
+            lines.extend(_collapsed_section(rows, title=title, header=_DIFF_HEADER))
+    return lines
+
+
 def render_regressions_pr_comment(
     regressions: list[Regression],
     *,
     limit: int | None = _PR_COMMENT_ROW_CAP,
     links: SourceLinks | None = None,
+    diff_report: DiffReport | None = None,
 ) -> str:
-    """Render the regressions PR comment, showing `limit` rows before collapsing.
+    """Render the `check` PR comment, showing `limit` rows before collapsing.
 
-    This is the comment the Action posts in no-baseline (`--fail-above`) mode —
-    a first-adoption run, where every function above the threshold is reported.
+    This is the comment the Action posts, and the visible table is the set the
+    gate acted on — so the body can never contradict the exit code the Action
+    reports beside it. In baseline mode `diff_report` supplies the richer diff
+    as collapsed context. Selecting the visible rows by `DiffStatus` instead is
+    what let an exit-1 run post "_No risk regressions detected._", and an exit-0
+    run post a visible regression row: the gate's `existing_above_threshold`
+    fires on entries that are `UNCHANGED` by construction, and a `NEW` entry
+    below `fail_new_above` trips no gate at all.
+
     It used to emit every row unbounded: riskratchet's own repo produced 345
     rows / ~49k characters, so a moderately larger repo crossed GitHub's 65,536
     limit and failed the Action instead of posting a report.
@@ -187,14 +248,17 @@ def render_regressions_pr_comment(
         "# riskratchet",
         "",
         _regressions_summary_line(regressions),
-        "",
     ]
-    if not regressions:
+    if diff_report is not None:
+        lines.append(_diff_context_line(diff_report))
+    lines.append("")
+    displayed: list[Regression] = []
+    if regressions:
+        displayed = regressions if limit is None else regressions[:limit]
+        lines.extend(header)
+        lines.extend(_regression_markdown_row(reg, links=links) for reg in displayed)
+    else:
         lines.append("_No risk regressions detected._")
-        return "\n".join(lines) + "\n"
-    displayed = regressions if limit is None else regressions[:limit]
-    lines.extend(header)
-    lines.extend(_regression_markdown_row(reg, links=links) for reg in displayed)
     collapsed = regressions[len(displayed) :]
     if collapsed:
         lines.extend(
@@ -202,6 +266,14 @@ def render_regressions_pr_comment(
                 [_regression_markdown_row(reg, links=links) for reg in collapsed],
                 title="Lower-priority regressions",
                 header=header,
+            )
+        )
+    if diff_report is not None:
+        lines.extend(
+            _diff_context_sections(
+                diff_report,
+                gated=frozenset(reg.id for reg in regressions),
+                links=links,
             )
         )
     return _fit_pr_comment("\n".join(lines) + "\n")
@@ -241,12 +313,7 @@ def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = No
         "",
     ]
     if visible:
-        lines.extend(
-            [
-                "| Status | Function | Before | After | Delta | Reason |",
-                "| --- | --- | ---: | ---: | ---: | --- |",
-            ]
-        )
+        lines.extend(_DIFF_HEADER)
         lines.extend(_diff_markdown_row(entry, links=links) for entry in visible)
     else:
         lines.append("_No risk regressions detected._")
@@ -262,10 +329,7 @@ def render_diff_pr_comment(report: DiffReport, *, links: SourceLinks | None = No
                 _collapsed_section(
                     [_diff_markdown_row(entry, links=links) for entry in entries],
                     title=title,
-                    header=[
-                        "| Status | Function | Before | After | Delta | Reason |",
-                        "| --- | --- | ---: | ---: | ---: | --- |",
-                    ],
+                    header=_DIFF_HEADER,
                 )
             )
     return _fit_pr_comment("\n".join(lines) + "\n")

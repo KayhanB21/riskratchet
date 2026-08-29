@@ -91,8 +91,6 @@ def render_report_table(
         console.print(f"... {len(sorted_fns) - limit} more functions hidden (use --limit to show more)")
     if include_summary:
         console.print(_summary_line(report))
-        if report.coverage_status == "missing":
-            console.print("Coverage: missing (all functions are treated as uncovered).")
     if links is not None:
         buf.write(_table_source_footer((fn.id.as_target(), links.link_for(fn)) for fn in displayed))
     return buf.getvalue()

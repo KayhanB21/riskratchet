@@ -367,6 +367,14 @@ Post regressions as a PR comment (use `--format pr-comment` for a sticky body
 that updates in place via the `<!-- riskratchet-report -->` marker; use
 `--format github` for inline workflow warnings):
 
+> **Changed in 0.3.5.** `check --format pr-comment` now renders the set the
+> gate acted on, in both baseline and `--fail-above` mode, so the comment can
+> never contradict the exit code printed beside it. In baseline mode the diff
+> rides along underneath as collapsed context. Previously the baseline-mode
+> comment selected rows by diff status, which could report
+> "No risk regressions detected" on a run that exited 1, and show a regression
+> row on a run that exited 0.
+
 ```bash
 riskratchet check src --coverage coverage.json \
   --baseline .riskratchet.json --format markdown \
@@ -635,6 +643,19 @@ empty `results` array. This is a deliberate divergence from cargo-crap, which
 rejects combining a baseline with SARIF output; riskratchet instead always
 emits a schema-valid SARIF 2.1.0 document (empty when there is nothing to
 report), so a code-scanning upload never fails just because the gate is green.
+Since 0.3.5 that claim is enforced by validating the output against the
+normative SARIF 2.1.0 schema in the test suite, not only against a snapshot.
+
+`--format markdown` reports the number of functions **analyzed**, alongside the
+number emitted, plus the suppressed and skipped counts. Before 0.3.5 it printed
+the emitted count under the "Functions analyzed" label, so `--top 5` on a
+400-function repo read `5` while `--json` on the same run reported `400`.
+
+`--format github` escapes the annotation message and the `file=` property with
+the escape sets the Actions runner actually reverses for each. Before 0.3.5 the
+two were swapped, so every annotation rendered `src/m.py%3A%3Ahuge` rather than
+`src/m.py::huge`, and a path containing `:` or `,` broke property parsing and
+the runner dropped the annotation.
 
 Native JSON output (truncated):
 

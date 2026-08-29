@@ -966,11 +966,10 @@ def check(
     elif effective_format == "pr-comment":
         # P8 (since 0.2.8): no-baseline mode renders the regressions-only
         # PR comment instead of bailing out, so the format works in both
-        # baseline and `--fail-above` modes.
-        if diff_report is not None:
-            rendered = render_diff_pr_comment(diff_report, links=links)
-        else:
-            rendered = render_regressions_pr_comment(regressions, links=links)
+        # baseline and `--fail-above` modes. Both modes render the same thing —
+        # the set the gate acted on — because a comment posted beside the exit
+        # code must not contradict it; the diff rides along as context.
+        rendered = render_regressions_pr_comment(regressions, links=links, diff_report=diff_report)
     else:
         rendered = _render_regressions(regressions, format=effective_format, links=links)
     _write(rendered, output)

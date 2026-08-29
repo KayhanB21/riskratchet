@@ -23,6 +23,7 @@ from riskratchet.reporting import (
     SourceLinks,
     _sarif_level_for_severity,
     render_function_explanation,
+    render_regressions_github,
     render_regressions_json,
     render_regressions_markdown,
     render_regressions_pr_comment,
@@ -30,6 +31,7 @@ from riskratchet.reporting import (
     render_regressions_summary_json,
     render_regressions_summary_text,
     render_regressions_table,
+    render_report_github,
     render_report_json,
     render_report_markdown,
     render_report_pr_comment,
@@ -410,3 +412,41 @@ def test_pr_comment_under_budget_is_returned_unmodified() -> None:
     out = render_regressions_pr_comment(_regressions(2))
 
     assert "truncated to fit" not in out
+
+
+def test_github_annotation_escapes_the_property_and_leaves_the_message_readable() -> None:
+    """The two halves of a workflow command take different escape sets.
+
+    The runner's `unescapeData` reverses only `%25`/`%0D`/`%0A`, so escaping `:`
+    in the message is one-way: every annotation riskratchet emitted rendered
+    `m.py%3A%3Afoo` instead of `m.py::foo`. `unescapeProperty` reverses `%3A`
+    and `%2C` as well, and `:`/`,` terminate the property list — so the `file=`
+    value, which was escaped with nothing at all, broke parsing outright and
+    the runner dropped the annotation.
+    """
+    out = render_report_github(_report(_fn("foo", 80.0, path="odd:dir,name/m.py")), min_score=0.0)
+
+    head, _, message = out.partition("::warning ")[2].partition("::")
+    assert head.startswith("file=odd%3Adir%2Cname/m.py,line=")
+    assert "%3A" not in message and "%2C" not in message
+    assert "odd:dir,name/m.py::foo has critical risk: score 80.0" in message
+
+
+def test_github_annotation_still_escapes_newlines_in_the_message() -> None:
+    """A multi-line reason must not become two workflow commands."""
+    out = render_regressions_github(
+        [
+            Regression(
+                id=FunctionId(path="m.py", qualname="foo"),
+                kind=RegressionKind.ABOVE_THRESHOLD,
+                current_score=80.0,
+                previous_score=None,
+                delta=None,
+                reason="line one\nline two",
+            )
+        ]
+    )
+
+    assert out.count("::warning") == 1
+    assert "%0A" in out
+    assert "\nline two" not in out

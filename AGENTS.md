@@ -182,12 +182,37 @@ success and `2` on usage errors.
   dropping every TS entry while looking non-empty.
   Add to the list rather than replacing it — reading old baselines is what keeps
   an upgrade from forcing every adopter to re-baseline.
+- **A report rendered beside an exit code must describe the gate that produced it.**
+  `check --format pr-comment` selected rows by `DiffStatus` while the gate keys on
+  `RegressionKind` — different sets, each holding members the other cannot, so the
+  Action's sticky comment could read "No risk regressions detected" on an exit-1 run
+  and show a regression row on an exit-0 run. Both modes now render
+  `render_regressions_pr_comment`; a diff attaches as collapsed context, never as the
+  verdict. `tests/test_pr_comment_gate_agreement.py` sweeps every `RegressionKind`.
+- **Count what you claim to count.** A renderer that says "analyzed" must not print the
+  emitted count: `--top`/`--limit` truncate the list, and `_summary_payload` already
+  carries `analyzed_functions`, `emitted_functions`, `suppressed_functions`, and
+  `skipped_missing_coverage`. Route new renderers through it rather than
+  `len(report.functions)`.
+- **A snapshot is not a contract.** `tests/__snapshots__/` froze the broken `--format
+  github` escaping and the exit-0-with-a-regression-row PR comment for many releases —
+  a snapshot pins whatever is emitted, correct or not. Pair every snapshot with an
+  assertion about the property that matters, and read every `.ambr` move as a change to
+  review, not noise to accept.
 - `--format sarif` emits a SARIF 2.1.0 log. The output references
   `https://json.schemastore.org/sarif-2.1.0.json` in its `$schema` field;
   the upstream OASIS definition is the [SARIF 2.1.0 spec](https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/sarif-v2.1.0-cs01.html).
-  riskratchet does not ship a separate SARIF schema. Driver name is
+  riskratchet does not ship a separate SARIF schema of its own: the normative one is
+  vendored at `tests/vendor/sarif-2.1.0.schema.json` and every emitted log is validated
+  against it by `tests/test_sarif_schema.py`. Driver name is
   `riskratchet`; rule IDs are `riskratchet.function-risk` (from `scan`) and
   `riskratchet.regression` (from `check`).
+- **The two halves of a GitHub workflow command take different escape sets.** The
+  runner's `unescapeData` reverses only `%25`/`%0D`/`%0A`; `unescapeProperty` also
+  reverses `%3A`/`%2C`. Escaping `:` into a message is therefore one-way, and leaving a
+  `file=` value unescaped lets `:` or `,` terminate the property list and drop the
+  annotation. `_escape_github_data` and `_escape_github_property` are not
+  interchangeable.
 - Field names in our native JSON are stable within a minor version (0.x).
   Additive changes (new optional fields) may land in any release; renames
   or removals are called out in `CHANGELOG.md` under a **Breaking** heading.

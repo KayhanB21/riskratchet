@@ -85,11 +85,18 @@
   <!-- riskratchet-report -->
   # riskratchet
   
-  **Regressions:** 0 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 0 · **Removed:** 1
+  **Regressions:** 0 · **New above threshold:** 0 · **Regressed:** 0 · **Existing above threshold:** 0 · **Component regressed:** 0 · **Above threshold:** 0
+  _Since the baseline:_ **Changed:** 0 · **New:** 1 · **Ambiguous renames:** 0 · **Improved:** 1 · **Moved:** 0 · **Removed:** 1
+  
+  _No risk regressions detected._
+  
+  <details><summary>New functions (1)</summary>
   
   | Status | Function | Before | After | Delta | Reason |
   | --- | --- | ---: | ---: | ---: | --- |
   | new | `src/m.py::huge` | n/a | 40.0 | n/a | function is absent from baseline with score 40.0 |
+  
+  </details>
   
   <details><summary>Improvements (1)</summary>
   
@@ -890,7 +897,7 @@
 # ---
 # name: test_scan_via_cli_snapshot[github]
   '''
-  ::warning file=src/m.py,line=15,endLine=46::src/m.py%3A%3Ahuge has medium risk%3A score 40.0, CRAP 2.0, complexity 1
+  ::warning file=src/m.py,line=15,endLine=46::src/m.py::huge has medium risk: score 40.0, CRAP 2.0, complexity 1
   
   '''
 # ---
@@ -1015,8 +1022,11 @@
   # riskratchet report
   
   **Functions analyzed:** 3
+  **Functions emitted:** 3
   **Files analyzed:** 1
   **Coverage:** present
+  **Suppressed:** 0
+  **Skipped (missing coverage):** 0
   
   | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
   | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |

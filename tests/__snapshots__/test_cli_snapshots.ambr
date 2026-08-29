@@ -4,8 +4,11 @@
   # riskratchet report
   
   **Functions analyzed:** 2
+  **Functions emitted:** 2
   **Files analyzed:** 1
   **Coverage:** missing
+  **Suppressed:** 0
+  **Skipped (missing coverage):** 0
   
   | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
   | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
@@ -19,7 +22,7 @@
   <!-- riskratchet-report -->
   # riskratchet
   
-  Summary: 2 functions across 1 files. 0 critical, 0 high, 2 medium, 0 low
+  Summary: 2 functions across 1 files. 0 critical, 0 high, 2 medium, 0 low. Coverage: missing (all functions are treated as uncovered)
   
   | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
   | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
