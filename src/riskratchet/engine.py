@@ -193,11 +193,26 @@ def _risks_for_file(
 
 
 def _is_allowed(fn: FunctionRisk, patterns: Sequence[str]) -> bool:
-    for pattern in patterns:
-        if "/" in pattern or "**" in pattern:
-            if fnmatch(fn.id.path, pattern):
-                return True
-            continue
-        if fnmatch(fn.id.qualname, pattern):
-            return True
-    return False
+    """True when any `allow` pattern suppresses this function."""
+    return any(pattern_matches(p, fn.id.as_target(), fn.id.path, fn.id.qualname) for p in patterns)
+
+
+def pattern_matches(pattern: str, target: str, path: str, qualname: str) -> bool:
+    """Pick which of a function's three names an `allow` pattern is matched against.
+
+    A pattern containing `::` matches the full `path::qualname` target — the canonical
+    form `explain` requires and `check`/`diff` print. Without that case, copying a
+    target out of a report and pasting it into `allow` suppressed nothing, silently:
+    patterns were matched against the path *or* the qualname, never the target, so the
+    one spelling riskratchet itself emits was the one that could not work. `allow` also
+    removes entries from the baseline, so a no-op suppression means debt the user
+    believes is parked is still being ratcheted.
+
+    Shared shape with `typescript_engine.pattern_matches`; kept in step by
+    `test_both_backends_suppress_the_same_patterns`.
+    """
+    if "::" in pattern:
+        return fnmatch(target, pattern)
+    if "/" in pattern or "**" in pattern:
+        return fnmatch(path, pattern)
+    return fnmatch(qualname, pattern)

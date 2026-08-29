@@ -199,11 +199,17 @@ def test_malformed_entries_warn_but_do_not_stop_the_run(
     monkeypatch.chdir(tmp_path)
     src = _project(tmp_path)
     baseline = tmp_path / "partial.json"
-    # The surviving entry is scored generously so nothing regresses and the exit
-    # code isolates the one thing under test: a dropped entry is not fatal.
+    # The surviving entry is scored generously *in every component* so nothing
+    # regresses and the exit code isolates the one thing under test: a dropped entry
+    # is not fatal. An empty `components` map would leave every component at 0 and
+    # trip the component gate, which since 0.3.5 runs even when the total improved.
+    generous = (
+        '{"coverage_gap": 100.0, "structural_complexity": 100.0, "branch_gap": 100.0, '
+        '"churn": 100.0, "public_surface": 100.0, "sprawl": 100.0}'
+    )
     baseline.write_text(
         '{"version": "3", "entries": ['
-        '{"path": "src/m.py", "qualname": "trivial", "score": 100.0, "components": {}},'
+        '{"path": "src/m.py", "qualname": "trivial", "score": 100.0, "components": ' + generous + "},"
         '{"path": "src/m.py", "qualname": "broken", "score": "not-a-number", "components": {}}'
         "]}",
         encoding="utf-8",
@@ -926,3 +932,188 @@ def test_allow_missing_coverage_downgrades_the_named_path_check(
 
     assert result.exit_code == 0, result.output
     assert "coverage file not found: absent.json" in result.stderr
+
+
+# --- 0.3.5: the config you wrote is the config that runs ----------------------------
+
+
+@pytest.mark.parametrize("command", ["scan", "check", "diff", "baseline"])
+def test_include_from_config_narrows_the_scan(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`include` was declared, validated, schema'd, documented — and read by nobody.
+
+    Every command did `include or []` while the adjacent lines correctly did
+    `exclude or cfg.get("exclude", [])`. `doctor` *did* read it, so its coverage-overlap
+    check evaluated a narrower file set than the run it was diagnosing.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ninclude = ["src/m.py"]\nfail_new_above = 5\n',
+        encoding="utf-8",
+    )
+    _seed_baseline(src)  # *before* other.py exists, so a leak makes it a NEW function
+    # Deliberately risky: uncovered, public, and branchy enough to score above the
+    # default `fail_new_above`. If `include` leaks, `check` fails on it — so a clean
+    # exit is positive evidence the filter applied, not merely an absent string.
+    (src / "other.py").write_text(
+        "def other(a, b, c, d, e, f, g, h):\n"
+        + "".join(f"    if {v}:\n        return {i}\n" for i, v in enumerate("abcdefgh"))
+        + "    return 0\n",
+        encoding="utf-8",
+    )
+
+    args = [command, "--no-auto-cov", "--no-git"]
+    if command != "scan":  # `scan` has no --allow-missing-coverage
+        args.append("--allow-missing-coverage")
+    if command != "baseline":  # `baseline` writes a file rather than emitting a report
+        args.append("--json")
+    result = runner.invoke(app, args)
+
+    assert result.exit_code == 0, result.output
+    haystack = (
+        (tmp_path / ".riskratchet.json").read_text(encoding="utf-8")
+        if command == "baseline"
+        else result.stdout
+    )
+    assert "other" not in haystack
+
+
+def test_an_allow_target_copied_from_a_report_actually_suppresses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`path::qualname` is the form riskratchet prints, and the one that never matched.
+
+    Patterns were matched against the path *or* the qualname, never the target, so
+    pasting a target straight out of a report suppressed nothing — silently, while also
+    failing to keep it out of the baseline.
+    """
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\nallow = ["src/m.py::trivial"]\n', encoding="utf-8"
+    )
+
+    result = runner.invoke(app, ["scan", "--json", "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 0, result.output
+    assert '"qualname": "trivial"' not in result.stdout
+    assert "nothing was suppressed" not in result.stderr
+
+
+def test_allow_patterns_that_suppress_nothing_say_so(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A suppression that suppresses nothing is debt the user believes is parked."""
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\nallow = ["src/m.py::misspelled"]\n', encoding="utf-8"
+    )
+
+    result = runner.invoke(app, ["scan", "--no-auto-cov", "--no-git"])
+
+    assert result.exit_code == 0, result.output
+    assert "nothing was suppressed" in result.stderr
+
+
+def test_a_baseline_whose_entries_all_fail_to_read_is_fatal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Zero usable entries is a zero-entry baseline, and those pass every gate.
+
+    `load_baseline`'s own docstring says a file that cannot be trusted as a ratchet must
+    fail loudly; it applied that to a missing `entries` array but not to an `entries`
+    array none of whose members parsed. It compounds: `check` then feeds `0` into
+    `_require_gateable_functions`, so one condition disabled two guards.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    baseline = tmp_path / "all-broken.json"
+    baseline.write_text(
+        '{"version": "3", "entries": ['
+        '{"path": "src/m.py", "qualname": "a", "score": "nope", "components": {}},'
+        '{"path": "src/m.py", "qualname": "b", "score": "nope", "components": {}}'
+        "]}",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--baseline",
+            str(baseline),
+            "--allow-missing-coverage",
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "none could be read" in result.stderr
+    assert "No risk regressions detected" not in result.output
+
+
+def test_doctor_does_not_call_a_zero_entry_baseline_a_pass(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An empty baseline passes every gate, so PASS is the wrong word for it."""
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    (tmp_path / ".riskratchet.json").write_text('{"version": "3", "entries": []}', encoding="utf-8")
+
+    result = runner.invoke(app, ["doctor", "--json"])
+
+    assert '"status": "warn"' in result.stdout
+    assert "no entries" in result.stdout
+
+
+def test_explain_resolves_the_same_target_from_a_nested_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`explain` computed identity against the cwd, not the project root.
+
+    So run from a nested package it rejected the very `path::qualname` that `check` and
+    `diff` had just printed — breaking `_discover_config`'s promise that a nested run
+    matches a root-level one.
+    """
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    target = "src/m.py::trivial"
+
+    monkeypatch.chdir(tmp_path)
+    from_root = runner.invoke(app, ["explain", target, "--no-auto-cov", "--no-git"])
+    monkeypatch.chdir(src)
+    from_nested = runner.invoke(
+        app, ["explain", target, "--config", str(tmp_path / "pyproject.toml"), "--no-auto-cov", "--no-git"]
+    )
+
+    assert from_root.exit_code == 0, from_root.output
+    assert from_nested.exit_code == 0, from_nested.output
+    assert target in from_nested.stdout
+
+
+def test_a_target_in_the_wrong_spelling_names_the_right_one(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Targets are repo-relative; a cwd-relative spelling gets pointed at the real one."""
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    monkeypatch.chdir(src)
+
+    result = runner.invoke(
+        app,
+        [
+            "explain",
+            "m.py::trivial",
+            "--config",
+            str(tmp_path / "pyproject.toml"),
+            "--no-auto-cov",
+            "--no-git",
+        ],
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "src/m.py::trivial" in result.stderr

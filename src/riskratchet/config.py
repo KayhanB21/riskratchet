@@ -23,7 +23,8 @@ lives outside `cli.py`).
 from __future__ import annotations
 
 import sys
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -39,8 +40,9 @@ from riskratchet.auto_coverage import (
     ensure_coverage,
 )
 from riskratchet.coverage import MissingCoveragePolicy
-from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS
+from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, head_sha
 from riskratchet.groups import normalize_groups
+from riskratchet.redaction import RedactionConfig, resolve_salt
 from riskratchet.scoring import DEFAULT_WEIGHTS, InvalidWeightsError, resolve_weights
 
 if sys.version_info >= (3, 11):
@@ -736,6 +738,151 @@ def _ensure_ts_coverage_exists(
             err=True,
         )
     raise typer.Exit(code=2)
+
+
+@dataclass(frozen=True)
+class GateSettings:
+    """Everything `[tool.riskratchet]` contributes to a gating run, already resolved.
+
+    The CLI resolves these inline, one command at a time. This exists so a *second*
+    entry point does not have to reproduce that resolution from memory: before 0.3.5
+    the pytest plugin read no config at all, so a repo that had tightened
+    `fail_regression_above` to 1 still got the plugin's hardcoded 5, custom `weights`
+    were ignored (making every score incomparable with the baseline the CLI wrote),
+    and `paths = ["lib"]` left the plugin scanning a `src` that did not exist.
+
+    `tests/test_pytest_plugin.py::test_the_plugin_and_the_cli_reach_the_same_verdict`
+    is the trip-wire: it fails if this and the CLI ever disagree again.
+    """
+
+    paths: list[Path]
+    include: list[str]
+    exclude: list[str]
+    allow: list[str]
+    weights: dict[str, float] | None
+    groups: dict[str, tuple[str, ...]]
+    churn_days: int
+    missing_coverage: MissingCoveragePolicy
+    fail_new_above: float
+    fail_regression_above: float
+    fail_existing_above: float | None
+    fail_component_regression_above: float
+    component_regression_gate: bool
+
+
+def resolve_gate_settings(
+    cfg: dict[str, Any],
+    config_dir: Path,
+    *,
+    paths: list[Path] | None = None,
+    fail_new_above: float | None = None,
+    fail_regression_above: float | None = None,
+    fail_existing_above: float | None = None,
+    fail_component_regression_above: float | None = None,
+    component_regression_gate: bool = True,
+    churn_days: int | None = None,
+) -> GateSettings:
+    """Resolve config into gate settings, with any explicitly-passed override winning.
+
+    Every override is `None`-defaulted on purpose. An option whose default is a real
+    value — the plugin's old `50.0`, `5.0`, `"src"` — cannot be told apart from the
+    user passing that same value, so config could never win. That is why the plugin
+    silently ignored `[tool.riskratchet]` rather than merely deprioritising it.
+    """
+    return GateSettings(
+        paths=_resolved_paths(paths, cfg, config_dir),
+        include=list(cfg.get("include", [])),
+        exclude=list(cfg.get("exclude", [])),
+        allow=list(cfg.get("allow", [])),
+        weights=_resolved_weights(cfg),
+        groups=_resolved_groups(cfg),
+        churn_days=_resolved_churn_days(churn_days, cfg),
+        missing_coverage=_resolved_missing_coverage(None, cfg),
+        fail_new_above=_resolved_float(fail_new_above, cfg.get("fail_new_above"), default=50.0),
+        fail_regression_above=_resolved_float(
+            fail_regression_above, cfg.get("fail_regression_above"), default=5.0
+        ),
+        fail_existing_above=_resolved_optional_float(fail_existing_above, cfg.get("fail_existing_above")),
+        fail_component_regression_above=_resolved_float(
+            fail_component_regression_above, cfg.get("fail_component_regression_above"), default=15.0
+        ),
+        component_regression_gate=(
+            component_regression_gate
+            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+        ),
+    )
+
+
+def discover_config(config_path: Path | None = None) -> tuple[dict[str, Any], Path]:
+    """Public wrapper over the upward config walk, for non-CLI entry points."""
+    return _discover_config(config_path)
+
+
+def _secho_warning(message: str) -> None:
+    typer.secho(message, fg=typer.colors.YELLOW, err=True)
+
+
+def _env_var(name: str) -> str | None:
+    import os
+
+    value = os.environ.get(name)
+    return value or None
+
+
+def resolve_redaction(
+    *,
+    redact_paths: bool,
+    redact_qualnames: bool,
+    private_comment: bool,
+    redact_salt: str | None,
+    cfg: Mapping[str, Any],
+    config_dir: Path,
+    warn: Callable[[str], None] | None = None,
+) -> RedactionConfig:
+    """Build a RedactionConfig from CLI flags, config, and the salt sources.
+
+    `--private-comment` is a preset: it forces both path and qualname redaction
+    and suppresses source links for PR comments. When redaction is active but no
+    explicit / env / config / git-derived salt exists, warn once that unsalted
+    hashes are guessable.
+
+    Lives here rather than in `cli` so the pytest plugin can reach it without
+    importing the CLI: before 0.3.5 the plugin printed raw paths and qualnames into
+    CI logs for repos that had asked for redaction in config, because this function
+    was on the other side of that wall. `warn` lets a caller without typer route the
+    unsalted notice into its own reporter.
+    """
+    say = warn or _secho_warning
+    rp = _resolved_bool(redact_paths, cfg.get("redact_paths"))
+    rq = _resolved_bool(redact_qualnames, cfg.get("redact_qualnames"))
+    pc = _resolved_bool(private_comment, cfg.get("private_comment"))
+    if pc:
+        rp = True
+        rq = True
+    if not (rp or rq):
+        # Inactive: skip salt resolution entirely so a normal run never shells
+        # out to git for a salt it will not use.
+        return RedactionConfig()
+
+    def _auto_salt() -> str | None:
+        repo = _env_var("GITHUB_REPOSITORY")
+        sha = _env_var("GITHUB_SHA")
+        if repo and sha:
+            return f"{repo}@{sha}"
+        return head_sha(config_dir)
+
+    resolution = resolve_salt(redact_salt, cfg.get("redact_salt"), auto=_auto_salt)
+    if (rp or rq) and resolution.source == "none":
+        say(
+            "warning: redacting without a salt; hashes are guessable from known paths. "
+            "Set --redact-salt or RISKRATCHET_REDACT_SALT for stronger redaction."
+        )
+    return RedactionConfig(
+        redact_paths=rp,
+        redact_qualnames=rq,
+        suppress_links=pc,
+        salt=resolution.salt,
+    )
 
 
 def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:

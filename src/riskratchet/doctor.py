@@ -136,8 +136,12 @@ def _check_baseline(baseline_file: Path) -> DoctorCheck:
             summary=f"baseline not found: {baseline_file}",
             remediation="riskratchet baseline",
         )
+    dropped: list[int] = []
     try:
-        baseline = load_baseline(baseline_file)
+        # `cli._load_baseline_or_exit` passes `on_dropped`; without it here, `doctor`
+        # reported PASS on a baseline that had silently lost entries — the one command
+        # whose job is to notice that.
+        baseline = load_baseline(baseline_file, on_dropped=dropped.append)
     except BaselineVersionError as exc:
         # Regenerating would overwrite a newer, still-valid baseline with an older
         # format — the opposite of the fix.
@@ -153,6 +157,23 @@ def _check_baseline(baseline_file: Path) -> DoctorCheck:
             status=CheckStatus.FAIL,
             summary=f"baseline is malformed: {exc}",
             remediation="riskratchet baseline  # regenerate from current state",
+        )
+    if dropped:
+        return DoctorCheck(
+            name="baseline",
+            status=CheckStatus.WARN,
+            summary=f"{baseline_file}: {dropped[0]} unreadable entr{'y' if dropped[0] == 1 else 'ies'} "
+            f"dropped ({len(baseline.entries)} usable) — those functions are not ratcheted",
+            remediation="riskratchet baseline  # regenerate from current state",
+        )
+    if not baseline.entries:
+        # An empty baseline passes every gate, so PASS is the wrong word for it even
+        # when the file is well-formed.
+        return DoctorCheck(
+            name="baseline",
+            status=CheckStatus.WARN,
+            summary=f"{baseline_file} has no entries — every gate passes",
+            remediation="riskratchet baseline  # capture the current state",
         )
     return DoctorCheck(
         name="baseline",

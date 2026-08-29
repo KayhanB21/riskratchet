@@ -157,3 +157,26 @@ def test_an_unreadable_report_is_fatal_rather_than_an_empty_coverage_view(tmp_pa
             ts_coverage_paths=[junk],
             missing_coverage_policy=MissingCoveragePolicy.SKIP,
         )
+
+
+@pytest.mark.parametrize(
+    ("pattern", "suppresses"),
+    [
+        ("lib/app.ts::handler", True),  # the canonical target form
+        ("lib/**", True),
+        ("handler", True),
+        ("lib/app.ts::other", False),
+        ("nomatch", False),
+    ],
+)
+def test_both_backends_suppress_the_same_patterns(pattern: str, suppresses: bool) -> None:
+    """`allow` semantics must not depend on which backend found the function.
+
+    The `::` case is the one that mattered: it matched nothing in either backend, so
+    a target copied out of a report silently suppressed nothing while the user believed
+    that debt was parked.
+    """
+    from riskratchet.engine import pattern_matches
+
+    assert pattern_matches(pattern, "lib/app.ts::handler", "lib/app.ts", "handler") is suppresses
+    assert te._is_allowed("lib/app.ts", "handler", [pattern]) is suppresses
