@@ -888,6 +888,13 @@ Finally, a **report riskratchet cannot write** — `--output`, `--debug-json-fil
 `baseline --output` pointing at a directory or a read-only location — is exit `2`, not the exit `1`
 plus traceback it used to be. Exit `1` means a gate tripped, and a full disk is not a gate.
 
+For the same reason, a **test command auto-coverage cannot start** is exit `2`. The default
+`test_command` shells out to `pytest`; on a machine without it — a slim CI image, a project on a
+different runner — that raised an uncaught `FileNotFoundError` and exited `1`, so a missing test
+runner was indistinguishable from a risk regression. An unparseable or empty `test_command` reports
+the same way. A command that *does* run and then fails is unchanged: whatever coverage it wrote is
+still used, because failing tests still produce a usable signal.
+
 ## TypeScript
 
 riskratchet scores TypeScript as a first-class backend alongside Python. Pass `scan --typescript`

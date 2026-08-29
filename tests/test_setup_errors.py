@@ -22,6 +22,8 @@ import pytest
 from click.testing import Result
 from typer.testing import CliRunner
 
+from riskratchet import auto_coverage
+from riskratchet.auto_coverage import _default_runner as _real_default_runner
 from riskratchet.cli import app
 
 runner = CliRunner()
@@ -1117,3 +1119,65 @@ def test_a_target_in_the_wrong_spelling_names_the_right_one(
 
     assert result.exit_code == 2, result.output
     assert "src/m.py::trivial" in result.stderr
+
+
+@pytest.fixture
+def real_test_command_runner(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Undo conftest's `block_auto_coverage_runner` for the runner's own tests.
+
+    The guard exists so tests never shell out to a real `pytest`. Here
+    `_default_runner` *is* the code under test, and both commands it is given
+    fail before any process starts — one at `shlex.split`, the other because
+    the executable does not exist — so nothing is spawned.
+    """
+    monkeypatch.setattr(auto_coverage, "_default_runner", _real_default_runner)
+
+
+@pytest.mark.parametrize("command", ["scan", "baseline"])
+def test_an_unrunnable_test_command_exits_two_without_a_traceback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    command: str,
+    real_test_command_runner: None,
+) -> None:
+    """A missing test runner is a setup error, not a gate verdict.
+
+    Auto-coverage shells out to `pytest` by default. On a machine without it —
+    a slim CI image, a project using a different runner — `subprocess.run`
+    raised an uncaught `FileNotFoundError`, which surfaced as a Rich traceback
+    and exit 1. Exit 1 means "risk regressed", so an unrunnable test command
+    read as a failing gate.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntest_command = "riskratchet-no-such-runner --out {output}"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, [command, str(src), "--no-git"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "could not be run" in result.output
+    # The remediation names all three ways out.
+    assert "--coverage" in result.output
+    assert "test_command" in result.output
+    assert "--no-auto-cov" in result.output
+
+
+def test_an_unparseable_test_command_exits_two_without_a_traceback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, real_test_command_runner: None
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntest_command = "pytest --cov \'unclosed"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["scan", str(src), "--no-git"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "could not be parsed" in result.output

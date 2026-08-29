@@ -26,7 +26,7 @@ import sys
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NoReturn
 
 import typer
 
@@ -37,6 +37,7 @@ from riskratchet.auto_coverage import (
     DEFAULT_CACHE_PATH,
     DEFAULT_TEST_COMMAND,
     AutoCoverageResult,
+    CoverageCommandError,
     ensure_coverage,
 )
 from riskratchet.coverage import MissingCoveragePolicy
@@ -548,6 +549,36 @@ def _report_missing_coverage(
     )
 
 
+def _exit_unrunnable_test_command(exc: CoverageCommandError, *, cache_path: Path) -> NoReturn:
+    """A test command that cannot be started is a setup error, not a gate verdict.
+
+    `pytest` missing from PATH raised an uncaught `FileNotFoundError` through
+    `subprocess.run`, which Typer rendered as a traceback and exit 1 — the code
+    that means "risk regressed". Every other unusable input reaches exit 2 with
+    a remediation; this is the same rule for the command auto-coverage shells
+    out to.
+    """
+    typer.secho(
+        _format_setup_error(
+            f"riskratchet: {exc}: `{exc.command}`.",
+            [
+                (
+                    "Generate coverage yourself and point riskratchet at it:",
+                    f"<command> --coverage {cache_path}",
+                ),
+                (
+                    "Fix the configured command:",
+                    '[tool.riskratchet] test_command = "..."',
+                ),
+                ("Disable auto-coverage entirely:", "<command> --no-auto-cov"),
+            ],
+        ),
+        fg=typer.colors.RED,
+        err=True,
+    )
+    raise typer.Exit(code=2)
+
+
 def _resolve_coverage(
     value: Path | None,
     cfg: dict[str, Any],
@@ -590,14 +621,17 @@ def _resolve_coverage(
             substitute=cache_path if auto_enabled else None,
         )
 
-    result: AutoCoverageResult = ensure_coverage(
-        requested=requested if was_configured else None,
-        sources=sources,
-        cache_path=cache_path,
-        test_command=test_command,
-        enabled=auto_enabled,
-        cwd=config_dir,
-    )
+    try:
+        result: AutoCoverageResult = ensure_coverage(
+            requested=requested if was_configured else None,
+            sources=sources,
+            cache_path=cache_path,
+            test_command=test_command,
+            enabled=auto_enabled,
+            cwd=config_dir,
+        )
+    except CoverageCommandError as exc:
+        _exit_unrunnable_test_command(exc, cache_path=cache_path)
     _record_coverage_diag(
         diagnostics,
         mode="single" if result.path is not None else "none",

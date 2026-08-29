@@ -29,6 +29,20 @@ DEFAULT_CACHE_PATH = Path(".riskratchet/coverage.json")
 DEFAULT_TEST_COMMAND = "pytest --cov --cov-branch --cov-report=json:{output} -q"
 
 
+class CoverageCommandError(Exception):
+    """The auto-coverage test command could not be started at all.
+
+    Distinct from the command *running* and failing, which is survivable —
+    whatever coverage it wrote is still used. This is "there is nothing to
+    run", so it is a setup error (exit 2), never a gate verdict (exit 1).
+    """
+
+    def __init__(self, command: str, problem: str) -> None:
+        super().__init__(f"test command {problem}")
+        self.command = command
+        self.problem = problem
+
+
 @dataclass(frozen=True, slots=True)
 class AutoCoverageResult:
     """Outcome of `ensure_coverage`.
@@ -123,11 +137,28 @@ def _cache_is_fresh(cache_path: Path, sources: list[Path]) -> bool:
     return True
 
 
+def _split_command(command: str) -> list[str]:
+    """Parse a configured test command into argv, or say why it cannot be."""
+    try:
+        args = shlex.split(command)
+    except ValueError as exc:  # unbalanced quote in a configured test_command
+        raise CoverageCommandError(command, f"could not be parsed: {exc}") from exc
+    if not args:
+        raise CoverageCommandError(command, "is empty")
+    return args
+
+
 def _default_runner(command: str, cwd: Path) -> int:
     # shell=False keeps argument quoting honest. The configured command is
     # split with shlex so users can still write a single template string.
-    args = shlex.split(command)
-    result = subprocess.run(args, check=False, cwd=cwd)
+    try:
+        result = subprocess.run(_split_command(command), check=False, cwd=cwd)
+    except OSError as exc:
+        # `pytest` not on PATH is the common one, and it used to surface as an
+        # uncaught FileNotFoundError: a Rich traceback and exit 1, which means
+        # "the gate tripped". A test runner that cannot be started is a setup
+        # error the user must fix, so it has to reach exit 2 instead.
+        raise CoverageCommandError(command, f"could not be run: {exc.strerror or exc}") from exc
     return result.returncode
 
 
