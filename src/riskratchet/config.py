@@ -10,9 +10,9 @@ Path-resolution contract:
   relative to the current working directory (so shell tab-completion and
   "scan here" behave as typed).
 - Config-declared paths (`paths`, `coverage`, `coverage_map`,
-  `coverage_cache`, `baseline`) are anchored to the directory of the
-  discovered config file, so a run from a nested package directory
-  resolves them against the project root.
+  `coverage_cache`, `baseline`, `ts_coverage`, `ts_entry`) are anchored to
+  the directory of the discovered config file, so a run from a nested
+  package directory resolves them against the project root.
 - The auto-coverage test command runs from the config directory, and
   report paths are made relative to it.
 
@@ -33,6 +33,7 @@ import typer
 if TYPE_CHECKING:
     from riskratchet.diagnostics import Diagnostics
 
+from riskratchet.analysis import iter_python_files
 from riskratchet.auto_coverage import (
     DEFAULT_CACHE_PATH,
     DEFAULT_TEST_COMMAND,
@@ -95,6 +96,9 @@ CONFIG_ALLOWED_KEYS = {
     "redact_qualnames",
     "redact_salt",
     "test_command",
+    "ts_coverage",
+    "ts_entry",
+    "typescript",
     "weights",
 }
 
@@ -115,7 +119,9 @@ _BOOL_KEYS = (
     "redact_paths",
     "redact_qualnames",
     "private_comment",
+    "typescript",
 )
+_STRING_LIST_KEYS = ("paths", "include", "exclude", "allow", "ts_coverage", "ts_entry")
 
 
 def _discover_config(config_path: Path | None) -> tuple[dict[str, Any], Path]:
@@ -256,7 +262,7 @@ def invalid_config_values(cfg: Mapping[str, Any]) -> list[str]:
 
 def _string_list_problems(cfg: Mapping[str, Any]) -> list[str]:
     out = []
-    for key in ("paths", "include", "exclude", "allow"):
+    for key in _STRING_LIST_KEYS:
         value = cfg.get(key, [])
         if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
             out.append(f"{key} must be a list of strings.")
@@ -361,6 +367,9 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
         "include": cfg.get("include", []),
         "exclude": cfg.get("exclude", []),
         "allow": cfg.get("allow", []),
+        "typescript": resolved_typescript(None, cfg),
+        "ts_coverage": _config_string_list(cfg, "ts_coverage"),
+        "ts_entry": _config_string_list(cfg, "ts_entry"),
         "weights": _resolved_weights(cfg) or DEFAULT_WEIGHTS,
         "groups": {name: list(prefixes) for name, prefixes in groups.items()},
     }
@@ -482,6 +491,45 @@ def _resolved_paths(
     return [Path(".")]
 
 
+def resolved_typescript(cli_value: bool | None, cfg: Mapping[str, Any]) -> bool:
+    """Resolve the TypeScript switch: an explicit flag wins, then config, then off.
+
+    `--typescript/--no-typescript` is `None`-defaulted for the reason the gate
+    thresholds are: a real-valued default cannot be told apart from the user passing
+    it, so config could never win — and a switch config can turn *on* must be one a
+    flag can turn back *off*, or `[tool.riskratchet] typescript = true` would leave
+    no way to run Python-only. Public because the pytest plugin resolves the same key.
+    """
+    if cli_value is not None:
+        return cli_value
+    configured = cfg.get("typescript")
+    return configured if isinstance(configured, bool) else False
+
+
+def resolved_ts_paths(
+    cli_value: list[Path] | None,
+    cfg: Mapping[str, Any],
+    key: str,
+    config_dir: Path,
+) -> list[Path]:
+    """Resolve `--ts-coverage` / `--ts-entry` against `ts_coverage` / `ts_entry` in config.
+
+    CLI values win wholesale and stay cwd-relative; config values anchor to the config
+    directory — the contract `coverage` follows, so a nested-directory run reads the
+    same report a root run does.
+    """
+    if cli_value:
+        return list(cli_value)
+    return [_anchor_config_path(Path(item), config_dir) for item in _config_string_list(cfg, key)]
+
+
+def _config_string_list(cfg: Mapping[str, Any], key: str) -> list[str]:
+    value = cfg.get(key)
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value]
+
+
 def _coverage_candidate(value: Path | None, default: Any) -> tuple[Path | None, bool]:
     if value is not None:
         return value, True
@@ -549,7 +597,12 @@ def _report_missing_coverage(
     )
 
 
-def _exit_unrunnable_test_command(exc: CoverageCommandError, *, cache_path: Path) -> NoReturn:
+def _report_unrunnable_test_command(
+    exc: CoverageCommandError,
+    *,
+    cache_path: Path,
+    allow_missing: bool,
+) -> None:
     """A test command that cannot be started is a setup error, not a gate verdict.
 
     `pytest` missing from PATH raised an uncaught `FileNotFoundError` through
@@ -557,7 +610,19 @@ def _exit_unrunnable_test_command(exc: CoverageCommandError, *, cache_path: Path
     that means "risk regressed". Every other unusable input reaches exit 2 with
     a remediation; this is the same rule for the command auto-coverage shells
     out to.
+
+    Under `allow_missing_coverage` the user has already said "continue when
+    coverage is absent", and a runner that cannot start yields exactly that
+    absence — so it warns and continues. Before 0.3.6 the flag did not reach this
+    branch, which left a TypeScript-only tree with no way to run at all.
     """
+    if allow_missing:
+        typer.secho(
+            f"riskratchet: {exc}: `{exc.command}`; continuing without coverage.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        return
     typer.secho(
         _format_setup_error(
             f"riskratchet: {exc}: `{exc.command}`.",
@@ -579,6 +644,50 @@ def _exit_unrunnable_test_command(exc: CoverageCommandError, *, cache_path: Path
     raise typer.Exit(code=2)
 
 
+def _python_coverage_applicable(
+    ts_enabled: bool,
+    paths: Sequence[Path],
+    *,
+    config_dir: Path,
+    include: Sequence[str],
+    exclude: Sequence[str],
+) -> bool:
+    """Python coverage is only a requirement when there is Python to cover.
+
+    On a TypeScript-only tree every command used to run auto-coverage — a full
+    `pytest --cov` to measure zero functions, or exit 2 where pytest was not
+    installed at all — so a TypeScript adopter could not `scan`, `baseline`, or
+    `check` without also disabling the coverage guard. Only consulted when the
+    TypeScript backend is on: a Python-only run with no `.py` files is the
+    empty-scan case, which its own guards already explain better.
+    """
+    if not ts_enabled:
+        return True
+    return bool(iter_python_files(list(paths), root=config_dir, include=list(include), exclude=list(exclude)))
+
+
+def _skip_python_coverage(
+    requested: Path | None,
+    *,
+    from_cli: bool,
+    allow_missing: bool,
+    diagnostics: Diagnostics | None,
+) -> None:
+    """Announce that no Python coverage will be generated or required for this run.
+
+    A report the user *named* still gets `_report_missing_coverage`'s verdict (a
+    typo'd `--coverage` is a usage error on any tree); nothing substitutes for it.
+    """
+    if requested is not None:
+        _report_missing_coverage(requested, from_cli=from_cli, allow_missing=allow_missing, substitute=None)
+    typer.secho(
+        "riskratchet: no Python files under the scan paths; Python coverage not applicable.",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+    _record_coverage_diag(diagnostics, mode="none", source="not_applicable")
+
+
 def _resolve_coverage(
     value: Path | None,
     cfg: dict[str, Any],
@@ -589,6 +698,9 @@ def _resolve_coverage(
     allow_missing: bool,
     config_dir: Path,
     diagnostics: Diagnostics | None = None,
+    ts_enabled: bool = False,
+    include: Sequence[str] = (),
+    exclude: Sequence[str] = (),
 ) -> Path | None:
     """Resolve which coverage JSON to use, generating one via tests if needed.
 
@@ -599,6 +711,11 @@ def _resolve_coverage(
     unless `--allow-missing-coverage` was set. Config-sourced paths (the
     configured `coverage` and `coverage_cache`) anchor to `config_dir`; an
     explicit `--coverage` stays relative to the current directory.
+
+    With the TypeScript backend on (`ts_enabled`) and no Python file under the
+    scan paths after `include` / `exclude`, Python coverage is not applicable: a
+    named report is still honoured or reported, but nothing is generated and
+    nothing is required (see `_python_coverage_applicable`).
     """
     requested, was_configured = _coverage_candidate(value, cfg.get("coverage"))
     if value is None and requested is not None:
@@ -606,6 +723,14 @@ def _resolve_coverage(
     if requested is not None and requested.exists():
         _record_coverage_diag(diagnostics, mode="single", source="explicit", path=str(requested))
         return requested
+
+    if not _python_coverage_applicable(
+        ts_enabled, sources, config_dir=config_dir, include=include, exclude=exclude
+    ):
+        _skip_python_coverage(
+            requested, from_cli=value is not None, allow_missing=allow_missing, diagnostics=diagnostics
+        )
+        return None
 
     auto_enabled = not no_auto_cov and _resolved_bool(True, cfg.get("auto_coverage"), default=True)
     cache_path = _anchor_config_path(
@@ -631,7 +756,9 @@ def _resolve_coverage(
             cwd=config_dir,
         )
     except CoverageCommandError as exc:
-        _exit_unrunnable_test_command(exc, cache_path=cache_path)
+        _report_unrunnable_test_command(exc, cache_path=cache_path, allow_missing=allow_missing)
+        _record_coverage_diag(diagnostics, mode="none", source="command_failed", command=exc.command)
+        return None
     _record_coverage_diag(
         diagnostics,
         mode="single" if result.path is not None else "none",
@@ -648,7 +775,11 @@ def _resolve_coverage(
         # which runs before auto-coverage so it fires whether or not the fallback
         # produced anything.
         return None
+    _exit_no_coverage_produced(requested, cache_path=cache_path, test_command=test_command)
 
+
+def _exit_no_coverage_produced(requested: Path | None, *, cache_path: Path, test_command: str) -> NoReturn:
+    """Every source of coverage failed on a command that requires it: exit 2 with the ways out."""
     resolved_test_command = test_command.format(output=str(cache_path))
     typer.secho(
         _format_setup_error(
@@ -745,33 +876,67 @@ def _ensure_ts_coverage_exists(
     paths: Sequence[Path] | None,
     *,
     allow_missing: bool,
-) -> None:
-    """Fail when a `--ts-coverage` report the user named does not exist.
+    required: bool = True,
+    from_config: bool = False,
+) -> list[Path]:
+    """Return the TypeScript coverage reports that exist; refuse, or drop with a
+    warning, the ones that do not.
 
-    The TypeScript counterpart of `_report_missing_coverage`, and the same rule:
-    a report named on the command line is an assertion about this run. Without this,
+    The TypeScript counterpart of `_report_missing_coverage`, with the same split.
+    A report named on the command line is an assertion about *this run* and is
+    exit 2 everywhere. A `[tool.riskratchet] ts_coverage` entry is a default a
+    fresh clone may not have generated yet: on `scan` / `explain`, where Python
+    coverage is not required either, it warns and scores TypeScript uncovered; on
+    the gate commands it is exit 2 unless `allow_missing_coverage`. Nothing can
+    substitute for it — there is no TypeScript auto-coverage — which is why, unlike
+    the Python default, a gate never silently continues past it. Without this,
     `typescript_engine` reported the miss through `on_error` and carried on with an
     empty coverage view — which under `missing_coverage = skip` dropped every
     TypeScript function and still exited 0.
+
+    Returns the usable subset because `typescript_engine` loads reports strictly: a
+    path it cannot read is fatal there too, so a report this guard decided to
+    tolerate must never reach it. Before 0.3.6 `--allow-missing-coverage` returned
+    early here and the strict loader then exited 2 anyway — the remediation this
+    message printed was not one.
     """
-    if allow_missing or not paths:
-        return
-    missing = [path for path in paths if not Path(path).exists()]
+    present, missing = _partition_existing(paths or [])
     if not missing:
-        return
+        return present
+    fatal = not allow_missing and (required or not from_config)
+    _report_missing_ts_reports(missing, fatal=fatal)
+    if fatal:
+        raise typer.Exit(code=2)
+    return present
+
+
+def _partition_existing(paths: Sequence[Path]) -> tuple[list[Path], list[Path]]:
+    """Split `paths` into the ones that exist on disk and the ones that do not."""
+    present: list[Path] = []
+    missing: list[Path] = []
+    for path in paths:
+        (present if Path(path).exists() else missing).append(Path(path))
+    return present, missing
+
+
+def _report_missing_ts_reports(missing: Sequence[Path], *, fatal: bool) -> None:
+    tail = "" if fatal else " Scoring TypeScript without it."
     for path in missing:
         typer.secho(
             _format_setup_error(
-                f"riskratchet: TypeScript coverage report not found: {path}.",
+                f"riskratchet: TypeScript coverage report not found: {path}.{tail}",
                 [
                     ("Generate it with your test runner:", "npx vitest run --coverage  # or nyc/c8/jest"),
+                    (
+                        "Point riskratchet at the report:",
+                        '[tool.riskratchet] ts_coverage = ["coverage/lcov.info"]  # or --ts-coverage <path>',
+                    ),
                     ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
                 ],
             ),
-            fg=typer.colors.RED,
+            fg=typer.colors.RED if fatal else typer.colors.YELLOW,
             err=True,
         )
-    raise typer.Exit(code=2)
 
 
 @dataclass(frozen=True)
@@ -802,6 +967,9 @@ class GateSettings:
     fail_existing_above: float | None
     fail_component_regression_above: float
     component_regression_gate: bool
+    typescript: bool
+    ts_coverage: list[Path]
+    ts_entry: list[Path]
 
 
 def resolve_gate_settings(
@@ -815,6 +983,9 @@ def resolve_gate_settings(
     fail_component_regression_above: float | None = None,
     component_regression_gate: bool = True,
     churn_days: int | None = None,
+    typescript: bool | None = None,
+    ts_coverage: list[Path] | None = None,
+    ts_entry: list[Path] | None = None,
 ) -> GateSettings:
     """Resolve config into gate settings, with any explicitly-passed override winning.
 
@@ -844,6 +1015,9 @@ def resolve_gate_settings(
             component_regression_gate
             and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
+        typescript=resolved_typescript(typescript, cfg),
+        ts_coverage=resolved_ts_paths(ts_coverage, cfg, "ts_coverage", config_dir),
+        ts_entry=resolved_ts_paths(ts_entry, cfg, "ts_entry", config_dir),
     )
 
 

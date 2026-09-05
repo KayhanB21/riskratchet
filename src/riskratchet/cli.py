@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
 
@@ -19,6 +20,7 @@ from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
     BaselineVersionError,
     baseline_from_report,
+    languages_not_scanned,
     load_baseline,
     regressions_above_threshold,
     regressions_from_diff,
@@ -50,6 +52,8 @@ from riskratchet.config import (
     _resolved_weights,
     invalid_config_values,
     resolve_gate_settings,
+    resolved_ts_paths,
+    resolved_typescript,
     unknown_config_keys,
 )
 from riskratchet.config import (
@@ -187,8 +191,16 @@ TypescriptOption = Annotated[
     typer.Option(
         "--typescript",
         help="Also analyze and score TypeScript functions (since 0.3.0), mixed into the scored "
-        'functions with `language: "typescript"`. Needs '
+        'functions with `language: "typescript"`. Same as `typescript = true` in '
+        "\\[tool.riskratchet] (since 0.3.6). Needs "
         f"`pip install '{_TYPESCRIPT_EXTRA}'`.",
+    ),
+]
+NoTypescriptOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-typescript",
+        help="Skip TypeScript even when \\[tool.riskratchet] sets typescript = true (since 0.3.6).",
     ),
 ]
 TsCoverageOption = Annotated[
@@ -381,15 +393,8 @@ def scan(
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
-    typescript: Annotated[
-        bool,
-        typer.Option(
-            "--typescript",
-            help="Also analyze and SCORE TypeScript functions (since 0.3.0), mixed into the scored "
-            'functions with `language: "typescript"`. Needs '
-            f"`pip install '{_TYPESCRIPT_EXTRA}'`.",
-        ),
-    ] = False,
+    typescript: TypescriptOption = False,
+    no_typescript: NoTypescriptOption = False,
     experimental_typescript: Annotated[
         bool,
         typer.Option(
@@ -434,31 +439,39 @@ def scan(
     diag = Diagnostics(command="scan")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
-    _ensure_ts_coverage_exists(ts_coverage, allow_missing=False)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
-    coverage_path: Path | None
-    if resolved_coverage_map:
-        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=True)
-        coverage_path = None
-        diag.set_coverage(
-            mode="map",
-            source="map",
-            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
-        )
-    else:
-        coverage_path = _resolve_coverage(
-            coverage,
-            cfg,
-            sources=resolved_paths,
-            no_auto_cov=no_auto_cov,
-            required=False,
-            # Not `allow_missing=True`: that is redundant with `required=False` and would
-            # also excuse a *typo'd* --coverage path, which is a usage error here as much
-            # as a nonexistent scan path is.
-            allow_missing=False,
-            config_dir=config_dir,
-            diagnostics=diag,
-        )
+    resolved_include = include or cfg.get("include", [])
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
+    ts = _resolve_ts_settings(
+        typescript,
+        no_typescript,
+        experimental_typescript,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=False,
+        required=False,
+    )
+    coverage_path, resolved_coverage_map = _resolve_coverage_inputs(
+        coverage,
+        coverage_map,
+        cfg=cfg,
+        config_dir=config_dir,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=False,
+        # Not `allow_missing=True`: that is redundant with `required=False` and would
+        # also excuse a *typo'd* --coverage path, which is a usage error here as much
+        # as a nonexistent scan path is.
+        allow_missing=False,
+        map_allow_missing=True,
+        diag=diag,
+        ts=ts,
+        include=resolved_include,
+        exclude=resolved_exclude,
+    )
     _emit_diagnostics_banner(
         command="scan",
         scan_roots=resolved_paths,
@@ -466,13 +479,6 @@ def scan(
         config_dir=config_dir,
         coverage_map=resolved_coverage_map,
         redaction=redaction,
-    )
-    resolved_include = include or cfg.get("include", [])
-    resolved_exclude = exclude or cfg.get("exclude", [])
-    resolved_allow = allow or cfg.get("allow", [])
-    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    ts_enabled = _resolve_typescript_flag(
-        typescript, experimental_typescript, ts_coverage=ts_coverage, ts_entry=ts_entry
     )
     report = _build_report_or_exit(
         resolved_paths,
@@ -486,9 +492,9 @@ def scan(
         churn_days=resolved_churn_days,
         cfg=cfg,
         missing_coverage=missing_coverage,
-        ts_enabled=ts_enabled,
-        ts_coverage=ts_coverage,
-        ts_entry=ts_entry,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
     _populate_run_diagnostics(
@@ -580,6 +586,7 @@ def baseline(
         typer.Option("--debug-json-file", help="Write the --debug-json envelope to this file instead."),
     ] = None,
     typescript: TypescriptOption = False,
+    no_typescript: NoTypescriptOption = False,
     ts_coverage: TsCoverageOption = None,
     ts_entry: TsEntryOption = None,
 ) -> None:
@@ -593,29 +600,37 @@ def baseline(
     diag = Diagnostics(command="baseline")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    resolved_include = include or cfg.get("include", [])
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
-    coverage_path: Path | None
-    if resolved_coverage_map:
-        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
-        coverage_path = None
-        diag.set_coverage(
-            mode="map",
-            source="map",
-            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
-        )
-    else:
-        coverage_path = _resolve_coverage(
-            coverage,
-            cfg,
-            sources=resolved_paths,
-            no_auto_cov=no_auto_cov,
-            required=True,
-            allow_missing=allow_missing,
-            config_dir=config_dir,
-            diagnostics=diag,
-        )
+    ts = _resolve_ts_settings(
+        typescript,
+        no_typescript,
+        False,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=allow_missing,
+        required=True,
+    )
+    coverage_path, resolved_coverage_map = _resolve_coverage_inputs(
+        coverage,
+        coverage_map,
+        cfg=cfg,
+        config_dir=config_dir,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=allow_missing,
+        map_allow_missing=allow_missing,
+        diag=diag,
+        ts=ts,
+        include=resolved_include,
+        exclude=resolved_exclude,
+    )
     _emit_diagnostics_banner(
         command="baseline",
         scan_roots=resolved_paths,
@@ -624,11 +639,6 @@ def baseline(
         coverage_map=resolved_coverage_map,
         redaction=RedactionConfig(),
     )
-    resolved_include = include or cfg.get("include", [])
-    resolved_exclude = exclude or cfg.get("exclude", [])
-    resolved_allow = allow or cfg.get("allow", [])
-    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
     report = _build_report_or_exit(
         resolved_paths,
         config_dir=config_dir,
@@ -641,9 +651,9 @@ def baseline(
         churn_days=resolved_churn_days,
         cfg=cfg,
         missing_coverage=missing_coverage,
-        ts_enabled=ts_enabled,
-        ts_coverage=ts_coverage,
-        ts_entry=ts_entry,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     _populate_run_diagnostics(
         diag,
@@ -776,6 +786,7 @@ def check(
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
     typescript: TypescriptOption = False,
+    no_typescript: NoTypescriptOption = False,
     ts_coverage: TsCoverageOption = None,
     ts_entry: TsEntryOption = None,
 ) -> None:
@@ -837,29 +848,37 @@ def check(
     )
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    resolved_include = include or cfg.get("include", [])
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
-    coverage_path: Path | None
-    if resolved_coverage_map:
-        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
-        coverage_path = None
-        diag.set_coverage(
-            mode="map",
-            source="map",
-            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
-        )
-    else:
-        coverage_path = _resolve_coverage(
-            coverage,
-            cfg,
-            sources=resolved_paths,
-            no_auto_cov=no_auto_cov,
-            required=True,
-            allow_missing=allow_missing,
-            config_dir=config_dir,
-            diagnostics=diag,
-        )
+    ts = _resolve_ts_settings(
+        typescript,
+        no_typescript,
+        False,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=allow_missing,
+        required=True,
+    )
+    coverage_path, resolved_coverage_map = _resolve_coverage_inputs(
+        coverage,
+        coverage_map,
+        cfg=cfg,
+        config_dir=config_dir,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=allow_missing,
+        map_allow_missing=allow_missing,
+        diag=diag,
+        ts=ts,
+        include=resolved_include,
+        exclude=resolved_exclude,
+    )
     _emit_diagnostics_banner(
         command="check",
         scan_roots=resolved_paths,
@@ -868,11 +887,6 @@ def check(
         coverage_map=resolved_coverage_map,
         redaction=redaction,
     )
-    resolved_include = include or cfg.get("include", [])
-    resolved_exclude = exclude or cfg.get("exclude", [])
-    resolved_allow = allow or cfg.get("allow", [])
-    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
     report = _build_report_or_exit(
         resolved_paths,
         config_dir=config_dir,
@@ -885,18 +899,18 @@ def check(
         churn_days=resolved_churn_days,
         cfg=cfg,
         missing_coverage=missing_coverage,
-        ts_enabled=ts_enabled,
-        ts_coverage=ts_coverage,
-        ts_entry=ts_entry,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     if old is not None:
         old, report = _apply_ts_identity_guard(
             old,
             report,
-            ts_enabled=ts_enabled,
+            ts_enabled=ts.enabled,
             paths=resolved_paths,
             baseline_file=baseline_file,
-            ts_coverage=ts_coverage,
+            ts_coverage=ts.coverage,
         )
     _populate_run_diagnostics(
         diag,
@@ -1067,10 +1081,10 @@ def explain(
         str | None,
         typer.Option("--missing-coverage", help="How to handle missing file coverage."),
     ] = None,
-    typescript: Annotated[
-        bool,
-        typer.Option("--typescript", help="Explain a TypeScript function (needs the [typescript] extra)."),
-    ] = False,
+    typescript: TypescriptOption = False,
+    no_typescript: NoTypescriptOption = False,
+    ts_coverage: TsCoverageOption = None,
+    ts_entry: TsEntryOption = None,
 ) -> None:
     """Print full risk breakdown for one function."""
     if "::" not in target:
@@ -1088,6 +1102,17 @@ def explain(
     if not file_path.exists():
         file_path = Path(file_part)
     resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
+    ts = _resolve_ts_settings(
+        typescript,
+        no_typescript,
+        False,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=False,
+        required=False,
+    )
     coverage_path = _resolve_coverage(
         coverage,
         cfg,
@@ -1097,25 +1122,32 @@ def explain(
         allow_missing=False,  # see the note in `scan`
         config_dir=config_dir,
         diagnostics=diag,
+        ts_enabled=ts.enabled,
     )
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     # `root=config_dir`, not the process cwd. `analyze` defaults to `Path.cwd()`, so
     # `explain` computed `FunctionId.path` against a different root than every other
     # command: run from a nested package it rejected the very target `check` had just
     # printed, breaking `_discover_config`'s promise that a nested run matches a
-    # root-level one. Routing through `build_report` also gets it the `coverage_map`,
-    # `missing_coverage` policy, and TypeScript backend it silently lacked.
-    report = build_report(
+    # root-level one. Routing through `_build_report_or_exit` — the same boundary the
+    # other four commands use — also gets it the `coverage_map`, `missing_coverage`
+    # policy, and TypeScript backend it silently lacked, and turns a missing
+    # `[typescript]` extra into exit 2 with the install hint instead of a traceback.
+    report = _build_report_or_exit(
         [file_path],
-        root=config_dir,
+        config_dir=config_dir,
         coverage_path=coverage_path,
         coverage_map=resolved_coverage_map or None,
+        include=[],
+        exclude=[],
+        allow=[],
         use_git=not no_git,
         churn_days=resolved_churn_days,
-        weights=_resolved_weights(cfg),
-        missing_coverage_policy=_resolved_missing_coverage(missing_coverage, cfg),
-        groups=_resolved_groups(cfg),
-        typescript=typescript,
+        cfg=cfg,
+        missing_coverage=missing_coverage,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     _populate_run_diagnostics(
         diag,
@@ -1237,6 +1269,7 @@ def diff(
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
     ] = None,
     typescript: TypescriptOption = False,
+    no_typescript: NoTypescriptOption = False,
     ts_coverage: TsCoverageOption = None,
     ts_entry: TsEntryOption = None,
 ) -> None:
@@ -1270,29 +1303,37 @@ def diff(
     diag.set_baseline(path=str(baseline_file), present=True, entry_count=len(old.entries))
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
     _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    resolved_include = include or cfg.get("include", [])
+    resolved_exclude = exclude or cfg.get("exclude", [])
+    resolved_allow = allow or cfg.get("allow", [])
+    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
-    _ensure_ts_coverage_exists(ts_coverage, allow_missing=allow_missing)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
-    coverage_path: Path | None
-    if resolved_coverage_map:
-        _ensure_coverage_map_exists(resolved_coverage_map, allow_missing=allow_missing)
-        coverage_path = None
-        diag.set_coverage(
-            mode="map",
-            source="map",
-            coverage_map={prefix: str(path) for prefix, path in resolved_coverage_map.items()},
-        )
-    else:
-        coverage_path = _resolve_coverage(
-            coverage,
-            cfg,
-            sources=resolved_paths,
-            no_auto_cov=no_auto_cov,
-            required=True,
-            allow_missing=allow_missing,
-            config_dir=config_dir,
-            diagnostics=diag,
-        )
+    ts = _resolve_ts_settings(
+        typescript,
+        no_typescript,
+        False,
+        ts_coverage=ts_coverage,
+        ts_entry=ts_entry,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=allow_missing,
+        required=True,
+    )
+    coverage_path, resolved_coverage_map = _resolve_coverage_inputs(
+        coverage,
+        coverage_map,
+        cfg=cfg,
+        config_dir=config_dir,
+        sources=resolved_paths,
+        no_auto_cov=no_auto_cov,
+        required=True,
+        allow_missing=allow_missing,
+        map_allow_missing=allow_missing,
+        diag=diag,
+        ts=ts,
+        include=resolved_include,
+        exclude=resolved_exclude,
+    )
     _emit_diagnostics_banner(
         command="diff",
         scan_roots=resolved_paths,
@@ -1301,11 +1342,6 @@ def diff(
         coverage_map=resolved_coverage_map,
         redaction=redaction,
     )
-    resolved_include = include or cfg.get("include", [])
-    resolved_exclude = exclude or cfg.get("exclude", [])
-    resolved_allow = allow or cfg.get("allow", [])
-    resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    ts_enabled = _resolve_typescript_flag(typescript, False, ts_coverage=ts_coverage, ts_entry=ts_entry)
     report = _build_report_or_exit(
         resolved_paths,
         config_dir=config_dir,
@@ -1318,17 +1354,17 @@ def diff(
         churn_days=resolved_churn_days,
         cfg=cfg,
         missing_coverage=missing_coverage,
-        ts_enabled=ts_enabled,
-        ts_coverage=ts_coverage,
-        ts_entry=ts_entry,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     old, report = _apply_ts_identity_guard(
         old,
         report,
-        ts_enabled=ts_enabled,
+        ts_enabled=ts.enabled,
         paths=resolved_paths,
         baseline_file=baseline_file,
-        ts_coverage=ts_coverage,
+        ts_coverage=ts.coverage,
     )
     _populate_run_diagnostics(
         diag,
@@ -1902,28 +1938,133 @@ def _exit_target_not_found(target: str, report: RiskReport) -> NoReturn:
     raise typer.Exit(code=2)
 
 
+@dataclass(frozen=True)
+class _TsSettings:
+    """The resolved TypeScript switch and its two path lists, flag → config → off."""
+
+    enabled: bool
+    coverage: list[Path]
+    entry: list[Path]
+
+
 def _resolve_typescript_flag(
     typescript: bool,
+    no_typescript: bool,
     experimental_typescript: bool,
     *,
-    ts_coverage: list[Path] | None,
-    ts_entry: list[Path] | None,
+    cfg: dict[str, Any],
 ) -> bool:
-    """Resolve the TypeScript toggle, warning on the deprecated alias and on stray --ts-* flags."""
-    if experimental_typescript and not typescript:
+    """Resolve the TypeScript toggle: `--no-typescript`, `--typescript`, the alias, then config.
+
+    `--no-typescript` is an explicit off and beats both the alias and
+    `[tool.riskratchet] typescript = true`: a switch config can turn on must be one a
+    flag can turn back off, or a real-valued default could never lose to config —
+    the pytest-plugin lesson from 0.3.5, applied before it repeats. Two flags rather
+    than one `--typescript/--no-typescript` pair because Typer renders the pair as two
+    sub-columns, which squeezes every option's help text at 80 columns.
+    """
+    if no_typescript:
+        return False
+    if typescript:
+        return True
+    if experimental_typescript:
         typer.secho(
             "--experimental-typescript is deprecated; use --typescript (TypeScript is scored since 0.3.0).",
             fg=typer.colors.YELLOW,
             err=True,
         )
-    enabled = typescript or experimental_typescript
-    if (ts_coverage or ts_entry) and not enabled:
+        return True
+    return resolved_typescript(None, cfg)
+
+
+def _resolve_ts_settings(
+    typescript: bool,
+    no_typescript: bool,
+    experimental_typescript: bool,
+    *,
+    ts_coverage: list[Path] | None,
+    ts_entry: list[Path] | None,
+    cfg: dict[str, Any],
+    config_dir: Path,
+    allow_missing: bool,
+    required: bool,
+) -> _TsSettings:
+    """Resolve the switch and the `--ts-coverage` / `--ts-entry` lists against config.
+
+    Warns when reports or entries were named (by flag or by key) for a run that will not
+    analyze TypeScript, since they would otherwise be silently ignored. The coverage list
+    comes back already checked by `_ensure_ts_coverage_exists`, so a report the guard
+    tolerated never reaches the strict loader.
+    """
+    enabled = _resolve_typescript_flag(typescript, no_typescript, experimental_typescript, cfg=cfg)
+    coverage = resolved_ts_paths(ts_coverage, cfg, "ts_coverage", config_dir)
+    entry = resolved_ts_paths(ts_entry, cfg, "ts_entry", config_dir)
+    if (coverage or entry) and not enabled:
         typer.secho(
-            "typescript: --ts-coverage / --ts-entry have no effect without --typescript.",
+            "typescript: --ts-coverage / --ts-entry have no effect without --typescript "
+            "(or `typescript = true` in [tool.riskratchet]); the same goes for the ts_coverage / "
+            "ts_entry keys.",
             fg=typer.colors.YELLOW,
             err=True,
         )
-    return enabled
+    if not enabled:
+        # Inert config keys stay inert: a `--no-typescript` run must not exit 2 on a
+        # TypeScript report it will never read. A report named on the command line keeps
+        # its contract — the user asserted it exists for this run.
+        coverage = list(ts_coverage or [])
+        entry = list(ts_entry or [])
+    coverage = _ensure_ts_coverage_exists(
+        coverage, allow_missing=allow_missing, required=required, from_config=not ts_coverage
+    )
+    return _TsSettings(enabled=enabled, coverage=coverage, entry=entry)
+
+
+def _resolve_coverage_inputs(
+    coverage: Path | None,
+    coverage_map: list[str] | None,
+    *,
+    cfg: dict[str, Any],
+    config_dir: Path,
+    sources: list[Path],
+    no_auto_cov: bool,
+    required: bool,
+    allow_missing: bool,
+    map_allow_missing: bool,
+    diag: Diagnostics,
+    ts: _TsSettings,
+    include: list[str],
+    exclude: list[str],
+) -> tuple[Path | None, dict[str, Path]]:
+    """Resolve the Python coverage source for a command: one file, or a per-prefix map.
+
+    `scan`, `baseline`, `check`, and `diff` inlined this identical block; one boundary
+    means the 0.3.6 rule — Python coverage is not applicable on a tree with no Python
+    under the scan paths — is applied in all four at once rather than remembered per
+    command. Returns `(coverage_path, coverage_map)`; at most one of them is set.
+    """
+    resolved_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
+    if resolved_map:
+        _ensure_coverage_map_exists(resolved_map, allow_missing=map_allow_missing)
+        diag.set_coverage(
+            mode="map",
+            source="map",
+            coverage_map={prefix: str(path) for prefix, path in resolved_map.items()},
+        )
+        return None, resolved_map
+    coverage_path = _resolve_coverage(
+        coverage,
+        cfg,
+        sources=sources,
+        no_auto_cov=no_auto_cov,
+        required=required,
+        allow_missing=allow_missing,
+        config_dir=config_dir,
+        diagnostics=diag,
+        ts_enabled=ts.enabled,
+        include=include,
+        exclude=exclude,
+    )
+    return coverage_path, resolved_map
 
 
 def _ts_warn(message: str) -> None:
@@ -1957,12 +2098,12 @@ def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
     `--typescript` over a mixed baseline gated only the Python half and reported a clean
     run. `doctor` already knows how to say this; the gate did not.
     """
-    if not report.functions:
-        return  # the empty-scan guards own this case, with a better message
-    scanned = {fn.language for fn in report.functions}
-    for language in sorted(lang for lang in {e.language for e in old.entries.values()} - scanned if lang):
-        lost = sum(1 for entry in old.entries.values() if entry.language == language)
-        hint = " (pass --typescript)" if language == "typescript" else ""
+    for language, lost in languages_not_scanned(old, report).items():
+        hint = (
+            " (pass --typescript, or set typescript = true in [tool.riskratchet])"
+            if language == "typescript"
+            else ""
+        )
         typer.secho(
             f"warning: the baseline holds {_count(lost, f'{language} entry', f'{language} entries')} "
             f"but this run analyzed no {language} — those functions are not being gated{hint}.",

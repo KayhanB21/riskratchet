@@ -24,6 +24,7 @@ from riskratchet.cli import app
 from riskratchet.config import (
     _BOOL_KEYS,
     _NUMBER_KEYS,
+    _STRING_LIST_KEYS,
     CONFIG_ALLOWED_KEYS,
     invalid_config_values,
     unknown_config_keys,
@@ -228,6 +229,9 @@ def test_valid_config_collects_no_problems() -> None:
         "weights": {"churn": 0.5},
         "groups": {"api": "src/api"},
         "coverage_map": {"src": "coverage.json"},
+        "typescript": True,
+        "ts_coverage": ["coverage/lcov.info"],
+        "ts_entry": ["src/index.ts"],
     }
     assert unknown_config_keys(cfg) == []
     assert invalid_config_values(cfg) == []
@@ -248,6 +252,9 @@ def test_valid_config_collects_no_problems() -> None:
         ({"weights": "heavy"}, "[tool.riskratchet.weights] must be a table."),
         ({"groups": "api"}, "[tool.riskratchet.groups] must be a table."),
         ({"coverage_map": []}, "[tool.riskratchet.coverage_map] must be a table"),
+        ({"typescript": "yes"}, "typescript must be a boolean."),
+        ({"ts_coverage": "coverage/lcov.info"}, "ts_coverage must be a list of strings."),
+        ({"ts_entry": [1]}, "ts_entry must be a list of strings."),
     ],
 )
 def test_invalid_config_values_collects_each_kind(cfg: dict[str, object], expected: str) -> None:
@@ -275,6 +282,7 @@ def test_every_type_checked_key_is_an_allowed_key() -> None:
     """A key validated but not allowed (or vice versa) is a silently dead rule."""
     assert set(_NUMBER_KEYS) <= CONFIG_ALLOWED_KEYS
     assert set(_BOOL_KEYS) <= CONFIG_ALLOWED_KEYS
+    assert set(_STRING_LIST_KEYS) <= CONFIG_ALLOWED_KEYS
 
 
 def test_config_show_still_reports_a_bad_weights_table(
@@ -311,3 +319,153 @@ def test_analysis_commands_report_the_same_weights_error(
 
     assert result.exit_code == 2, result.output
     assert "must be non-negative" in result.stderr
+
+
+# --- 0.3.6: `typescript`, `ts_coverage`, `ts_entry` are config keys ------------
+
+TS_SRC = (
+    "export function handler(value: number): number {\n"
+    "  if (value > 0) {\n"
+    "    return value;\n"
+    "  }\n"
+    "  return -value;\n"
+    "}\n"
+)
+TS_PROJECT = '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\n'
+
+
+def _make_mixed_project(root: Path, *, pyproject: str = TS_PROJECT) -> None:
+    _make_project(root, pyproject=pyproject)
+    _write_source(root / "src" / "m.ts", TS_SRC)
+
+
+def test_typescript_keys_are_known_config_keys(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The shipped CI path could not enable TypeScript: the key did not exist.
+
+    `typescript = true` warned `ignoring unknown key(s)` and scanned Python only, so an
+    adopter had no way to turn the backend on from the config every other setting
+    lives in — and the Action had no input to pass the flag either.
+    """
+    _make_mixed_project(
+        tmp_path,
+        pyproject=TS_PROJECT + 'ts_coverage = ["coverage/lcov.info"]\nts_entry = ["src/index.ts"]\n',
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, _scan("--no-typescript"))
+
+    assert result.exit_code == 0, result.output
+    assert "unknown" not in result.stderr
+    assert runner.invoke(app, ["config", "validate"]).exit_code == 0
+
+
+def test_config_typescript_scans_the_same_functions_as_the_flag(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`typescript = true` and `--typescript` are one switch, not two."""
+    pytest.importorskip("tree_sitter_typescript")
+    _make_mixed_project(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    from_config = runner.invoke(app, _scan())
+    assert from_config.exit_code == 0, from_config.output
+
+    (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")
+    from_flag = runner.invoke(app, _scan("--typescript"))
+    assert from_flag.exit_code == 0, from_flag.output
+
+    assert _scanned_paths(from_config) == {"src/m.py", "src/m.ts"}
+    assert json.loads(from_config.stdout)["functions"] == json.loads(from_flag.stdout)["functions"]
+
+
+def test_no_typescript_beats_a_config_that_turns_it_on(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A switch config can turn on must be one a flag can turn back off.
+
+    A `--typescript` flag whose default is a real `False` cannot be told apart from
+    the user asking for Python-only, which is the 0.3.5 pytest-plugin lesson: config
+    could never lose. `--no-typescript` is the explicit off.
+    """
+    _make_mixed_project(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, _scan("--no-typescript"))
+
+    assert result.exit_code == 0, result.output
+    assert _scanned_paths(result) == {"src/m.py"}
+
+
+def test_no_typescript_beats_the_deprecated_alias(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _make_mixed_project(tmp_path, pyproject='[tool.riskratchet]\npaths = ["src"]\n')
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, _scan("--experimental-typescript", "--no-typescript"))
+
+    assert result.exit_code == 0, result.output
+    assert _scanned_paths(result) == {"src/m.py"}
+    assert "deprecated" not in result.stderr
+
+
+def test_config_ts_coverage_anchors_to_the_config_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A `ts_coverage` entry resolves against the config file, like `coverage` does.
+
+    Observed through the missing-report error: run from a nested directory, the path
+    it names is the config-anchored one, not a cwd-relative reading that would look for
+    the report under the nested directory.
+    """
+    _make_mixed_project(tmp_path, pyproject=TS_PROJECT + 'ts_coverage = ["cov/lcov.info"]\n')
+    monkeypatch.chdir(tmp_path)
+    seeded = runner.invoke(
+        app, ["baseline", "src", "--no-git", "--no-auto-cov", "--allow-missing-coverage", "--no-typescript"]
+    )
+    assert seeded.exit_code == 0, seeded.output
+    nested = tmp_path / "src" / "nested"
+    nested.mkdir()
+    monkeypatch.chdir(nested)
+
+    result = runner.invoke(app, ["check", "--no-git", "--no-auto-cov"])
+
+    assert result.exit_code == 2, result.output
+    assert str(tmp_path / "cov" / "lcov.info") in result.stderr
+    assert "ts_coverage" in result.stderr
+
+
+def test_inert_typescript_keys_do_not_fail_a_python_only_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`--no-typescript` must not exit 2 on a report the run will never read."""
+    _make_mixed_project(tmp_path, pyproject=TS_PROJECT + 'ts_coverage = ["cov/lcov.info"]\n')
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, _scan("--no-typescript"))
+
+    assert result.exit_code == 0, result.output
+    assert "not found" not in result.stderr
+    assert "have no effect" in result.stderr
+
+
+def _documented_config_keys() -> set[str]:
+    """Every backticked name in the first column of the README's configuration table."""
+    import re
+
+    readme = (Path(__file__).resolve().parent.parent / "README.md").read_text(encoding="utf-8")
+    section = readme.split("## Configuration reference", 1)[1].split("\n## ", 1)[0]
+    keys: set[str] = set()
+    for line in section.splitlines():
+        if not line.startswith("| `"):
+            continue
+        first_cell = line.split("|")[1]
+        keys.update(re.findall(r"`([a-z_]+)`", first_cell))
+    return keys
+
+
+def test_every_allowed_config_key_is_documented_in_the_readme() -> None:
+    """Adding a key is a four-place change; the README table is the fourth.
+
+    `CONFIG_ALLOWED_KEYS`, the type rule, and the schema were all wired for the
+    redaction keys while the table stayed silent for a release; this closes that gap
+    for the next key.
+    """
+    assert _documented_config_keys() >= CONFIG_ALLOWED_KEYS
