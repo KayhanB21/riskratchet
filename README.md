@@ -140,7 +140,16 @@ paths`), `coverage` (auto-detected), `baseline` (`.riskratchet.json`
 — when the file is missing, the action runs in `--fail-above` mode),
 `fail-above` (`60`), `comment` (`true`), `python-version` (`3.12`),
 `riskratchet-version` (latest from PyPI), `github-token`
-(`${{ github.token }}`).
+(`${{ github.token }}`), and, since 0.3.6, `typescript` (empty:
+`[tool.riskratchet] typescript` decides; `true` / `false` pass
+`--typescript` / `--no-typescript`), `ts-coverage` and `ts-entry`
+(space-separated, workspace-relative; each entry becomes one
+`--ts-coverage` / `--ts-entry`). The action installs the `[typescript]`
+extra on every path, so turning TypeScript on from config works in CI
+without further setup — **at `v0.3.6` or later**: an older `action.yml`
+that installs the latest CLI from PyPI gets 0.3.6 without the extra, and
+a `typescript = true` config then exits 2 with the install hint. See
+[TypeScript](#typescript) for a full CI example.
 
 For Marketplace discovery, the `KayhanB21/riskratchet-action`
 wrapper repo is the recommended entry point; it delegates to the
@@ -278,6 +287,33 @@ repos:
           - "coverage.json"
           - "--baseline"
           - ".riskratchet.json"
+```
+
+#### Variant: a TypeScript (or mixed) repo
+
+Add the report your JavaScript runner writes as a sibling hook and hand it to
+riskratchet. Run riskratchet from your own environment (`language: system`) with the
+`[typescript]` extra installed there — `uv add --dev 'riskratchet[typescript]'` or
+`pip install 'riskratchet[typescript]'` — since the published hook's isolated venv
+does not carry the extra. `typescript = true` in `[tool.riskratchet]` (or
+`--typescript` on the command) turns the backend on:
+
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: vitest-cov
+        name: vitest --coverage (produces coverage/lcov.info for riskratchet)
+        entry: npx vitest run --coverage --coverage.reporter=lcov
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: riskratchet
+        entry: riskratchet check src --ts-coverage coverage/lcov.info --baseline .riskratchet.json
+        language: system
+        pass_filenames: false
+        always_run: true
 ```
 
 #### Variant: uv / poetry projects (all `language: system`)
@@ -451,6 +487,15 @@ riskratchet scan src --coverage coverage.json --missing-coverage skip
 `optimistic` treats missing file coverage as fully covered. `skip` drops
 functions from unmapped files and reports the skipped count.
 
+Generated Python is scored like any other Python: protobuf stubs and other codegen
+say `DO NOT EDIT` in a hundred different headers, so riskratchet does not guess.
+Keep them out at discovery time instead:
+
+```toml
+[tool.riskratchet]
+exclude = ["**/*_pb2.py", "**/*_pb2_grpc.py", "src/generated/**"]
+```
+
 ## Pytest plugin
 
 riskratchet ships a pytest plugin that runs `check` as part of your test
@@ -496,6 +541,14 @@ value shown):
 - `--riskratchet-fail-existing-above` (default: unset)
 - `--riskratchet-fail-component-regression-above` (default: `15`)
 - `--riskratchet-no-component-regression-gate`
+- `--riskratchet-typescript` / `--riskratchet-no-typescript` (default: `typescript`, else off; since 0.3.6)
+- `--riskratchet-ts-coverage` (default: `ts_coverage`; repeatable; since 0.3.6)
+- `--riskratchet-ts-entry` (default: `ts_entry`; repeatable; since 0.3.6)
+
+Since 0.3.6 the plugin scores TypeScript exactly as `riskratchet check` does — same
+`[typescript]` extra, same rule for a missing report (the session fails unless
+`allow_missing_coverage`), same warning when the baseline holds TypeScript entries the run did
+not analyze. Every setup failure fails the session with the message, never a traceback.
 
 ## How risk is scored
 
@@ -922,6 +975,52 @@ riskratchet scan src --typescript
 
 `--experimental-typescript` is a deprecated hidden alias for `--typescript`, kept for one release; it
 prints a deprecation warning and behaves identically. It will be removed in a later minor.
+
+### Turn it on from config or CI
+
+Since 0.3.6 the switch lives in `[tool.riskratchet]` too, so every door — `scan`, `check`, `diff`,
+`baseline`, `explain`, `doctor`, the pytest plugin, and the GitHub Action — reads the same
+setting. `ts_coverage` and `ts_entry` are the config forms of `--ts-coverage` / `--ts-entry`,
+relative to the config file; `--no-typescript` turns a configured `true` back off for one run.
+`riskratchet init` writes `typescript = true` for you when it finds TypeScript under `src`.
+
+```toml
+[tool.riskratchet]
+paths = ["src"]
+typescript = true
+ts_coverage = ["coverage/lcov.info"]   # exit 2 on baseline/check/diff if missing; a warning on scan
+ts_entry = ["src/index.ts"]            # optional: narrow the public surface to one barrel
+```
+
+A TypeScript-only project needs no Python coverage: when TypeScript is on and there is no `.py`
+file under the scan paths, riskratchet says so once and neither runs `pytest` nor asks for a
+`coverage.json`. In CI, produce the report and hand it to the Action (which installs the
+`[typescript]` extra itself):
+
+```yaml
+# .github/workflows/riskratchet.yml — a TypeScript (or mixed) repo
+on: [pull_request]
+
+jobs:
+  riskratchet:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444  # v5.0.0
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx vitest run --coverage --coverage.reporter=lcov   # or c8 / nyc / jest
+      - uses: KayhanB21/riskratchet@v0.3.5
+        with:
+          typescript: 'true'                  # or leave empty and set `typescript = true` in config
+          ts-coverage: coverage/lcov.info
+```
 
 TypeScript complexity (the `CC` column) is the McCabe cyclomatic count, computed to match ESLint's
 `complexity` rule: `??` counts as a branch but optional chaining `?.` does not (it has no Python

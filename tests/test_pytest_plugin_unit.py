@@ -230,6 +230,10 @@ def test_addoption_registers_every_documented_flag() -> None:
         "--riskratchet-fail-existing-above",
         "--riskratchet-fail-component-regression-above",
         "--riskratchet-no-component-regression-gate",
+        "--riskratchet-typescript",
+        "--riskratchet-no-typescript",
+        "--riskratchet-ts-coverage",
+        "--riskratchet-ts-entry",
     }
 
 
@@ -245,6 +249,12 @@ def test_addoption_registers_every_documented_flag() -> None:
         ("--riskratchet-fail-existing-above", None),
         ("--riskratchet-fail-component-regression-above", None),
         ("--riskratchet-no-component-regression-gate", False),
+        # 0.3.6: the TypeScript switch is two store_true flags so that neither is a
+        # real-valued default; both off means `[tool.riskratchet] typescript` decides.
+        ("--riskratchet-typescript", False),
+        ("--riskratchet-no-typescript", False),
+        ("--riskratchet-ts-coverage", None),
+        ("--riskratchet-ts-entry", None),
     ],
 )
 def test_every_threshold_option_defaults_to_unset(flag: str, default: Any) -> None:

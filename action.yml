@@ -14,6 +14,26 @@ inputs:
     description: 'Path to coverage.json. Optional; auto-coverage runs if absent.'
     required: false
     default: ''
+  typescript:
+    description: |
+      Also analyze and gate TypeScript. `true` passes `--typescript`, `false` passes
+      `--no-typescript`, and empty (the default) passes nothing, so `[tool.riskratchet]
+      typescript` decides. The action always installs the `[typescript]` extra.
+    required: false
+    default: ''
+  ts-coverage:
+    description: |
+      Istanbul/LCOV TypeScript coverage report(s), space-separated, relative to the
+      workspace (a `ts_coverage` entry in `[tool.riskratchet]` is relative to the config
+      file instead). Each becomes one `--ts-coverage`. Paths must not contain spaces.
+    required: false
+    default: ''
+  ts-entry:
+    description: |
+      Entry file(s) that narrow the TypeScript public surface, space-separated, relative
+      to the workspace. Each becomes one `--ts-entry`. Paths must not contain spaces.
+    required: false
+    default: ''
   baseline:
     description: 'Path to baseline JSON. Default `.riskratchet.json`; if the file is missing, the action runs in no-baseline `--fail-above` mode.'
     required: false
@@ -64,14 +84,23 @@ runs:
         RR_LOCAL_WHEEL: ${{ inputs.local-wheel }}
       run: |
         set -euo pipefail
+        # Every branch installs the `[typescript]` extra (since 0.3.6). It is a CI-only
+        # artifact — tree-sitter ships wheels for every runner platform, about 1 MB — a
+        # Python-only project sees no behaviour change, and a repo that turns TypeScript
+        # on from `[tool.riskratchet]` must never meet the install hint in CI.
         if [ -n "$RR_LOCAL_WHEEL" ]; then
           # Glob expansion intentional: dogfood passes `dist/*.whl`.
-          # shellcheck disable=SC2086
-          uv tool install $RR_LOCAL_WHEEL
+          # shellcheck disable=SC2206
+          wheels=( $RR_LOCAL_WHEEL )
+          if [ "${#wheels[@]}" -ne 1 ] || [ ! -f "${wheels[0]}" ]; then
+            echo "::error::local-wheel must match exactly one file, got: ${wheels[*]}"
+            exit 1
+          fi
+          uv tool install "${wheels[0]}[typescript]"
         elif [ -n "$RR_PIN" ]; then
-          uv tool install "riskratchet==$RR_PIN"
+          uv tool install "riskratchet[typescript]==$RR_PIN"
         else
-          uv tool install riskratchet
+          uv tool install 'riskratchet[typescript]'
         fi
         riskratchet --version
 
@@ -81,6 +110,9 @@ runs:
       env:
         RR_PATHS: ${{ inputs.paths }}
         RR_COVERAGE: ${{ inputs.coverage }}
+        RR_TYPESCRIPT: ${{ inputs.typescript }}
+        RR_TS_COVERAGE: ${{ inputs.ts-coverage }}
+        RR_TS_ENTRY: ${{ inputs.ts-entry }}
         RR_BASELINE: ${{ inputs.baseline }}
         RR_FAIL_ABOVE: ${{ inputs.fail-above }}
       run: |
@@ -95,6 +127,26 @@ runs:
         if [ -n "$RR_COVERAGE" ]; then
           args+=( --coverage "$RR_COVERAGE" )
         fi
+        # Empty passes nothing: the CLI resolves `[tool.riskratchet] typescript` itself,
+        # so the action never has to read pyproject.toml.
+        case "$RR_TYPESCRIPT" in
+          true) args+=( --typescript ) ;;
+          false) args+=( --no-typescript ) ;;
+          '') ;;
+          *)
+            echo "::error::typescript input must be 'true', 'false', or empty (got '$RR_TYPESCRIPT')"
+            exit 1
+            ;;
+        esac
+        # One repeated flag per space-separated entry, like `paths`.
+        # shellcheck disable=SC2086  # intentional word splitting
+        for report in $RR_TS_COVERAGE; do
+          args+=( --ts-coverage "$report" )
+        done
+        # shellcheck disable=SC2086  # intentional word splitting
+        for entry in $RR_TS_ENTRY; do
+          args+=( --ts-entry "$entry" )
+        done
         if [ -f "$RR_BASELINE" ]; then
           args+=( --baseline "$RR_BASELINE" --format pr-comment )
         else

@@ -16,9 +16,14 @@ from typer.testing import CliRunner
 
 from riskratchet.cli import app
 from riskratchet.init import (
+    STARTER_BLOCK,
+    STARTER_BLOCK_TYPESCRIPT,
     InitOutcome,
     RunnerKind,
+    detect_python,
     detect_test_runner,
+    detect_typescript,
+    next_steps,
     render_ci_snippet,
     write_starter_config,
 )
@@ -298,3 +303,105 @@ def test_render_ci_snippet_requests_full_history() -> None:
     steps = yaml.safe_load(body)
     assert steps[0]["with"]["fetch-depth"] == 0
     assert "actions/checkout" in steps[0]["uses"]
+
+
+# --- 0.3.6: a TypeScript tree gets a TypeScript starter -------------------------------
+#
+# `init` used to write the same Python-only block on any tree and print pytest-only next
+# steps, so a TypeScript adopter's first `check` scanned nothing it cared about.
+
+_TS_SOURCE = "export function add(a: number, b: number): number {\n  return a + b;\n}\n"
+_PY_SOURCE = "def add(a, b):\n    return a + b\n"
+
+
+def test_init_writes_the_typescript_starter_for_a_typescript_only_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "lib.ts").write_text(_TS_SOURCE, encoding="utf-8")
+
+    result = runner.invoke(app, ["init", "--no-baseline", "--no-snippet"])
+
+    assert result.exit_code == 0, result.output
+    text = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
+    assert text == STARTER_BLOCK_TYPESCRIPT
+    assert "typescript = true" in text
+    assert '# ts_coverage = ["coverage/lcov.info"]' in text
+    assert "pip install 'riskratchet[typescript]'" in result.stdout
+    assert "--ts-coverage coverage/lcov.info" in result.stdout
+    # No Python under src, so no pytest step and no Python report to name.
+    assert "pytest --cov" not in result.stdout
+    assert "--coverage coverage.json" not in result.stdout
+
+
+def test_init_next_steps_name_both_reports_for_a_mixed_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "lib.ts").write_text(_TS_SOURCE, encoding="utf-8")
+    (tmp_path / "src" / "app.py").write_text(_PY_SOURCE, encoding="utf-8")
+
+    result = runner.invoke(app, ["init", "--no-baseline", "--no-snippet"])
+
+    assert result.exit_code == 0, result.output
+    assert "typescript = true" in (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
+    assert "pytest --cov --cov-branch --cov-report=json:coverage.json -q" in result.stdout
+    assert (
+        "riskratchet baseline src --coverage coverage.json --ts-coverage coverage/lcov.info" in result.stdout
+    )
+    assert "riskratchet check src --coverage coverage.json --ts-coverage coverage/lcov.info" in result.stdout
+
+
+def test_init_python_only_output_is_byte_identical_to_before(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The Python-only starter and its three next steps are the 0.3.5 text exactly."""
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "app.py").write_text(_PY_SOURCE, encoding="utf-8")
+
+    result = runner.invoke(app, ["init", "--no-baseline", "--no-snippet"])
+
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "pyproject.toml").read_text(encoding="utf-8") == STARTER_BLOCK
+    assert "typescript" not in result.stdout
+    assert result.stdout.endswith(
+        "Next:\n"
+        "  1. pytest --cov --cov-branch --cov-report=json:coverage.json -q\n"
+        "  2. riskratchet baseline src --coverage coverage.json\n"
+        "  3. riskratchet check src --coverage coverage.json\n"
+    )
+
+
+def test_init_force_swaps_a_python_starter_for_the_typescript_one(tmp_path: Path) -> None:
+    target = tmp_path / "pyproject.toml"
+    target.write_text('[project]\nname = "demo"\n\n' + STARTER_BLOCK, encoding="utf-8")
+    assert write_starter_config(target, force=True, typescript=True) is InitOutcome.REPLACED
+    text = target.read_text(encoding="utf-8")
+    assert text.startswith("[project]\n")
+    assert "typescript = true" in text
+
+
+def test_language_detection_looks_only_under_the_starter_path(tmp_path: Path) -> None:
+    """A `.ts` outside `src` — docs tooling, a `node_modules` at the root — does not
+    make a Python project's starter turn TypeScript on."""
+    (tmp_path / "tooling.ts").write_text(_TS_SOURCE, encoding="utf-8")
+    assert detect_typescript(tmp_path) is False
+    assert detect_python(tmp_path) is False
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "lib.ts").write_text(_TS_SOURCE, encoding="utf-8")
+    assert detect_typescript(tmp_path) is True
+    assert detect_python(tmp_path) is False
+
+
+def test_next_steps_install_the_extra_first_and_name_only_the_reports_the_tree_needs() -> None:
+    ts_only = next_steps(typescript=True, python=False)
+    assert ts_only[0] == "pip install 'riskratchet[typescript]'"
+    assert not any("pytest" in step for step in ts_only)
+    assert ts_only[-1] == "riskratchet check src --ts-coverage coverage/lcov.info"
+    mixed = next_steps(typescript=True, python=True)
+    assert any(step.startswith("pytest --cov") for step in mixed)
+    assert mixed[-1] == "riskratchet check src --coverage coverage.json --ts-coverage coverage/lcov.info"
+    assert len(next_steps(typescript=False, python=True)) == 3

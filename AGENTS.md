@@ -136,13 +136,33 @@ success and `2` on usage errors.
   *rejects* versions outside its list, so updating only the schema makes
   riskratchet refuse a baseline its own schema calls valid.
   `test_supported_versions_match_the_baseline_schema_enum` is the trip-wire.
-- Adding a `[tool.riskratchet]` key is a **three-place** change: `CONFIG_ALLOWED_KEYS`
+- Adding a `[tool.riskratchet]` key is a **four-place** change: `CONFIG_ALLOWED_KEYS`
   (so it is not warned about as unknown), a type rule in `config.invalid_config_values`
-  (so a wrong-typed value is rejected rather than silently dropped), and
-  `schemas/config.schema.json`. Since 0.3.4 the analysis commands and
-  `config validate` share those collectors, and
-  `test_analysis_commands_reject_every_config_that_config_validate_rejects`
-  is the trip-wire if the two paths ever drift apart again.
+  (`_BOOL_KEYS` / `_NUMBER_KEYS` / `_STRING_LIST_KEYS`, so a wrong-typed value is
+  rejected rather than silently dropped), `schemas/config.schema.json` together with
+  the `config show --json` payload (`_resolved_config_payload`), and the README
+  configuration table. Since 0.3.4 the analysis commands and `config validate` share
+  those collectors, and `test_analysis_commands_reject_every_config_that_config_validate_rejects`
+  is the trip-wire if the two paths ever drift apart again;
+  `test_every_allowed_config_key_is_documented_in_the_readme` (0.3.6) is the one for
+  the table.
+- **An option config can turn on must be turn-off-able by flag.** `typescript = true`
+  has `--no-typescript` (and `--riskratchet-no-typescript` in the plugin) because a
+  switch only config can flip leaves a one-off run with no way back. A `--x/--no-x`
+  Typer pair renders as two sub-columns and squeezes every option's help at 80
+  columns, so the house style is a separate `--no-x` option.
+- **Python coverage is not applicable when there is nothing to cover.** With
+  TypeScript on and no `.py` file under the scan paths (after include/exclude),
+  `_resolve_coverage` runs no test command and requires no report; it says so once.
+  Before 0.3.6 a TypeScript-only project could not run `scan`, `baseline`, or `check`
+  at all — the auto-coverage `pytest` was not on the PATH of a
+  `pip install 'riskratchet[typescript]'` environment, and that was exit 2.
+- **The Action installs the `[typescript]` extra on every path**, so a repo that turns
+  TypeScript on from config never meets the install hint in CI. The three Action
+  inputs (`typescript`, `ts-coverage`, `ts-entry`) are passthroughs — empty passes
+  nothing and the CLI resolves config itself; the Action never reads `pyproject.toml`.
+  `dogfood-action.yml` proves the install and TypeScript scoring on a runner, not just
+  the YAML shape.
 - A path the user **named** must exist, and the answer cannot depend on which
   fallback happens to succeed. `--coverage` / `--ts-coverage` that do not exist are
   exit 2 (`config._report_missing_coverage`, `config._ensure_ts_coverage_exists`);
@@ -166,8 +186,11 @@ success and `2` on usage errors.
   write a baseline, and each one used to resolve its own settings. Any new entry point
   routes through `config.discover_config` + `config.resolve_gate_settings` +
   `pipeline.build_report`, never through `engine.analyze` directly — that is what makes
-  `[tool.riskratchet]`, redaction, and the empty-scan guards apply everywhere.
-  `test_the_plugin_and_the_cli_reach_the_same_verdict` is the trip-wire.
+  `[tool.riskratchet]`, redaction, the empty-scan guards, and (since 0.3.6) TypeScript
+  apply everywhere. The plugin still called `engine.analyze` until 0.3.6, so a mixed
+  baseline was gated on its Python half only.
+  `test_the_plugin_and_the_cli_reach_the_same_verdict` and
+  `test_the_plugin_gates_typescript_when_config_turns_it_on` are the trip-wires.
 - **An option default that is a real value cannot lose to config.** The plugin's
   thresholds defaulted to `50.0` / `5.0` / `15.0`, which is indistinguishable from the
   user passing those numbers, so config could never win. Options default to `None` and

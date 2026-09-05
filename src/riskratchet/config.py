@@ -920,23 +920,43 @@ def _partition_existing(paths: Sequence[Path]) -> tuple[list[Path], list[Path]]:
 
 
 def _report_missing_ts_reports(missing: Sequence[Path], *, fatal: bool) -> None:
-    tail = "" if fatal else " Scoring TypeScript without it."
     for path in missing:
         typer.secho(
-            _format_setup_error(
-                f"riskratchet: TypeScript coverage report not found: {path}.{tail}",
-                [
-                    ("Generate it with your test runner:", "npx vitest run --coverage  # or nyc/c8/jest"),
-                    (
-                        "Point riskratchet at the report:",
-                        '[tool.riskratchet] ts_coverage = ["coverage/lcov.info"]  # or --ts-coverage <path>',
-                    ),
-                    ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
-                ],
-            ),
+            missing_ts_report_message(path, fatal=fatal),
             fg=typer.colors.RED if fatal else typer.colors.YELLOW,
             err=True,
         )
+
+
+def missing_ts_report_message(path: Path, *, fatal: bool) -> str:
+    """The setup error for a TypeScript report that is not on disk, with its remediations.
+
+    Public so the pytest plugin prints the same words the CLI does; only the exit
+    convention differs (pytest has no usage-error code, so the session fails with 1).
+    """
+    tail = "" if fatal else " Scoring TypeScript without it."
+    return _format_setup_error(
+        f"riskratchet: TypeScript coverage report not found: {path}.{tail}",
+        [
+            ("Generate it with your test runner:", "npx vitest run --coverage  # or nyc/c8/jest"),
+            (
+                "Point riskratchet at the report:",
+                '[tool.riskratchet] ts_coverage = ["coverage/lcov.info"]  # or --ts-coverage <path>',
+            ),
+            ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
+        ],
+    )
+
+
+def usable_ts_coverage(paths: Sequence[Path], *, allow_missing: bool) -> tuple[list[Path], list[str]]:
+    """Split TypeScript reports into the ones on disk and a message per one that is not.
+
+    The gate-side rule of `_ensure_ts_coverage_exists` for an entry point that owns its
+    own exit convention: a missing report is fatal unless `allow_missing`, and the
+    returned list is the usable subset, so the strict loader never sees a tolerated path.
+    """
+    present, missing = _partition_existing(paths)
+    return present, [missing_ts_report_message(path, fatal=not allow_missing) for path in missing]
 
 
 @dataclass(frozen=True)
@@ -970,6 +990,7 @@ class GateSettings:
     typescript: bool
     ts_coverage: list[Path]
     ts_entry: list[Path]
+    allow_missing_coverage: bool
 
 
 def resolve_gate_settings(
@@ -1018,6 +1039,7 @@ def resolve_gate_settings(
         typescript=resolved_typescript(typescript, cfg),
         ts_coverage=resolved_ts_paths(ts_coverage, cfg, "ts_coverage", config_dir),
         ts_entry=resolved_ts_paths(ts_entry, cfg, "ts_entry", config_dir),
+        allow_missing_coverage=_resolved_bool(False, cfg.get("allow_missing_coverage")),
     )
 
 

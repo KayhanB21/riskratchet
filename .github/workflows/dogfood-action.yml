@@ -7,6 +7,11 @@ name: dogfood-action
 #
 # `comment: false` so the action does not post to PRs while it stabilises;
 # flip to `true` after the workflow has stayed green on a few runs.
+#
+# The second job (since 0.3.6) stages a TypeScript-only project and gates it
+# through the same action.yml, so the `typescript` / `ts-coverage` inputs, the
+# unconditional `[typescript]` extra install, and TypeScript scoring on a runner
+# are all proved on every PR — not just parsed by tests/test_action_yaml.py.
 
 on:
   pull_request:
@@ -59,6 +64,74 @@ jobs:
         with:
           paths: src
           coverage: coverage.json
+          # `src/` holds no TypeScript, so this scores nothing extra; it proves the
+          # input is parsed and forwarded on the repo's own gate.
+          typescript: 'true'
           baseline: .riskratchet.json
           local-wheel: dist/*.whl
           comment: 'false'
+
+  dogfood-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout riskratchet into a subdirectory
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          path: riskratchet-src
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+
+      - name: Build local wheel
+        working-directory: riskratchet-src
+        run: |
+          set -euo pipefail
+          uv build --wheel
+          ls -la dist/
+
+      - name: Stage a TypeScript-only project at the workspace root
+        # The workspace root is the project under test: the action's `check` runs from
+        # there, and config discovery starts there — so the repo's own
+        # `[tool.riskratchet]` (which excludes `tests/**`) must not be what it finds.
+        # The baseline is written by an ephemeral `uvx` of the same wheel, with the same
+        # `[typescript]` spelling the action installs, so the gate below compares a
+        # TypeScript baseline against a TypeScript scan of the same tree.
+        run: |
+          set -euo pipefail
+          mkdir src
+          cp -R riskratchet-src/tests/fixtures/typescript/. src/
+          printf '[tool.riskratchet]\npaths = ["src"]\n' > pyproject.toml
+          git init -q
+          git add src pyproject.toml
+          git -c user.email=dogfood@example.com -c user.name=dogfood commit -qm "TypeScript fixture"
+          whl=$(ls riskratchet-src/dist/riskratchet-*.whl)
+          uvx --from "${whl}[typescript]" riskratchet baseline src \
+            --typescript --ts-coverage src/app/coverage.lcov
+          test -s .riskratchet.json
+
+      - name: Run riskratchet action against the TypeScript project
+        # Baseline mode on purpose: if `--typescript` were not forwarded the scan would
+        # find zero functions against a populated baseline and exit 2, and if the extra
+        # were not installed the import hint would exit 2 — a `--fail-above` run would
+        # have passed both silently.
+        uses: ./riskratchet-src
+        with:
+          paths: src
+          typescript: 'true'
+          ts-coverage: src/app/coverage.lcov
+          baseline: .riskratchet.json
+          local-wheel: riskratchet-src/dist/*.whl
+          comment: 'false'
+
+      - name: The installed CLI scores TypeScript
+        run: |
+          set -euo pipefail
+          grep -q 'riskratchet-report' riskratchet-comment.md
+          grep -q 'No risk regressions detected' riskratchet-comment.md
+          riskratchet scan src --typescript --ts-coverage src/app/coverage.lcov --no-auto-cov --json \
+            | jq -e '[.functions[] | select(.language == "typescript")] | length > 0'
