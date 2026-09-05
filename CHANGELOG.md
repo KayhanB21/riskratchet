@@ -9,6 +9,192 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.6] - 2026-09-04
+
+TypeScript through every door. The backend has scored TypeScript since `0.2.12`, and
+`0.3.5` warned when a mixed baseline was being gated on its Python half — but the
+officially shipped CI path could not obey that warning: `typescript` was not a config
+key, the Action had no way to pass `--typescript`, and its install step never installed
+the `[typescript]` extra. This release makes the switch a config key, teaches every
+entrance the last three releases hardened — the Action, the pytest plugin, `init`,
+`explain`, `doctor` — to honour it, closes the TypeScript silences that surfaced on the
+way, and makes `check` say what it did not check. The first **Added** heading since
+`0.3.0`.
+
+### Added
+
+- **`typescript`, `ts_coverage`, `ts_entry` are `[tool.riskratchet]` keys.** Validated
+  (`typescript = "yes"` is exit `2`), shown by `config show`, in `config.schema.json`,
+  and in the README table — a trip-wire test now requires every allowed key to be
+  documented there. The two lists anchor to the config directory like `coverage`; CLI
+  values stay cwd-relative. **`--no-typescript`** is the explicit off that beats
+  `typescript = true` and the deprecated `--experimental-typescript` alias, on every
+  command: an option config can turn on must be turn-off-able by flag.
+- **Action inputs `typescript`, `ts-coverage`, `ts-entry`.** Passthroughs: `true` →
+  `--typescript`, `false` → `--no-typescript`, empty → nothing, so the CLI resolves
+  config; anything else fails the step before the CLI runs. The two path inputs are
+  space-separated like `paths`, one repeated flag per entry, workspace-relative. The
+  Action now installs `riskratchet[typescript]` on every install path (PyPI latest, a
+  pinned version, a local wheel), so a config-driven repo never sees the install hint in
+  CI. Config-driven TypeScript therefore needs the Action at **`v0.3.6` or later**: an
+  older `action.yml` with an unpinned version installs the 0.3.6 CLI without the extra
+  and exits `2` with the hint.
+- **Pytest plugin options `--riskratchet-typescript`, `--riskratchet-no-typescript`,
+  `--riskratchet-ts-coverage`, `--riskratchet-ts-entry`.** Both switches off means config
+  decides.
+- **`explain --ts-coverage` / `--ts-entry`**, for symmetry with the keys.
+- **`init` recognises a TypeScript tree.** When `src` holds `.ts` files the starter block
+  gains `typescript = true` and a commented `ts_coverage` hint, and the next steps become
+  `pip install 'riskratchet[typescript]'` → the runner's coverage command → `baseline` /
+  `check` naming only the reports the tree needs. `init --with-baseline` builds the first
+  baseline with the resolved TypeScript settings. Python-only output is byte-identical.
+- **`doctor` check `ts-coverage`** (the `doctor --json` check-name enum is extended),
+  only when TypeScript is on: nothing configured → WARN "TypeScript functions score as
+  uncovered" with the vitest + `ts_coverage` remediation; configured but missing or
+  malformed → FAIL; older than a `.ts` under the paths, or zero overlap with the scanned
+  `.ts` set → WARN; else PASS.
+- **`check` says how much of the baseline it compared.** Every format carries
+  `Baseline: N entries · M compared · K not seen this run`; `--summary` prints the same
+  counts; `check --json` gains an additive `baseline` object (`entries`, `compared`,
+  `removed`; absent in `--fail-above` mode).
+- **The unscanned-files warning.** When baseline entries live in files that still exist
+  under the scanned paths but were not scanned this run — an `include` / `exclude`
+  hiding them, not a deletion and not a deliberate subset such as `check packages/api` —
+  `check`, `diff`, and the pytest plugin warn with counts only (safe under
+  `private_comment`), and never fail. The `0.3.4` carry-over: three of four baseline
+  entries hidden by an `exclude` printed "No risk regressions detected." and exited `0`;
+  only the PR comment's collapsed diff said `Removed: 3`.
+- **The rename + edit note.** When the diff holds both new and removed entries, `check`
+  prints one stderr note naming the rule: a renamed function whose body also changed is
+  gated as new against `fail_new_above`, not as a regression against its old score, and
+  `riskratchet diff` lists both sets. The README gains the "Rename matcher: known limits"
+  paragraph that lived only in `AGENTS.md`.
+- **`skipped_generated_files`** in every report summary (`scan --json`, the text and
+  markdown headers, the summary line): the files a `@generated` header removed from
+  scoring, in both languages (see **Changed**).
+- `check --json` regression objects carry `group` (the scan and diff payloads already
+  did); `explain --summary --json` carries `language` (the one identity field the summary
+  lost). A scan path outside the config directory is named once on stderr.
+
+### Changed
+
+- **A TypeScript-only project runs.** On `0.3.5`, `scan`, `baseline`, and
+  `check --typescript` all exited `2` on a tree with no `.py` files: auto-coverage tried
+  to run `pytest` to cover nothing, and `--allow-missing-coverage` never reached the
+  unstartable-runner branch. When TypeScript is on and nothing under the scan paths is
+  Python, Python coverage is *not applicable* — no auto-coverage, no exit `2`, one stderr
+  line — and `doctor` reports the coverage row the same way, skipping the overlap and
+  branch-data rows. `summary.total` in `doctor --json` therefore moves for
+  TypeScript-only projects.
+- **`allow_missing_coverage` downgrades an unstartable test command** (`pytest` off the
+  PATH) to a warning. The flag promises "continue when coverage is absent", and a runner
+  that cannot start yields absent coverage.
+- **Missing TypeScript reports follow the `required` split `coverage` already had.** A
+  report named on the CLI (`--ts-coverage`) is exit `2` everywhere, unchanged. A report
+  named in config (`ts_coverage`) warns on `scan` / `explain` and is exit `2` on
+  `baseline` / `check` / `diff`, downgraded by `allow_missing_coverage` — which on
+  `0.3.5` returned early and let the strict loader exit `2` anyway, so the remediation it
+  printed was not one.
+- **`explain --typescript` without the `[typescript]` extra is exit `2`** with the
+  install hint; it was exit `1` plus a traceback. `explain` and `init --with-baseline` now
+  build through the same boundary as every other command.
+- **`doctor` FAILs when config enables TypeScript and the extra is absent**, with the
+  install command; it tries the import, not just the dist metadata, because `check`
+  exits `2` on exactly that import. When only the baseline records a TypeScript identity
+  the row stays a WARN. With `typescript = true` a scan path holding `.ts` files is PASS
+  instead of `WARN no .py files`; with it off, `.ts` files under the paths WARN that they
+  are not scored, naming the key.
+- **A `# @generated` Python file leaves the scored set.** The TypeScript backend has
+  honoured a comment-anchored `@generated` header since `0.2.12` and its docstring
+  claimed the Python backend mirrored it; it did not, so such a file was scored in full.
+  Both backends now skip the file's functions, count it in `skipped_generated_files`, and
+  list it in `files[]` with zero functions. The `*.pb.ts` / `*.gen.ts` name rule is
+  deliberately not mirrored for Python (codegen headers say `DO NOT EDIT` in a hundred
+  spellings); the README recipe is `exclude = ["**/*_pb2.py"]`. Entries the header
+  removes appear as removed in `diff`, never as regressions.
+- **`files[]` lists every file the scan reached.** A Python file with a syntax error or a
+  `@generated` header is listed with zero functions, as the TypeScript backend already
+  did, so `total_files` moves for repos that have them — a skipped population shows up in
+  the count rather than vanishing.
+- **One key per file.** A file outside the config directory is keyed by one `../…`
+  spelling whatever cwd or spelling it was passed with; `0.3.5` kept whatever spelling
+  the caller used, so the identity changed with the invocation. A symlinked scan root
+  keeps its `src/x.py` key. SARIF `artifactLocation.uri` is that key verbatim, so it
+  equals `properties.path` always — it used to re-derive an absolute path against the
+  process cwd. A baseline written from an absolute out-of-root spelling carries across
+  through the fingerprint matcher; `riskratchet baseline` settles the keys.
+- **The pytest plugin gates through `diff` + `regressions_from_diff`**, as `check` does,
+  instead of `compare`. Same verdict (the `0.3.5` property test still pins it); the diff
+  is what knows what was *not* seen, which is how the plugin prints the unscanned-files
+  warning.
+- The "baseline holds N typescript entries but this run analyzed no typescript" hint
+  names both ways to enable the backend; the Python-side "analyzed no python" warning
+  names `include` / `exclude` as the likely cause.
+
+No exit-code change above can turn a green gate red: each turns an exit `2` into `0` or
+a warning for a project that could not run, or reports a setup failure that was already
+failing. Two score changes can, and only for a TypeScript project whose `ts_entry` is
+`@generated` or does not parse (see **Fixed**): its functions regain their real
+`public_surface`, the first `check` after upgrade says so, and `riskratchet baseline`
+accepts the corrected scores.
+
+### Fixed
+
+- **`config.schema.json` said `missing_coverage ∈ {pessimistic, skip, zero}`**; the
+  enum is `optimistic`, so `config show --json` failed its own schema for one legal
+  value. A per-policy test now sweeps the enum.
+- **A `@generated` TypeScript file was dropped with no warning and no counter**, and a
+  `@generated` *entry* barrel demoted every TypeScript function to internal
+  (`public_surface` 100 → 0) behind the ordinary "public surface narrowed" line. A
+  generated file is valid TypeScript: it is now parsed for its real exports and only its
+  functions are skipped, so `export * from './generated'` keeps resolving and a generated
+  entry narrows correctly — guarded by a test that a good barrel re-exporting a generated
+  module narrows exactly as on `0.3.5`.
+- **An entry file that did not parse narrowed the public surface to nothing.** A
+  syntax-broken or unreadable `ts_entry` demoted every function to internal the same
+  way. Narrowing now refuses on an unproven graph: `check` warns
+  `entry index.ts did not parse; the surface can't be bounded — keeping file-level export
+  flags` and leaves the flags untouched. A file that is only re-exported keeps the
+  empty-module behaviour.
+- **TypeScript discovery descended into `node_modules`**; only hidden directories were
+  skipped. A `node_modules` named explicitly as the scan path is still honoured.
+- **`doctor` on a TypeScript-only package** warned `no .py files` with a remediation
+  about package roots, prescribed pytest for coverage, never checked TypeScript coverage,
+  and keyed its `typescript` row off the baseline identity alone (see **Added** and
+  **Changed**). `doctor` and `check` now agree on whether such a project can run.
+- **The pytest plugin had no TypeScript path.** It called `engine.analyze` directly, so
+  a mixed baseline under `typescript = true` would have been gated on its Python half
+  only, against the invariant `AGENTS.md` states. It now builds through
+  `pipeline.build_report` with the CLI's pieces it never had: the missing-report rule,
+  the exception boundary (`ImportError` / `FileNotFoundError` / `ValueError` fail the
+  session with the message, never a traceback), the grammar-bump identity guard with the
+  exact re-baseline command, and the "baseline holds N typescript entries" warning.
+- **The regression hint printed the raw baseline path under `--private-comment`**
+  beside a hashed stdout; it now prints `<baseline.json>`.
+
+### Internal
+
+- `config.resolve_gate_settings` / `GateSettings` carry `typescript`, `ts_coverage`,
+  `ts_entry`, and `allow_missing_coverage`; `resolved_typescript`, `resolved_ts_paths`,
+  `usable_ts_coverage`, and `missing_ts_report_message` are the public halves every entry
+  point resolves through. `languages_not_scanned` and `unscanned_baseline_files` live in
+  `baseline.classify` (a leaf) so the CLI and the plugin render the same facts;
+  `DiffReport.baseline_entries` feeds the baseline line.
+- `dogfood-action.yml` gains a second job that stages a TypeScript-only project and gates
+  it through `action.yml` in baseline mode — the mode in which a missing `--typescript`
+  or a missing extra is exit `2` rather than a silent pass — proving the install and
+  TypeScript scoring on a runner. The Action's check step is executed under bash against
+  a stub `riskratchet` in the test suite, so input handling is tested as behaviour, not
+  grepped.
+- Adding a config key is a four-place change (allowed keys, type rule, schema +
+  `config show` payload, README table), each with a trip-wire. `AGENTS.md` records the
+  invariants this release added: an option config can turn on must be turn-off-able by
+  flag; Python coverage is not applicable when there is nothing to cover; the Action
+  installs the extra on every path; a skipped file is still a file the scan reached;
+  narrowing refuses on an unproven graph; the gate must say what it did not check; one
+  key per file.
+- Tests 1081 → 1176; coverage 92.16% → 92.02%.
+
 ## [0.3.5] - 2026-08-28
 
 The gate has more than one door. `0.3.3` and `0.3.4` hardened the main `check` path;
