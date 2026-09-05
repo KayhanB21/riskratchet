@@ -155,6 +155,38 @@ def _diff_group_summary(entries: Iterable[DiffEntry]) -> dict[str, dict[str, int
     return groups
 
 
+def baseline_coverage(report: DiffReport) -> dict[str, int] | None:
+    """How much of the baseline this run compared: `{entries, compared, removed}`.
+
+    None when the diff carries no baseline size (a hand-built `DiffReport`). Every
+    baseline entry appears in the diff exactly once, matched or REMOVED, so
+    `compared = entries - removed`.
+    """
+    if report.baseline_entries is None:
+        return None
+    removed = len(report.by_status(DiffStatus.REMOVED))
+    return {
+        "entries": report.baseline_entries,
+        "compared": report.baseline_entries - removed,
+        "removed": removed,
+    }
+
+
+def baseline_line(report: DiffReport | None) -> str | None:
+    """`Baseline: N entries · M compared · K not seen this run` — the one line every
+    `check` format carries (0.3.6), so a run that compared 1 of 4 entries can never
+    read as a clean bill of health. None without a diff (`--fail-above` mode)."""
+    if report is None:
+        return None
+    counts = baseline_coverage(report)
+    if counts is None:
+        return None
+    return (
+        f"Baseline: {counts['entries']} entries · {counts['compared']} compared · "
+        f"{counts['removed']} not seen this run"
+    )
+
+
 def _regressions_summary(
     regressions: list[Regression],
     *,
@@ -176,6 +208,9 @@ def _regressions_summary(
         summary["diff"] = _diff_summary(diff_report)
         if not groups:
             summary["groups"] = summary["diff"].get("groups", {})
+        counts = baseline_coverage(diff_report)
+        if counts is not None:
+            summary["baseline"] = counts
     return summary
 
 

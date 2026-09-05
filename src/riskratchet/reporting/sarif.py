@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Any
 
 from riskratchet.models import (
@@ -147,8 +146,12 @@ def _sarif_location(path: str, start_line: int, end_line: int) -> dict[str, Any]
 
 
 def _sarif_uri(path: str) -> str:
-    if os.path.isabs(path):
-        return os.path.relpath(path).replace(os.sep, "/")
+    """The function's own key, verbatim, so `artifactLocation.uri == properties.path` always.
+
+    Keys are root-relative POSIX (a `../` path for a file outside the root since 0.3.6);
+    re-deriving an absolute one against the process cwd, as this did before, gave the
+    same function two different names in one log.
+    """
     return path
 
 

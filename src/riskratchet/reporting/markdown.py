@@ -23,6 +23,7 @@ from riskratchet.reporting.summary import (
     _sorted_by_risk,
     _summary_line,
     _summary_payload,
+    baseline_line,
 )
 from riskratchet.scoring import severity
 
@@ -180,11 +181,18 @@ def render_report_pr_comment(
     return _fit_pr_comment("\n".join(lines) + "\n")
 
 
-def render_regressions_markdown(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
+def render_regressions_markdown(
+    regressions: list[Regression],
+    *,
+    links: SourceLinks | None = None,
+    diff_report: DiffReport | None = None,
+) -> str:
+    tail = _baseline_markdown_lines(diff_report)
     if not regressions:
-        return "_No risk regressions detected._\n"
+        return "\n".join(["_No risk regressions detected._", *tail]) + "\n"
     lines = [
         "# riskratchet regressions",
+        *tail,
         "",
         "| Kind | Function | Before | After | Delta | Reason |",
         "| --- | --- | ---: | ---: | ---: | --- |",
@@ -192,6 +200,12 @@ def render_regressions_markdown(regressions: list[Regression], *, links: SourceL
     for reg in regressions:
         lines.append(_regression_markdown_row(reg, links=links))
     return "\n".join(lines) + "\n"
+
+
+def _baseline_markdown_lines(diff_report: DiffReport | None) -> list[str]:
+    """A blank line and the italic baseline line, or nothing without a diff."""
+    line = baseline_line(diff_report)
+    return ["", f"_{line}_"] if line else []
 
 
 def _diff_context_sections(
@@ -252,6 +266,9 @@ def render_regressions_pr_comment(
     ]
     if diff_report is not None:
         lines.append(_diff_context_line(diff_report))
+        baseline = baseline_line(diff_report)
+        if baseline:
+            lines.append(f"_{baseline}_")
     lines.append("")
     displayed: list[Regression] = []
     if regressions:

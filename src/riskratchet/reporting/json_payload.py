@@ -30,6 +30,7 @@ from riskratchet.reporting.summary import (
     _regressions_summary,
     _sorted_by_risk,
     _summary_payload,
+    baseline_coverage,
 )
 from riskratchet.scoring import severity
 
@@ -58,18 +59,17 @@ def render_regressions_json(
     regressions: list[Regression],
     *,
     links: SourceLinks | None = None,
+    diff_report: DiffReport | None = None,
 ) -> str:
-    return (
-        json.dumps(
-            {
-                "$schema": REGRESSIONS_SCHEMA_URL,
-                "version": OUTPUT_VERSION,
-                "regressions": [_regression_payload(reg, links=links) for reg in regressions],
-            },
-            indent=2,
-        )
-        + "\n"
-    )
+    payload: dict[str, Any] = {
+        "$schema": REGRESSIONS_SCHEMA_URL,
+        "version": OUTPUT_VERSION,
+        "regressions": [_regression_payload(reg, links=links) for reg in regressions],
+    }
+    counts = baseline_coverage(diff_report) if diff_report is not None else None
+    if counts is not None:
+        payload["baseline"] = counts  # additive (0.3.6): how much of the baseline was compared
+    return json.dumps(payload, indent=2) + "\n"
 
 
 def render_regressions_summary_json(
@@ -134,6 +134,7 @@ def render_function_summary_json(fn: FunctionRisk) -> str:
         "score": fn.score,
         "crap": fn.crap,
         "group": fn.group,
+        "language": fn.language,
     }
     return _summary_envelope("explain", summary)
 
@@ -176,6 +177,7 @@ def _regression_payload(reg: Regression, *, links: SourceLinks | None = None) ->
         "previous_score": reg.previous_score,
         "delta": reg.delta,
         "reason": reg.reason,
+        "group": reg.current.group if reg.current is not None else None,
     }
     if links is not None and reg.current is not None:
         payload["source_url"] = links.link_for(reg.current)

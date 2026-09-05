@@ -29,6 +29,7 @@ from riskratchet.reporting.summary import (
     _sorted_by_risk,
     _summary_line,
     _summary_payload,
+    baseline_line,
 )
 from riskratchet.scoring import severity
 
@@ -116,10 +117,16 @@ def render_report_summary_text(report: RiskReport) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_regressions_table(regressions: list[Regression], *, links: SourceLinks | None = None) -> str:
+def render_regressions_table(
+    regressions: list[Regression],
+    *,
+    links: SourceLinks | None = None,
+    diff_report: DiffReport | None = None,
+) -> str:
     buf, console = _make_buffered_console()
     if not regressions:
         console.print("[green]No risk regressions detected.[/]")
+        _print_baseline_line(console, diff_report)
         return buf.getvalue()
     table = Table(title="riskratchet regressions", show_header=True, header_style="bold red")
     table.add_column("Kind")
@@ -138,11 +145,18 @@ def render_regressions_table(regressions: list[Regression], *, links: SourceLink
             reg.reason,
         )
     console.print(table)
+    _print_baseline_line(console, diff_report)
     if links is not None:
         buf.write(
             _table_source_footer((reg.id.as_target(), _regression_link(reg, links)) for reg in regressions)
         )
     return buf.getvalue()
+
+
+def _print_baseline_line(console: Console, diff_report: DiffReport | None) -> None:
+    line = baseline_line(diff_report)
+    if line is not None:
+        console.print(line, markup=False, highlight=False)
 
 
 def render_regressions_summary_text(
@@ -175,6 +189,11 @@ def render_regressions_summary_text(
             f"removed={diff_summary['removed']} "
             f"moved={diff_summary['moved']} "
             f"unchanged={diff_summary['unchanged']}"
+        )
+    if "baseline" in summary:
+        counts = summary["baseline"]
+        lines.append(
+            f"baseline entries={counts['entries']} compared={counts['compared']} removed={counts['removed']}"
         )
     lines.extend(_group_summary_lines(summary.get("groups", {})))
     return "\n".join(lines) + "\n"

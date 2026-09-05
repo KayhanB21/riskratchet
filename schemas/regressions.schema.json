@@ -35,8 +35,20 @@
           },
           "delta": { "type": ["number", "null"] },
           "reason": { "type": "string" },
+          "group": { "type": ["string", "null"], "description": "Monorepo group of the current function (since 0.3.6); null when ungrouped." },
           "source_url": { "type": "string", "description": "Optional blob URL (P10, since 0.2.8); emitted when --repo-url and --commit-ref are passed and the regression has a current snapshot." }
         }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "description": "How much of the baseline this run compared (since 0.3.6). Absent in --fail-above (no-baseline) mode.",
+      "required": ["entries", "compared", "removed"],
+      "additionalProperties": false,
+      "properties": {
+        "entries": { "type": "integer", "minimum": 0 },
+        "compared": { "type": "integer", "minimum": 0 },
+        "removed": { "type": "integer", "minimum": 0 }
       }
     }
   }

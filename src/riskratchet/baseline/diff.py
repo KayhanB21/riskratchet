@@ -112,7 +112,7 @@ def diff(
         )
 
     entries.sort(key=_diff_sort_key)
-    return DiffReport(entries=tuple(entries))
+    return DiffReport(entries=tuple(entries), baseline_entries=len(old.entries))
 
 
 def _diff_status_for_existing(
