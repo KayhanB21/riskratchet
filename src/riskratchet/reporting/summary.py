@@ -122,6 +122,7 @@ def _summary_payload(report: RiskReport) -> dict[str, Any]:
         "coverage_status": report.coverage_status,
         "suppressed_functions": report.suppressed_functions,
         "skipped_missing_coverage": report.skipped_missing_coverage,
+        "skipped_generated_files": report.skipped_generated_files,
         "by_severity": counts,
         "groups": _function_group_summary(report.functions),
     }
@@ -199,6 +200,11 @@ def _summary_line(report: RiskReport) -> str:
         extra.append(f"{report.suppressed_functions} suppressed")
     if report.skipped_missing_coverage:
         extra.append(f"{report.skipped_missing_coverage} skipped missing coverage")
+    if report.skipped_generated_files:
+        # A dropped population must be said out loud: the file is in `total_files`,
+        # its functions are in nothing.
+        count = report.skipped_generated_files
+        extra.append(f"{count} generated file{'' if count == 1 else 's'} skipped")
     suffix = ("; " + ", ".join(extra)) if extra else ""
     summary = f"Summary: {len(report.functions)} functions across {len(report.files)} files. "
     line = summary + ", ".join(parts) + suffix

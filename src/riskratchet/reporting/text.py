@@ -107,7 +107,8 @@ def render_report_summary_text(report: RiskReport) -> str:
             f"files={summary['total_files']} "
             f"coverage={summary['coverage_status']} "
             f"suppressed={summary['suppressed_functions']} "
-            f"skipped_missing_coverage={summary['skipped_missing_coverage']}"
+            f"skipped_missing_coverage={summary['skipped_missing_coverage']} "
+            f"skipped_generated_files={summary['skipped_generated_files']}"
         ),
         _severity_summary_line(summary["by_severity"]),
     ]

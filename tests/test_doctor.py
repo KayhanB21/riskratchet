@@ -170,38 +170,38 @@ def test_doctor_warns_when_coverage_is_stale(tmp_path: Path, monkeypatch: pytest
     assert "pytest --cov" in (cov["remediation"] or "")
 
 
-def test_find_newer_py_covers_all_branches(tmp_path: Path) -> None:
-    # `_find_newer_py` compares `st_mtime`, so its branch coverage is otherwise
+def test_find_newer_covers_all_branches(tmp_path: Path) -> None:
+    # `_find_newer` compares `st_mtime`, so its branch coverage is otherwise
     # environment-dependent (which source files happen to be newer than coverage.json
     # during a full test run differs Mac↔Linux) — that made the risk baseline
     # non-reproducible across machines. Exercise every branch with explicitly set mtimes
     # so its coverage is identical everywhere.
     import os
 
-    from riskratchet.doctor import _find_newer_py
+    from riskratchet.doctor import _find_newer
 
     cov_mtime = 1_000_000.0
 
     # non-existent path is skipped → None
-    assert _find_newer_py([tmp_path / "nope.py"], cov_mtime) is None
+    assert _find_newer([tmp_path / "nope.py"], cov_mtime, suffixes=(".py",)) is None
 
     # a file that is not .py is skipped
     other = tmp_path / "data.txt"
     other.write_text("x\n", encoding="utf-8")
     os.utime(other, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer_py([other], cov_mtime) is None
+    assert _find_newer([other], cov_mtime, suffixes=(".py",)) is None
 
     # a .py file newer than cov_mtime is returned
     newer = tmp_path / "newer.py"
     newer.write_text("a = 1\n", encoding="utf-8")
     os.utime(newer, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer_py([newer], cov_mtime) == str(newer)
+    assert _find_newer([newer], cov_mtime, suffixes=(".py",)) == str(newer)
 
     # a .py file older than cov_mtime is not returned
     older = tmp_path / "older.py"
     older.write_text("b = 1\n", encoding="utf-8")
     os.utime(older, (cov_mtime - 100, cov_mtime - 100))
-    assert _find_newer_py([older], cov_mtime) is None
+    assert _find_newer([older], cov_mtime, suffixes=(".py",)) is None
 
     # a directory containing a newer .py returns that file
     pkg = tmp_path / "pkg"
@@ -209,7 +209,7 @@ def test_find_newer_py_covers_all_branches(tmp_path: Path) -> None:
     nested = pkg / "mod.py"
     nested.write_text("c = 1\n", encoding="utf-8")
     os.utime(nested, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer_py([pkg], cov_mtime) == str(nested)
+    assert _find_newer([pkg], cov_mtime, suffixes=(".py",)) == str(nested)
 
     # a directory whose .py files are all older → None
     olddir = tmp_path / "olddir"
@@ -217,7 +217,14 @@ def test_find_newer_py_covers_all_branches(tmp_path: Path) -> None:
     oldnested = olddir / "old.py"
     oldnested.write_text("d = 1\n", encoding="utf-8")
     os.utime(oldnested, (cov_mtime - 100, cov_mtime - 100))
-    assert _find_newer_py([olddir], cov_mtime) is None
+    assert _find_newer([olddir], cov_mtime, suffixes=(".py",)) is None
+
+    # 0.3.6: the same walk serves the TypeScript report, keyed on the TS suffixes
+    ts = pkg / "mod.ts"
+    ts.write_text("export const x = 1;\n", encoding="utf-8")
+    os.utime(ts, (cov_mtime + 100, cov_mtime + 100))
+    assert _find_newer([pkg], cov_mtime, suffixes=(".ts", ".tsx")) == str(ts)
+    assert _find_newer([ts], cov_mtime, suffixes=(".py",)) is None
 
 
 def test_check_coverage_covers_all_branches(tmp_path: Path) -> None:
@@ -558,3 +565,226 @@ def test_doctor_never_exits_on_a_config_it_exists_to_diagnose(
     # exit — this bare project has no baseline yet.)
     assert result.exit_code != 2, result.output
     assert "fail_new_above must be a number." in result.output
+
+
+# --- 0.3.6: doctor speaks TypeScript ---------------------------------------------------
+#
+# On a TypeScript-only package `doctor` said `WARN no .py files` with a remediation
+# about package roots, prescribed `pytest --cov` for coverage, had no TypeScript
+# coverage check at all, and keyed its TypeScript row off baseline identity alone —
+# so a `typescript = true` config with the extra missing was a green doctor and an
+# exit-2 `check`.
+
+_TS_SOURCE = "export function add(a: number, b: number): number {\n  return a + b;\n}\n"
+_LCOV = Path(__file__).resolve().parent / "fixtures" / "typescript" / "app" / "coverage.lcov"
+
+
+def _ts_project(tmp_path: Path, *, python: bool = False) -> Path:
+    src = tmp_path / "src"
+    src.mkdir(exist_ok=True)
+    (src / "lib.ts").write_text(_TS_SOURCE, encoding="utf-8")
+    if python:
+        (src / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    return src
+
+
+def _diagnose_ts(
+    tmp_path: Path,
+    *,
+    typescript: bool = True,
+    ts_coverage: list[Path] | None = None,
+    cfg: dict[str, Any] | None = None,
+) -> dict[str, DoctorCheck]:
+    return _checks_by_name(
+        diagnose(
+            config_dir=tmp_path,
+            cfg=cfg if cfg is not None else {"paths": ["src"], "typescript": typescript},
+            paths=[tmp_path / "src"],
+            baseline_file=tmp_path / ".riskratchet.json",
+            coverage_path=tmp_path / "coverage.json",
+            coverage_origin="coverage_auto",
+            typescript=typescript,
+            ts_coverage=ts_coverage or [],
+        )
+    )
+
+
+def test_a_typescript_only_tree_with_typescript_on_has_no_python_complaints(tmp_path: Path) -> None:
+    _ts_project(tmp_path)
+
+    checks = _diagnose_ts(tmp_path)
+
+    assert checks["paths"].status is CheckStatus.PASS
+    assert checks["coverage"].status is CheckStatus.PASS
+    assert "not applicable" in checks["coverage"].summary
+    assert "coverage-overlap" not in checks and "branch-data" not in checks
+    assert checks["ts-coverage"].status is CheckStatus.WARN
+    assert "score as uncovered" in checks["ts-coverage"].summary
+    assert "ts_coverage" in (checks["ts-coverage"].remediation or "")
+    assert set(checks) <= set(SCHEMA_CHECK_NAMES)
+
+
+def test_a_typescript_only_tree_without_the_key_says_which_key(tmp_path: Path) -> None:
+    _ts_project(tmp_path)
+
+    checks = _diagnose_ts(tmp_path, typescript=False, cfg={"paths": ["src"]})
+
+    assert checks["paths"].status is CheckStatus.WARN
+    assert "typescript is not enabled" in checks["paths"].summary
+    assert "typescript = true" in (checks["paths"].remediation or "")
+    # Python coverage stays a Python question when TypeScript is off.
+    assert "not applicable" not in checks["coverage"].summary
+    assert "ts-coverage" not in checks
+
+
+def test_a_mixed_tree_keeps_the_python_coverage_rows(tmp_path: Path) -> None:
+    _ts_project(tmp_path, python=True)
+    (tmp_path / "coverage.json").write_text(
+        json.dumps({"files": {"src/m.py": {"executed_lines": [1, 2], "missing_lines": []}}}), encoding="utf-8"
+    )
+
+    checks = _diagnose_ts(tmp_path)
+
+    assert checks["paths"].status is CheckStatus.PASS
+    assert "not applicable" not in checks["coverage"].summary
+    assert "coverage-overlap" in checks
+    assert "ts-coverage" in checks
+
+
+def test_an_empty_tree_with_typescript_on_names_both_suffixes(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+
+    checks = _diagnose_ts(tmp_path)
+
+    assert checks["paths"].status is CheckStatus.WARN
+    assert "no .py or .ts files" in checks["paths"].summary
+
+
+def test_typescript_row_fails_when_config_enables_it_and_the_extra_is_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A new situation, so "never turns a green doctor red" holds: on 0.3.5 the key
+    was unknown and the row absent; `check` on this config exits 2 with the same hint."""
+    import riskratchet.doctor as doctor_module
+
+    _ts_project(tmp_path)
+    monkeypatch.setattr(
+        doctor_module, "runtime_typescript_identity", lambda: (_ for _ in ()).throw(ImportError("no extra"))
+    )
+
+    enabled = _diagnose_ts(tmp_path)["typescript"]
+    assert enabled.status is CheckStatus.FAIL
+    assert "typescript = true" in enabled.summary
+    assert enabled.remediation == "pip install 'riskratchet[typescript]'"
+
+    # Only the baseline mentions TypeScript: still the 0.3.1 WARN, never a FAIL.
+    (tmp_path / ".riskratchet.json").write_text(
+        json.dumps(
+            {"version": 3, "entries": [], "identity": {"typescript": {"scheme": 1, "grammar": "0.0.1"}}}
+        ),
+        encoding="utf-8",
+    )
+    from_baseline = _diagnose_ts(tmp_path, typescript=False, cfg={"paths": ["src"]})["typescript"]
+    assert from_baseline.status is CheckStatus.WARN
+
+
+def test_typescript_row_passes_when_enabled_with_the_extra_and_no_baseline_identity(tmp_path: Path) -> None:
+    pytest.importorskip("tree_sitter_typescript")
+    _ts_project(tmp_path)
+
+    check = _diagnose_ts(tmp_path)["typescript"]
+
+    assert check.status is CheckStatus.PASS
+    assert check.summary.startswith("enabled;")
+
+
+def _ts_project_with_report(tmp_path: Path) -> Path:
+    """The fixture report measures `src/app/sample.ts`; stage that file so the paths overlap."""
+    app = tmp_path / "src" / "app"
+    app.mkdir(parents=True)
+    (app / "sample.ts").write_text(_TS_SOURCE, encoding="utf-8")
+    report = tmp_path / "coverage" / "lcov.info"
+    report.parent.mkdir()
+    report.write_text(_LCOV.read_text(encoding="utf-8"), encoding="utf-8")
+    return report
+
+
+def test_ts_coverage_check_matrix(tmp_path: Path) -> None:
+    """Mirrors `_check_coverage`'s branch order: missing → malformed → stale → overlap → pass."""
+    import os
+
+    report = _ts_project_with_report(tmp_path)
+
+    missing = _diagnose_ts(tmp_path, ts_coverage=[tmp_path / "nowhere" / "lcov.info"])["ts-coverage"]
+    assert missing.status is CheckStatus.FAIL
+    assert "not found" in missing.summary
+    assert "vitest" in (missing.remediation or "")
+
+    fresh = _diagnose_ts(tmp_path, ts_coverage=[report])["ts-coverage"]
+    assert fresh.status is CheckStatus.PASS, fresh
+    assert "(fresh)" in fresh.summary
+
+    stale_source = tmp_path / "src" / "app" / "sample.ts"
+    os.utime(stale_source, (report.stat().st_mtime + 100, report.stat().st_mtime + 100))
+    stale = _diagnose_ts(tmp_path, ts_coverage=[report])["ts-coverage"]
+    assert stale.status is CheckStatus.WARN
+    assert "stale" in stale.summary
+    os.utime(stale_source, (report.stat().st_mtime - 100, report.stat().st_mtime - 100))
+
+    stale_source.rename(tmp_path / "src" / "app" / "elsewhere.ts")
+    no_overlap = _diagnose_ts(tmp_path, ts_coverage=[report])["ts-coverage"]
+    assert no_overlap.status is CheckStatus.WARN
+    assert "0 of 1 scanned TypeScript files" in no_overlap.summary
+
+    report.write_text("this is not a coverage report\n", encoding="utf-8")
+    malformed = _diagnose_ts(tmp_path, ts_coverage=[report])["ts-coverage"]
+    assert malformed.status is CheckStatus.FAIL
+    assert "malformed" in malformed.summary
+
+
+def test_doctor_cli_on_a_typescript_only_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """End to end through the config: the rows `check` would agree with, and exit 0."""
+    pytest.importorskip("tree_sitter_typescript")
+    monkeypatch.chdir(tmp_path)
+    _ts_project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\n', encoding="utf-8"
+    )
+    (tmp_path / ".riskratchet.json").write_text(json.dumps({"version": 3, "entries": []}), encoding="utf-8")
+
+    result = runner.invoke(app, ["doctor", "--json"])
+
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    payload = json.loads(result.stdout)
+    rows = {row["name"]: row for row in payload["checks"]}
+    assert set(rows) <= set(SCHEMA_CHECK_NAMES)
+    assert rows["paths"]["status"] == "pass"
+    assert rows["coverage"]["summary"].startswith("not applicable")
+    assert rows["typescript"]["status"] == "pass"
+    assert rows["ts-coverage"]["status"] == "warn"
+    assert "coverage-overlap" not in rows
+    assert payload["summary"]["total"] == len(payload["checks"])
+
+
+def test_doctor_fails_when_the_extra_cannot_be_imported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The dist's metadata can be present while its import fails; `check` exits 2 on the
+    import, so `doctor` must try the import, not just read the version."""
+    import sys
+
+    monkeypatch.chdir(tmp_path)
+    _ts_project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\n', encoding="utf-8"
+    )
+    (tmp_path / ".riskratchet.json").write_text(json.dumps({"version": 3, "entries": []}), encoding="utf-8")
+    monkeypatch.setitem(sys.modules, "tree_sitter", None)
+    monkeypatch.setitem(sys.modules, "tree_sitter_typescript", None)
+
+    result = runner.invoke(app, ["doctor", "--json"])
+
+    assert result.exit_code == 1, (result.stdout, result.stderr)
+    rows = {row["name"]: row for row in json.loads(result.stdout)["checks"]}
+    assert rows["typescript"]["status"] == "fail"
+    assert rows["typescript"]["remediation"] == "pip install 'riskratchet[typescript]'"

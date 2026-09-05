@@ -1617,8 +1617,8 @@ def doctor(
     """Diagnose setup: paths, baseline, coverage, git, config, suppressions.
 
     Some checks are conditional: the coverage-derived ones need a loadable
-    coverage file, and the TypeScript identity check only appears when the
-    baseline actually records TypeScript entries.
+    coverage file (and Python files to cover), and the TypeScript rows appear
+    when \\[tool.riskratchet] enables TypeScript or the baseline records it.
 
     Exits 0 only when every check is `pass` or `warn`. A single `fail` exits 1
     with the remediation command in the per-check row, so a user can
@@ -1638,6 +1638,8 @@ def doctor(
         baseline_file=baseline_file,
         coverage_path=coverage_path,
         coverage_origin=coverage_origin,
+        typescript=resolved_typescript(None, cfg),
+        ts_coverage=resolved_ts_paths(None, cfg, "ts_coverage", config_dir),
     )
     if json_output:
         payload: dict[str, object] = {
@@ -2633,6 +2635,7 @@ def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | 
         suppressed_functions=report.suppressed_functions,
         skipped_missing_coverage=report.skipped_missing_coverage,
         analyzed_functions=report.analyzed_functions or len(report.functions),
+        skipped_generated_files=report.skipped_generated_files,
     )
 
 

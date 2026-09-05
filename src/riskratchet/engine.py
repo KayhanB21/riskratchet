@@ -13,6 +13,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
+from riskratchet._paths import relative_posix
 from riskratchet.analysis import ParsedFile, ParseError, iter_python_files, parse_file
 from riskratchet.complexity import complexity_for_file
 from riskratchet.coverage import (
@@ -83,22 +84,10 @@ def analyze(
     else:
         coverage_data = empty_coverage()
         coverage_present = False
-    parsed_files: list[ParsedFile] = []
     function_risks: list[FunctionRisk] = []
-    file_stats_list: list[FileStats] = []
     suppressed_functions = 0
     skipped_missing_coverage = 0
-
-    for py_path in py_files:
-        parsed = parse_file(py_path, root=root_path)
-        if isinstance(parsed, ParseError):
-            print(
-                f"warning: skipping {parsed.path}: {parsed.message}",
-                file=sys.stderr,
-            )
-            continue
-        parsed_files.append(parsed)
-        file_stats_list.append(parsed.file_stats)
+    parsed_files, file_stats_list, skipped_generated_files = _parse_sources(py_files, root_path)
 
     churn_by_function = collect_function_churn(
         root_path,
@@ -144,7 +133,40 @@ def analyze(
         suppressed_functions=suppressed_functions,
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(function_risks) + suppressed_functions,
+        skipped_generated_files=skipped_generated_files,
     )
+
+
+def _parse_sources(py_files: list[Path], root_path: Path) -> tuple[list[ParsedFile], list[FileStats], int]:
+    """Parse every discovered file into the ones to score, the stats of every file reached,
+    and the count of generated files.
+
+    `files` means every file the scan reached: a syntax-error file is listed with zero
+    functions (as the TypeScript backend already did) and a `@generated` file is listed,
+    counted, and not scored — so a skipped population shows up in `total_files` rather
+    than vanishing.
+    """
+    parsed_files: list[ParsedFile] = []
+    file_stats_list: list[FileStats] = []
+    skipped_generated_files = 0
+    for py_path in py_files:
+        parsed = parse_file(py_path, root=root_path)
+        if isinstance(parsed, ParseError):
+            print(f"warning: skipping {parsed.path}: {parsed.message}", file=sys.stderr)
+            file_stats_list.append(
+                FileStats(
+                    path=relative_posix(parsed.path, root_path),
+                    total_lines=parsed.total_lines,
+                    function_count=0,
+                )
+            )
+            continue
+        file_stats_list.append(parsed.file_stats)
+        if parsed.generated:
+            skipped_generated_files += 1
+            continue
+        parsed_files.append(parsed)
+    return parsed_files, file_stats_list, skipped_generated_files
 
 
 def _risks_for_file(

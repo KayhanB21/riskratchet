@@ -10,6 +10,7 @@ from __future__ import annotations
 import ast
 import copy
 import hashlib
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +19,15 @@ from riskratchet._paths import has_hidden_parent as _has_hidden_parent
 from riskratchet._paths import relative_posix as _relative_posix
 from riskratchet.matching import signature_fingerprint
 from riskratchet.models import FileStats, FunctionId, FunctionSpan
+
+# Line-anchored: `@generated` counts as a generated-file marker only inside a leading
+# `#` comment, never in a string or a docstring. The same claim the TypeScript backend
+# honours (`typescript._GENERATED_HEADER_RE`), scanned over the file head only. The
+# `_pb2.py` *name* rule is deliberately not mirrored: Python codegen headers say
+# `DO NOT EDIT` in a hundred spellings, and a name rule would drop whole populations
+# silently — `exclude = ["**/*_pb2.py"]` is the documented recipe instead.
+_GENERATED_HEADER_RE = re.compile(r"^\s*#\s*@generated", re.MULTILINE)
+_GENERATED_HEAD_BYTES = 2000
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,12 +56,19 @@ class ParsedFile:
     tree: ast.Module
     file_stats: FileStats
     functions: tuple[DiscoveredFunction, ...]
+    # True when the file's header carries the `@generated` marker: it parsed, it is
+    # listed, but `functions` is empty — an author's explicit claim that nothing in it
+    # is theirs to ratchet.
+    generated: bool = False
 
 
 @dataclass(frozen=True, slots=True)
 class ParseError:
     path: Path
     message: str
+    # Line count when the file was readable (a syntax error), 0 when it was not, so the
+    # engine can still list the file with zero functions.
+    total_lines: int = 0
 
 
 def parse_file(path: Path, *, root: Path) -> ParsedFile | ParseError:
@@ -69,10 +86,15 @@ def parse_file(path: Path, *, root: Path) -> ParsedFile | ParseError:
     try:
         tree = ast.parse(source, filename=str(path))
     except SyntaxError as exc:
-        return ParseError(path=path, message=f"syntax error: {exc.msg} (line {exc.lineno})")
+        return ParseError(
+            path=path,
+            message=f"syntax error: {exc.msg} (line {exc.lineno})",
+            total_lines=_count_lines(source),
+        )
 
     relative_path = _relative_posix(path, root)
-    functions = _discover_functions(tree, relative_path)
+    generated = is_generated_python(source[:_GENERATED_HEAD_BYTES])
+    functions = () if generated else _discover_functions(tree, relative_path)
     file_stats = FileStats(
         path=relative_path,
         total_lines=_count_lines(source),
@@ -85,7 +107,22 @@ def parse_file(path: Path, *, root: Path) -> ParsedFile | ParseError:
         tree=tree,
         file_stats=file_stats,
         functions=functions,
+        generated=generated,
     )
+
+
+def is_generated_python(source_head: str) -> bool:
+    """True when the file head carries a comment-anchored `@generated` marker.
+
+    The Python half of the generated-file rule the TypeScript backend has had since
+    0.2.12: a `# @generated` header (the marker Facebook's and Google's generators
+    write) means the file is skipped for scoring, counted, and listed with zero
+    functions. `@generated` inside a string, a docstring, or trailing code does not
+    count. Before 0.3.6 the TypeScript docstring claimed this mirror existed; it did
+    not, so a generated `.py` was scored in full while the same header in a `.ts` file
+    dropped the file silently.
+    """
+    return _GENERATED_HEADER_RE.search(source_head) is not None
 
 
 def _count_lines(source: str) -> int:

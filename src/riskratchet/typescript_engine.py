@@ -101,9 +101,12 @@ def analyze_typescript(
     file_line_counts: dict[str, int] = {}
     file_fn_counts: dict[str, int] = {}
     unmeasured_files = 0
+    skipped = _SkippedFiles(root_path, on_error)
     for path in files:
-        found, exports = ts.analyze_ts_file(path, root=root_path, on_error=on_error)
         rel = relative_posix(path, root_path)
+        found, exports = ts.analyze_ts_file(
+            path, root=root_path, on_error=skipped.on_error, on_skip=skipped.on_skip
+        )
         modules[rel] = exports
         file_line_counts[rel] = _count_lines(path)
         file_fn_counts[rel] = len(found)
@@ -116,7 +119,9 @@ def analyze_typescript(
     if unmeasured_files:
         _warn(on_warning, f"{unmeasured_files} file(s) had no coverage entry (scored without coverage)")
 
-    discovered = _narrow_public(discovered, files, root_path, ts_entries, modules, on_warning)
+    discovered = _narrow_public(
+        discovered, files, root_path, ts_entries, modules, on_warning, failed_to_parse=skipped.failed
+    )
 
     churn_by_function = collect_function_churn(
         root_path,
@@ -181,7 +186,30 @@ def analyze_typescript(
         suppressed_functions=suppressed,
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(risks) + suppressed,
+        skipped_generated_files=len(skipped.generated),
     )
+
+
+class _SkippedFiles:
+    """The files a scan reached but did not score, by reason, as `analyze_ts_file` reports them.
+
+    `failed` (syntax error / unreadable) feeds the entry-barrel refusal in `_narrow_public`:
+    such a module is empty by construction. `generated` is the count every summary discloses.
+    """
+
+    def __init__(self, root: Path, on_error: Any) -> None:
+        self._root = root
+        self._on_error = on_error
+        self.failed: set[str] = set()
+        self.generated: set[str] = set()
+
+    def on_error(self, path: Path, message: str) -> None:
+        self.failed.add(relative_posix(path, self._root))
+        if self._on_error is not None:
+            self._on_error(path, message)
+
+    def on_skip(self, path: Path, _reason: str) -> None:
+        self.generated.add(relative_posix(path, self._root))
 
 
 def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
@@ -196,6 +224,7 @@ def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
         suppressed_functions=python.suppressed_functions + typescript.suppressed_functions,
         skipped_missing_coverage=python.skipped_missing_coverage + typescript.skipped_missing_coverage,
         analyzed_functions=(python.analyzed_functions or 0) + (typescript.analyzed_functions or 0),
+        skipped_generated_files=python.skipped_generated_files + typescript.skipped_generated_files,
     )
 
 
@@ -247,10 +276,18 @@ def _narrow_public(
     entries: Sequence[Path] | None,
     modules: dict[str, Any],
     on_warning: WarnFn,
+    *,
+    failed_to_parse: set[str] | None = None,
 ) -> list[Any]:
     """Narrow `is_public` to entry-barrel reachability (only demotes; never promotes). A non-barrel
     project or an unresolved wildcard leaves flags untouched — the same safety rail the informational
-    CLI path uses."""
+    CLI path uses.
+
+    An entry that **did not parse** is the third case that must refuse: its module is empty by
+    construction, so before 0.3.6 a syntax error in `index.ts` demoted every function in the
+    package to internal (`public_surface` 100 → 0) behind the ordinary "narrowed" line. Only a
+    *resolved entry* in that state refuses; a transitively broken file keeps the empty-module
+    behaviour, since the surface reachable through it is genuinely empty."""
     resolved_entries = ts.detect_ts_entries(root, files, list(entries or []))
     if not resolved_entries:
         if entries:
@@ -262,6 +299,8 @@ def _narrow_public(
     if entries and len(resolved_entries) < len(entries):
         unmatched = len(entries) - len(resolved_entries)
         _warn(on_warning, f"public surface: {unmatched} --ts-entry path(s) matched no scanned file")
+    if _refuses_unparsed_entry(resolved_entries, failed_to_parse or set(), on_warning):
+        return functions
     result = tsx.resolve_entry_reachable(modules, resolved_entries)
     if result.poison_all:
         _warn(
@@ -290,6 +329,21 @@ def _narrow_public(
             f"public surface: kept {kept_uncertain} function(s) public behind unresolved named re-exports",
         )
     return narrowed
+
+
+def _refuses_unparsed_entry(
+    resolved_entries: list[str], failed_to_parse: set[str], on_warning: WarnFn
+) -> bool:
+    """True (after warning) when a resolved entry did not parse, so narrowing must not run."""
+    unparsed = [entry for entry in resolved_entries if entry in failed_to_parse]
+    if not unparsed:
+        return False
+    _warn(
+        on_warning,
+        f"public surface: entry {', '.join(unparsed)} did not parse; the surface can't be "
+        "bounded — keeping file-level export flags",
+    )
+    return True
 
 
 def _is_allowed(path: str, qualname: str, patterns: Sequence[str]) -> bool:

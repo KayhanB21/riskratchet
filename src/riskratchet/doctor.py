@@ -19,7 +19,7 @@ envelope is contract-stable and validated against
 from __future__ import annotations
 
 import subprocess
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -32,9 +32,12 @@ from riskratchet.baseline.io import runtime_typescript_identity
 from riskratchet.config import invalid_config_values, unknown_config_keys
 from riskratchet.coverage import CoverageData, load_coverage
 from riskratchet.git import is_shallow_repo
+from riskratchet.typescript import _require_tree_sitter, iter_typescript_files
 
 # Bound the overlap walk so `doctor` stays sub-second on a monorepo.
 _OVERLAP_FILE_CAP = 2000
+_TS_SUFFIXES = (".ts", ".tsx", ".mts", ".cts")
+_TS_COVERAGE_COMMAND = "npx vitest run --coverage --coverage.reporter=lcov  # or c8/nyc/jest"
 
 
 class CheckStatus(str, Enum):
@@ -59,6 +62,8 @@ def diagnose(
     baseline_file: Path,
     coverage_path: Path | None,
     coverage_origin: str = "coverage",
+    typescript: bool = False,
+    ts_coverage: Sequence[Path] = (),
 ) -> list[DoctorCheck]:
     """Run every check and return the results in declaration order.
 
@@ -68,25 +73,37 @@ def diagnose(
     rest of riskratchet would use; pass `None` for coverage when the
     user has no coverage configured at all. `coverage_origin` names where
     the path came from (`coverage`, `coverage_map`, `coverage_cache`) so the
-    remediation can be specific.
+    remediation can be specific. `typescript` and `ts_coverage` are the
+    resolved `[tool.riskratchet]` values (since 0.3.6): `doctor` diagnoses
+    the config, so it takes no flags of its own.
 
     The coverage file is parsed once and reused by the overlap and
-    branch-data checks; those two are skipped when it isn't loadable.
+    branch-data checks; those two are skipped when it isn't loadable, and
+    when Python coverage is not applicable — TypeScript on and no `.py`
+    under the scan paths, the rule `check` applies — so the two commands
+    never disagree about whether a project is usable.
     """
-    coverage_check, data = _check_coverage(coverage_path, source_paths=paths, origin=coverage_origin)
+    python_files = _scanned_files(paths, config_dir=config_dir, cfg=cfg, language="python")
+    if typescript and not python_files:
+        coverage_check, data = _coverage_not_applicable(), None
+    else:
+        coverage_check, data = _check_coverage(coverage_path, source_paths=paths, origin=coverage_origin)
     checks = [
-        _check_paths(paths),
+        _check_paths(paths, typescript=typescript),
         _check_baseline(baseline_file),
         coverage_check,
     ]
     if data is not None:
-        checks.append(_check_coverage_overlap(data, paths=paths, config_dir=config_dir, cfg=cfg))
+        checks.append(_check_coverage_overlap(data, files=python_files, config_dir=config_dir))
         checks.append(_check_branch_data(data, coverage_path))
     checks.append(_check_git(config_dir))
     checks.append(_check_shallow_clone(config_dir))
-    typescript = _check_typescript(baseline_file, paths=paths)
-    if typescript is not None:
-        checks.append(typescript)
+    typescript_check = _check_typescript(baseline_file, paths=paths, enabled=typescript)
+    if typescript_check is not None:
+        checks.append(typescript_check)
+    if typescript:
+        ts_files = _scanned_files(paths, config_dir=config_dir, cfg=cfg, language="typescript")
+        checks.append(_check_ts_coverage(list(ts_coverage), files=ts_files, config_dir=config_dir))
     checks.append(_check_config(cfg))
     checks.append(_check_suppressions(cfg))
     return checks
@@ -102,7 +119,14 @@ def summarize(checks: list[DoctorCheck]) -> dict[str, int]:
     }
 
 
-def _check_paths(paths: list[Path]) -> DoctorCheck:
+def _check_paths(paths: list[Path], *, typescript: bool = False) -> DoctorCheck:
+    """The scan paths exist and hold something to score.
+
+    With TypeScript on, `.ts` files count: a TypeScript-only package used to get
+    `WARN no .py files` with a remediation about package roots — the wrong fix. With
+    it off, `.ts` files under the paths are worth a word, since the switch that would
+    score them is one config key away.
+    """
     missing = [p for p in paths if not p.exists()]
     if missing:
         names = ", ".join(str(p) for p in missing)
@@ -112,19 +136,47 @@ def _check_paths(paths: list[Path]) -> DoctorCheck:
             summary=f"missing scan paths: {names}",
             remediation="check spelling, or update [tool.riskratchet] paths in pyproject.toml",
         )
-    empty = [p for p in paths if not _has_python_files(p)]
+    problem = _path_content_problem(paths, typescript=typescript)
+    if problem is not None:
+        return problem
+    return DoctorCheck(
+        name="paths",
+        status=CheckStatus.PASS,
+        summary=", ".join(str(p) for p in paths) or ".",
+    )
+
+
+def _path_content_problem(paths: list[Path], *, typescript: bool) -> DoctorCheck | None:
+    """A WARN when a path holds nothing to score, or TypeScript the config does not score."""
+    with_typescript = [p for p in paths if _has_typescript_files(p)]
+    empty = [p for p in paths if not _has_python_files(p) and p not in with_typescript]
     if empty:
         names = ", ".join(str(p) for p in empty)
         return DoctorCheck(
             name="paths",
             status=CheckStatus.WARN,
-            summary=f"no .py files under: {names}",
+            summary=f"no .py{' or .ts' if typescript else ''} files under: {names}",
             remediation="verify the scan path is the package root, not a sibling directory",
         )
+    if with_typescript and not typescript:
+        names = ", ".join(str(p) for p in with_typescript)
+        return DoctorCheck(
+            name="paths",
+            status=CheckStatus.WARN,
+            summary=f"TypeScript files under {names} but typescript is not enabled — they are not scored",
+            remediation="[tool.riskratchet] typescript = true  # or pass --typescript",
+        )
+    return None
+
+
+def _coverage_not_applicable() -> DoctorCheck:
+    """The TypeScript-only tree: `check` neither runs a test command nor asks for a
+    report there (0.3.6), so a missing `coverage.json` is not a problem to diagnose.
+    The dependent overlap / branch-data rows are skipped with it."""
     return DoctorCheck(
-        name="paths",
+        name="coverage",
         status=CheckStatus.PASS,
-        summary=", ".join(str(p) for p in paths) or ".",
+        summary="not applicable (no Python files under the scan paths)",
     )
 
 
@@ -253,7 +305,7 @@ def _check_coverage(
             None,
         )
     cov_mtime = coverage_path.stat().st_mtime
-    newer = _find_newer_py(source_paths, cov_mtime)
+    newer = _find_newer(source_paths, cov_mtime, suffixes=(".py",))
     if newer is not None:
         return (
             DoctorCheck(
@@ -277,9 +329,8 @@ def _check_coverage(
 def _check_coverage_overlap(
     data: CoverageData,
     *,
-    paths: list[Path],
+    files: list[Path] | None,
     config_dir: Path,
-    cfg: Mapping[str, Any],
 ) -> DoctorCheck:
     """Warn when the coverage report barely mentions the files being scanned.
 
@@ -287,17 +338,9 @@ def _check_coverage_overlap(
     site-packages) resolves nothing, so every function scores as 0% covered
     and risk scores balloon — with no error anywhere. `CoverageData.lookup`
     already tolerates path-format differences, so a miss here is a real miss.
+    `files` is the enumerated Python set (`None` when the walk failed).
     """
-    include = cfg.get("include")
-    exclude = cfg.get("exclude")
-    try:
-        files = iter_python_files(
-            paths,
-            root=config_dir,
-            include=list(include) if isinstance(include, list) else [],
-            exclude=list(exclude) if isinstance(exclude, list) else [],
-        )[:_OVERLAP_FILE_CAP]
-    except OSError:
+    if files is None:
         return DoctorCheck(
             name="coverage-overlap",
             status=CheckStatus.WARN,
@@ -363,30 +406,41 @@ def _check_shallow_clone(config_dir: Path) -> DoctorCheck:
     return DoctorCheck(name="shallow-clone", status=CheckStatus.PASS, summary="full history")
 
 
-def _check_typescript(baseline_file: Path, *, paths: list[Path]) -> DoctorCheck | None:
+def _check_typescript(baseline_file: Path, *, paths: list[Path], enabled: bool = False) -> DoctorCheck | None:
     """Compare the baseline's recorded TypeScript identity against the runtime.
 
-    Returns `None` for a Python-only project so nothing new appears in the
-    common case. A mismatch already degrades gracefully (0.3.1 prints the
-    re-baseline command during `check`); reporting it here makes it findable
-    before CI does.
+    Fires when config enables TypeScript (0.3.6) or the baseline records a
+    TypeScript identity; returns `None` for a Python-only project so nothing new
+    appears in the common case. A mismatch already degrades gracefully (0.3.1
+    prints the re-baseline command during `check`); reporting it here makes it
+    findable before CI does. The absent extra is a FAIL only when config turned
+    TypeScript on — every command then exits 2 with the same install hint — and
+    stays a WARN when only the baseline mentions TypeScript, as before.
     """
-    if not baseline_file.exists():
+    persisted = _persisted_typescript_identity(baseline_file)
+    if persisted is None and not enabled:
         return None
     try:
-        persisted = load_baseline(baseline_file).identity.get("typescript")
-    except ValueError:
-        return None  # already reported by the baseline check
-    if not isinstance(persisted, dict):
-        return None
-    try:
+        # Import it, not just read its metadata: a dist whose import fails is as absent
+        # as no dist at all, and `check` would exit 2 on exactly that import.
+        _require_tree_sitter()
         runtime = runtime_typescript_identity()
     except Exception:
         return DoctorCheck(
             name="typescript",
-            status=CheckStatus.WARN,
-            summary="baseline has TypeScript entries but the [typescript] extra is not installed",
+            status=CheckStatus.FAIL if enabled else CheckStatus.WARN,
+            summary=(
+                "typescript = true but the [typescript] extra is not installed"
+                if enabled
+                else "baseline has TypeScript entries but the [typescript] extra is not installed"
+            ),
             remediation="pip install 'riskratchet[typescript]'",
+        )
+    if persisted is None:
+        return DoctorCheck(
+            name="typescript",
+            status=CheckStatus.PASS,
+            summary=f"enabled; scheme {runtime.get('scheme')}, grammar {runtime.get('grammar')}",
         )
     if runtime != persisted:
         target = " ".join(str(p) for p in paths) or "<paths>"
@@ -505,6 +559,99 @@ def _has_branch_data(data: CoverageData) -> bool:
     return False
 
 
+def _persisted_typescript_identity(baseline_file: Path) -> dict[str, Any] | None:
+    """The `identity.typescript` block of a readable baseline, else None."""
+    if not baseline_file.exists():
+        return None
+    try:
+        persisted = load_baseline(baseline_file).identity.get("typescript")
+    except ValueError:
+        return None  # already reported by the baseline check
+    return persisted if isinstance(persisted, dict) else None
+
+
+def _check_ts_coverage(reports: list[Path], *, files: list[Path] | None, config_dir: Path) -> DoctorCheck:
+    """The TypeScript twin of `_check_coverage` (+ overlap), one row, same branch order.
+
+    Only emitted when TypeScript is enabled. Nothing configured is a WARN, not a
+    FAIL: `check` runs without a report and scores every TypeScript function as
+    uncovered, which is worth saying but does not break the gate. A configured
+    report that is missing or malformed is exactly what makes `check` exit 2, so
+    those FAIL with the command that writes one.
+    """
+    if not reports:
+        return DoctorCheck(
+            name="ts-coverage",
+            status=CheckStatus.WARN,
+            summary="no TypeScript coverage configured (TypeScript functions score as uncovered)",
+            remediation=(
+                f'{_TS_COVERAGE_COMMAND}; then [tool.riskratchet] ts_coverage = ["coverage/lcov.info"]'
+            ),
+        )
+    missing = [p for p in reports if not p.exists()]
+    if missing:
+        names = ", ".join(str(p) for p in missing)
+        return DoctorCheck(
+            name="ts-coverage",
+            status=CheckStatus.FAIL,
+            summary=f"TypeScript coverage report not found: {names}",
+            remediation=_TS_COVERAGE_COMMAND,
+        )
+    from riskratchet.typescript_coverage import load_ts_coverage_files
+
+    try:
+        data = load_ts_coverage_files(reports, strict=True)
+    except ValueError as exc:
+        return DoctorCheck(
+            name="ts-coverage",
+            status=CheckStatus.FAIL,
+            summary=f"TypeScript coverage report is malformed: {exc}",
+            remediation=_TS_COVERAGE_COMMAND,
+        )
+    oldest = min(p.stat().st_mtime for p in reports)
+    newer = _find_newer(list(files or []), oldest, suffixes=_TS_SUFFIXES)
+    if newer is not None:
+        return DoctorCheck(
+            name="ts-coverage",
+            status=CheckStatus.WARN,
+            summary=f"TypeScript coverage older than {newer} (stale)",
+            remediation=_TS_COVERAGE_COMMAND,
+        )
+    names = ", ".join(str(p) for p in reports)
+    if files:
+        hits = sum(1 for path in files if data.lookup(relative_posix(path, config_dir)) is not None)
+        if hits == 0:
+            return DoctorCheck(
+                name="ts-coverage",
+                status=CheckStatus.WARN,
+                summary=f"0 of {len(files)} scanned TypeScript files appear in {names}",
+                remediation="coverage measures a different tree — run the test command from the project root",
+            )
+    return DoctorCheck(name="ts-coverage", status=CheckStatus.PASS, summary=f"{names} (fresh)")
+
+
+def _scanned_files(
+    paths: list[Path], *, config_dir: Path, cfg: Mapping[str, Any], language: str
+) -> list[Path] | None:
+    """The files a scan would reach for one language, honouring `include` / `exclude`.
+
+    `None` when the walk failed (unreadable directory), which the overlap check reports.
+    Capped so `doctor` stays sub-second on a monorepo.
+    """
+    include = cfg.get("include")
+    exclude = cfg.get("exclude")
+    walk = iter_python_files if language == "python" else iter_typescript_files
+    try:
+        return walk(
+            paths,
+            root=config_dir,
+            include=list(include) if isinstance(include, list) else [],
+            exclude=list(exclude) if isinstance(exclude, list) else [],
+        )[:_OVERLAP_FILE_CAP]
+    except OSError:
+        return None
+
+
 def _has_python_files(path: Path) -> bool:
     if not path.exists():
         return False
@@ -514,15 +661,25 @@ def _has_python_files(path: Path) -> bool:
         return False
 
 
-def _find_newer_py(source_paths: list[Path], cov_mtime: float) -> str | None:
-    """Return the first .py file newer than `cov_mtime`, or None."""
+def _has_typescript_files(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        return bool(iter_typescript_files([path], root=path.resolve()))
+    except OSError:
+        return False
+
+
+def _find_newer(source_paths: list[Path], cov_mtime: float, *, suffixes: tuple[str, ...]) -> str | None:
+    """Return the first file with one of `suffixes` newer than `cov_mtime`, or None."""
     for src in source_paths:
         if not src.exists():
             continue
-        if src.is_file() and src.suffix == ".py" and src.stat().st_mtime > cov_mtime:
+        if src.is_file() and src.suffix in suffixes and src.stat().st_mtime > cov_mtime:
             return str(src)
         if src.is_dir():
-            for py in src.rglob("*.py"):
-                if py.stat().st_mtime > cov_mtime:
-                    return str(py)
+            for suffix in suffixes:
+                for candidate in src.rglob(f"*{suffix}"):
+                    if candidate.stat().st_mtime > cov_mtime:
+                        return str(candidate)
     return None

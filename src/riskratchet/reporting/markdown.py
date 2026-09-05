@@ -122,6 +122,7 @@ def render_report_markdown(
         f"**Coverage:** {summary['coverage_status']}",
         f"**Suppressed:** {summary['suppressed_functions']}",
         f"**Skipped (missing coverage):** {summary['skipped_missing_coverage']}",
+        f"**Skipped (generated files):** {summary['skipped_generated_files']}",
         "",
         "| Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |",

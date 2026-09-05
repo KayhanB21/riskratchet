@@ -9,6 +9,7 @@
   **Coverage:** missing
   **Suppressed:** 0
   **Skipped (missing coverage):** 0
+  **Skipped (generated files):** 0
   
   | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
   | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |

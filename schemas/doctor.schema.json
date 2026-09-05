@@ -26,6 +26,7 @@
               "git",
               "shallow-clone",
               "typescript",
+              "ts-coverage",
               "config",
               "suppressions"
             ]
