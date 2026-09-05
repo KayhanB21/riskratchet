@@ -864,6 +864,7 @@
       "coverage_status": "present",
       "suppressed_functions": 0,
       "skipped_missing_coverage": 0,
+      "skipped_generated_files": 0,
       "by_severity": {
         "low": 2,
         "medium": 1,
@@ -889,7 +890,7 @@
 # ---
 # name: test_scan_summary_via_cli_snapshot[text]
   '''
-  scan functions=3 analyzed=3 emitted=3 files=1 coverage=present suppressed=0 skipped_missing_coverage=0
+  scan functions=3 analyzed=3 emitted=3 files=1 coverage=present suppressed=0 skipped_missing_coverage=0 skipped_generated_files=0
   severity low=2 medium=1 high=0 critical=0
   group name=ungrouped by_severity.critical=0 by_severity.high=0 by_severity.low=2 by_severity.medium=1 functions=3 max_score=40.0
   
@@ -914,6 +915,7 @@
       "coverage_status": "present",
       "suppressed_functions": 0,
       "skipped_missing_coverage": 0,
+      "skipped_generated_files": 0,
       "by_severity": {
         "low": 2,
         "medium": 1,
@@ -1027,6 +1029,7 @@
   **Coverage:** present
   **Suppressed:** 0
   **Skipped (missing coverage):** 0
+  **Skipped (generated files):** 0
   
   | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
   | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |

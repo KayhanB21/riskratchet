@@ -86,12 +86,16 @@ riskratchet init --with-baseline  # also run pytest --cov + baseline
 riskratchet init --force          # replace existing [tool.riskratchet]
 ```
 
-`riskratchet doctor` is a six-check pre-flight that names whatever
-would make `check` fail to start (missing paths, missing/malformed
-baseline, missing/stale coverage, no git history, unknown config
-keys, invalid suppressions) and prints the exact fix command for
-each. The status table goes to stdout; the `→ fix:` remediations go
-to stderr so you can pipe them separately:
+`riskratchet doctor` is a pre-flight that names whatever would make
+`check` fail to start (missing paths, missing/malformed baseline,
+missing/stale coverage, no git history, unknown config keys, invalid
+suppressions) and prints the exact fix command for each. With
+`typescript = true` it also checks the `[typescript]` extra is installed
+and reports the TypeScript coverage report (`ts-coverage`: missing or
+malformed is a FAIL, none configured is a WARN); on a TypeScript-only
+tree the Python coverage row reads "not applicable", the same rule
+`check` applies. The status table goes to stdout; the `→ fix:`
+remediations go to stderr so you can pipe them separately:
 
 ```bash
 riskratchet doctor                # human-readable table + remediation
@@ -487,9 +491,16 @@ riskratchet scan src --coverage coverage.json --missing-coverage skip
 `optimistic` treats missing file coverage as fully covered. `skip` drops
 functions from unmapped files and reports the skipped count.
 
-Generated Python is scored like any other Python: protobuf stubs and other codegen
-say `DO NOT EDIT` in a hundred different headers, so riskratchet does not guess.
-Keep them out at discovery time instead:
+**Generated files.** A file whose header carries a comment-anchored `@generated`
+marker (`# @generated` in Python, `// @generated` or `/* @generated */` in
+TypeScript) is skipped in both languages since 0.3.6: its functions are not
+scored or gated, the file still appears in `files[]` with zero functions, and the
+summary says so (`skipped_generated_files`, "N generated files skipped"). A
+marker inside a string, a docstring, or trailing code does not count. TypeScript
+also skips by name (`*.pb.ts`, `*.gen.ts`). Python codegen that says `DO NOT
+EDIT` without the marker — protobuf stubs, for one — is scored like any other
+Python, because those headers come in a hundred spellings and riskratchet does
+not guess. Keep them out at discovery time instead:
 
 ```toml
 [tool.riskratchet]
@@ -724,6 +735,7 @@ Native JSON output (truncated):
     "coverage_status": "present",
     "suppressed_functions": 1,
     "skipped_missing_coverage": 0,
+    "skipped_generated_files": 0,
     "by_severity": { "low": 1, "medium": 6, "high": 3, "critical": 0 }
   },
   "functions": [
@@ -1119,10 +1131,15 @@ functions/arrows. Qualnames reflect nesting through classes, functions, and
 top-level `bar`. Public vs internal is **export reachability** — inline `export` /
 `export default`, separate `export { name }` clauses, and (with an entry barrel) cross-file
 re-export chains — not naming. Files with
-syntax errors are skipped with a warning (never partially listed). Deliberately
+syntax errors are skipped with a warning (never partially listed); if the skipped file
+is the entry barrel itself, narrowing refuses ("the surface can't be bounded") and every
+file-level export flag is kept rather than demoted. Deliberately
 **skipped**: anonymous inline callbacks (`xs.map(x => …)`), object-literal methods,
 interface/abstract method *signatures* (no body), and generated files (a
-comment-anchored `@generated` header or `*.pb.ts` / `*.gen.ts` name). **Not yet
+comment-anchored `@generated` header or `*.pb.ts` / `*.gen.ts` name) — counted in the
+summary and listed in `files[]` with zero functions; a generated file still contributes
+its exports, so a barrel's `export * from './generated'` keeps resolving. `node_modules`
+is never descended into. **Not yet
 supported** (silently skipped): generator functions and async iterators. The parser
 is tree-sitter; the rationale and the contract a future backend must fill live in
 [`docs/typescript-parser-decision.md`](docs/typescript-parser-decision.md) and

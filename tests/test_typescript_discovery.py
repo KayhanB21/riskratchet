@@ -197,3 +197,15 @@ def test_an_unreadable_file_is_skipped_with_a_warning_not_an_exit_one_traceback(
 
     assert found == []
     assert errors and "cannot read file" in errors[0][1]
+
+
+def test_node_modules_is_skipped_like_hidden_directories(tmp_path: Path) -> None:
+    """Only hidden directories were skipped before 0.3.6, so a scan root holding an
+    installed dependency tree walked every package under it."""
+    from riskratchet.typescript import iter_typescript_files
+
+    (tmp_path / "node_modules" / "dep").mkdir(parents=True)
+    (tmp_path / "node_modules" / "dep" / "index.ts").write_text("export const d = 1;\n", encoding="utf-8")
+    (tmp_path / "own.ts").write_text("export const o = 1;\n", encoding="utf-8")
+
+    assert [p.name for p in iter_typescript_files([tmp_path], root=tmp_path)] == ["own.ts"]

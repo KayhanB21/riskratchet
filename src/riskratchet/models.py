@@ -141,6 +141,11 @@ class RiskReport:
     suppressed_functions: int = 0
     skipped_missing_coverage: int = 0
     analyzed_functions: int | None = None
+    # Files the scan reached but did not score because their header carries a
+    # comment-anchored `@generated` marker (since 0.3.6, both backends). They still
+    # appear in `files` with zero functions, so `total_files` means "every file the
+    # scan reached" and a dropped population is never invisible.
+    skipped_generated_files: int = 0
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}

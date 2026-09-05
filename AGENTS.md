@@ -170,7 +170,26 @@ success and `2` on usage errors.
   auto-coverage may legitimately fill it. `doctor._check_coverage` keys off the same
   rule via the `coverage_auto` origin — before 0.3.5 it said FAIL where `check` said
   nothing at all, so the two commands disagreed about whether a project was usable.
-  Keep them in step: `test_doctor_and_check_agree_about_a_missing_configured_coverage_path`.
+  Keep them in step: `test_doctor_and_check_agree_about_a_missing_configured_coverage_path`,
+  and on a TypeScript-only tree (0.3.6) both say Python coverage is *not applicable*:
+  `test_a_typescript_only_tree_needs_no_python_coverage` and
+  `test_doctor_cli_on_a_typescript_only_project`. `doctor` takes no TypeScript
+  flags — it diagnoses the config — and its check names are a closed enum in
+  `schemas/doctor.schema.json`; a new row is a schema change.
+- **A skipped file is still a file the scan reached.** A comment-anchored
+  `@generated` header skips a file's functions in both backends; the file stays in
+  `report.files` with zero functions and is counted in
+  `RiskReport.skipped_generated_files`, disclosed in every summary. The `*.pb.ts` /
+  `*.gen.ts` *name* rule is TypeScript-only on purpose (Python codegen headers say
+  `DO NOT EDIT` in a hundred spellings; the README recipe is `exclude`). A generated
+  TypeScript file is still parsed for its exports, so a barrel that re-exports it keeps
+  resolving — the draft fix that unregistered it would have flipped `is_public` back on
+  for every narrowed function, a +100 `public_surface` swing on upgrade.
+- **Narrowing refuses on an unproven graph, and an entry that did not parse is
+  unproven.** `_narrow_public` keeps every export flag when a resolved entry is in
+  `failed_to_parse` (syntax error / unreadable) — before 0.3.6 a broken `index.ts`
+  demoted every function to internal behind the ordinary "narrowed" line. A
+  transitively broken file keeps the empty-module behaviour.
 - The TypeScript backend mirrors the Python one, and "mirrors" is a claim tests must
   hold to. `missing_coverage` handling is pinned across both backends by
   `test_an_absent_report_scores_the_same_in_both_backends` (parametrized over the whole

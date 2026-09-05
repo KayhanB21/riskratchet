@@ -19,6 +19,7 @@
         "coverage_status",
         "suppressed_functions",
         "skipped_missing_coverage",
+        "skipped_generated_files",
         "by_severity",
         "groups"
       ],
@@ -31,6 +32,7 @@
         "coverage_status": { "enum": ["present", "missing"] },
         "suppressed_functions": { "type": "integer", "minimum": 0 },
         "skipped_missing_coverage": { "type": "integer", "minimum": 0 },
+        "skipped_generated_files": { "type": "integer", "minimum": 0 },
         "by_severity": {
           "type": "object",
           "required": ["low", "medium", "high", "critical"],

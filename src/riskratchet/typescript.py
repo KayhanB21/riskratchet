@@ -144,8 +144,26 @@ def _walk_typescript(entry: Path) -> list[Path]:
         return []
     found: list[Path] = []
     for suffix in _TS_SUFFIXES:
-        found.extend(p for p in entry.rglob(f"*{suffix}") if not _has_hidden_parent(p, entry))
+        found.extend(
+            p
+            for p in entry.rglob(f"*{suffix}")
+            if not _has_hidden_parent(p, entry) and not _under_node_modules(p, entry)
+        )
     return found
+
+
+def _under_node_modules(path: Path, entry: Path) -> bool:
+    """True for a file inside a `node_modules` directory below the scan entry.
+
+    Only hidden directories were skipped before 0.3.6, so a scan root that contained
+    an installed dependency tree walked (and, with `--typescript`, parsed) every
+    package under it. A `node_modules` named explicitly as the scan path is honoured.
+    """
+    try:
+        parts = path.relative_to(entry).parts
+    except ValueError:
+        return False
+    return "node_modules" in parts[:-1]
 
 
 def _language(suffix: str) -> Any:
@@ -166,9 +184,14 @@ def _language(suffix: str) -> Any:
 
 
 def is_generated_typescript(path: Path, source_head: str) -> bool:
-    """Generated/vendored code is excluded from discovery, mirroring how generated Python
-    is kept out of scoring. Detected by filename (`*.pb.ts` / `*.gen.ts`, incl.
-    `.mts`/`.cts`) or a comment-anchored `@generated` marker in the file header."""
+    """Generated/vendored code is excluded from scoring. Detected by filename (`*.pb.ts` /
+    `*.gen.ts`, incl. `.mts`/`.cts`) or a comment-anchored `@generated` marker in the
+    file header. The header rule is mirrored by `analysis.is_generated_python` (since
+    0.3.6); the name rule is TypeScript-only — see that function for why.
+
+    A generated file is still valid TypeScript: `analyze_ts_file` parses it for its
+    export surface so a barrel's `export * from './generated'` keeps resolving, and only
+    its *functions* are dropped (counted in `RiskReport.skipped_generated_files`)."""
     if _GENERATED_NAME_RE.search(path.name):
         return True
     return _GENERATED_HEADER_RE.search(source_head) is not None
@@ -179,18 +202,28 @@ def analyze_ts_file(
     *,
     root: Path,
     on_error: Callable[[Path, str], None] | None = None,
+    on_skip: Callable[[Path, str], None] | None = None,
 ) -> tuple[list[TsFunction], ModuleExports]:
     """Parse a `.ts`/`.tsx`/`.mts`/`.cts` file **once** and return both its discovered functions
     and its export surface. The CLI uses this so a file is not parsed twice (once for discovery,
     once for barrel resolution).
 
-    Returns `([], empty)` for generated files and for files with ERROR nodes (a genuinely broken
-    file), invoking `on_error(path, "syntax error")` in the latter case — never partial results.
+    Returns `([], empty)` for files with ERROR nodes (a genuinely broken file) and unreadable
+    ones, invoking `on_error(path, reason)` — never partial results. A **generated** file returns
+    `([], its real exports)` and invokes `on_skip(path, "generated")`: it is valid TypeScript, so a
+    barrel's `export * from './generated'` keeps resolving; only its functions are dropped.
+    Before 0.3.6 it returned an empty module, which made a generated file behind a wildcard
+    re-export look like an empty one and demoted every function the barrel reached through it.
     """
-    node = _parse_root(path, on_error)
+    node, generated = _parse_root(path, on_error)
     if node is None:
         return [], ModuleExports()
-    return _functions_from_root(node, _relative_posix(path, root)), _exports_from_root(node)
+    exports = _exports_from_root(node)
+    if generated:
+        if on_skip is not None:
+            on_skip(path, "generated")
+        return [], exports
+    return _functions_from_root(node, _relative_posix(path, root)), exports
 
 
 def discover_typescript(
@@ -200,15 +233,18 @@ def discover_typescript(
     on_error: Callable[[Path, str], None] | None = None,
 ) -> list[TsFunction]:
     """Discover functions in a single file (functions half of `analyze_ts_file`)."""
-    node = _parse_root(path, on_error)
-    if node is None:
+    node, generated = _parse_root(path, on_error)
+    if node is None or generated:
         return []
     return _functions_from_root(node, _relative_posix(path, root))
 
 
-def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> Node | None:
-    """Shared loader: read + parse a TS file to its root node, or None for a generated, unreadable,
-    or broken file (invoking `on_error` for the latter two).
+def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> tuple[Node | None, bool]:
+    """Shared loader: read + parse a TS file to `(root node, generated)`.
+
+    The node is None for an unreadable or broken file (invoking `on_error`). A generated
+    file is parsed like any other and flagged, so callers can keep its export surface
+    while dropping its functions.
 
     `analysis.parse_file` catches the same read errors and turns them into a skipped file with a
     warning; here they used to escape as an uncaught `PermissionError` and exit 1 — "a gate
@@ -219,18 +255,17 @@ def _parse_root(path: Path, on_error: Callable[[Path, str], None] | None) -> Nod
     except OSError as exc:
         if on_error is not None:
             on_error(path, f"cannot read file: {exc}")
-        return None
+        return None, False
     head = source[:2000].decode("utf-8", "replace")
-    if is_generated_typescript(path, head):
-        return None
+    generated = is_generated_typescript(path, head)
     tree_sitter, _ = _require_tree_sitter()
     parser = tree_sitter.Parser(_language(path.suffix))
     tree = parser.parse(source)
     if tree.root_node.has_error:
         if on_error is not None:
             on_error(path, "syntax error")
-        return None
-    return cast("Node", tree.root_node)
+        return None, generated
+    return cast("Node", tree.root_node), generated
 
 
 def _functions_from_root(root: Node, rel: str) -> list[TsFunction]:
@@ -359,8 +394,9 @@ def _default_export_identifier(stmt: Node) -> str | None:
 
 def parse_module_exports(path: Path, *, root: Path) -> ModuleExports:
     """Parse one file's top-level export surface (exports half of `analyze_ts_file`). Returns an
-    empty surface for generated or unparseable files, matching discovery."""
-    node = _parse_root(path, None)
+    empty surface for unparseable files; a generated file keeps its real surface (0.3.6), as it
+    does in `analyze_ts_file`, so a barrel that re-exports it keeps resolving."""
+    node, _generated = _parse_root(path, None)
     return ModuleExports() if node is None else _exports_from_root(node)
 
 
