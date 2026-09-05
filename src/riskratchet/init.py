@@ -26,6 +26,27 @@ STARTER_BLOCK = """[tool.riskratchet]
 paths = ["src"]
 """
 
+# The starter for a tree with TypeScript under `src`: the key the Action, the pytest
+# plugin, and every command read (since 0.3.6), plus the report hint as a comment
+# because `init` does not know which runner will write it.
+STARTER_BLOCK_TYPESCRIPT = (
+    STARTER_BLOCK
+    + """# TypeScript files were found under src. Needs `pip install 'riskratchet[typescript]'`.
+typescript = true
+# Istanbul/LCOV report(s), relative to this file, once your test runner writes one.
+# ts_coverage = ["coverage/lcov.info"]
+"""
+)
+
+# The starter scan path. Language detection looks here and nowhere else: walking the
+# whole project would descend into `node_modules` and flag a Python repo's docs tooling.
+_STARTER_PATH = "src"
+
+_PYTEST_COV = "pytest --cov --cov-branch --cov-report=json:coverage.json -q"
+_VITEST_COV = (
+    "npx vitest run --coverage --coverage.reporter=lcov  # or c8/nyc/jest: lcov.info or coverage-final.json"
+)
+
 # Action ref written into the CI snippet. Bump alongside the release tag
 # (not `__version__`) — `init` is run against an installed version, but
 # the snippet pins the *Action tag*, which only exists after publish.
@@ -55,16 +76,18 @@ class RunnerKind(str, Enum):
     UNKNOWN = "unknown"
 
 
-def write_starter_config(pyproject: Path, *, force: bool) -> InitOutcome:
+def write_starter_config(pyproject: Path, *, force: bool, typescript: bool = False) -> InitOutcome:
     """Write or refresh the `[tool.riskratchet]` block in `pyproject.toml`.
 
     Without `force`, existing configuration is preserved (no-op return
     `SKIPPED`). With `force`, the existing section is replaced in place
     via text substitution so surrounding TOML (comments, layout) stays
     intact. Other sections of `pyproject.toml` are never touched.
+    `typescript` selects the starter that turns the TypeScript backend on.
     """
+    block = starter_block(typescript=typescript)
     if not pyproject.exists():
-        pyproject.write_text(STARTER_BLOCK, encoding="utf-8")
+        pyproject.write_text(block, encoding="utf-8")
         return InitOutcome.CREATED
 
     existing = pyproject.read_text(encoding="utf-8")
@@ -72,13 +95,68 @@ def write_starter_config(pyproject: Path, *, force: bool) -> InitOutcome:
     if has_section and not force:
         return InitOutcome.SKIPPED
     if has_section and force:
-        new_text = _replace_section(existing, STARTER_BLOCK)
+        new_text = _replace_section(existing, block)
         pyproject.write_text(new_text, encoding="utf-8")
         return InitOutcome.REPLACED
     # Append at end with a blank line for separation.
     sep = "" if existing.endswith("\n") else "\n"
-    pyproject.write_text(existing + sep + "\n" + STARTER_BLOCK, encoding="utf-8")
+    pyproject.write_text(existing + sep + "\n" + block, encoding="utf-8")
     return InitOutcome.APPENDED
+
+
+def starter_block(*, typescript: bool) -> str:
+    """The `[tool.riskratchet]` block `init` writes; Python-only output is unchanged."""
+    return STARTER_BLOCK_TYPESCRIPT if typescript else STARTER_BLOCK
+
+
+def detect_typescript(config_dir: Path) -> bool:
+    """True when the starter scan path holds TypeScript files.
+
+    Discovery only — `iter_typescript_files` imports without the `[typescript]` extra,
+    so a Python-only install can still recognise a TypeScript tree and say what to
+    install. The extra is needed to *score* it, which is why the starter says so.
+    """
+    from riskratchet.typescript import iter_typescript_files
+
+    starter = config_dir / _STARTER_PATH
+    if not starter.is_dir():
+        return False
+    return bool(iter_typescript_files([starter], root=config_dir))
+
+
+def detect_python(config_dir: Path) -> bool:
+    """True when the starter scan path holds Python files."""
+    from riskratchet.analysis import iter_python_files
+
+    starter = config_dir / _STARTER_PATH
+    if not starter.is_dir():
+        return False
+    return bool(iter_python_files([starter], root=config_dir))
+
+
+def next_steps(*, typescript: bool, python: bool) -> list[str]:
+    """The "Next:" list `init` prints when it did not run the baseline itself.
+
+    Python-only trees (and empty ones) get the same three lines as before 0.3.6. A tree
+    with TypeScript gets the install, the report each runner writes, and a baseline /
+    check pair that names both reports — only the ones its languages need.
+    """
+    if not typescript:
+        return [
+            _PYTEST_COV,
+            f"riskratchet baseline {_STARTER_PATH} --coverage coverage.json",
+            f"riskratchet check {_STARTER_PATH} --coverage coverage.json",
+        ]
+    reports = " --ts-coverage coverage/lcov.info"
+    if python:
+        reports = " --coverage coverage.json" + reports
+    steps = ["pip install 'riskratchet[typescript]'"]
+    if python:
+        steps.append(_PYTEST_COV)
+    steps.append(_VITEST_COV)
+    steps.append(f"riskratchet baseline {_STARTER_PATH}{reports}")
+    steps.append(f"riskratchet check {_STARTER_PATH}{reports}")
+    return steps
 
 
 def detect_test_runner(config_dir: Path) -> RunnerKind:

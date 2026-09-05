@@ -9,6 +9,7 @@ a runner.
 
 from __future__ import annotations
 
+import itertools
 import re
 from pathlib import Path
 from typing import Any
@@ -150,3 +151,124 @@ def test_action_step_outputs_still_append() -> None:
     check = next((s for s in steps if s.get("id") == "ratchet"), None)
     assert check is not None
     assert '>> "$GITHUB_OUTPUT"' in check["run"]
+
+
+# --- 0.3.6: the Action can turn TypeScript on ---------------------------------------
+#
+# Before this the officially shipped CI path could not enable TypeScript at all: no
+# input passed `--typescript`, and the install step never installed the `[typescript]`
+# extra, so a repo that turned it on from `[tool.riskratchet]` met the install hint in
+# CI. The three inputs are passthroughs; the extra is installed on every branch.
+
+
+@pytest.mark.parametrize("name", ["typescript", "ts-coverage", "ts-entry"])
+def test_action_declares_the_typescript_inputs_with_empty_defaults(name: str) -> None:
+    """Empty means "pass nothing": the CLI resolves `[tool.riskratchet] typescript`
+    itself, so the Action never reads pyproject.toml."""
+    inputs = _load()["inputs"]
+    assert name in inputs, f"action.yml must declare input {name!r}"
+    assert str(inputs[name].get("default", "")) == ""
+    assert "[tool.riskratchet]" in inputs["typescript"]["description"]
+
+
+def test_action_installs_the_typescript_extra_on_every_path() -> None:
+    """PyPI latest, a pinned version, and the dogfood wheel all install
+    `riskratchet[typescript]`; a config-driven repo must never see the install hint."""
+    steps = _load()["runs"]["steps"]
+    install = next(s for s in steps if s.get("name") == "Install riskratchet")
+    installs = [line.strip() for line in str(install["run"]).splitlines() if "uv tool install" in line]
+    assert len(installs) == 3, installs
+    for line in installs:
+        assert "[typescript]" in line, f"install branch without the extra: {line!r}"
+
+
+def _check_step_run() -> str:
+    steps = _load()["runs"]["steps"]
+    check = next(s for s in steps if s.get("id") == "ratchet")
+    return str(check["run"])
+
+
+def test_action_check_step_forwards_the_typescript_inputs() -> None:
+    run = _check_step_run()
+    assert "--typescript" in run
+    assert "--no-typescript" in run
+    assert '--ts-coverage "$report"' in run
+    assert '--ts-entry "$entry"' in run
+    env = next(s for s in _load()["runs"]["steps"] if s.get("id") == "ratchet")["env"]
+    assert env["RR_TYPESCRIPT"] == "${{ inputs.typescript }}"
+    assert env["RR_TS_COVERAGE"] == "${{ inputs.ts-coverage }}"
+    assert env["RR_TS_ENTRY"] == "${{ inputs.ts-entry }}"
+
+
+def _forwarded_args(tmp_path: Path, **env: str) -> tuple[int, list[str]]:
+    """Run the check step's shell against a stub `riskratchet` and return what it received.
+
+    The step is executed as-is under bash — the same text the runner executes — with the
+    binary on PATH replaced by a script that records its argv. Static greps prove the
+    flags are mentioned; only running the script proves how the inputs become them.
+    """
+    import os
+    import shutil
+    import subprocess
+
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("bash is required to execute the composite step")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    stub = bin_dir / "riskratchet"
+    stub.write_text('#!/usr/bin/env bash\nprintf \'%s\\n\' "$@" > "$RR_ARGS_FILE"\n', encoding="utf-8")
+    stub.chmod(0o755)
+    args_file = tmp_path / "args.txt"
+    full_env = {
+        **os.environ,
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}",
+        "GITHUB_OUTPUT": str(tmp_path / "output.txt"),
+        "RR_ARGS_FILE": str(args_file),
+        "RR_PATHS": "",
+        "RR_COVERAGE": "",
+        "RR_TYPESCRIPT": "",
+        "RR_TS_COVERAGE": "",
+        "RR_TS_ENTRY": "",
+        "RR_BASELINE": "does-not-exist.json",
+        "RR_FAIL_ABOVE": "60",
+        **env,
+    }
+    result = subprocess.run(
+        [bash, "-c", _check_step_run()], cwd=tmp_path, env=full_env, capture_output=True, text=True
+    )
+    received = args_file.read_text(encoding="utf-8").split("\n")[:-1] if args_file.exists() else []
+    return result.returncode, received
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [("true", ["--typescript"]), ("false", ["--no-typescript"]), ("", [])],
+)
+def test_the_typescript_input_becomes_the_matching_flag(
+    tmp_path: Path, value: str, expected: list[str]
+) -> None:
+    code, received = _forwarded_args(tmp_path, RR_TYPESCRIPT=value)
+    assert code == 0
+    flags = [arg for arg in received if arg in ("--typescript", "--no-typescript")]
+    assert flags == expected
+
+
+def test_a_typescript_input_that_is_not_a_boolean_fails_the_step(tmp_path: Path) -> None:
+    code, received = _forwarded_args(tmp_path, RR_TYPESCRIPT="yes")
+    assert code == 1
+    assert received == [], "the CLI must not run on an input the action could not interpret"
+
+
+def test_space_separated_reports_become_repeated_flags(tmp_path: Path) -> None:
+    code, received = _forwarded_args(
+        tmp_path,
+        RR_TS_COVERAGE="coverage/lcov.info packages/b/coverage/lcov.info",
+        RR_TS_ENTRY="src/index.ts",
+    )
+    assert code == 0
+    pairs = list(itertools.pairwise(received))
+    assert ("--ts-coverage", "coverage/lcov.info") in pairs
+    assert ("--ts-coverage", "packages/b/coverage/lcov.info") in pairs
+    assert ("--ts-entry", "src/index.ts") in pairs
+    assert received.count("--ts-coverage") == 2

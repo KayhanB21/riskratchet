@@ -65,7 +65,10 @@ from riskratchet.git import is_shallow_repo
 from riskratchet.init import (
     InitOutcome,
     RunnerKind,
+    detect_python,
     detect_test_runner,
+    detect_typescript,
+    next_steps,
     render_ci_snippet,
     write_starter_config,
 )
@@ -1476,8 +1479,9 @@ def init_command(
     to the prompt), runs pytest --cov and `baseline` to skip the
     manual two-step that follows.
     """
-    outcome = write_starter_config(pyproject, force=force)
     config_dir = pyproject.resolve().parent
+    typescript = detect_typescript(config_dir)
+    outcome = write_starter_config(pyproject, force=force, typescript=typescript)
     runner = detect_test_runner(config_dir)
     color = {
         InitOutcome.CREATED: typer.colors.GREEN,
@@ -1496,9 +1500,8 @@ def init_command(
         _run_baseline_from_init(config_dir)
     else:
         typer.echo("Next:")
-        typer.echo("  1. pytest --cov --cov-branch --cov-report=json:coverage.json -q")
-        typer.echo("  2. riskratchet baseline src --coverage coverage.json")
-        typer.echo("  3. riskratchet check src --coverage coverage.json")
+        for index, step in enumerate(next_steps(typescript=typescript, python=detect_python(config_dir)), 1):
+            typer.echo(f"  {index}. {step}")
 
 
 def _should_run_baseline(*, with_baseline: bool | None, runner: RunnerKind) -> bool:
@@ -1568,17 +1571,34 @@ def _run_baseline_from_init(config_dir: Path) -> None:
     cfg, _ = _discover_config(None)
     settings = resolve_gate_settings(cfg, config_dir)
     scan_paths = settings.paths or [config_dir]
-    report = build_report(
+    # Through the shared boundary, so `typescript = true` scores TypeScript here too and
+    # a missing extra or an unreadable report is exit 2 with the fix, not a traceback.
+    ts = _resolve_ts_settings(
+        False,
+        False,
+        False,
+        ts_coverage=None,
+        ts_entry=None,
+        cfg=cfg,
+        config_dir=config_dir,
+        allow_missing=settings.allow_missing_coverage,
+        required=True,
+    )
+    report = _build_report_or_exit(
         scan_paths,
-        root=config_dir,
+        config_dir=config_dir,
         coverage_path=coverage_path,
+        coverage_map=None,
         include=settings.include,
         exclude=settings.exclude,
         allow=settings.allow,
+        use_git=True,
         churn_days=settings.churn_days,
-        weights=settings.weights,
-        missing_coverage_policy=settings.missing_coverage,
-        groups=settings.groups,
+        cfg=cfg,
+        missing_coverage=None,
+        ts_enabled=ts.enabled,
+        ts_coverage=ts.coverage,
+        ts_entry=ts.entry,
     )
     baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
     _refuse_to_erase_baseline(report, baseline_file)

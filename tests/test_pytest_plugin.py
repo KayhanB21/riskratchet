@@ -274,3 +274,178 @@ def test_an_unusable_config_value_fails_the_session(pytester: pytest.Pytester) -
 
     assert result.ret == 1, result.stdout.str()
     assert "invalid config" in result.stdout.str()
+
+
+# --- 0.3.6: TypeScript through the plugin door ---------------------------------------
+#
+# The plugin called `engine.analyze` directly, which has no TypeScript path, so a mixed
+# baseline was gated on its Python half only — against the invariant that every entry
+# point routes through `pipeline.build_report`. Now `typescript = true` (or
+# `--riskratchet-typescript`) scores TypeScript here with the CLI's missing-report rule,
+# its exception boundary, and its identity guard.
+
+_TS_RISKY = """
+export function tsRisky(a: number, b: number, c: number, d: number, e: number): number {
+  if (a) return 1;
+  if (b) return 2;
+  if (c) return 3;
+  if (d) return 4;
+  if (e) return 5;
+  return 0;
+}
+"""
+
+
+def _ts_entry(path: str, qualname: str, score: float) -> dict[str, object]:
+    return {**_entry(path, qualname, score), "language": "typescript"}
+
+
+def _mixed_project(pytester: pytest.Pytester, config: str) -> Path:
+    """Python and TypeScript under `lib`, both regressed against a baseline that scored them at 10."""
+    _write(pytester.path / "lib" / "app.py", _RISKY)
+    _write(pytester.path / "lib" / "lib.ts", _TS_RISKY)
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(config, encoding="utf-8")
+    baseline = pytester.path / ".riskratchet.json"
+    baseline.write_text(
+        json.dumps(
+            _baseline_payload([_entry("lib/app.py", "risky", 10.0), _ts_entry("lib/lib.ts", "tsRisky", 10.0)])
+        ),
+        encoding="utf-8",
+    )
+    return baseline
+
+
+_MIXED_CONFIG = """
+[tool.riskratchet]
+paths = ["lib"]
+typescript = true
+fail_regression_above = 1
+"""
+
+
+def _plugin(pytester: pytest.Pytester, *extra: str) -> pytest.RunResult:
+    return pytester.runpytest_subprocess(
+        "--cov=lib", "--cov-report=json:coverage.json", "--riskratchet", *extra
+    )
+
+
+def test_the_plugin_gates_typescript_when_config_turns_it_on(pytester: pytest.Pytester) -> None:
+    """Same project, same baseline: the plugin and `check` both fail on the TypeScript function."""
+    pytest.importorskip("tree_sitter")
+    baseline = _mixed_project(pytester, _MIXED_CONFIG)
+
+    plugin = _plugin(pytester)
+    cli = runner.invoke(
+        app, ["check", "--baseline", str(baseline), "--no-auto-cov", "--no-git", "--allow-missing-coverage"]
+    )
+
+    assert plugin.ret == 1, plugin.stdout.str()
+    assert cli.exit_code == 1, cli.output
+    for text in (_collapsed(plugin.stdout.str()), _collapsed(cli.output)):
+        assert "tsRisky" in text
+        assert "risky" in text
+        assert "not being gated" not in text
+
+
+def test_riskratchet_typescript_turns_it_on_without_config(pytester: pytest.Pytester) -> None:
+    pytest.importorskip("tree_sitter")
+    _mixed_project(pytester, _MIXED_CONFIG.replace("typescript = true\n", ""))
+
+    result = _plugin(pytester, "--riskratchet-typescript")
+
+    assert result.ret == 1, result.stdout.str()
+    assert "tsRisky" in _collapsed(result.stdout.str())
+
+
+def test_riskratchet_no_typescript_beats_the_config(pytester: pytest.Pytester) -> None:
+    """The off-switch, and the warning that the TypeScript half is not being gated.
+
+    Runs without the extra: TypeScript is off, so nothing imports tree-sitter.
+    """
+    _mixed_project(pytester, _MIXED_CONFIG)
+
+    result = _plugin(pytester, "--riskratchet-no-typescript")
+
+    text = _collapsed(result.stdout.str())
+    assert result.ret == 1, result.stdout.str()  # the Python regression still fails
+    assert "tsRisky" not in text
+    assert "baseline holds 1 typescript entry" in text
+    assert "not being gated" in text
+    assert "--riskratchet-typescript" in text
+
+
+def test_the_plugin_without_the_extra_fails_the_session_with_the_install_hint(
+    pytester: pytest.Pytester,
+) -> None:
+    """The plugin's copy of `explain --typescript` without the extra: a message, not a traceback."""
+    _mixed_project(pytester, _MIXED_CONFIG)
+    # Poison the import inside the sub-pytest so the absent-extra path runs in every
+    # environment, including CI where the extra is installed.
+    pytester.makeconftest(
+        "import sys\nsys.modules['tree_sitter'] = None\nsys.modules['tree_sitter_typescript'] = None\n"
+    )
+
+    result = _plugin(pytester)
+
+    out = result.stdout.str() + result.stderr.str()
+    assert result.ret == 1, out
+    assert "riskratchet[typescript]" in out
+    assert "Traceback" not in out
+
+
+def test_a_configured_typescript_report_that_is_missing_fails_the_session(pytester: pytest.Pytester) -> None:
+    """`check`'s rule for a gate: a report the config names must exist, unless
+    `allow_missing_coverage`. Checked before any TypeScript is parsed, so no extra needed."""
+    _mixed_project(pytester, _MIXED_CONFIG + 'ts_coverage = ["coverage/lcov.info"]\n')
+
+    result = _plugin(pytester)
+
+    out = result.stdout.str()
+    assert result.ret == 1, out
+    assert "TypeScript coverage report not found" in out
+    assert "regressions detected" not in out, "the gate must not run on a report it could not read"
+
+
+def test_allow_missing_coverage_tolerates_a_missing_typescript_report(pytester: pytest.Pytester) -> None:
+    pytest.importorskip("tree_sitter")
+    _mixed_project(
+        pytester, _MIXED_CONFIG + 'ts_coverage = ["coverage/lcov.info"]\nallow_missing_coverage = true\n'
+    )
+
+    result = _plugin(pytester)
+
+    out = result.stdout.str()
+    assert result.ret == 1, out  # the regressions, not the report
+    assert "Scoring TypeScript without it." in out
+    assert "tsRisky" in _collapsed(out)
+
+
+def test_a_malformed_typescript_report_fails_the_session_without_a_traceback(
+    pytester: pytest.Pytester,
+) -> None:
+    pytest.importorskip("tree_sitter")
+    _mixed_project(pytester, _MIXED_CONFIG + 'ts_coverage = ["coverage/lcov.info"]\n')
+    _write(pytester.path / "coverage" / "lcov.info", "this is not a coverage report")
+
+    result = _plugin(pytester)
+
+    out = result.stdout.str() + result.stderr.str()
+    assert result.ret == 1, out
+    assert "coverage/lcov.info" in out or "lcov.info" in out
+    assert "Traceback" not in out
+    assert "regressions detected" not in out
+
+
+def test_typescript_lists_without_typescript_warn_that_they_are_inert(pytester: pytest.Pytester) -> None:
+    """A config-named report is dropped, not checked, when TypeScript is off — the
+    session must not fail on a file it will never read."""
+    _mixed_project(
+        pytester, _MIXED_CONFIG.replace("typescript = true\n", 'ts_coverage = ["nowhere/lcov.info"]\n')
+    )
+
+    result = _plugin(pytester)
+
+    out = result.stdout.str()
+    assert "have no effect without --riskratchet-typescript" in out
+    assert "TypeScript coverage report not found" not in out
