@@ -1369,3 +1369,41 @@ def test_allow_missing_coverage_tolerates_a_missing_typescript_report(
 
     assert result.exit_code == 0, result.output
     assert "nope.info" in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("args", "config_line", "exit_code", "marker"),
+    [
+        ([], 'coverage = "ci-coverage.json"\n', 0, "continuing without coverage"),
+        (["--coverage", "ci-coverage.json"], "", 2, "coverage file not found: ci-coverage.json"),
+    ],
+    ids=["config-named-warns", "cli-named-exits-two"],
+)
+def test_a_named_python_report_keeps_its_verdict_on_a_typescript_only_tree(
+    args: list[str],
+    config_line: str,
+    exit_code: int,
+    marker: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ "Not applicable" skips generation, not the rule that a named path must exist.
+
+    A `--coverage` typo is a usage error on any tree; a configured `coverage` default
+    that is absent warns and continues, exactly as on a Python tree — and neither runs
+    the test command.
+    """
+    pytest.importorskip("tree_sitter_typescript")
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\n' + config_line, encoding="utf-8"
+    )
+
+    result = runner.invoke(app, ["scan", str(src), "--no-git", *args])
+
+    assert result.exit_code == exit_code, result.output
+    assert "Traceback" not in result.output
+    assert marker in result.stderr
+    if exit_code == 0:
+        assert "Python coverage not applicable" in result.stderr
