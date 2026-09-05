@@ -491,6 +491,11 @@ riskratchet scan src --coverage coverage.json --missing-coverage skip
 `optimistic` treats missing file coverage as fully covered. `skip` drops
 functions from unmapped files and reports the skipped count.
 
+A scan path outside the config directory (`riskratchet scan ../shared/src`) is keyed by a
+`../` path relative to it — one spelling per file whatever the cwd, since 0.3.6 — and the
+command says so once on stderr, because a baseline written against such a key is only
+matched by runs that resolve the same config directory.
+
 **Generated files.** A file whose header carries a comment-anchored `@generated`
 marker (`# @generated` in Python, `// @generated` or `/* @generated */` in
 TypeScript) is skipped in both languages since 0.3.6: its functions are not
@@ -1157,6 +1162,24 @@ Each entry carries `path`, `qualname`, `score`, `components`, plus a `fingerprin
 `signature`. Those two are stable across formatter whitespace/quote/paren choices and change on
 real edits, which is what lets a renamed or moved function be tracked as *the same* function
 instead of reported as one removal plus one new high-risk arrival.
+
+**Rename matcher: known limits.** A body-fingerprint match plus any one other signal
+(signature, path, qualname tail, component vector, score) is the bar for an unambiguous
+match; signature-only matches are deliberately rejected, so a body rewrite cannot hide
+behind a rename. The consequence: a function that is renamed *and* edited in the same
+change cannot be matched, and is gated as **new** against `fail_new_above`, not as a
+regression against its old score. Since 0.3.6 `check` says so when entries left the
+baseline and others appeared (`note: N functions left the baseline and M appeared …`), and
+`riskratchet diff` lists both sets. The weights and the 0.65 threshold are provisional —
+expect the occasional ambiguous rename that needs the PR diff to resolve.
+
+**What `check` tells you about the baseline (since 0.3.6).** Every format carries
+`Baseline: N entries · M compared · K not seen this run` (`"baseline": {entries, compared,
+removed}` in `--json`), so a run that compared one entry of four can never read as a clean
+bill of health. When entries it did not see live in files that still exist under the scanned
+paths — an `include` / `exclude` hiding a baselined file, as opposed to a deleted file or a
+deliberate `riskratchet check packages/api` subset — it warns on stderr with counts only
+(safe under redaction) and names the two fixes. The verdict is never changed by either.
 
 **The `identity` block (v3).** When a baseline contains TypeScript entries it also records
 `identity.typescript` — the `tree-sitter-typescript` grammar version and the fingerprint scheme

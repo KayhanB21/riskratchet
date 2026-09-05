@@ -27,6 +27,8 @@ from riskratchet.baseline import (
     save_baseline,
     suppress_stale_typescript_renames,
     typescript_identity_stale,
+    unscanned_baseline_files,
+    unscanned_files_message,
 )
 from riskratchet.baseline import (
     diff as diff_baseline,
@@ -75,6 +77,7 @@ from riskratchet.init import (
 from riskratchet.models import (
     Baseline,
     DiffReport,
+    DiffStatus,
     FunctionRisk,
     Regression,
     RegressionKind,
@@ -441,7 +444,7 @@ def scan(
     )
     diag = Diagnostics(command="scan")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
-    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"), config_dir=config_dir)
     resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
@@ -602,7 +605,7 @@ def baseline(
     _enforce_config_or_exit(cfg)
     diag = Diagnostics(command="baseline")
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
-    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"), config_dir=config_dir)
     resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
@@ -850,7 +853,7 @@ def check(
         entry_count=len(old.entries) if old is not None else None,
     )
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
-    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"), config_dir=config_dir)
     resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
@@ -955,6 +958,11 @@ def check(
             fail_new_above=fail_new_above_val,
             fail_existing_above=fail_existing_above_val,
         )
+        # Before redaction: the rule needs real paths; it prints counts only.
+        _warn_unscanned_baseline_files(
+            diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
+        )
+        _note_renames_gated_as_new(diff_report, fail_new_above=fail_new_above_val)
     else:
         assert fail_above_resolved is not None
         diff_report = None
@@ -988,7 +996,9 @@ def check(
         # code must not contradict it; the diff rides along as context.
         rendered = render_regressions_pr_comment(regressions, links=links, diff_report=diff_report)
     else:
-        rendered = _render_regressions(regressions, format=effective_format, links=links)
+        rendered = _render_regressions(
+            regressions, format=effective_format, links=links, diff_report=diff_report
+        )
     _write(rendered, output)
     _emit_diagnostics(
         diag,
@@ -999,7 +1009,7 @@ def check(
     )
     if regressions:
         if old is not None:
-            _emit_regression_hint(regressions, baseline_file=baseline_file)
+            _emit_regression_hint(regressions, baseline_file=baseline_file, redaction=redaction)
         else:
             assert fail_above_resolved is not None
             _emit_above_threshold_hint(regressions, threshold=fail_above_resolved)
@@ -1164,6 +1174,13 @@ def explain(
         root=config_dir,
     )
     fn = report.find(target)
+    if fn is None and Path(file_part).is_absolute():
+        # An absolute target names one file unambiguously, so it may be looked up by the
+        # key the report uses — a `../` path when the file lies outside the root (0.3.6);
+        # before, an out-of-root key *was* the absolute spelling, by accident. A
+        # cwd-relative spelling stays strict: targets are repo-relative identities.
+        _, _, qualname = target.partition("::")
+        fn = report.find(f"{_rel_or_str(file_path, config_dir)}::{qualname}")
     if fn is None:
         _exit_target_not_found(target, report)
     redaction = _resolve_redaction(
@@ -1305,7 +1322,7 @@ def diff(
     old = _load_baseline_or_exit(baseline_file)
     diag.set_baseline(path=str(baseline_file), present=True, entry_count=len(old.entries))
     resolved_paths = _resolved_paths(paths, cfg, config_dir)
-    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"))
+    _check_paths_exist(resolved_paths, paths_arg=paths, configured=cfg.get("paths"), config_dir=config_dir)
     resolved_include = include or cfg.get("include", [])
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
@@ -1397,6 +1414,9 @@ def diff(
             and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
         ),
         groups=_resolved_groups(cfg),
+    )
+    _warn_unscanned_baseline_files(
+        diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
     )
     if redaction.active:
         diff_report = redact_diff(diff_report, redaction)
@@ -1784,11 +1804,16 @@ def _emit_scan_next_step_footer(report: RiskReport, *, baseline_file: Path, conf
         typer.echo("riskratchet: 0 functions at severity medium or higher — nothing to baseline yet.")
 
 
-def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path) -> None:
+def _emit_regression_hint(
+    regressions: list[Regression], *, baseline_file: Path, redaction: RedactionConfig | None = None
+) -> None:
     """Print escape-hatch hints to stderr when `check` exits with regressions.
 
-    Stays on stderr so `--json` consumers still see a clean stdout payload.
+    Stays on stderr so `--json` consumers still see a clean stdout payload. Under
+    redaction the baseline path is a placeholder: stdout was hashed to keep paths out
+    of the log, and this line used to print the real one right after it.
     """
+    shown = "<baseline.json>" if redaction is not None and redaction.active else str(baseline_file)
     typer.secho("", err=True)
     typer.secho("riskratchet: regressions detected. Options:", fg=typer.colors.YELLOW, err=True)
     if any(r.kind is RegressionKind.NEW_ABOVE_THRESHOLD for r in regressions):
@@ -1798,7 +1823,7 @@ def _emit_regression_hint(regressions: list[Regression], *, baseline_file: Path)
         )
     typer.secho(
         f"  1. Accept the new state as the baseline (if the change is intentional):\n"
-        f"       riskratchet baseline <paths> --coverage <coverage.json> --output {baseline_file}",
+        f"       riskratchet baseline <paths> --coverage <coverage.json> --output {shown}",
         err=True,
     )
     has_component = any(r.kind is RegressionKind.COMPONENT_REGRESSED for r in regressions)
@@ -1857,18 +1882,19 @@ def _render_regressions(
     *,
     format: str,
     links: SourceLinks | None = None,
+    diff_report: DiffReport | None = None,
 ) -> str:
     if format == "json":
-        return render_regressions_json(regressions, links=links)
+        return render_regressions_json(regressions, links=links, diff_report=diff_report)
     if format == "markdown":
-        return render_regressions_markdown(regressions, links=links)
+        return render_regressions_markdown(regressions, links=links, diff_report=diff_report)
     if format == "pr-comment":
-        return render_regressions_pr_comment(regressions, links=links)
+        return render_regressions_pr_comment(regressions, links=links, diff_report=diff_report)
     if format == "github":
         return render_regressions_github(regressions)
     if format == "sarif":
         return render_regressions_sarif(regressions, links=links)
-    return render_regressions_table(regressions, links=links)
+    return render_regressions_table(regressions, links=links, diff_report=diff_report)
 
 
 def _write(rendered: str, output: Path | None) -> None:
@@ -2124,11 +2150,68 @@ def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
         hint = (
             " (pass --typescript, or set typescript = true in [tool.riskratchet])"
             if language == "typescript"
-            else ""
+            else " (an include / exclude hiding every file, or a deliberate subset?)"
         )
         typer.secho(
             f"warning: the baseline holds {_count(lost, f'{language} entry', f'{language} entries')} "
             f"but this run analyzed no {language} — those functions are not being gated{hint}.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+
+
+def _warn_unscanned_baseline_files(
+    diff_report: DiffReport, *, report: RiskReport, config_dir: Path, scan_roots: list[Path]
+) -> None:
+    """Say when baselined files under the scanned paths were not scanned this run.
+
+    Three of four baseline entries hidden by an `exclude` used to produce "No risk
+    regressions detected." and exit 0 — only the PR comment's collapsed diff said
+    `Removed: 3`. Warn, never fail: the rule cannot tell a filter from an intent, so it
+    names the count and the two fixes and leaves the verdict alone.
+    """
+    entries, files = unscanned_baseline_files(
+        diff_report, report=report, config_dir=config_dir, scan_roots=scan_roots
+    )
+    if entries:
+        typer.secho(unscanned_files_message(entries, files), fg=typer.colors.YELLOW, err=True)
+
+
+def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float) -> None:
+    """When entries left the baseline and others appeared, name the rule that gated them.
+
+    A renamed function whose body also changed cannot be matched (body fingerprint +
+    one more signal is the bar), so it is gated as *new* against `fail_new_above`, not
+    as a regression against its old score — a 49.75 → 52.25 rename+edit under
+    `--fail-regression-above 1` passed with no signal. The matcher contract stays;
+    this says out loud which gate applied.
+    """
+    removed = len(diff_report.by_status(DiffStatus.REMOVED))
+    new = len(diff_report.by_status(DiffStatus.NEW))
+    if not removed or not new:
+        return
+    typer.secho(
+        f"note: {_count(removed, 'function')} left the baseline and {new} appeared; a renamed function "
+        f"whose body also changed is gated as new (fail_new_above={fail_new_above:g}), not as a "
+        "regression — `riskratchet diff` lists both sets.",
+        err=True,
+    )
+
+
+def _warn_out_of_root_paths(resolved: list[Path], config_dir: Path) -> None:
+    """Say once when a scan path lies outside the config directory.
+
+    Its functions are keyed by a `../` path relative to the config directory (one
+    spelling per file since 0.3.6, whatever the cwd), which is legitimate but worth
+    knowing before a baseline is written against it.
+    """
+    from ._paths import relative_posix
+
+    outside = [str(p) for p in resolved if relative_posix(p, config_dir).startswith("../")]
+    if outside:
+        typer.secho(
+            f"warning: {_count(len(outside), 'scan path')} outside the config directory {config_dir}: "
+            f"{', '.join(outside)} — functions there are keyed by a ../ path relative to it.",
             fg=typer.colors.YELLOW,
             err=True,
         )
@@ -2570,6 +2653,7 @@ def _check_paths_exist(
     *,
     paths_arg: list[Path] | None,
     configured: object,
+    config_dir: Path | None = None,
 ) -> None:
     """Exit with an actionable error when any scan path is missing.
 
@@ -2577,11 +2661,14 @@ def _check_paths_exist(
     `[tool.riskratchet] paths`) — that case can't be "missing". Splitting
     this out of `config._resolved_paths` keeps `config.py` a pure
     resolver and concentrates the typer.Exit boundary in `cli.py`.
+    With `config_dir`, also says once when a scan path lies outside it.
     """
     if not paths_arg and not (isinstance(configured, list) and configured):
         return
     missing = [p for p in resolved if not p.exists()]
     if not missing:
+        if config_dir is not None:
+            _warn_out_of_root_paths(resolved, config_dir)
         return
     shown = [str(p) for p in missing]
     if paths_arg:

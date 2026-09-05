@@ -220,6 +220,10 @@ class DiffEntry:
 @dataclass(frozen=True, slots=True)
 class DiffReport:
     entries: tuple[DiffEntry, ...]
+    # How many entries the baseline held (since 0.3.6), so a renderer can say how many
+    # of them this run compared: every baseline entry appears in `entries` exactly once,
+    # matched or REMOVED, but only the producer knows the total without re-deriving it.
+    baseline_entries: int | None = None
 
     def by_status(self, status: DiffStatus) -> tuple[DiffEntry, ...]:
         return tuple(entry for entry in self.entries if entry.status is status)

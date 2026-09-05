@@ -155,7 +155,6 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # Imported lazily so that enabling the plugin entry point does not pull the
     # whole package in before pytest-cov has a chance to start coverage. Without
     # this, all module-level lines in riskratchet/* show as "missing".
-    from riskratchet.baseline import compare
     from riskratchet.git import is_shallow_repo
 
     rootdir = Path(str(config.rootpath))
@@ -210,15 +209,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         session, baseline, report, settings=settings, baseline_path=baseline_path, ts_coverage=ts_coverage
     )
 
-    regressions = compare(
-        report,
-        baseline,
-        fail_new_above=settings.fail_new_above,
-        fail_regression_above=settings.fail_regression_above,
-        fail_existing_above=settings.fail_existing_above,
-        fail_component_regression_above=settings.fail_component_regression_above,
-        component_regression_gate=settings.component_regression_gate,
-    )
+    regressions = _gated(session, report, baseline, settings=settings, config_dir=config_dir)
     if not regressions:
         return
 
@@ -403,6 +394,43 @@ def _guarded_typescript_identity(
         command += f" --ts-coverage {path}"
     _emit(session, f"  re-baseline: {command} --output {baseline_path}")
     return suppress_stale_typescript_renames(baseline, report)
+
+
+def _gated(
+    session: pytest.Session,
+    report: RiskReport,
+    baseline: Baseline,
+    *,
+    settings: GateSettings,
+    config_dir: Path,
+) -> list[Regression]:
+    """`check`'s gate — `diff` + `regressions_from_diff`, one policy, one verdict — plus its
+    disclosure: baseline entries under the scanned paths that this run did not reach
+    (an `include` / `exclude` that hides a baselined file) are said out loud, counts only.
+    The plugin used `compare` until 0.3.6; the diff is what knows what was *not* seen."""
+    from riskratchet.baseline import (
+        diff,
+        regressions_from_diff,
+        unscanned_baseline_files,
+        unscanned_files_message,
+    )
+
+    diff_report = diff(
+        report,
+        baseline,
+        fail_regression_above=settings.fail_regression_above,
+        fail_component_regression_above=settings.fail_component_regression_above,
+        component_regression_gate=settings.component_regression_gate,
+        groups=settings.groups,
+    )
+    entries, files = unscanned_baseline_files(
+        diff_report, report=report, config_dir=config_dir, scan_roots=settings.paths
+    )
+    if entries:
+        _emit(session, "riskratchet: " + unscanned_files_message(entries, files))
+    return regressions_from_diff(
+        diff_report, fail_new_above=settings.fail_new_above, fail_existing_above=settings.fail_existing_above
+    )
 
 
 def _report_regressions(

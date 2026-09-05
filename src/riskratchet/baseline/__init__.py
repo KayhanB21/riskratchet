@@ -20,7 +20,11 @@ submodule layout is an implementation detail.
 
 from __future__ import annotations
 
-from riskratchet.baseline.classify import languages_not_scanned
+from riskratchet.baseline.classify import (
+    languages_not_scanned,
+    unscanned_baseline_files,
+    unscanned_files_message,
+)
 from riskratchet.baseline.compare import compare
 from riskratchet.baseline.diff import diff
 from riskratchet.baseline.io import (
@@ -54,4 +58,6 @@ __all__ = [
     "save_baseline",
     "suppress_stale_typescript_renames",
     "typescript_identity_stale",
+    "unscanned_baseline_files",
+    "unscanned_files_message",
 ]

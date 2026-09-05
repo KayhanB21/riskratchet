@@ -185,6 +185,24 @@ success and `2` on usage errors.
   TypeScript file is still parsed for its exports, so a barrel that re-exports it keeps
   resolving — the draft fix that unregistered it would have flipped `is_public` back on
   for every narrowed function, a +100 `public_surface` swing on upgrade.
+- **The gate must say what it did not check.** `check` carries the baseline line
+  (`Baseline: N entries · M compared · K not seen this run`; `"baseline"` in `--json`)
+  in every format via `reporting.summary.baseline_line` / `baseline_coverage`, fed by
+  `DiffReport.baseline_entries` (set by `baseline.diff`, preserved by `redact_diff`).
+  `baseline.classify.unscanned_baseline_files` is the rule behind the stderr warning —
+  entries whose language was scanned, whose file exists, lies lexically under a scanned
+  root, and is absent from `report.files` — computed on the **unredacted** diff and
+  printed as counts only; the pytest plugin (which gates via `diff` +
+  `regressions_from_diff` since 0.3.6, no longer `compare`) prints the same words
+  through `unscanned_files_message`. A rename+edit is disclosed, never re-gated.
+- **One key per file.** `_paths.relative_posix` tries the path as given (joined to the
+  cwd, normalised lexically) relative to the root, then the resolved pair, then
+  `os.path.relpath` (`../` for a file outside the root), then the path as given (a
+  different Windows drive). Step one is what keeps a symlinked scan root keyed as
+  `src/x.py`; do not "simplify" it to resolve-first. `_sarif_uri` emits the key verbatim,
+  so `artifactLocation.uri == properties.path` always (`tests/test_disclosures.py`).
+  `explain` targets stay repo-relative identities; only an *absolute* target falls back
+  to the report's key.
 - **Narrowing refuses on an unproven graph, and an entry that did not parse is
   unproven.** `_narrow_public` keeps every export flag when a resolved entry is in
   `failed_to_parse` (syntax error / unreadable) — before 0.3.6 a broken `index.ts`

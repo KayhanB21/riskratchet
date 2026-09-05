@@ -243,7 +243,7 @@ def redact_diff(report: DiffReport, cfg: RedactionConfig) -> DiffReport:
                 reason=_scrub(entry.reason, mapping),
             )
         )
-    return DiffReport(entries=tuple(entries))
+    return replace(report, entries=tuple(entries))
 
 
 def redact_diagnostics(diag: Diagnostics, cfg: RedactionConfig) -> Diagnostics:

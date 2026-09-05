@@ -449,3 +449,27 @@ def test_typescript_lists_without_typescript_warn_that_they_are_inert(pytester: 
     out = result.stdout.str()
     assert "have no effect without --riskratchet-typescript" in out
     assert "TypeScript coverage report not found" not in out
+
+
+def test_the_plugin_renders_the_unscanned_files_warning(pytester: pytest.Pytester) -> None:
+    """0.3.6: a baselined file hidden by `exclude` is said out loud through this door too."""
+    _write(pytester.path / "lib" / "app.py", _RISKY)
+    _write(pytester.path / "lib" / "hidden.py", "def hidden():\n    return 1\n")
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["lib"]\nexclude = ["lib/hidden.py"]\n', encoding="utf-8"
+    )
+    (pytester.path / ".riskratchet.json").write_text(
+        json.dumps(
+            _baseline_payload([_entry("lib/app.py", "risky", 99.0), _entry("lib/hidden.py", "hidden", 1.0)])
+        ),
+        encoding="utf-8",
+    )
+
+    result = _plugin(pytester)
+
+    assert result.ret == 0, result.stdout.str()  # a warning, never a failed session
+    assert (
+        "1 baseline entry lives in 1 file that was under the scanned paths but not scanned"
+        in result.stdout.str()
+    )
