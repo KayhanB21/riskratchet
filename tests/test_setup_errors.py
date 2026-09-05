@@ -15,6 +15,8 @@ invariant — not the exact wording of the headline.
 
 from __future__ import annotations
 
+import json
+import sys
 from pathlib import Path
 from textwrap import dedent
 
@@ -1181,3 +1183,189 @@ def test_an_unparseable_test_command_exits_two_without_a_traceback(
     assert result.exit_code == 2, result.output
     assert "Traceback" not in result.output
     assert "could not be parsed" in result.output
+
+
+# --- 0.3.6: TypeScript through every door -----------------------------------------
+
+_TS_SRC = (
+    "export function handler(value: number): number {\n"
+    "  if (value > 0) {\n"
+    "    return value;\n"
+    "  }\n"
+    "  return -value;\n"
+    "}\n"
+)
+
+
+def _typescript_only_project(tmp_path: Path) -> Path:
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "m.ts").write_text(_TS_SRC, encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\n', encoding="utf-8"
+    )
+    return tmp_path / "src"
+
+
+def test_a_typescript_only_tree_needs_no_python_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """With nothing to cover, Python coverage is not a requirement.
+
+    Every command on a TypeScript-only tree used to run auto-coverage: a full
+    `pytest --cov` to measure zero functions, or exit 2 where pytest was not installed
+    at all — so a TypeScript adopter could not `scan`, `baseline`, or `check`, and
+    `--allow-missing-coverage` did not help because the unstartable runner failed
+    first. No `--no-auto-cov` here on purpose: the conftest guard turns any attempt to
+    run the test command into a failure, so exit 0 proves nothing was spawned.
+    """
+    pytest.importorskip("tree_sitter_typescript")
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+
+    scan = runner.invoke(app, ["scan", str(src), "--no-git"])
+    assert scan.exit_code == 0, scan.output
+    assert "Python coverage not applicable" in scan.stderr
+
+    baseline = runner.invoke(app, ["baseline", str(src), "--no-git"])
+    assert baseline.exit_code == 0, baseline.output
+    assert "wrote baseline with 1 functions" in baseline.stdout
+
+    check = runner.invoke(app, ["check", str(src), "--no-git"])
+    assert check.exit_code == 0, check.output
+    # `doctor` and `check` must agree the setup is usable.
+    assert runner.invoke(app, ["doctor"]).exit_code == 0
+
+
+def test_an_unstartable_test_command_warns_under_allow_missing_coverage(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, real_test_command_runner: None
+) -> None:
+    """`allow_missing_coverage` promises "continue when coverage is absent".
+
+    A runner that cannot start yields exactly that absence; before 0.3.6 the flag
+    never reached this branch and the run exited 2 regardless.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\nallow_missing_coverage = true\n'
+        'test_command = "riskratchet-no-such-runner --out {output}"\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["baseline", str(src), "--no-git"])
+
+    assert result.exit_code == 0, result.output
+    assert "Traceback" not in result.output
+    assert "could not be run" in result.stderr
+    assert "continuing without coverage" in result.stderr
+
+
+def test_explain_without_the_extra_exits_two_with_the_install_hint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`explain` was the one command outside `_build_report_or_exit`.
+
+    Without the `[typescript]` extra it raised a raw `ImportError` — a traceback and
+    exit 1, the code that means "risk regressed" — where every other command printed
+    the install command and exited 2.
+    """
+    monkeypatch.setitem(sys.modules, "tree_sitter", None)
+    monkeypatch.setitem(sys.modules, "tree_sitter_typescript", None)
+    monkeypatch.chdir(tmp_path)
+    _typescript_only_project(tmp_path)
+
+    result = runner.invoke(app, ["explain", "src/m.ts::handler", "--no-git", "--no-auto-cov"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "riskratchet[typescript]" in result.output
+
+
+def test_a_configured_typescript_report_that_is_missing_stops_the_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Nothing can substitute for a TypeScript report, so a gate never continues past it.
+
+    The Python `coverage` default warns because auto-coverage may fill it; there is no
+    TypeScript auto-coverage, so on `check` a configured `ts_coverage` that does not
+    exist is exit 2 — downgraded only by `allow_missing_coverage`.
+    """
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+    _seed_baseline(src)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\nts_coverage = ["coverage/lcov.info"]\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["check", str(src), "--no-git", "--no-auto-cov"])
+
+    assert result.exit_code == 2, result.output
+    assert "Traceback" not in result.output
+    assert "coverage/lcov.info" in result.stderr
+    assert "--allow-missing-coverage" in result.stderr
+
+
+def test_a_configured_typescript_report_that_is_missing_only_warns_on_scan(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`scan` has no `--allow-missing-coverage`; a fresh clone must still be able to look."""
+    pytest.importorskip("tree_sitter_typescript")
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ntypescript = true\nts_coverage = ["coverage/lcov.info"]\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["scan", str(src), "--no-git", "--no-auto-cov", "--json"])
+
+    assert result.exit_code == 0, result.output
+    assert "Scoring TypeScript without it" in result.stderr
+    assert json.loads(result.stdout)["functions"][0]["path"] == "src/m.ts"
+
+
+def test_a_typescript_report_named_on_the_command_line_stops_check_too(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+    _seed_baseline(src)
+
+    result = runner.invoke(
+        app, ["check", str(src), "--typescript", "--ts-coverage", "nope.info", "--no-git", "--no-auto-cov"]
+    )
+
+    assert result.exit_code == 2, result.output
+    assert "nope.info" in result.stderr
+
+
+def test_allow_missing_coverage_tolerates_a_missing_typescript_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The remediation `--allow-missing-coverage` printed did not work before 0.3.6.
+
+    The guard returned early under the flag and the strict loader in
+    `typescript_engine` then exited 2 on the same path with a different message.
+    """
+    pytest.importorskip("tree_sitter_typescript")
+    monkeypatch.chdir(tmp_path)
+    src = _typescript_only_project(tmp_path)
+    _seed_baseline(src)
+
+    result = runner.invoke(
+        app,
+        [
+            "check",
+            str(src),
+            "--typescript",
+            "--ts-coverage",
+            "nope.info",
+            "--allow-missing-coverage",
+            "--no-git",
+            "--no-auto-cov",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "nope.info" in result.stderr

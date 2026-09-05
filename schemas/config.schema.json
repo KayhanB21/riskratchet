@@ -32,6 +32,9 @@
         "include",
         "exclude",
         "allow",
+        "typescript",
+        "ts_coverage",
+        "ts_entry",
         "weights",
         "groups"
       ],
@@ -54,11 +57,14 @@
         "auto_coverage": { "type": "boolean" },
         "coverage_cache": { "type": "string" },
         "test_command": { "type": "string" },
-        "missing_coverage": { "enum": ["pessimistic", "skip", "zero"] },
+        "missing_coverage": { "enum": ["pessimistic", "optimistic", "skip"] },
         "churn_window_days": { "type": "integer", "minimum": 1 },
         "include": { "type": "array", "items": { "type": "string" } },
         "exclude": { "type": "array", "items": { "type": "string" } },
         "allow": { "type": "array", "items": { "type": "string" } },
+        "typescript": { "type": "boolean" },
+        "ts_coverage": { "type": "array", "items": { "type": "string" } },
+        "ts_entry": { "type": "array", "items": { "type": "string" } },
         "weights": {
           "type": "object",
           "required": [

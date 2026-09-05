@@ -827,6 +827,9 @@ visible without breaking a build; `riskratchet config validate` is the strict ch
 | `test_command` | str | pytest invocation | Command `auto_coverage` runs; `{output}` is substituted. |
 | `allow_missing_coverage` | bool | `false` | Continue when coverage is absent instead of exiting 2. |
 | `missing_coverage` | str | `pessimistic` | Policy for files absent from coverage: `pessimistic`, `optimistic`, or `skip`. |
+| `typescript` | bool | `false` | Also analyze and score TypeScript (since 0.3.6; same as `--typescript`). `--no-typescript` overrides it. Needs the `[typescript]` extra. |
+| `ts_coverage` | list[str] | `[]` | Istanbul/LCOV report(s) for TypeScript coverage, relative to the config file (same as `--ts-coverage`). A missing report is exit 2 on `baseline`/`check`/`diff` and a warning on `scan`/`explain`. |
+| `ts_entry` | list[str] | `[]` | Package entry file(s) that narrow the TypeScript public surface (same as `--ts-entry`). |
 | `churn_window_days` | int | `90` | Churn lookback window. |
 | `weights` | table | see below | Per-component weight overrides; non-zero weights are renormalized. |
 | `groups` | table | — | Named path prefixes for monorepo reporting. |

@@ -18,6 +18,7 @@ from typer.testing import CliRunner
 
 from riskratchet.baseline import SUPPORTED_BASELINE_VERSIONS, load_baseline
 from riskratchet.cli import app
+from riskratchet.coverage import MissingCoveragePolicy
 
 SCHEMAS_DIR = Path(__file__).resolve().parent.parent / "schemas"
 runner = CliRunner()
@@ -470,3 +471,30 @@ def test_loader_accepts_every_baseline_the_schema_accepts(tmp_path: Path) -> Non
 
         assert loaded.version == payload["version"]
         assert len(loaded.entries) == len(cast(list[Any], payload["entries"]))
+
+
+@pytest.mark.parametrize("policy", list(MissingCoveragePolicy), ids=lambda p: p.value)
+def test_config_show_json_validates_for_every_missing_coverage_policy(
+    tmp_path: Path, policy: MissingCoveragePolicy
+) -> None:
+    """The schema said `zero` where the enum says `optimistic`.
+
+    The two-key fixture above never set the policy, so `config show --json` failed its
+    own schema for exactly one legal value and nothing noticed. Sweep the enum so a
+    fourth policy cannot land on one side alone.
+    """
+    config = tmp_path / "pyproject.toml"
+    config.write_text(
+        f'[tool.riskratchet]\npaths = ["src"]\nmissing_coverage = "{policy.value}"\ntypescript = true\n',
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["config", "show", "--config", str(config), "--json"])
+
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    Draft202012Validator(_load_schema("config.schema.json")).validate(payload)
+    assert payload["config"]["missing_coverage"] == policy.value
+    assert payload["config"]["typescript"] is True
+    assert payload["config"]["ts_coverage"] == []
+    assert payload["config"]["ts_entry"] == []

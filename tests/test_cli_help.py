@@ -46,7 +46,7 @@ def test_paths_help_renders_the_config_table_name(command: str) -> None:
     assert "\\[" not in out
 
 
-@pytest.mark.parametrize("command", ANALYSIS_COMMANDS)
+@pytest.mark.parametrize("command", (*ANALYSIS_COMMANDS, "explain"))
 def test_typescript_help_shows_the_real_install_command(command: str) -> None:
     """`pip install 'riskratchet'` would not install the TypeScript backend."""
     out = " ".join(_help(command).split())

@@ -28,6 +28,25 @@ from riskratchet.models import (
 )
 
 
+def languages_not_scanned(old: Baseline, report: RiskReport) -> dict[str, int]:
+    """Baseline languages this report holds no function for, with their entry counts.
+
+    A `check` without the TypeScript backend over a mixed baseline silently gates only
+    the Python half — those entries never reach the comparison, because `compare` has
+    no "removed" concept. Pure and typer-free so the CLI and the pytest plugin render
+    the same fact rather than each keeping its own copy of the rule. Empty when the
+    report itself is empty: the empty-scan guards own that case with a better message.
+    """
+    if not report.functions:
+        return {}
+    scanned = {fn.language for fn in report.functions}
+    counts: dict[str, int] = {}
+    for entry in old.entries.values():
+        if entry.language and entry.language not in scanned:
+            counts[entry.language] = counts.get(entry.language, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def _unique_old_entries_by_fingerprint(old: Baseline) -> dict[str, BaselineEntry | None]:
     by_fingerprint: dict[str, BaselineEntry | None] = {}
     for entry in old.entries.values():

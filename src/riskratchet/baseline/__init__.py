@@ -20,6 +20,7 @@ submodule layout is an implementation detail.
 
 from __future__ import annotations
 
+from riskratchet.baseline.classify import languages_not_scanned
 from riskratchet.baseline.compare import compare
 from riskratchet.baseline.diff import diff
 from riskratchet.baseline.io import (
@@ -45,6 +46,7 @@ __all__ = [
     "baseline_from_report",
     "compare",
     "diff",
+    "languages_not_scanned",
     "load_baseline",
     "regressions_above_threshold",
     "regressions_from_diff",
