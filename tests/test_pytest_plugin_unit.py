@@ -234,6 +234,11 @@ def test_addoption_registers_every_documented_flag() -> None:
         "--riskratchet-no-typescript",
         "--riskratchet-ts-coverage",
         "--riskratchet-ts-entry",
+        # 0.3.7: the four config-only settings gain an off-switch at this door too.
+        "--riskratchet-no-redact-paths",
+        "--riskratchet-no-redact-qualnames",
+        "--riskratchet-no-private-comment",
+        "--riskratchet-no-allow-missing-coverage",
     }
 
 
@@ -255,6 +260,11 @@ def test_addoption_registers_every_documented_flag() -> None:
         ("--riskratchet-no-typescript", False),
         ("--riskratchet-ts-coverage", None),
         ("--riskratchet-ts-entry", None),
+        # 0.3.7: store_true for the same reason — off means "did not say", so config decides.
+        ("--riskratchet-no-redact-paths", False),
+        ("--riskratchet-no-redact-qualnames", False),
+        ("--riskratchet-no-private-comment", False),
+        ("--riskratchet-no-allow-missing-coverage", False),
     ],
 )
 def test_every_threshold_option_defaults_to_unset(flag: str, default: Any) -> None:

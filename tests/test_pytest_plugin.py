@@ -473,3 +473,61 @@ def test_the_plugin_renders_the_unscanned_files_warning(pytester: pytest.Pyteste
         "1 baseline entry lives in 1 file that was under the scanned paths but not scanned"
         in result.stdout.str()
     )
+
+
+def test_the_plugin_refuses_a_named_ts_entry_that_does_not_exist(pytester: pytest.Pytester) -> None:
+    """The third door enforces AGENTS.md:166 too, with pytest's exit convention.
+
+    `check` exits 2 on a `--ts-entry` that is not on disk; pytest has no usage-error code,
+    so the session fails with 1 — the same split `_typescript_reports_or_fail` already makes
+    for a missing TypeScript coverage report. What must not differ between the doors is
+    whether the run is refused at all: before 0.3.7 both of them scored on regardless, with
+    every file-level export flag intact.
+    """
+    pytest.importorskip("tree_sitter")
+    _mixed_project(pytester, _MIXED_CONFIG)
+
+    result = _plugin(pytester, "--riskratchet-ts-entry", "nope.ts")
+
+    assert result.ret == 1, result.stdout.str()
+    assert "TypeScript entry file not found" in _collapsed(result.stdout.str())
+
+
+def test_the_plugin_accepts_a_ts_entry_that_exists(pytester: pytest.Pytester) -> None:
+    """The guard must not fire on the good path, or it would refuse every TypeScript run."""
+    pytest.importorskip("tree_sitter")
+    _mixed_project(pytester, _MIXED_CONFIG)
+
+    result = _plugin(pytester, "--riskratchet-ts-entry", "lib/lib.ts")
+
+    assert "TypeScript entry file not found" not in _collapsed(result.stdout.str())
+
+
+def test_the_plugin_can_turn_config_redaction_back_off(pytester: pytest.Pytester) -> None:
+    """The invariant is about what config can turn on, and this door reads the same config.
+
+    Without these flags a repo running `redact_paths = true` could unredact a
+    `riskratchet check` run but not a `pytest --riskratchet` one — the door-to-door
+    disagreement 0.3.5 was spent removing.
+    """
+    _configured_project(pytester)  # its config already sets private_comment = true
+
+    redacted = _plugin(pytester)
+    shown = _plugin(pytester, "--riskratchet-no-private-comment")
+
+    assert redacted.ret == 1, redacted.stdout.str()
+    assert shown.ret == 1, shown.stdout.str()
+    assert "risky" not in _collapsed(redacted.stdout.str())
+    assert "risky" in _collapsed(shown.stdout.str())
+
+
+def test_the_plugin_can_require_the_coverage_config_allowed_to_be_absent(
+    pytester: pytest.Pytester,
+) -> None:
+    """`--riskratchet-no-allow-missing-coverage` reaches `resolve_gate_settings`, not just the CLI."""
+    from riskratchet.config import resolve_gate_settings
+
+    cfg = {"allow_missing_coverage": True}
+    assert resolve_gate_settings(cfg, Path(".")).allow_missing_coverage is True
+    settings = resolve_gate_settings(cfg, Path("."), no_allow_missing_coverage=True)
+    assert settings.allow_missing_coverage is False

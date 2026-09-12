@@ -517,43 +517,43 @@
   
   Summary: 30 functions across 1 files. 0 critical, 0 high, 30 medium, 0 low
   
-  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
-  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
-  | medium | 27.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f29`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f28`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f27`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f26`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f25`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f24`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f23`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f22`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f21`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 27.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f20`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f19`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f18`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f17`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f16`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f15`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f14`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f13`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f12`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f11`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 26.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f10`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+  | medium | 27.9 | 10.0 | 5 | 50% | 50% | [`big.py::f29`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.8 | 10.0 | 5 | 50% | 50% | [`big.py::f28`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.7 | 10.0 | 5 | 50% | 50% | [`big.py::f27`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.6 | 10.0 | 5 | 50% | 50% | [`big.py::f26`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.5 | 10.0 | 5 | 50% | 50% | [`big.py::f25`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.4 | 10.0 | 5 | 50% | 50% | [`big.py::f24`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.3 | 10.0 | 5 | 50% | 50% | [`big.py::f23`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.2 | 10.0 | 5 | 50% | 50% | [`big.py::f22`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.1 | 10.0 | 5 | 50% | 50% | [`big.py::f21`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 27.0 | 10.0 | 5 | 50% | 50% | [`big.py::f20`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.9 | 10.0 | 5 | 50% | 50% | [`big.py::f19`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.8 | 10.0 | 5 | 50% | 50% | [`big.py::f18`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.7 | 10.0 | 5 | 50% | 50% | [`big.py::f17`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.6 | 10.0 | 5 | 50% | 50% | [`big.py::f16`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.5 | 10.0 | 5 | 50% | 50% | [`big.py::f15`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.4 | 10.0 | 5 | 50% | 50% | [`big.py::f14`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.3 | 10.0 | 5 | 50% | 50% | [`big.py::f13`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.2 | 10.0 | 5 | 50% | 50% | [`big.py::f12`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.1 | 10.0 | 5 | 50% | 50% | [`big.py::f11`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 26.0 | 10.0 | 5 | 50% | 50% | [`big.py::f10`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
   
   <details><summary>Lower-priority findings (10)</summary>
   
-  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
-  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
-  | medium | 25.9 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f09`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.8 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f08`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.7 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f07`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.6 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f06`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.5 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f05`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.4 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f04`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.3 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f03`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.2 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f02`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.1 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f01`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
-  | medium | 25.0 | 10.0 | 5 | 50% | 50% | ungrouped | [`big.py::f00`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+  | medium | 25.9 | 10.0 | 5 | 50% | 50% | [`big.py::f09`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.8 | 10.0 | 5 | 50% | 50% | [`big.py::f08`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.7 | 10.0 | 5 | 50% | 50% | [`big.py::f07`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.6 | 10.0 | 5 | 50% | 50% | [`big.py::f06`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.5 | 10.0 | 5 | 50% | 50% | [`big.py::f05`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.4 | 10.0 | 5 | 50% | 50% | [`big.py::f04`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.3 | 10.0 | 5 | 50% | 50% | [`big.py::f03`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.2 | 10.0 | 5 | 50% | 50% | [`big.py::f02`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.1 | 10.0 | 5 | 50% | 50% | [`big.py::f01`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
+  | medium | 25.0 | 10.0 | 5 | 50% | 50% | [`big.py::f00`](https://github.com/acme/project/blob/abc1234/big.py#L1-L10) | 1-10 |
   
   </details>
   
@@ -1065,11 +1065,11 @@
   
   Summary: 3 functions across 1 files. 0 critical, 0 high, 1 medium, 2 low
   
-  | Severity | Score | CRAP | CC | LCov | BCov | Group | Function | Lines |
-  | --- | ---: | ---: | ---: | ---: | ---: | --- | --- | ---: |
-  | medium | 40.0 | 2.0 | 1 | 0% | n/a | ungrouped | `src/m.py::huge` | 15-46 |
-  | low | 3.8 | 4.0 | 4 | 100% | n/a | ungrouped | `src/m.py::branchy` | 5-12 |
-  | low | 0.0 | 1.0 | 1 | 100% | n/a | ungrouped | `src/m.py::trivial` | 1-2 |
+  | Severity | Score | CRAP | CC | LCov | BCov | Function | Lines |
+  | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+  | medium | 40.0 | 2.0 | 1 | 0% | n/a | `src/m.py::huge` | 15-46 |
+  | low | 3.8 | 4.0 | 4 | 100% | n/a | `src/m.py::branchy` | 5-12 |
+  | low | 0.0 | 1.0 | 1 | 100% | n/a | `src/m.py::trivial` | 1-2 |
   
   '''
 # ---

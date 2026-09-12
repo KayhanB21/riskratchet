@@ -335,14 +335,66 @@ def test_uncertain_name_behind_alias_is_kept_public(tmp_path: Path, monkeypatch:
 
 
 def test_partial_unmatched_ts_entry_warns(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """An entry that exists but sits outside the scanned set warns; narrowing still runs.
+
+    Since 0.3.7 an entry that is not on disk at all is exit 2 instead (see
+    `test_a_named_ts_entry_that_does_not_exist_is_a_setup_error`), so this case has to
+    use a real file the walker does not reach — `node_modules` is skipped by discovery —
+    or it would be testing the setup error rather than the narrowing warning.
+    """
     pytest.importorskip("tree_sitter")
     pytest.importorskip("tree_sitter_typescript")
     app_dir = _isolated_barrel(tmp_path)
     (app_dir / "index.ts").unlink()
-    result = _scan(app_dir, monkeypatch, "--ts-entry", "public_api.ts", "--ts-entry", "nope.ts")
+    vendored = app_dir / "node_modules" / "dep"
+    vendored.mkdir(parents=True)
+    (vendored / "entry.ts").write_text("export function vendored() { return 1; }\n", encoding="utf-8")
+    result = _scan(
+        app_dir, monkeypatch, "--ts-entry", "public_api.ts", "--ts-entry", "node_modules/dep/entry.ts"
+    )
     assert result.exit_code == 0, (result.stdout, result.stderr)
     assert "1 --ts-entry path(s) matched no scanned file" in result.stderr
     assert _visibility(result)["exposed"] is True  # narrowing still runs on the matched entry
+
+
+def test_a_named_ts_entry_that_does_not_exist_is_a_setup_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AGENTS.md:166 — a path the user *named* must exist, so a typo is exit 2, not a warning.
+
+    Before 0.3.7 this scored: the entry resolved to nothing, `_narrow_public` early-returned
+    with every file-level export flag intact, and the run reported a wider public surface
+    than the user asked for while saying only that the entry "matched no scanned file".
+    """
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = _isolated_barrel(tmp_path)
+    result = _scan(app_dir, monkeypatch, "--ts-entry", "nope.ts")
+    assert result.exit_code == 2, (result.stdout, result.stderr)
+    assert "TypeScript entry file not found: nope.ts" in result.stderr
+
+
+def test_a_config_ts_entry_that_does_not_exist_still_only_warns(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The config key keeps the engine warning: a stale default must not turn a gate red.
+
+    The same split `_ensure_ts_coverage_exists` draws between a path named for *this run*
+    and a project default a fresh clone may not have generated yet. Making the key exit 2
+    would fail every repo carrying a stale `ts_entry` on a patch upgrade.
+    """
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = _isolated_barrel(tmp_path)
+    (app_dir / "pyproject.toml").write_text(
+        '[project]\nname = "demo"\nversion = "0"\n[tool.riskratchet]\nts_entry = ["nope.ts"]\n',
+        encoding="utf-8",
+    )
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert "TypeScript entry file not found" not in result.stderr
+    # Proof the key was actually read rather than ignored, which would pass either way.
+    assert "--ts-entry did not match any scanned file" in result.stderr
 
 
 def test_explicit_ts_entry_overrides_detection(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -450,3 +502,98 @@ def test_a_transitively_broken_module_keeps_the_empty_module_behaviour(
     assert result.exit_code == 0, result.output
     assert _visibility(result) == {"tsRisky": True, "tsHidden": False}
     assert "narrowed to entry index.ts" in result.output
+
+
+def test_a_types_declared_entry_narrows_through_the_declaration_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`package.json` `types` points at a `.d.ts`, and that entry must keep resolving.
+
+    Pinned because "skip `.d.ts` files" sits on the backlog and taking it literally would
+    repeat the 0.3.6 generated-barrel error against the same graph: drop declaration files
+    from the scanned set and the `types` entry resolves to nothing, `_narrow_public`
+    early-returns keeping every file-level export flag, and `public_surface` swings on
+    what was meant to be a cosmetic change. If this test fails, that is what happened.
+    """
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "pkg"
+    app_dir.mkdir()
+    (app_dir / "package.json").write_text(
+        '{"name": "demo", "version": "0.0.0", "types": "./api.d.ts"}\n', encoding="utf-8"
+    )
+    (app_dir / "api.d.ts").write_text(
+        "export declare function exposed(): number;\nexport * from './impl';\n", encoding="utf-8"
+    )
+    (app_dir / "impl.ts").write_text("export function exposed() { return 1; }\n", encoding="utf-8")
+    (app_dir / "other.ts").write_text("export function unrelated() { return 3; }\n", encoding="utf-8")
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    vis = _visibility(result)
+    assert vis["exposed"] is True  # reachable through the .d.ts barrel
+    assert vis["unrelated"] is False  # not reachable -> narrowed
+
+
+def test_a_package_entry_without_a_leading_dot_slash_does_not_resolve_yet(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """KNOWN DEFECT, pinned deliberately: `"types": "api.d.ts"` silently narrows nothing.
+
+    `typescript_exports.resolve_specifier` treats any specifier without a leading `./` as
+    a bare import — correct for an `import` statement, wrong for a `package.json` entry
+    field, where npm's own documented spelling is `"main": "index.js"`. So for most real
+    packages the entry never resolves, `_narrow_public` early-returns, and every exported
+    function stays public. It looks like narrowing simply found nothing to demote.
+
+    Not fixed here because fixing it *lowers* `public_surface` on every function a barrel
+    stops reaching, and 0.3.7 moves no scores — the same rule that deferred the churn
+    re-anchoring. When 0.4.0 fixes it, this test flips to expect `False` and the one above
+    stops being the only spelling that works.
+    """
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    app_dir = tmp_path / "pkg"
+    app_dir.mkdir()
+    (app_dir / "package.json").write_text(
+        '{"name": "demo", "version": "0.0.0", "types": "api.d.ts"}\n', encoding="utf-8"
+    )
+    (app_dir / "api.d.ts").write_text(
+        "export declare function exposed(): number;\nexport * from './impl';\n", encoding="utf-8"
+    )
+    (app_dir / "impl.ts").write_text("export function exposed() { return 1; }\n", encoding="utf-8")
+    (app_dir / "other.ts").write_text("export function unrelated() { return 3; }\n", encoding="utf-8")
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    assert _visibility(result)["unrelated"] is True  # 0.4.0: expect False
+
+
+def test_a_declaration_file_contributes_no_scored_functions_but_is_still_counted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A `.d.ts` is ambient declarations, so it scores nothing — and stays in `total_files`.
+
+    Both halves are deliberate. Nothing to score means the "exclude `.d.ts` from scoring"
+    half of the backlog item is already true, with no code needed. Staying counted is the
+    invariant 0.3.6 wrote down twice (`models.py`, `engine.py`): `files` is every file the
+    scan reached, so a population that was dropped is never invisible. A zero-function
+    `.d.ts` is the same shape as a zero-function `export const x = 1` module, and removing
+    only one of them would make the count mean two different things.
+    """
+    pytest.importorskip("tree_sitter")
+    pytest.importorskip("tree_sitter_typescript")
+    import json
+
+    app_dir = tmp_path / "pkg"
+    app_dir.mkdir()
+    (app_dir / "types.d.ts").write_text(
+        "declare module 'thing' {\n  export function f(a: number): void;\n}\n"
+        "export declare const h: (x: number) => number;\n"
+        "export declare class K {\n  m(a: boolean): number;\n}\n",
+        encoding="utf-8",
+    )
+    (app_dir / "impl.ts").write_text("export function real() { return 1; }\n", encoding="utf-8")
+    result = _scan(app_dir, monkeypatch)
+    assert result.exit_code == 0, (result.stdout, result.stderr)
+    payload = json.loads(result.stdout)
+    assert sorted(fn["qualname"] for fn in payload["functions"]) == ["real"]
+    assert payload["summary"]["total_files"] == 2

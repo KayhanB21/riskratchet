@@ -341,6 +341,15 @@ def _is_number(value: Any) -> bool:
 
 
 def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str, Any]:
+    """Every `[tool.riskratchet]` setting as this build resolved it, for `config show`.
+
+    `redact_salt` is reported as `"present"` / `"absent"`, never as its value: the
+    whole point of the salt is that a reader of the output cannot reproduce the
+    hashes, and `config show --json` lands in CI logs and bug reports. The same
+    "present"/"absent" spelling the baseline's `scoring.coverage` uses. Presence is
+    read from config alone, like every other key here — the env var and the
+    git-derived fallback belong to a run, not to the file.
+    """
     groups = _resolved_groups(cfg)
     raw_map = cfg.get("coverage_map")
     coverage_map_payload: dict[str, str] = {}
@@ -358,9 +367,9 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
         "fail_component_regression_above": _resolved_float(
             None, cfg.get("fail_component_regression_above"), default=15.0
         ),
-        "component_regression_gate": _resolved_bool(True, cfg.get("component_regression_gate"), default=True),
-        "allow_missing_coverage": _resolved_bool(False, cfg.get("allow_missing_coverage")),
-        "auto_coverage": _resolved_bool(True, cfg.get("auto_coverage"), default=True),
+        "component_regression_gate": _config_bool(cfg.get("component_regression_gate"), default=True),
+        "allow_missing_coverage": _config_bool(cfg.get("allow_missing_coverage")),
+        "auto_coverage": _config_bool(cfg.get("auto_coverage"), default=True),
         "coverage_cache": cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH)),
         "test_command": cfg.get("test_command", DEFAULT_TEST_COMMAND),
         "missing_coverage": _resolved_missing_coverage(None, cfg).value,
@@ -371,9 +380,17 @@ def _resolved_config_payload(cfg: dict[str, Any], config_dir: Path) -> dict[str,
         "typescript": resolved_typescript(None, cfg),
         "ts_coverage": _config_string_list(cfg, "ts_coverage"),
         "ts_entry": _config_string_list(cfg, "ts_entry"),
+        "redact_paths": _config_bool(cfg.get("redact_paths")),
+        "redact_qualnames": _config_bool(cfg.get("redact_qualnames")),
+        "private_comment": _config_bool(cfg.get("private_comment")),
+        "redact_salt": "present" if _nonempty_string(cfg.get("redact_salt")) else "absent",
         "weights": _resolved_weights(cfg) or DEFAULT_WEIGHTS,
         "groups": {name: list(prefixes) for name, prefixes in groups.items()},
     }
+
+
+def _nonempty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
 
 
 def _resolved_weights(cfg: dict[str, Any]) -> dict[str, float] | None:
@@ -733,7 +750,7 @@ def _resolve_coverage(
         )
         return None
 
-    auto_enabled = not no_auto_cov and _resolved_bool(True, cfg.get("auto_coverage"), default=True)
+    auto_enabled = not no_auto_cov and _config_bool(cfg.get("auto_coverage"), default=True)
     cache_path = _anchor_config_path(
         Path(str(cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH)))), config_dir
     )
@@ -949,6 +966,67 @@ def missing_ts_report_message(path: Path, *, fatal: bool) -> str:
     )
 
 
+def _ensure_ts_entries_exist(paths: Sequence[Path] | None, *, from_config: bool) -> list[Path]:
+    """Refuse a `--ts-entry` the user named that is not on disk; leave config keys to the engine.
+
+    AGENTS.md:166 — a path the user *named* must exist. Before 0.3.7 a misspelled entry
+    only warned, and the warning it printed said the entry "did not match any scanned
+    file", which reads like a filter that caught nothing rather than a path that is not
+    there. Worse, an unresolved entry makes `_narrow_public` early-return with every
+    file-level export flag intact, so the run still scores — just against a wider public
+    surface than the user asked for.
+
+    Only a command-line entry is fatal, the same split `_ensure_ts_coverage_exists`
+    draws: a `[tool.riskratchet] ts_entry` key is a default a fresh clone may not have
+    generated yet, and making it exit 2 would turn a green gate red on a patch upgrade.
+    That case keeps the existing engine warning, and the list comes back unchanged
+    either way so nothing about scoring moves.
+    """
+    _, missing = _partition_existing(paths or [])
+    if not missing or from_config:
+        return list(paths or [])
+    for path in missing:
+        typer.secho(missing_ts_entry_message(path), fg=typer.colors.RED, err=True)
+    raise typer.Exit(code=2)
+
+
+def missing_ts_entry_message(path: Path) -> str:
+    """The setup error for a `--ts-entry` that is not on disk, with its remediations.
+
+    Public so the pytest plugin prints the same words the CLI does; only the exit
+    convention differs (pytest has no usage-error code, so the session fails with 1).
+    """
+    return _format_setup_error(
+        f"riskratchet: TypeScript entry file not found: {path}.",
+        [
+            (
+                "Name the package entry that exists:",
+                '[tool.riskratchet] ts_entry = ["src/index.ts"]  # or --ts-entry <path>',
+            ),
+            (
+                "A path on the command line is relative to the current directory, not to the config file:",
+                "riskratchet check --typescript --ts-entry ./src/index.ts",
+            ),
+            (
+                "Drop the flag to leave every exported function public:",
+                "<command> --typescript",
+            ),
+        ],
+    )
+
+
+def usable_ts_entries(paths: Sequence[Path]) -> tuple[list[Path], list[str]]:
+    """Split TypeScript entries into the ones on disk and a message per one that is not.
+
+    The command-line rule of `_ensure_ts_entries_exist` for an entry point that owns its
+    own exit convention. The present list is returned for symmetry with
+    `usable_ts_coverage`; entry resolution tolerates a missing path, so the caller passes
+    the original list on unchanged once it has decided whether to fail.
+    """
+    present, missing = _partition_existing(paths)
+    return present, [missing_ts_entry_message(path) for path in missing]
+
+
 def usable_ts_coverage(paths: Sequence[Path], *, allow_missing: bool) -> tuple[list[Path], list[str]]:
     """Split TypeScript reports into the ones on disk and a message per one that is not.
 
@@ -1008,6 +1086,7 @@ def resolve_gate_settings(
     typescript: bool | None = None,
     ts_coverage: list[Path] | None = None,
     ts_entry: list[Path] | None = None,
+    no_allow_missing_coverage: bool = False,
 ) -> GateSettings:
     """Resolve config into gate settings, with any explicitly-passed override winning.
 
@@ -1034,13 +1113,14 @@ def resolve_gate_settings(
             fail_component_regression_above, cfg.get("fail_component_regression_above"), default=15.0
         ),
         component_regression_gate=(
-            component_regression_gate
-            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+            component_regression_gate and _config_bool(cfg.get("component_regression_gate"), default=True)
         ),
         typescript=resolved_typescript(typescript, cfg),
         ts_coverage=resolved_ts_paths(ts_coverage, cfg, "ts_coverage", config_dir),
         ts_entry=resolved_ts_paths(ts_entry, cfg, "ts_entry", config_dir),
-        allow_missing_coverage=_resolved_bool(False, cfg.get("allow_missing_coverage")),
+        allow_missing_coverage=_resolved_tristate(
+            False, no_allow_missing_coverage, cfg.get("allow_missing_coverage")
+        ),
     )
 
 
@@ -1069,6 +1149,9 @@ def resolve_redaction(
     cfg: Mapping[str, Any],
     config_dir: Path,
     warn: Callable[[str], None] | None = None,
+    no_redact_paths: bool = False,
+    no_redact_qualnames: bool = False,
+    no_private_comment: bool = False,
 ) -> RedactionConfig:
     """Build a RedactionConfig from CLI flags, config, and the salt sources.
 
@@ -1077,6 +1160,13 @@ def resolve_redaction(
     explicit / env / config / git-derived salt exists, warn once that unsalted
     hashes are guessable.
 
+    `--no-private-comment` turns the preset off, not the two keys underneath it: a
+    config that asks for `redact_paths` on its own still redacts paths. Composing
+    the three `--no-` flags is how you get a fully unredacted run out of a config
+    that redacts, and each one names exactly what it is turning off. Conversely an
+    explicit `--no-redact-paths` / `--no-redact-qualnames` also beats an active
+    preset, so no combination of config and flags leaves redaction stuck on.
+
     Lives here rather than in `cli` so the pytest plugin can reach it without
     importing the CLI: before 0.3.5 the plugin printed raw paths and qualnames into
     CI logs for repos that had asked for redaction in config, because this function
@@ -1084,12 +1174,20 @@ def resolve_redaction(
     unsalted notice into its own reporter.
     """
     say = warn or _secho_warning
-    rp = _resolved_bool(redact_paths, cfg.get("redact_paths"))
-    rq = _resolved_bool(redact_qualnames, cfg.get("redact_qualnames"))
-    pc = _resolved_bool(private_comment, cfg.get("private_comment"))
+    rp = _resolved_tristate(redact_paths, no_redact_paths, cfg.get("redact_paths"))
+    rq = _resolved_tristate(redact_qualnames, no_redact_qualnames, cfg.get("redact_qualnames"))
+    pc = _resolved_tristate(private_comment, no_private_comment, cfg.get("private_comment"))
     if pc:
         rp = True
         rq = True
+    # An explicit off-flag is the last word, including over the preset it just widened:
+    # `--private-comment --no-redact-paths` is "suppress links and hash qualnames, but
+    # show me which file". Letting the preset win here would leave a setting config can
+    # turn on that no flag can turn back off, which is the whole point of these switches.
+    if no_redact_paths:
+        rp = False
+    if no_redact_qualnames:
+        rq = False
     if not (rp or rq):
         # Inactive: skip salt resolution entirely so a normal run never shells
         # out to git for a salt it will not use.
@@ -1116,9 +1214,37 @@ def resolve_redaction(
     )
 
 
-def _resolved_bool(cli_value: bool, cfg_value: Any, *, default: bool = False) -> bool:
-    if cli_value != default:
-        return cli_value
+def _config_bool(cfg_value: Any, *, default: bool = False) -> bool:
+    """A boolean `[tool.riskratchet]` key, or its default when unset or not a bool.
+
+    Config-only by construction. Until 0.3.7 this took a CLI value too and returned it
+    "when it differs from the default" — which is not a thing a caller can rely on: a
+    flag passed as `False` when `False` is the default is indistinguishable from silence,
+    so config always won and four settings ended up with no off-switch at all. Every
+    caller was already passing the default, so the CLI parameter was dead code guarding
+    a trap. A CLI-overridable boolean uses `_resolved_tristate` instead.
+    """
+    if isinstance(cfg_value, bool):
+        return cfg_value
+    return default
+
+
+def _resolved_tristate(on: bool, off: bool, cfg_value: Any, *, default: bool = False) -> bool:
+    """Resolve an explicit on flag, an explicit off flag, config, then the default.
+
+    `_config_bool` cannot express this, and neither could the CLI-aware helper it
+    replaced: that one read a CLI value only when it differs from the default, so a flag
+    passed as its own default was indistinguishable from silence and config always won.
+    A setting config can turn on must be one a flag can turn back off, which needs three
+    states — asked on, asked off, did not say — not two.
+
+    Off beats on, the same precedence `_resolve_typescript_flag` uses, so a wrapper
+    that appends `--no-x` to a command line it did not write always wins.
+    """
+    if off:
+        return False
+    if on:
+        return True
     if isinstance(cfg_value, bool):
         return cfg_value
     return default

@@ -209,7 +209,30 @@ success and `2` on usage errors.
   has `--no-typescript` (and `--riskratchet-no-typescript` in the plugin) because a
   switch only config can flip leaves a one-off run with no way back. A `--x/--no-x`
   Typer pair renders as two sub-columns and squeezes every option's help at 80
-  columns, so the house style is a separate `--no-x` option.
+  columns, so the house style is a separate `--no-x` option. 0.3.7 closed the four
+  settings that never satisfied this — `redact_paths`, `redact_qualnames`,
+  `private_comment`, `allow_missing_coverage` — through `config._resolved_tristate`
+  (off beats on beats config). `_resolved_bool` **cannot** express it: it reads a CLI
+  value only when it differs from the default, so a flag passed as its own default is
+  indistinguishable from silence. An explicit off-flag is the last word even over the
+  `--private-comment` preset it just widened, or the preset would leave a setting no
+  flag can turn off.
+- **A path the user named must exist; a path config defaulted may not yet.** A
+  `--ts-entry` / `--ts-coverage` / `--coverage` given on the command line is an
+  assertion about *this run*, so it is exit 2 (session-fails-1 in the plugin) when it
+  is missing. The matching `[tool.riskratchet]` key is a project default a fresh clone
+  may not have generated, so it warns instead — making it fatal would turn a green gate
+  red on a patch upgrade. `_ensure_ts_entries_exist` / `_ensure_ts_coverage_exists`
+  draw the line with `from_config`, and neither drops an entry from the resolved list,
+  so nothing about scoring moves either way.
+- **A per-row table shows a column when it carries information.** The `Group` column
+  appears when `[tool.riskratchet.groups]` placed something, the `Language` column when
+  a non-Python function is in the table — in all six markdown/PR-comment tables and the
+  three Rich tables alike. Before 0.3.7 exactly one table had a group column, and it
+  printed `ungrouped` on every row whether or not groups existed. The rule keeps an
+  ungrouped Python-only repo's output byte-identical across the change, which is what
+  lets a rendering fix ship in a patch release; the terminal tables would otherwise
+  spend their 80-column budget squeezing the `no_wrap` Function cell.
 - **Python coverage is not applicable when there is nothing to cover.** With
   TypeScript on and no `.py` file under the scan paths (after include/exclude),
   `_resolve_coverage` runs no test command and requires no report; it says so once.

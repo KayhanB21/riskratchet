@@ -38,13 +38,14 @@ from riskratchet.baseline import (
 from riskratchet.config import (
     CONFIG_SCHEMA_URL,
     _anchor_config_path,
+    _config_bool,
     _discover_config,
     _ensure_coverage_map_exists,
     _ensure_ts_coverage_exists,
+    _ensure_ts_entries_exist,
     _format_setup_error,
     _load_config_strict,
     _resolve_coverage,
-    _resolved_bool,
     _resolved_churn_days,
     _resolved_config_payload,
     _resolved_coverage_map,
@@ -53,6 +54,7 @@ from riskratchet.config import (
     _resolved_missing_coverage,
     _resolved_optional_float,
     _resolved_paths,
+    _resolved_tristate,
     _resolved_weights,
     invalid_config_values,
     resolve_gate_settings,
@@ -212,6 +214,41 @@ NoTypescriptOption = Annotated[
     typer.Option(
         "--no-typescript",
         help="Skip TypeScript even when \\[tool.riskratchet] sets typescript = true (since 0.3.6).",
+    ),
+]
+# Off-switches for the four settings config can turn on (AGENTS.md: a switch config can turn
+# on must be one a flag can turn back off). Separate `--no-` flags rather than Typer
+# `--x/--no-x` pairs for the reason NoTypescriptOption gives: a pair renders as two
+# sub-columns and squeezes every option's help text at 80 columns.
+NoRedactPathsOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-redact-paths",
+        help="Show real source paths even when \\[tool.riskratchet] sets redact_paths = true (since 0.3.7).",
+    ),
+]
+NoRedactQualnamesOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-redact-qualnames",
+        help="Show real qualnames even when \\[tool.riskratchet] sets redact_qualnames = true (since 0.3.7).",
+    ),
+]
+NoPrivateCommentOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-private-comment",
+        help="Turn off the private-comment preset even when \\[tool.riskratchet] sets "
+        "private_comment = true; the redact_paths / redact_qualnames keys still apply "
+        "(since 0.3.7).",
+    ),
+]
+NoAllowMissingCoverageOption = Annotated[
+    bool,
+    typer.Option(
+        "--no-allow-missing-coverage",
+        help="Require coverage data even when \\[tool.riskratchet] sets "
+        "allow_missing_coverage = true (since 0.3.7).",
     ),
 ]
 TsCoverageOption = Annotated[
@@ -400,6 +437,9 @@ def scan(
             help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
         ),
     ] = False,
+    no_redact_paths: NoRedactPathsOption = False,
+    no_redact_qualnames: NoRedactQualnamesOption = False,
+    no_private_comment: NoPrivateCommentOption = False,
     redact_salt: Annotated[
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
@@ -443,6 +483,9 @@ def scan(
         redact_paths=redact_paths,
         redact_qualnames=redact_qualnames,
         private_comment=private_comment,
+        no_redact_paths=no_redact_paths,
+        no_redact_qualnames=no_redact_qualnames,
+        no_private_comment=no_private_comment,
         redact_salt=redact_salt,
         cfg=cfg,
         config_dir=config_dir,
@@ -577,6 +620,7 @@ def baseline(
             help="Allow baselining without configured coverage data.",
         ),
     ] = False,
+    no_allow_missing_coverage: NoAllowMissingCoverageOption = False,
     no_auto_cov: Annotated[
         bool,
         typer.Option(
@@ -615,7 +659,9 @@ def baseline(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    allow_missing = _resolved_tristate(
+        allow_missing_coverage, no_allow_missing_coverage, cfg.get("allow_missing_coverage")
+    )
     ts = _resolve_ts_settings(
         typescript,
         no_typescript,
@@ -751,6 +797,7 @@ def check(
             help="Allow checking without configured coverage data.",
         ),
     ] = False,
+    no_allow_missing_coverage: NoAllowMissingCoverageOption = False,
     no_auto_cov: Annotated[
         bool,
         typer.Option(
@@ -793,6 +840,9 @@ def check(
             help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
         ),
     ] = False,
+    no_redact_paths: NoRedactPathsOption = False,
+    no_redact_qualnames: NoRedactQualnamesOption = False,
+    no_private_comment: NoPrivateCommentOption = False,
     redact_salt: Annotated[
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
@@ -810,6 +860,9 @@ def check(
         redact_paths=redact_paths,
         redact_qualnames=redact_qualnames,
         private_comment=private_comment,
+        no_redact_paths=no_redact_paths,
+        no_redact_qualnames=no_redact_qualnames,
+        no_private_comment=no_private_comment,
         redact_salt=redact_salt,
         cfg=cfg,
         config_dir=config_dir,
@@ -864,7 +917,9 @@ def check(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    allow_missing = _resolved_tristate(
+        allow_missing_coverage, no_allow_missing_coverage, cfg.get("allow_missing_coverage")
+    )
     ts = _resolve_ts_settings(
         typescript,
         no_typescript,
@@ -955,7 +1010,7 @@ def check(
             ),
             component_regression_gate=(
                 not no_component_regression_gate
-                and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+                and _config_bool(cfg.get("component_regression_gate"), default=True)
             ),
             groups=_resolved_groups(cfg),
         )
@@ -1085,6 +1140,9 @@ def explain(
             help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
         ),
     ] = False,
+    no_redact_paths: NoRedactPathsOption = False,
+    no_redact_qualnames: NoRedactQualnamesOption = False,
+    no_private_comment: NoPrivateCommentOption = False,
     redact_salt: Annotated[
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
@@ -1193,6 +1251,9 @@ def explain(
         redact_paths=redact_paths,
         redact_qualnames=redact_qualnames,
         private_comment=private_comment,
+        no_redact_paths=no_redact_paths,
+        no_redact_qualnames=no_redact_qualnames,
+        no_private_comment=no_private_comment,
         redact_salt=redact_salt,
         cfg=cfg,
         config_dir=config_dir,
@@ -1247,6 +1308,7 @@ def diff(
         bool,
         typer.Option("--allow-missing-coverage", help="Allow diffing without configured coverage data."),
     ] = False,
+    no_allow_missing_coverage: NoAllowMissingCoverageOption = False,
     missing_coverage: Annotated[
         str | None,
         typer.Option("--missing-coverage", help="How to handle missing file coverage."),
@@ -1290,6 +1352,9 @@ def diff(
             help="Preset: redact paths + qualnames and suppress source links (since 0.2.9 P12).",
         ),
     ] = False,
+    no_redact_paths: NoRedactPathsOption = False,
+    no_redact_qualnames: NoRedactQualnamesOption = False,
+    no_private_comment: NoPrivateCommentOption = False,
     redact_salt: Annotated[
         str | None,
         typer.Option("--redact-salt", help="Salt for redaction hashes (or RISKRATCHET_REDACT_SALT)."),
@@ -1307,6 +1372,9 @@ def diff(
         redact_paths=redact_paths,
         redact_qualnames=redact_qualnames,
         private_comment=private_comment,
+        no_redact_paths=no_redact_paths,
+        no_redact_qualnames=no_redact_qualnames,
+        no_private_comment=no_private_comment,
         redact_salt=redact_salt,
         cfg=cfg,
         config_dir=config_dir,
@@ -1333,7 +1401,9 @@ def diff(
     resolved_exclude = exclude or cfg.get("exclude", [])
     resolved_allow = allow or cfg.get("allow", [])
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
-    allow_missing = _resolved_bool(allow_missing_coverage, cfg.get("allow_missing_coverage"))
+    allow_missing = _resolved_tristate(
+        allow_missing_coverage, no_allow_missing_coverage, cfg.get("allow_missing_coverage")
+    )
     ts = _resolve_ts_settings(
         typescript,
         no_typescript,
@@ -1417,7 +1487,7 @@ def diff(
         ),
         component_regression_gate=(
             not no_component_regression_gate
-            and _resolved_bool(True, cfg.get("component_regression_gate"), default=True)
+            and _config_bool(cfg.get("component_regression_gate"), default=True)
         ),
         groups=_resolved_groups(cfg),
     )
@@ -2103,6 +2173,7 @@ def _resolve_ts_settings(
     coverage = _ensure_ts_coverage_exists(
         coverage, allow_missing=allow_missing, required=required, from_config=not ts_coverage
     )
+    entry = _ensure_ts_entries_exist(entry, from_config=not ts_entry)
     return _TsSettings(enabled=enabled, coverage=coverage, entry=entry)
 
 
