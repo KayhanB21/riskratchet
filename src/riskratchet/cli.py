@@ -65,9 +65,11 @@ from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 from riskratchet.git import is_shallow_repo
 from riskratchet.init import (
+    _STARTER_PATH,
     InitOutcome,
     RunnerKind,
     detect_python,
+    detect_scan_path,
     detect_test_runner,
     detect_typescript,
     next_steps,
@@ -683,6 +685,7 @@ def baseline(
         redaction=RedactionConfig(),
     )
     typer.echo(f"wrote baseline with {len(report.functions)} functions to {target}")
+    _warn_empty_baseline(report, target)
 
 
 @app.command()
@@ -1500,8 +1503,13 @@ def init_command(
     manual two-step that follows.
     """
     config_dir = pyproject.resolve().parent
-    typescript = detect_typescript(config_dir)
-    outcome = write_starter_config(pyproject, force=force, typescript=typescript)
+    # Look before writing. Scaffolding `paths = ["src"]` into a repo with no `src/` is not
+    # a default, it is a wrong answer: the config is broken the moment it lands, and the
+    # very next command these instructions name exits 2 on it.
+    detected = detect_scan_path(config_dir)
+    scan_path = detected or _STARTER_PATH
+    typescript = detect_typescript(config_dir, scan_path)
+    outcome = write_starter_config(pyproject, force=force, typescript=typescript, scan_path=scan_path)
     runner = detect_test_runner(config_dir)
     color = {
         InitOutcome.CREATED: typer.colors.GREEN,
@@ -1511,16 +1519,39 @@ def init_command(
     }[outcome]
     typer.secho(f"riskratchet init: {outcome.value} [tool.riskratchet] in {pyproject}", fg=color)
     typer.echo(f"detected test runner: {runner.value}")
+    if detected is None:
+        # Scaffold the conventional path anyway — a project that has not written its
+        # package yet is a legitimate `init`, and refusing would break it. But say so now:
+        # through 0.3.6 this wrote `paths = ["src"]` into a repo with no `src/` in silence,
+        # and the user found out two commands later when `riskratchet baseline` — named in
+        # the "Next:" steps directly below — exited 2 on a config `init` had just written.
+        typer.secho(
+            f"riskratchet: init: no {_STARTER_PATH}/ directory here, so `paths = "
+            f'["{_STARTER_PATH}"]` is a guess. Edit it to your package layout before '
+            "running the steps below, or they will exit 2.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
     if outcome is InitOutcome.SKIPPED:
         typer.echo("(re-run with --force to replace the existing block)")
     if not no_snippet:
         typer.echo("")
-        typer.echo(render_ci_snippet())
+        # Same detection the "Next:" steps use, so the snippet and the manual steps can
+        # never prescribe different commands (a `pytest --cov` line printed to a unittest
+        # project just moves the exit 2 from the action into the test step).
+        typer.echo(render_ci_snippet(runner=runner, typescript=typescript))
     if _should_run_baseline(with_baseline=with_baseline, runner=runner):
         _run_baseline_from_init(config_dir)
     else:
         typer.echo("Next:")
-        for index, step in enumerate(next_steps(typescript=typescript, python=detect_python(config_dir)), 1):
+        for index, step in enumerate(
+            next_steps(
+                typescript=typescript,
+                python=detect_python(config_dir, scan_path),
+                scan_path=scan_path,
+            ),
+            1,
+        ):
             typer.echo(f"  {index}. {step}")
 
 
@@ -1550,8 +1581,9 @@ def _run_baseline_from_init(config_dir: Path) -> None:
     """Run pytest --cov + emit a baseline, both anchored to `config_dir`.
 
     Failures (pytest non-zero, baseline write errors) surface as stderr
-    diagnostics and exit 1 — keeping the failure mode of `init` aligned
-    with running each step by hand instead of pretending it succeeded.
+    diagnostics and **exit 2** — a setup error, not a tripped gate. `init` gates
+    nothing, so exit 1 was always the wrong code here; it also disagreed with
+    `_save_baseline_or_exit` on the very next line, which has always exited 2.
     """
     import subprocess
 
@@ -1579,7 +1611,11 @@ def _run_baseline_from_init(config_dir: Path) -> None:
             fg=typer.colors.YELLOW,
             err=True,
         )
-        raise typer.Exit(code=1)
+        # Exit 2, not 1. Exit 1 means a gate tripped (AGENTS.md: "Never let an I/O failure
+        # exit 1"), and nothing was gated here — the test command could not produce the
+        # coverage this needs, which is a setup failure like every other one. `init` also
+        # already exits 2 through `_save_baseline_or_exit`, so 1 was the odd one out.
+        raise typer.Exit(code=2)
     typer.secho("running: riskratchet baseline (anchored to config dir)", fg=typer.colors.CYAN)
     # Read the project's own config rather than guessing. `init --with-baseline` runs
     # even when the starter block was SKIPPED — i.e. on an already-configured project —
@@ -2533,6 +2569,34 @@ def _warn_empty_scan(report: RiskReport, *, command: str) -> None:
     cause = _empty_scan_cause(report)
     if cause is not None:
         typer.secho(f"riskratchet: {command}: {cause[0]}.", fg=typer.colors.YELLOW, err=True)
+
+
+def _warn_empty_baseline(report: RiskReport, target: Path) -> None:
+    """Say so when the baseline just written holds nothing.
+
+    `baseline` was the one command that wrote a zero-function file and reported it as a
+    plain success: "wrote baseline with 0 functions" in the ordinary voice, exit 0. Every
+    `check` against it then prints "No risk regressions detected" and exits 0 forever —
+    an inert ratchet that reports success, which is precisely the failure 0.3.4 set out to
+    end everywhere else. `check` already warns in this situation (`_warn_empty_scan`);
+    only the command that *creates* the condition stayed quiet.
+
+    This is a warning and not an exit 2 on purpose. A monorepo sweep over a package that
+    is legitimately empty must keep working — the same reason `_warn_empty_scan` exists
+    rather than a hard failure — so the fix is to make the silence loud, not to fail.
+    """
+    if report.functions:
+        return
+    cause = _empty_scan_cause(report)
+    headline = cause[0] if cause is not None else "no functions were found to analyze"
+    typer.secho(
+        f"riskratchet: baseline: {headline}, so {target} holds no entries and "
+        "`riskratchet check` against it will pass unconditionally.",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+    for label, command in cause[1] if cause is not None else []:
+        typer.secho(f"  {label} {command}", fg=typer.colors.YELLOW, err=True)
 
 
 def _require_gateable_functions(report: RiskReport, *, command: str, baseline_entries: int) -> None:

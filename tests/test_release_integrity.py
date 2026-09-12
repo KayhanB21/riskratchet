@@ -6,8 +6,10 @@ import re
 import sys
 from importlib.metadata import PackageNotFoundError, metadata, version
 from pathlib import Path
+from typing import cast
 
 import pytest
+import yaml  # type: ignore[import-untyped]
 from typer.testing import CliRunner
 
 from riskratchet import __version__
@@ -86,18 +88,68 @@ def test_package_version_falls_back_to_pyproject(monkeypatch: pytest.MonkeyPatch
     assert version_mod.package_version() == _project_version()
 
 
+_CANONICAL_WORKFLOW_HEADER = "# .github/workflows/riskratchet.yml\n"
+
+
+def _canonical_readme_steps() -> list[object]:
+    """The `steps:` list of the README's canonical workflow block.
+
+    Extracted structurally rather than by substring, because the README holds more than
+    one workflow block and a substring check cannot tell them apart.
+    """
+    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
+    blocks = [
+        block.split("```", 1)[0]
+        for block in readme.split("```yaml\n")[1:]
+        if block.startswith(_CANONICAL_WORKFLOW_HEADER)
+    ]
+    assert len(blocks) == 1, f"expected exactly one canonical workflow block, found {len(blocks)}"
+    workflow = yaml.safe_load(blocks[0])
+    steps = workflow["jobs"]["riskratchet"]["steps"]
+    assert isinstance(steps, list)
+    return cast("list[object]", steps)
+
+
 def test_readme_ci_snippet_matches_render_ci_snippet() -> None:
-    """The README's copy-paste snippet and `riskratchet init`'s output are the
-    two things an adopter actually pastes into CI. They drifted once already:
-    both shipped without `fetch-depth: 0`, silently zeroing churn. Assert every
-    meaningful line of the rendered snippet appears in the README so a fix to
-    one can't leave the other stale.
+    """The README's copy-paste workflow and `riskratchet init`'s snippet are the two
+    things an adopter actually pastes into CI, and they must be the *same* steps.
+
+    They have drifted twice. Before 0.3.2 both shipped without `fetch-depth: 0`, silently
+    zeroing churn. Through 0.3.6 both shipped with no step that writes `coverage.json` at
+    all, so the documented workflow exited 2 as pasted — and the check that was supposed
+    to catch that only asserted each rendered line appeared *somewhere* in a 62 KB README,
+    in any order, with no reverse direction. A second, broken workflow block passed it.
+
+    Compare the parsed step lists instead: same steps, same order, both directions.
     """
     from riskratchet.init import render_ci_snippet
 
-    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
-    for line in render_ci_snippet().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        assert stripped in readme, f"README is missing the CI-snippet line: {stripped!r}"
+    rendered = yaml.safe_load(render_ci_snippet())
+    assert rendered == _canonical_readme_steps()
+
+
+def test_the_documented_workflow_writes_the_coverage_it_names() -> None:
+    """The workflow must produce the report it hands to the action.
+
+    `coverage: coverage.json` names a path, and a named path that does not exist is exit 2
+    (AGENTS.md: "a path the user named must exist"). Dropping the input is exit 2 too,
+    because auto-coverage shells out to `pytest`, which is absent from the action's
+    `uv tool install` environment. So some step before the action must write the file —
+    this asserts it, in both the README block and `init`'s snippet.
+    """
+    from riskratchet.init import render_ci_snippet
+
+    for label, steps in (
+        ("README", _canonical_readme_steps()),
+        ("init", yaml.safe_load(render_ci_snippet())),
+    ):
+        named = [
+            step["with"]["coverage"]
+            for step in steps
+            if isinstance(step, dict) and "riskratchet@" in str(step.get("uses", ""))
+        ]
+        assert named == ["coverage.json"], f"{label}: unexpected coverage input {named!r}"
+        writers = [
+            step for step in steps if isinstance(step, dict) and "coverage.json" in str(step.get("run", ""))
+        ]
+        assert writers, f"{label}: no step writes coverage.json before the action runs"

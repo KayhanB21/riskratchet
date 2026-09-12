@@ -272,3 +272,109 @@ def test_space_separated_reports_become_repeated_flags(tmp_path: Path) -> None:
     assert ("--ts-coverage", "packages/b/coverage/lcov.info") in pairs
     assert ("--ts-entry", "src/index.ts") in pairs
     assert received.count("--ts-coverage") == 2
+
+
+def _run_check_step(tmp_path: Path, stub_body: str, **env: str) -> tuple[int, str, str]:
+    """Execute the check step under bash against an arbitrary stub, returning the body."""
+    import os
+    import shutil
+    import subprocess
+
+    bash = shutil.which("bash")
+    if bash is None:
+        pytest.skip("bash is required to execute the composite step")
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir(exist_ok=True)
+    stub = bin_dir / "riskratchet"
+    stub.write_text(stub_body, encoding="utf-8")
+    stub.chmod(0o755)
+    full_env = {
+        **os.environ,
+        "PATH": f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}",
+        "GITHUB_OUTPUT": str(tmp_path / "output.txt"),
+        "RR_PATHS": "",
+        "RR_COVERAGE": "",
+        "RR_TYPESCRIPT": "",
+        "RR_TS_COVERAGE": "",
+        "RR_TS_ENTRY": "",
+        "RR_BASELINE": "does-not-exist.json",
+        "RR_FAIL_ABOVE": "60",
+        **env,
+    }
+    result = subprocess.run(
+        [bash, "-c", _check_step_run()], cwd=tmp_path, env=full_env, capture_output=True, text=True
+    )
+    body_file = tmp_path / "riskratchet-comment.md"
+    body = body_file.read_text(encoding="utf-8") if body_file.exists() else ""
+    outputs = (tmp_path / "output.txt").read_text(encoding="utf-8")
+    return result.returncode, body, outputs
+
+
+def test_a_setup_error_still_produces_a_comment_body(tmp_path: Path) -> None:
+    """Exit 2 writes nothing to stdout, and an empty body is what swallowed the error.
+
+    The CLI raises before it renders, so everything it said went to stderr. An empty
+    `riskratchet-comment.md` then makes `gh` fail 422, which fails the upsert step, which
+    skips the exit-status step — so the adopter saw a `gh: Validation Failed` traceback
+    instead of "riskratchet exited 2". Given the documented workflow used to *always*
+    exit 2 on a first run, this was the common path, not a corner.
+    """
+    code, body, outputs = _run_check_step(
+        tmp_path, '#!/usr/bin/env bash\necho "boom: coverage.json not found" >&2\nexit 2\n'
+    )
+    assert code == 0, "the check step must not fail; it reports through its status output"
+    assert "status=2" in outputs
+    assert body.strip(), "a setup error must still produce a comment body"
+    assert "2" in body
+
+
+def test_the_failure_body_leads_with_the_sticky_marker(tmp_path: Path) -> None:
+    """The upsert matches the existing comment with `startswith(<marker>)`.
+
+    A failure body without the marker PATCHed over the sticky comment orphans it: the
+    next green run matches nothing and opens a second comment, forever.
+    """
+    from riskratchet.reporting import PR_COMMENT_MARKER
+
+    _, body, _ = _run_check_step(tmp_path, "#!/usr/bin/env bash\nexit 2\n")
+    assert body.startswith(PR_COMMENT_MARKER)
+
+
+def test_the_action_marker_matches_the_cli_constant() -> None:
+    """One owner for the marker. The action writes it literally on the failure path, so a
+    rename of `PR_COMMENT_MARKER` that missed `action.yml` would silently orphan every
+    sticky comment. This is the trip-wire that makes the literal safe."""
+    from riskratchet.reporting import PR_COMMENT_MARKER
+
+    text = ACTION_YML.read_text(encoding="utf-8")
+    assert PR_COMMENT_MARKER in text
+    upsert = next(s for s in _load()["runs"]["steps"] if s.get("name") == "Upsert PR comment")
+    assert PR_COMMENT_MARKER in upsert["run"]
+
+
+def test_a_clean_run_body_is_untouched(tmp_path: Path) -> None:
+    """The failure body is a fallback, never a rewrite: exit 0 keeps what the CLI wrote."""
+    code, body, outputs = _run_check_step(
+        tmp_path, '#!/usr/bin/env bash\nprintf "<!-- riskratchet-report -->\\nall good\\n"\nexit 0\n'
+    )
+    assert code == 0
+    assert "status=0" in outputs
+    assert body == "<!-- riskratchet-report -->\nall good\n"
+
+
+def test_the_exit_status_step_runs_even_when_the_upsert_fails() -> None:
+    """`always()` is what stops an upsert failure from swallowing the exit code — but it
+    must be guarded on a status that exists, or a failure in an *earlier* step (install,
+    or the input validation) leaves `status` empty and this step annotates someone else's
+    failure as "riskratchet exited "."""
+    step = next(s for s in _load()["runs"]["steps"] if s.get("name") == "Surface riskratchet exit status")
+    condition = step["if"]
+    assert "always()" in condition
+    assert "steps.ratchet.outputs.status != ''" in condition
+    assert '[ -z "$status" ]' in step["run"], "script-level belt for the same guard"
+
+
+def test_the_upsert_never_posts_an_empty_body() -> None:
+    """`gh` rejects an empty body 422, and that failure is what hid the real error."""
+    upsert = next(s for s in _load()["runs"]["steps"] if s.get("name") == "Upsert PR comment")
+    assert "[ ! -s riskratchet-comment.md ]" in upsert["run"]

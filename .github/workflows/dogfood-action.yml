@@ -135,3 +135,103 @@ jobs:
           grep -q 'No risk regressions detected' riskratchet-comment.md
           riskratchet scan src --typescript --ts-coverage src/app/coverage.lcov --no-auto-cov --json \
             | jq -e '[.functions[] | select(.language == "typescript")] | length > 0'
+
+  # 0.3.7: the documented first run. Through 0.3.6 the README's canonical workflow and
+  # `init`'s snippet both named `coverage: coverage.json` with no step that wrote it, so
+  # the documented path was exit 2 as pasted — and nothing in CI noticed, because every
+  # dogfood job above writes coverage itself. This job pastes the documented steps into a
+  # scratch project instead, so the path an adopter actually takes is the path CI proves.
+  dogfood-documented-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout riskratchet into a subdirectory
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          path: riskratchet-src
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+
+      - name: Build local wheel
+        working-directory: riskratchet-src
+        run: |
+          set -euo pipefail
+          uv build --wheel
+
+      - name: Stage a scratch project at the workspace root
+        run: |
+          set -euo pipefail
+          mkdir -p src tests
+          cat > src/app.py <<'EOF'
+          def classify(value):
+              if value > 10:
+                  return "big"
+              if value > 0:
+                  return "small"
+              return "none"
+          EOF
+          cat > tests/test_app.py <<'EOF'
+          from src.app import classify
+
+
+          def test_classify():
+              assert classify(11) == "big"
+              assert classify(1) == "small"
+              assert classify(-1) == "none"
+          EOF
+          cat > pyproject.toml <<'EOF'
+          [project]
+          name = "scratch"
+          version = "0.1.0"
+
+          # `pythonpath` because pytest's default `prepend` import mode puts the *test
+          # file's* rootdir on sys.path (here `tests/`), not the workspace root, so
+          # `from src.app import classify` would be a collection-time ModuleNotFoundError.
+          # `testpaths` because riskratchet itself is checked out into this workspace as
+          # `riskratchet-src/`, and a bare `pytest` collects that too — 1198 tests whose
+          # dev dependencies are deliberately not installed here.
+          [tool.pytest.ini_options]
+          pythonpath = ["."]
+          testpaths = ["tests"]
+
+          [tool.riskratchet]
+          paths = ["src"]
+          EOF
+          git init -q .
+          git add -A
+          git -c user.email=ci@example.com -c user.name=ci commit -qm "scratch project"
+
+      # These two steps are the fix under test: the documented workflow writes the
+      # coverage report it hands to the action. Deleting either one must turn this job
+      # red — that is the whole point of the job.
+      - name: Install test dependencies (the documented step)
+        run: python -m pip install --quiet pytest pytest-cov
+
+      - name: Write coverage.json (the documented step)
+        run: pytest --cov --cov-branch --cov-report=json:coverage.json -q
+
+      - name: Write the first baseline
+        run: |
+          set -euo pipefail
+          uvx --from riskratchet-src/dist/*.whl riskratchet baseline src \
+            --coverage coverage.json --output .riskratchet.json
+          python - <<'EOF'
+          import json
+          entries = json.load(open(".riskratchet.json"))["entries"]
+          assert entries, "the documented path produced an empty baseline"
+          print(f"baseline holds {len(entries)} entries")
+          EOF
+
+      - name: Gate through the action, exactly as documented
+        uses: ./riskratchet-src
+        with:
+          paths: src
+          coverage: coverage.json
+          baseline: .riskratchet.json
+          local-wheel: riskratchet-src/dist/*.whl
+          comment: 'false'
