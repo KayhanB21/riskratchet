@@ -89,7 +89,9 @@ riskratchet init --force          # replace existing [tool.riskratchet]
 `riskratchet doctor` is a pre-flight that names whatever would make
 `check` fail to start (missing paths, missing/malformed baseline,
 missing/stale coverage, no git history, unknown config keys, invalid
-suppressions) and prints the exact fix command for each. With
+suppressions) and prints the exact fix command for each. Since 0.3.7 it
+also reports `scoring-model`: what would score this run, and whether the
+baseline was scored the same way. With
 `typescript = true` it also checks the `[typescript]` extra is installed
 and reports the TypeScript coverage report (`ts-coverage`: missing or
 malformed is a FAIL, none configured is a WARN); on a TypeScript-only
@@ -105,7 +107,9 @@ riskratchet doctor >/dev/null     # remediation commands only
 ```
 
 `doctor` exits `0` only when every check is pass or warn; a single
-fail exits `1`. The intended workflow is `init` → `doctor` → fix the
+fail exits `1`. The check names in `--json` are a **closed enum** in
+`doctor.schema.json`, so a new row is a schema change — pin a copy and you
+must refresh it when one is added. The intended workflow is `init` → `doctor` → fix the
 warnings → `baseline` → `check`.
 
 ## GitHub Action
@@ -447,7 +451,7 @@ In GitHub Actions, those values are filled from `GITHUB_SERVER_URL`,
 `GITHUB_REPOSITORY`, and `GITHUB_SHA` when available.
 
 JSON output is validated against the schemas under
-[`schemas/`](schemas/) on every release:
+[`schemas/`](schemas/) on every release. All nine:
 
 - `report.schema.json`: `scan --json`
 - `regressions.schema.json`: `check --json`
@@ -455,9 +459,50 @@ JSON output is validated against the schemas under
 - `baseline.schema.json`: `.riskratchet.json` on disk
 - `summary.schema.json`: `scan|check|diff --summary --json`
 - `config.schema.json`: `config show --json`
+- `doctor.schema.json`: `doctor --json`
+- `explain.schema.json`: `explain --json`
+- `debug.schema.json`: `--debug-json`
 
-Native JSON output includes `$schema` and `version` fields so consumers can
-pin parsing behavior.
+Native JSON output includes `$schema` and `version` fields so consumers can pin
+parsing behavior.
+
+**Getting the schemas.** Since 0.3.7 they ship inside the wheel and the sdist, so
+the package you installed carries its own contract:
+
+```python
+from riskratchet.schemas import schema_names, schema_path, load_schema
+
+schema_names()          # ('baseline', 'config', 'debug', ... ) — all nine
+load_schema("report")   # the parsed schema, ready for a validator
+schema_path("report")   # its path on disk, for tools that want the file
+```
+
+Every `$schema` and `$id` is a URL that resolves, pointing at the copy on `master`
+(`https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/<name>.schema.json`).
+Before 0.3.7 they pointed at a path that 404s and shipped in no artifact at all.
+
+**What `version` means, per document.** Three different things wear the name, so
+read it against the document you are holding:
+
+| Document | `version` is |
+| --- | --- |
+| `scan` / `check` / `diff` / `explain` / `--summary` JSON | the **output contract** version, riskratchet's own `MAJOR.MINOR` (`"0.3"`) |
+| `config show --json`, `doctor --json` | the **package** version (`"0.3.7"`) |
+| `--debug-json` | an **integer** contract version of its own, independent of both |
+| `.riskratchet.json` | the **baseline format** version (`"3"`), independent of all three |
+
+The output-contract version derives from the package's minor, which is exactly the
+guarantee already in force: field names are stable within a minor version, and renames
+or removals travel under a **Breaking** heading. It read `"0.2"` from 0.2.x through
+0.3.6 — including straight across 0.3.0's Breaking output change — because it was
+maintained by hand.
+
+**The schemas are strict.** Every one sets `additionalProperties: false`, and
+`doctor.schema.json` closes its check-name enum. That is what makes them worth pinning
+— an unexpected key is an error, not a shrug — but it also means **any** additive
+field requires a pinned copy to be refreshed, in a patch release as much as a minor
+one. The `version` field tells you which shape you have; the CHANGELOG lists additions
+under **Changed** with "refresh your pinned copy" whenever a strict schema grew.
 
 ### Common pitfalls
 
@@ -1178,6 +1223,27 @@ per function, recording the score and components at the time it was written. `ch
 compare today's report against it. It is a reviewed artifact — commit it, and treat a bump the way
 you'd treat a snapshot update. Its shape is validated by
 [`schemas/baseline.schema.json`](schemas/baseline.schema.json).
+
+**What produced these numbers.** Since 0.3.7 every baseline carries a top-level `scoring`
+block recording the scoring-model version, the resolved weights, the churn window, whether
+churn could be collected at all, and whether coverage was present. Two scores are only
+comparable when the same five produced both, and a gate that compares them anyway is
+reporting a difference nobody made. When they differ, `check`, `diff`, the pytest plugin,
+and `doctor`'s `scoring-model` row all say which one changed — and then compare anyway.
+**It is always a warning, never a failure:** a mismatch makes the comparison untrustworthy,
+not the code worse, and failing would break the upgrade the disclosure exists to protect.
+
+Name the difference before you act on it. New weights in `pyproject.toml` mean "re-baseline,
+that was deliberate". Churn that was collectable when the baseline was written and is not now
+means the opposite — fix the repository access, because re-baselining bakes the zeroes in.
+The same reasoning covers a baseline whose every entry has zero churn while the run measures
+some; riskratchet calls that out separately, because it is the one case a pre-0.3.7 baseline
+still betrays without any recorded provenance.
+
+Baselines written by 0.3.0 through 0.3.6 carry no block and stay silent: format v3 already
+implies the current scoring model, so there is nothing to report and nothing to nag about.
+A v1 or v2 baseline — or one so old it has no `version` key — does warn, because those
+predate 0.3.0's redefinition of `sprawl` and were genuinely scored by a different model.
 
 Each entry carries `path`, `qualname`, `score`, `components`, plus a `fingerprint` (body) and
 `signature`. Those two are stable across formatter whitespace/quote/paren choices and change on

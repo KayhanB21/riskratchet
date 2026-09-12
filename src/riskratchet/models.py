@@ -134,6 +134,31 @@ class FunctionRisk:
 
 
 @dataclass(frozen=True, slots=True)
+class ScoringInputs:
+    """What the scorer was configured with on the run that produced a `RiskReport`.
+
+    Recorded so a baseline can say what produced its numbers, and so a later run can
+    tell "this score went up" from "this score was computed differently". Only inputs
+    that change a score belong here — `model` (the `scoring.SCORING_MODEL_VERSION`
+    algorithm identity), the *resolved* weight vector, the churn window, and whether
+    churn could be collected at all. Coverage presence is the fifth such input and is
+    already on `RiskReport.coverage_status`, so it is not duplicated here.
+
+    The weights must be the **resolved** vector (`scoring.resolve_weights`), never the
+    raw config override: absent and explicitly-default overrides resolve to identical
+    dicts, so comparing resolved vectors treats them as the same scoring setup, while
+    comparing raw config would report a difference that does not exist.
+    """
+
+    model: int
+    weights: dict[str, float]
+    churn_window_days: int
+    # False when churn was switched off (`use_git=False`) or no repository was found, in
+    # which case every function's churn component scored 0 regardless of its real history.
+    churn_available: bool
+
+
+@dataclass(frozen=True, slots=True)
 class RiskReport:
     functions: tuple[FunctionRisk, ...]
     files: tuple[FileStats, ...]
@@ -146,6 +171,11 @@ class RiskReport:
     # appear in `files` with zero functions, so `total_files` means "every file the
     # scan reached" and a dropped population is never invisible.
     skipped_generated_files: int = 0
+    # Scoring provenance (0.3.7). Optional so a hand-built `RiskReport` in a test or a
+    # downstream tool stays constructible; every path through `pipeline.build_report`
+    # sets it, and `baseline_from_report` writes no `scoring` block when it is None
+    # rather than inventing one that claims defaults.
+    scoring: ScoringInputs | None = None
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}
@@ -183,11 +213,25 @@ class Baseline:
     written only when an entry for that language exists, and lets the rename
     matcher detect a grammar/scheme bump (which silently changes every
     fingerprint) instead of reading it as a mass rename.
+
+    `scoring` (0.3.7) records what produced these numbers — scoring model version,
+    resolved weights, churn window, whether churn was collectable, coverage presence
+    — so a run scored under a different setup says so instead of gating silently
+    against incomparable numbers. Written on every baseline, Python-only included.
+    Empty on a baseline from 0.3.6 or earlier.
+
+    `declared_version` is the `version` string as the file actually spelled it, or
+    `None` when the file carried no `version` key at all. `version` collapses that
+    absence to the current version so every reader keeps working; the raw value is
+    kept because "no version key" identifies the oldest files of all, which are
+    exactly the ones written by a different scoring model.
     """
 
     version: str
     entries: dict[FunctionId, BaselineEntry] = field(default_factory=dict)
     identity: dict[str, dict[str, Any]] = field(default_factory=dict)
+    scoring: dict[str, Any] = field(default_factory=dict)
+    declared_version: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -74,6 +74,15 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/riskratchet"]
 
+# The nine published JSON Schemas ship inside the package, beside `riskratchet/schemas/__init__.py`,
+# so `riskratchet.schemas.load_schema` can hand a consumer the contract from the wheel they already
+# installed. Through 0.3.6 they existed only in git: `unzip -l` on the wheel found zero schemas while
+# the README promised a published contract. `tests/test_schema_packaging.py` opens the built wheel and
+# compares bytes, because a force-include is applied at build time and nothing in an editable dev
+# install can otherwise tell whether it worked.
+[tool.hatch.build.targets.wheel.force-include]
+"schemas" = "riskratchet/schemas"
+
 # Without this, hatchling's sdist defaults to every VCS-tracked file, which drags
 # in data/ (research data), bin/, docs/, schemas/, and the GH Action — ~6x the
 # wheel. Keep the sdist to source plus the metadata needed to build.
@@ -83,6 +92,9 @@ packages = ["src/riskratchet"]
 [tool.hatch.build.targets.sdist]
 include = [
     "src/riskratchet",
+    # Kept in the sdist both because the schemas are part of the published contract and because a
+    # wheel built *from* the sdist resolves the wheel force-include against this directory.
+    "schemas",
     "README.md",
     "AGENTS.md",
     "CHANGELOG.md",

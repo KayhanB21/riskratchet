@@ -32,6 +32,19 @@ def is_shallow_repo(root: Path) -> bool:
     return (root / ".git" / "shallow").is_file()
 
 
+def churn_is_available(root: Path, *, enabled: bool = True) -> bool:
+    """Whether `collect_function_churn` can read any history for `root`.
+
+    The same predicate `collect_function_churn` gates on, named once and exported so a
+    report can record *why* every churn component is zero. A zero churn score otherwise
+    means either "this function has not changed" or "there was no repository to ask",
+    and a baseline written under the second reading gates against numbers that are not
+    measurements. Keep the two in lockstep: this is the function to change when churn
+    learns to resolve the real repository root.
+    """
+    return bool(enabled) and (root / ".git").exists()
+
+
 def collect_function_churn(
     root: Path,
     functions: Sequence[FunctionChurnTarget],
@@ -46,9 +59,7 @@ def collect_function_churn(
     line overlaps that function's current start/end line range. Any git
     failure collapses to an empty mapping; callers treat missing ids as zero.
     """
-    if not enabled or not functions:
-        return {}
-    if not (root / ".git").exists():
+    if not functions or not churn_is_available(root, enabled=enabled):
         return {}
 
     targets_by_path: dict[str, list[FunctionChurnTarget]] = {}

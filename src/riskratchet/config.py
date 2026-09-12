@@ -45,6 +45,7 @@ from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, head_sha
 from riskratchet.groups import normalize_groups
 from riskratchet.redaction import RedactionConfig, resolve_salt
+from riskratchet.schemas import schema_url
 from riskratchet.scoring import DEFAULT_WEIGHTS, InvalidWeightsError, resolve_weights
 
 if sys.version_info >= (3, 11):
@@ -53,7 +54,7 @@ else:
     import tomli as tomllib  # type: ignore[import-not-found]
 
 VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
-CONFIG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/config.schema.json"
+CONFIG_SCHEMA_URL = schema_url("config")
 
 
 def _format_setup_error(headline: str, fixes: list[tuple[str, str]]) -> str:

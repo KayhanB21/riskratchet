@@ -124,12 +124,48 @@ success and `2` on usage errors.
 
 ## Output contract and stability
 
-- JSON schemas live in [`schemas/`](schemas/): `report.schema.json`
+- **Nine** JSON schemas live in [`schemas/`](schemas/): `report.schema.json`
   (scan), `regressions.schema.json` (check), `diff.schema.json` (diff),
   `baseline.schema.json` (on-disk baseline), `summary.schema.json`
-  (`--summary --json` envelope), and `config.schema.json`
-  (`config show --json`). Each is exercised against real CLI output in
-  `tests/test_schemas.py`.
+  (`--summary --json` envelope), `config.schema.json` (`config show --json`),
+  `doctor.schema.json` (`doctor --json`), `explain.schema.json` (`explain --json`),
+  and `debug.schema.json` (`--debug-json`). Each is exercised against real CLI
+  output in `tests/test_schemas.py`.
+- Since 0.3.7 the schemas **ship in the wheel and the sdist** and are reachable as
+  `riskratchet.schemas` (`schema_names`, `schema_path`, `load_schema`, `schema_url`).
+  That module also owns `SCHEMA_BASE_URL`, the single place a schema URL is spelled:
+  the eight `*_SCHEMA_URL` constants and all nine `$id`s derive from it, so they
+  cannot drift apart, and none of them may be written out by hand.
+  `tests/test_schema_packaging.py` opens the **built wheel** with `zipfile` — the dev
+  environment is an editable install, so an `importlib.resources` check there would
+  pass whether or not the build was configured at all.
+- `reporting.OUTPUT_VERSION` is **derived** from the package's `MAJOR.MINOR`, never
+  edited. Hand-maintained, it sat at `"0.2"` from 0.2.x through 0.3.6, straight across
+  0.3.0's Breaking output change. Note that `version` means something different per
+  document — output contract, package version, an integer debug contract, and the
+  baseline format version — and the README carries the table.
+- **The published schemas are strict** (`additionalProperties: false` everywhere, and
+  a closed check-name enum in `doctor.schema.json`). That is the point of publishing
+  them, and the cost is that *any* additive field — in a patch release as much as a
+  minor one — obliges a consumer with a pinned copy to refresh it. List such additions
+  under **Changed** with "refresh your pinned copy", never silently under **Added**.
+- **Deprecation policy: warn, then remove, across two releases.** A field, flag, or
+  config key that is going away must first ship a release that still honours it and
+  warns, and may only be removed in a later release, under a **Breaking** heading.
+  Nothing is removed in the same release it is first deprecated in. (This lived only
+  in an uncommitted planning doc until 0.3.7, which meant it did not travel with a
+  clone — the same mistake 0.3.6 fixed for the stacked-PR rule.)
+- **Scoring provenance.** Every baseline records a top-level `scoring` block — model
+  version, *resolved* weights, churn window, churn availability, coverage presence —
+  and all three doors (`cli`, `pytest_plugin`, `doctor`'s `scoring-model` row) say when
+  a run was scored differently. Always a **warning**, never an exit code: a mismatch
+  makes the comparison untrustworthy, not the project broken, and failing would break
+  the upgrade the disclosure exists to protect. The plugin has no exit 2 available
+  (`session.exitstatus = 1` means "a gate tripped"), which is the per-door convention
+  for every disclosure of this kind. Compare *resolved* values only — absent and
+  explicitly-default weights resolve identically, so comparing raw config would report
+  a difference that does not exist. `SCORING_MODEL_VERSION` (`scoring.py`) bumps only
+  when a change would score identical inputs differently, and that bump is **Breaking**.
 - Bumping the baseline format is a **two-file** change: `SUPPORTED_BASELINE_VERSIONS`
   in `src/riskratchet/baseline/io.py` and the `version` enum in
   `schemas/baseline.schema.json` must move together. Since 0.3.3 the loader

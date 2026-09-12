@@ -356,17 +356,27 @@ def _guarded_typescript_identity(
     baseline_path: Path,
     ts_coverage: list[Path],
 ) -> tuple[Baseline, RiskReport]:
-    """The plugin's copy of `cli._apply_ts_identity_guard`.
+    """The plugin's copy of `cli._apply_baseline_guards`.
 
     Says when the baseline holds a language this run did not analyze — those entries
     simply vanish from the comparison, so a Python-only session over a mixed baseline
-    would otherwise gate half the project and report a clean run. And when the
-    baseline's TypeScript grammar differs from the runtime's, every persisted
-    fingerprint is stale, so TypeScript is matched by id only and the exact
-    re-baseline command is printed.
+    would otherwise gate half the project and report a clean run. Says when the baseline's
+    numbers were produced by a different scoring model, weight vector, churn window, churn
+    availability or coverage presence, so a gate never compares two scores that were never
+    measurements of the same thing. And when the baseline's TypeScript grammar differs from
+    the runtime's, every persisted fingerprint is stale, so TypeScript is matched by id only
+    and the exact re-baseline command is printed.
+
+    **Per-door convention.** The plugin has no exit 2: a session failure is
+    `session.exitstatus = 1`, which means "a gate tripped". So every disclosure here is a
+    message and nothing more — the CLI's setup-error exit has no equivalent to route to, and
+    borrowing exit 1 would report a failure the code did not cause. These are warnings at all
+    three doors anyway, which is what makes the convention safe to state this plainly.
     """
     from riskratchet.baseline import (
+        baseline_scored_without_churn,
         languages_not_scanned,
+        scoring_model_stale,
         suppress_stale_typescript_renames,
         typescript_identity_stale,
     )
@@ -382,6 +392,21 @@ def _guarded_typescript_identity(
             f"riskratchet: the baseline holds {lost} {language} entr{'y' if lost == 1 else 'ies'} "
             f"but this run analyzed no {language} — those functions are not being gated{hint}.",
         )
+    reasons = scoring_model_stale(baseline, report)
+    if reasons:
+        _emit(session, "riskratchet: the baseline was not scored the way this run scores:")
+        for reason in reasons:
+            _emit(session, f"  - {reason}")
+        _emit(session, "  comparing them anyway; re-baseline once the difference is the one you intended.")
+        _emit(session, f"  re-baseline: {_rebaseline_command(settings, baseline_path, ts_coverage)}")
+    elif baseline_scored_without_churn(baseline, report):
+        _emit(
+            session,
+            "riskratchet: every function in the baseline has zero churn but this run measured some, "
+            "so the baseline was probably written where git history was unavailable — churn will "
+            "look like a regression everywhere.",
+        )
+        _emit(session, f"  re-baseline: {_rebaseline_command(settings, baseline_path, ts_coverage)}")
     if not settings.typescript or not typescript_identity_stale(baseline):
         return baseline, report
     _emit(
@@ -389,11 +414,22 @@ def _guarded_typescript_identity(
         "typescript: baseline TypeScript grammar/scheme differs from the runtime; matching TypeScript "
         "functions by id only (a grammar bump changes every fingerprint) — re-baseline recommended",
     )
-    command = "riskratchet baseline " + " ".join(str(path) for path in settings.paths) + " --typescript"
+    _emit(session, f"  re-baseline: {_rebaseline_command(settings, baseline_path, ts_coverage)}")
+    return suppress_stale_typescript_renames(baseline, report)
+
+
+def _rebaseline_command(settings: GateSettings, baseline_path: Path, ts_coverage: list[Path]) -> str:
+    """The plugin's copy of `cli._rebaseline_command`: the exact command that rewrites this baseline.
+
+    `--typescript` only when this session analyzed it — on a Python-only project the flag would
+    hand back a command that exits 2 for want of the extra.
+    """
+    command = "riskratchet baseline " + " ".join(str(path) for path in settings.paths)
+    if settings.typescript:
+        command += " --typescript"
     for path in ts_coverage:
         command += f" --ts-coverage {path}"
-    _emit(session, f"  re-baseline: {command} --output {baseline_path}")
-    return suppress_stale_typescript_renames(baseline, report)
+    return f"{command} --output {baseline_path}"
 
 
 def _gated(

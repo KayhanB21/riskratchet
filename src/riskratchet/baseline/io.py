@@ -10,6 +10,7 @@ how to move a `Baseline` to and from JSON.
 from __future__ import annotations
 
 import json
+from collections.abc import Collection
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,12 @@ from riskratchet.models import (
     RiskComponents,
     RiskReport,
 )
+
+# Weights are floats that survive a JSON round-trip exactly at this precision, and the
+# only comparison anyone makes of them is "is this the same scoring setup?". Rounding
+# before both writing and comparing keeps a 0.1 + 0.2 style representation artifact from
+# being reported as a changed weight.
+_WEIGHT_PRECISION = 6
 
 BASELINE_VERSION = "3"
 
@@ -52,7 +59,60 @@ def baseline_from_report(report: RiskReport) -> Baseline:
             group=fn.group,
             language=fn.language,
         )
-    return Baseline(version=BASELINE_VERSION, entries=entries, identity=_identity_for(entries))
+    return Baseline(
+        version=BASELINE_VERSION,
+        entries=entries,
+        identity=_identity_for(entries),
+        scoring=_scoring_for(report),
+        declared_version=BASELINE_VERSION,
+    )
+
+
+def _scoring_for(report: RiskReport) -> dict[str, Any]:
+    """The provenance block: what scored these numbers, on every baseline.
+
+    Unlike `identity`, this is written for Python-only baselines too — a Python baseline
+    from a different scoring model, different weights, or a run where churn could not be
+    collected is just as incomparable as a TypeScript one from a different grammar, and
+    until 0.3.7 nothing recorded it. Empty when the report carries no `ScoringInputs`,
+    so a hand-built report writes no block rather than one claiming defaults it never used.
+
+    Carries no path, qualname, or coverage figure — only configuration — so it is safe to
+    print under `private_comment` / redaction without any filtering.
+    """
+    inputs = report.scoring
+    if inputs is None:
+        return {}
+    return scoring_block(
+        model=inputs.model,
+        weights=inputs.weights,
+        churn_window_days=inputs.churn_window_days,
+        churn_available=inputs.churn_available,
+        coverage=report.coverage_status,
+    )
+
+
+def scoring_block(
+    *,
+    model: int,
+    weights: Any,
+    churn_window_days: int,
+    churn_available: bool,
+    coverage: str,
+) -> dict[str, Any]:
+    """Build a provenance block from already-resolved parts.
+
+    Public because `doctor` builds one from config without scoring anything, and the two must
+    be byte-comparable: a different key order or a different rounding here would make `doctor`
+    and `check` disagree about a baseline neither of them has any reason to doubt.
+    """
+    return {
+        "model": model,
+        "weights": {name: round(float(value), _WEIGHT_PRECISION) for name, value in sorted(weights.items())},
+        "churn_window_days": churn_window_days,
+        "churn_available": churn_available,
+        "coverage": coverage,
+    }
 
 
 def _identity_for(entries: dict[FunctionId, BaselineEntry]) -> dict[str, Any]:
@@ -92,7 +152,7 @@ def load_baseline(path: Path, *, on_dropped: Any = None) -> Baseline:
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not read baseline {path}: {exc}") from exc
 
-    version = _baseline_version(raw)
+    version, declared_version = _baseline_version(raw)
     entries: dict[FunctionId, BaselineEntry] = {}
     dropped = 0
     for raw_entry in raw["entries"]:
@@ -116,24 +176,39 @@ def load_baseline(path: Path, *, on_dropped: Any = None) -> Baseline:
         on_dropped(dropped)
     raw_identity = raw.get("identity")
     identity = raw_identity if isinstance(raw_identity, dict) else {}
-    return Baseline(version=version, entries=entries, identity=identity)
+    raw_scoring = raw.get("scoring")
+    scoring = raw_scoring if isinstance(raw_scoring, dict) else {}
+    return Baseline(
+        version=version,
+        entries=entries,
+        identity=identity,
+        scoring=scoring,
+        declared_version=declared_version,
+    )
 
 
-def _baseline_version(raw: Any) -> str:
-    """Validate the baseline envelope and return its schema version.
+def _baseline_version(raw: Any) -> tuple[str, str | None]:
+    """Validate the baseline envelope and return `(effective version, declared version)`.
 
     A missing `version` is read as the current one — some early files predate the
     field — but an *unknown* one is fatal, because a future entry shape would
     parse to zero usable entries and look like a clean baseline.
+
+    The declared spelling is returned alongside, `None` when the key was absent, because
+    collapsing the two loses the one fact that identifies the oldest baselines in
+    existence: a file that predates the `version` field also predates the current scoring
+    model, and `scoring_model_stale` has to be able to say so. Every other caller wants
+    the effective version and can ignore the second element.
     """
     if not isinstance(raw, dict):
         raise ValueError(f"baseline root must be a JSON object, got {type(raw).__name__}")
     if not isinstance(raw.get("entries"), list):
         raise ValueError("baseline has no 'entries' array")
-    version = str(raw.get("version", BASELINE_VERSION))
+    declared = raw.get("version")
+    version = str(declared) if declared is not None else BASELINE_VERSION
     if version not in SUPPORTED_BASELINE_VERSIONS:
         raise BaselineVersionError(_unsupported_version_message(version))
-    return version
+    return version, (version if declared is not None else None)
 
 
 def _unsupported_version_message(version: str) -> str:
@@ -174,6 +249,142 @@ def typescript_identity_stale(baseline: Baseline) -> bool:
         return False
 
 
+def runtime_scoring_block(report: RiskReport) -> dict[str, Any]:
+    """The provenance block this run would write — what a persisted one is compared against."""
+    return _scoring_for(report)
+
+
+def scoring_model_stale(baseline: Baseline, report: RiskReport) -> list[str]:
+    """Reasons the baseline's numbers were not produced the way this run produces them.
+
+    Empty when they are comparable. Each reason is one short adopter-readable clause; the
+    caller decides how to present them. Never raises and never fails a gate: a mismatch
+    means the *comparison* is untrustworthy, and turning that into an exit code would
+    break every upgrade, which is the outcome this whole mechanism exists to avoid.
+
+    Three cases, in order:
+
+    * **A pre-v3 envelope** (v1, v2, or no `version` key at all) was written by 0.2.x,
+      before 0.3.0 redefined `sprawl`. The file carries no provenance to compare, but the
+      envelope version is itself the evidence.
+    * **A recorded block** is compared field by field, so the reason names what actually
+      differs — which matters, because the right response is not the same for each. New
+      weights in `pyproject.toml` mean "re-baseline, that was deliberate"; churn that was
+      available then and is not now means "fix CI, and do NOT re-baseline, or you will bake
+      the zero in".
+    * **A v3 baseline with no block** (0.3.0 through 0.3.6) stays silent. v3 implies the
+      current scoring model, so there is nothing to report; its weights and churn window
+      are genuinely unknowable and guessing would nag every existing user on upgrade.
+      `baseline_scored_without_churn` still catches the one case that leaves evidence.
+    """
+    envelope = scoring_envelope_reason(baseline)
+    if envelope is not None:
+        return [envelope]
+    current = _scoring_for(report)
+    if not baseline.scoring or not current:
+        return []
+    return scoring_block_differences(baseline.scoring, current)
+
+
+def scoring_envelope_reason(baseline: Baseline) -> str | None:
+    """The pre-0.3.0 evidence carried by the envelope itself, for a file with no `scoring` block.
+
+    A v1 or v2 baseline — or one so old it has no `version` key at all — was written before
+    0.3.0 redefined `sprawl`, so its scores came from a scoring model this build no longer
+    implements. Split out from `scoring_model_stale` because `doctor` reaches the same verdict
+    without building a report.
+    """
+    if baseline.declared_version is None:
+        return "the baseline predates the `version` field, so riskratchet 0.2.x wrote it"
+    if baseline.version != BASELINE_VERSION:
+        return (
+            f"the baseline is v{baseline.version}, written by riskratchet 0.2.x before the "
+            f"0.3.0 scoring model"
+        )
+    return None
+
+
+def scoring_block_differences(
+    persisted: dict[str, Any],
+    current: dict[str, Any],
+    *,
+    ignore: Collection[str] = (),
+) -> list[str]:
+    """Compare two provenance blocks and name every difference, one clause each.
+
+    Public because `doctor` compares a persisted block against what the *config* resolves to,
+    without scoring anything, and must reach the same verdict `check` does with a report in
+    hand — the two disagreeing about whether a baseline is comparable is the failure mode this
+    whole mechanism exists to remove.
+
+    `ignore` names fields the caller cannot resolve faithfully, so it reports nothing rather
+    than something wrong. `doctor` ignores `coverage` for exactly that reason: it sees whether
+    a coverage file exists *now*, while a real run may be about to generate one through
+    auto-coverage, so comparing it would warn about a difference that will not exist by the
+    time anything is scored. `doctor`'s own coverage row already reports that state.
+    """
+    reasons: list[str] = []
+    if "model" not in ignore and persisted.get("model") != current.get("model"):
+        reasons.append(f"scoring model {persisted.get('model')} -> {current.get('model')}")
+    if "weights" not in ignore:
+        reasons.extend(_weight_reasons(persisted.get("weights"), current.get("weights")))
+    if "churn_window_days" not in ignore and persisted.get("churn_window_days") != current.get(
+        "churn_window_days"
+    ):
+        reasons.append(
+            f"churn window {persisted.get('churn_window_days')}d -> {current.get('churn_window_days')}d"
+        )
+    was_churn, now_churn = persisted.get("churn_available"), current.get("churn_available")
+    if "churn_available" not in ignore and was_churn != now_churn:
+        reasons.append(
+            "churn was collectable when the baseline was written but not in this run, so every "
+            "churn component scored 0 — fix the repository access rather than re-baselining"
+            if was_churn
+            else "churn could not be collected when the baseline was written but can be now, so "
+            "churn components will rise against baselined zeroes"
+        )
+    if "coverage" not in ignore and persisted.get("coverage") != current.get("coverage"):
+        reasons.append(f"coverage {persisted.get('coverage')} -> {current.get('coverage')}")
+    return reasons
+
+
+def _weight_reasons(persisted: Any, current: Any) -> list[str]:
+    """Name the components whose weight moved, not just that the vector differs.
+
+    Both sides are already rounded to `_WEIGHT_PRECISION` by `_scoring_for`, so this
+    compares what was written, never raw floats.
+    """
+    if not isinstance(persisted, dict) or not isinstance(current, dict):
+        return []
+    changed = [
+        f"{name} {persisted.get(name)} -> {current.get(name)}"
+        for name in sorted(set(persisted) | set(current))
+        if persisted.get(name) != current.get(name)
+    ]
+    return [f"weights changed ({', '.join(changed)})"] if changed else []
+
+
+def baseline_scored_without_churn(baseline: Baseline, report: RiskReport) -> bool:
+    """True when every baselined function has zero churn but this run measured some.
+
+    The one silent-zero a baseline without a `scoring` block still betrays. A baseline
+    written where git was unreachable — a container without `.git`, a `--no-git` run, a
+    source tarball — records churn 0 for every function; comparing a real run against it
+    pushes the whole churn component upward at once, which reads as a mass regression
+    nobody caused. Detecting it here covers the 0.3.0-0.3.6 baselines that carry no
+    provenance at all, so the disclosure is not limited to files written from 0.3.7 on.
+
+    Deliberately narrow: it requires entries on one side and measured churn on the other,
+    so a genuinely quiet repository (nothing committed in the window) says nothing, and
+    neither does an empty baseline.
+    """
+    if not baseline.entries:
+        return False
+    if any(entry.components.churn for entry in baseline.entries.values()):
+        return False
+    return any(fn.components.churn for fn in report.functions)
+
+
 def suppress_stale_typescript_renames(baseline: Baseline, report: RiskReport) -> tuple[Baseline, RiskReport]:
     """Clear TS fingerprints on both the baseline and the report so a stale-grammar baseline matches
     TypeScript functions by **id only** — never by a fingerprint made under a different grammar.
@@ -197,6 +408,11 @@ def _dumps(baseline: Baseline) -> str:
     # non-Python entry (a Python-only baseline omits it, staying byte-stable across v2→v3).
     if baseline.identity:
         payload["identity"] = baseline.identity
+    # Persisted on every baseline that has it, so a `load` -> `save` round-trip through the
+    # public API cannot quietly strip the provenance and turn a v3 baseline that knows what
+    # scored it into one that does not.
+    if baseline.scoring:
+        payload["scoring"] = baseline.scoring
     payload["entries"] = [
         _entry_to_dict(entry)
         for entry in sorted(

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json",
+  "$id": "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/regressions.schema.json",
   "title": "riskratchet check regressions",
   "description": "Output of `riskratchet check --json`. The CLI exits 1 when `regressions` is non-empty, 2 on usage error, 0 otherwise.",
   "type": "object",

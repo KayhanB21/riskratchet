@@ -33,7 +33,12 @@ from riskratchet import typescript_exports as tsx
 from riskratchet._paths import relative_posix
 from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import pattern_matches
-from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
+from riskratchet.git import (
+    DEFAULT_CHURN_WINDOW_DAYS,
+    churn_for_function,
+    churn_is_available,
+    collect_function_churn,
+)
 from riskratchet.groups import group_for_path
 from riskratchet.models import (
     ComplexityStats,
@@ -41,8 +46,10 @@ from riskratchet.models import (
     FileStats,
     FunctionRisk,
     RiskReport,
+    ScoringInputs,
 )
 from riskratchet.scoring import (
+    SCORING_MODEL_VERSION,
     TYPESCRIPT_COMPLEXITY_CALIBRATION,
     compute_components,
     crap_score,
@@ -187,6 +194,12 @@ def analyze_typescript(
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(risks) + suppressed,
         skipped_generated_files=len(skipped.generated),
+        scoring=ScoringInputs(
+            model=SCORING_MODEL_VERSION,
+            weights=resolved_weights,
+            churn_window_days=churn_days,
+            churn_available=churn_is_available(root_path, enabled=use_git),
+        ),
     )
 
 
@@ -225,6 +238,11 @@ def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
         skipped_missing_coverage=python.skipped_missing_coverage + typescript.skipped_missing_coverage,
         analyzed_functions=(python.analyzed_functions or 0) + (typescript.analyzed_functions or 0),
         skipped_generated_files=python.skipped_generated_files + typescript.skipped_generated_files,
+        # One value, not a merge: `build_report` hands both backends the same weights, churn
+        # window and root, so the two `ScoringInputs` are equal by construction. Falling back
+        # to the TypeScript one keeps a hand-built Python report (tests, downstream callers)
+        # from erasing provenance the TypeScript half does carry.
+        scoring=python.scoring or typescript.scoring,
     )
 
 

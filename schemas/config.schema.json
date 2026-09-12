@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/KayhanB21/riskratchet/schemas/config.schema.json",
+  "$id": "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/config.schema.json",
   "title": "riskratchet resolved config",
   "description": "Output of `riskratchet config show --json`.",
   "type": "object",

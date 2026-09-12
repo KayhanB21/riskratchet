@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/KayhanB21/riskratchet/schemas/debug.schema.json",
+  "$id": "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/debug.schema.json",
   "title": "riskratchet debug diagnostics",
   "description": "Output of `--debug-json` on scan/baseline/check/diff/explain. A diagnostic aid for CI debugging; its own versioned contract, independent of the native payload schemas. Unset categories are null.",
   "type": "object",
