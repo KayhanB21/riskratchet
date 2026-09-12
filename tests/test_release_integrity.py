@@ -37,7 +37,7 @@ def _project_version() -> str:
 def test_installed_metadata_and_runtime_versions_match_pyproject() -> None:
     expected = _project_version()
 
-    assert expected == "0.3.6"
+    assert expected == "0.3.7"
     assert version("riskratchet") == expected
     assert metadata("riskratchet")["Version"] == expected
     assert __version__ == expected
