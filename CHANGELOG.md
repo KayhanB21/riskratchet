@@ -9,6 +9,130 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [0.3.7] - 2026-09-11
+
+Scoped from an audit rather than the backlog, because the audit found something
+worse than anything on it: **the workflow riskratchet documents as its canonical
+reference could not work as pasted, and when it failed the Action hid the reason.**
+Pulling that thread turned up a family of the same fault — a tool that knew
+something and did not say it. A baseline that could not say what scored it. Churn
+that scores zero in a monorepo package while `doctor` vouches for the repo. An I/O
+failure that exits 1, which means "a gate tripped". Four settings config can turn on
+that no flag could turn back off.
+
+**No score moves anywhere in this release, and nothing is renamed or removed.** Every
+score-moving change the audit turned up — re-anchoring churn to the repository root,
+resolving bare `package.json` entry specifiers — is deferred to `0.4.0` and recorded
+in `AGENTS.md` and the README so it is not rediscovered. A patch release must not turn
+a green gate red.
+
+### Added
+
+- **Baselines record what scored them.** Every baseline carries a top-level `scoring`
+  block — model version, resolved weights, churn window, whether churn could be
+  collected, coverage presence. All three doors warn when a run is scored differently
+  from the baseline it is gating, and name *which* input moved: `check`/`diff`, the
+  pytest plugin, and a new `doctor` `scoring-model` row. Always a warning, never an
+  exit code — a mismatch makes the comparison untrustworthy, not the project broken,
+  and failing would break the upgrade the disclosure exists to protect. A `v3` baseline
+  from `0.3.0`-`0.3.6` stays silent, since v3 already implies this scoring model.
+- **The nine schemas ship in the wheel and the sdist**, reachable as
+  `riskratchet.schemas` (`schema_names`, `schema_path`, `load_schema`, `schema_url`).
+  That module owns the single base URL every `$id` and all eight `*_SCHEMA_URL`
+  constants derive from, so they cannot drift apart again.
+- **An off-switch for every setting config can turn on.** `--no-redact-paths`,
+  `--no-redact-qualnames`, `--no-private-comment` on `scan`/`check`/`explain`/`diff`;
+  `--no-allow-missing-coverage` on `baseline`/`check`/`diff`; and the four
+  `--riskratchet-no-*` equivalents in the pytest plugin, which reads the same config.
+  Off beats on beats config. An explicit off-flag is the last word even over the
+  `--private-comment` preset it just widened.
+- **`config show` reports the four redaction settings**, the only members of
+  `CONFIG_ALLOWED_KEYS` the payload omitted. `redact_salt` is reported as `"present"` /
+  `"absent"` and **never as its value**: `config show --json` lands in CI logs and bug
+  reports, and a reader holding the salt can reproduce every hash redaction exists to
+  prevent.
+- **`Group` and `Language` columns in every per-row table** — the three terminal tables,
+  both markdown tables, and the PR comment. A column appears when it carries
+  information: `Group` when `[tool.riskratchet.groups]` placed something, `Language`
+  when a non-Python function is in the table. The `group` and `language` JSON fields are
+  unchanged.
+- **`doctor` reports when churn is scoring zero** because the config directory is not
+  the git root, and `dogfood-action.yml` gains a job that pastes the documented workflow
+  into a scratch project and gates through the Action, so the path an adopter actually
+  takes is the path CI proves.
+
+### Changed
+
+- **Three strict-schema additions — refresh your pinned copy.** `baseline.scoring`; the
+  `doctor` check-name enum gains `scoring-model` (so `doctor --json` `summary.total`
+  moves from 9 to 10); and `config.schema.json` grows four required properties, 24 to
+  28. The published schemas set `additionalProperties: false` everywhere, which is the
+  point of publishing them and the reason any additive field — in a patch release as
+  much as a minor one — obliges a pinned consumer to refresh.
+- **Every `$schema` and `$id` resolves.** All nine `$id`s and all eight `*_SCHEMA_URL`
+  constants pointed at a URL that 404'd.
+- **`OUTPUT_VERSION` is `"0.3"`, derived from the package minor rather than
+  hand-maintained.** It sat at `"0.2"` from `0.2.x` through `0.3.6` — straight across
+  `0.3.0`'s **Breaking** output change. The README now says what `version` means per
+  document, since `config show` and `doctor` put the package version in the same key
+  and `debug` uses an integer contract.
+- **Both documented CI workflows now write the coverage they name**, and
+  `render_ci_snippet` is parametrised by the detected runner and TypeScript-ness, so a
+  unittest project is not handed `pytest --cov`.
+- **`init` detects the package root** instead of hardcoding `paths = ["src"]`, through a
+  bounded candidate list rather than a walk. With nothing to detect it still scaffolds
+  the convention but says the path is a guess, rather than letting you find out two
+  commands later.
+- **`init --with-baseline` exits 2, not 1**, when the test command cannot produce
+  coverage. Exit 1 means a gate tripped, and `init` gates nothing.
+- **A `--ts-entry` named on the command line that is not on disk is exit 2** (the plugin
+  fails the session, having no usage-error code). It previously warned that the entry
+  "matched no scanned file" and scored on — and an unresolved entry leaves every
+  file-level export flag intact, so a typo silently widened the public surface. A
+  `[tool.riskratchet] ts_entry` key keeps the warning: it is a project default a fresh
+  clone may not have generated.
+- **`AGENTS.md` carries the deprecation policy**, which lived only in an uncommitted
+  planning doc and so did not travel with a clone — the same mistake `0.3.6` fixed for
+  the stacked-PR rule.
+
+### Fixed
+
+- **The Action no longer swallows its own exit code, or invents one.** A setup error
+  raises before the CLI renders, so the captured stdout was empty, `gh` rejected the
+  empty comment body with a 422, `set -e` killed the job, and the step that would have
+  printed `::error::riskratchet exited 2` was skipped by its default `if: success()`.
+  The adopter saw a `gh: Validation Failed` traceback. A setup error now writes a real
+  comment body (marker first, so the sticky comment is never orphaned), the upsert
+  refuses an empty body, and the status step runs on `always()` guarded by
+  `status != ''` so a failure in an *earlier* step is never annotated as riskratchet's.
+- **`baseline` says so when it writes a zero-function baseline.** It was the one command
+  that could create an inert ratchet and report it as a plain success; `check` has
+  warned about the same condition since `0.3.4`.
+- **Churn scoring zero in a nested config directory is no longer silent, and `doctor` no
+  longer vouches for it.** `doctor._check_git` shelled `git rev-parse --git-dir`, which
+  succeeds from any subdirectory, so it passed `git repo` and `full history` on exactly
+  the layout where churn is dead. `head_sha` and `is_shallow_repo` now ask git rather
+  than probing for `<dir>/.git`, which was wrong for every nested config dir, worktree
+  and submodule — and left a monorepo package redacting with an **unsalted** hash, the
+  one outcome salting exists to prevent. Scoring stays anchored at the config directory;
+  moving it is `0.4.0`.
+- **An `OSError` from a git call no longer exits 1.** Four subprocess sites caught only
+  `FileNotFoundError`, so anything else escaped as an uncaught traceback that Typer
+  turns into exit 1 — "a gate tripped" — for an I/O failure. Timeouts and `OSError` now
+  warn once per pass instead of returning a silent empty result that gets baselined as
+  fact. A repository with no commits yet stays quiet: there is genuinely nothing to find.
+- **`doctor` no longer walks `.venv`** to decide coverage is stale, where it would name
+  a file like `.venv/.../urllib3/_version.py` and tell you to re-run pytest, and no
+  longer exits 1 on a dangling symlink.
+- **`regenerate-baseline.yml` uploaded nothing while reporting success**, because
+  `.riskratchet.json` is a dotfile and `upload-artifact` has excluded hidden files since
+  v4.4. `if-no-files-found: error` so the next silent no-op is not silent.
+- **Four settings config could turn on that no flag could turn back off** —
+  `redact_paths`, `redact_qualnames`, `private_comment`, `allow_missing_coverage`. The
+  cause was one helper: it returned a CLI value "when it differs from the default", so a
+  flag passed as its own default was indistinguishable from silence and config always
+  won.
+
 ## [0.3.6] - 2026-09-04
 
 TypeScript through every door. The backend has scored TypeScript since `0.2.12`, and
