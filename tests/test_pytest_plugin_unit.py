@@ -331,3 +331,78 @@ def test_boolean_flags_are_store_true() -> None:
 
 def test_paths_flag_appends_so_it_can_repeat() -> None:
     assert _registered_options()["--riskratchet-paths"]["action"] == "append"
+
+
+def _entry_session(
+    tmp_path: Path, named: list[str] | None, *, reporter: _StubReporter | None = None
+) -> _StubSession:
+    session = _make_session(tmp_path, reporter=reporter)
+    session.config._options["--riskratchet-ts-entry"] = named
+    return session
+
+
+def test_typescript_entries_ok_passes_when_every_named_entry_exists(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _typescript_entries_ok
+
+    (tmp_path / "entry.ts").write_text("export function f() { return 1; }\n", encoding="utf-8")
+    session = _entry_session(tmp_path, ["entry.ts"])
+    settings = resolve_gate_settings({"typescript": True}, tmp_path)
+
+    assert _typescript_entries_ok(session, settings) is True  # type: ignore[arg-type]
+    assert session.exitstatus == 0
+
+
+def test_typescript_entries_ok_fails_the_session_for_a_missing_named_entry(tmp_path: Path) -> None:
+    """pytest has no usage-error code, so the CLI's exit 2 becomes a failed session here."""
+    from riskratchet.pytest_plugin import _typescript_entries_ok
+
+    reporter = _StubReporter()
+    session = _entry_session(tmp_path, ["nope.ts"], reporter=reporter)
+    settings = resolve_gate_settings({"typescript": True}, tmp_path)
+
+    assert _typescript_entries_ok(session, settings) is False  # type: ignore[arg-type]
+    assert session.exitstatus == 1
+    assert any("TypeScript entry file not found" in line for line in reporter.lines)
+
+
+def test_typescript_entries_ok_is_inert_with_typescript_off(tmp_path: Path) -> None:
+    """A `--riskratchet-no-typescript` run must not fail on an entry it will never read."""
+    from riskratchet.pytest_plugin import _typescript_entries_ok
+
+    session = _entry_session(tmp_path, ["nope.ts"])
+    settings = resolve_gate_settings({}, tmp_path)
+
+    assert _typescript_entries_ok(session, settings) is True  # type: ignore[arg-type]
+    assert session.exitstatus == 0
+
+
+def test_typescript_entries_ok_ignores_a_config_only_entry(tmp_path: Path) -> None:
+    """Only the flag is checked: a stale `[tool.riskratchet] ts_entry` keeps the engine warning.
+
+    Failing a plugin session on a project default would turn a green gate red on a patch
+    upgrade, which is the split `_ensure_ts_coverage_exists` already draws in the CLI.
+    """
+    from riskratchet.pytest_plugin import _typescript_entries_ok
+
+    session = _entry_session(tmp_path, None)
+    settings = resolve_gate_settings({"typescript": True, "ts_entry": ["nope.ts"]}, tmp_path)
+
+    assert _typescript_entries_ok(session, settings) is True  # type: ignore[arg-type]
+    assert session.exitstatus == 0
+
+
+def test_usable_ts_entries_splits_present_from_missing(tmp_path: Path) -> None:
+    """The entry-point-neutral half of the guard, so a second door needs no new logic."""
+    from riskratchet.config import usable_ts_entries
+
+    (tmp_path / "real.ts").write_text("export function f() { return 1; }\n", encoding="utf-8")
+
+    present, problems = usable_ts_entries([tmp_path / "real.ts"])
+    assert present == [tmp_path / "real.ts"]
+    assert problems == []
+
+    present, problems = usable_ts_entries([tmp_path / "real.ts", tmp_path / "nope.ts"])
+    assert present == [tmp_path / "real.ts"]
+    assert len(problems) == 1
+    assert "TypeScript entry file not found" in problems[0]
+    assert "relative to the current directory" in problems[0]
