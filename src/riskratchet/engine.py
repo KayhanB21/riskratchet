@@ -25,7 +25,12 @@ from riskratchet.coverage import (
     load_coverage,
     load_coverage_map,
 )
-from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_for_function, collect_function_churn
+from riskratchet.git import (
+    DEFAULT_CHURN_WINDOW_DAYS,
+    churn_for_function,
+    churn_is_available,
+    collect_function_churn,
+)
 from riskratchet.groups import group_for_path
 from riskratchet.models import (
     ChurnStats,
@@ -33,8 +38,15 @@ from riskratchet.models import (
     FunctionId,
     FunctionRisk,
     RiskReport,
+    ScoringInputs,
 )
-from riskratchet.scoring import compute_components, crap_score, resolve_weights, total_risk
+from riskratchet.scoring import (
+    SCORING_MODEL_VERSION,
+    compute_components,
+    crap_score,
+    resolve_weights,
+    total_risk,
+)
 
 
 def analyze(
@@ -134,6 +146,12 @@ def analyze(
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(function_risks) + suppressed_functions,
         skipped_generated_files=skipped_generated_files,
+        scoring=ScoringInputs(
+            model=SCORING_MODEL_VERSION,
+            weights=resolved_weights,
+            churn_window_days=churn_days,
+            churn_available=churn_is_available(root_path, enabled=use_git),
+        ),
     )
 
 

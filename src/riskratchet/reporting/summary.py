@@ -12,6 +12,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
+from riskratchet import __version__
 from riskratchet.models import (
     DiffEntry,
     DiffReport,
@@ -22,15 +23,25 @@ from riskratchet.models import (
     RiskReport,
     Severity,
 )
+from riskratchet.schemas import schema_url
 from riskratchet.scoring import severity
 
-REPORT_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/report.schema.json"
-REGRESSIONS_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/regressions.schema.json"
-DIFF_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/diff.schema.json"
-SUMMARY_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/summary.schema.json"
-EXPLAIN_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/explain.schema.json"
-DEBUG_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/debug.schema.json"
-OUTPUT_VERSION = "0.2"
+# Derived, never spelled out: `riskratchet.schemas` owns the one base URL and the set of
+# published names, so a constant here cannot point somewhere the shipped files do not.
+REPORT_SCHEMA_URL = schema_url("report")
+REGRESSIONS_SCHEMA_URL = schema_url("regressions")
+DIFF_SCHEMA_URL = schema_url("diff")
+SUMMARY_SCHEMA_URL = schema_url("summary")
+EXPLAIN_SCHEMA_URL = schema_url("explain")
+DEBUG_SCHEMA_URL = schema_url("debug")
+
+# The JSON output contract's version, derived from the package's own MAJOR.MINOR rather than
+# maintained by hand. AGENTS.md and the CHANGELOG already promise that output field names are
+# stable *within a minor version* and that renames or removals travel under **Breaking**, so
+# deriving it makes the field mean exactly the guarantee already written down. Maintained by
+# hand it did not: it read "0.2" from 0.2.x all the way through 0.3.6, straight across 0.3.0's
+# Breaking output change, which is the one release it most needed to move on.
+OUTPUT_VERSION = ".".join(__version__.split(".")[:2])
 PR_COMMENT_MARKER = "<!-- riskratchet-report -->"
 
 

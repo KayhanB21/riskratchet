@@ -28,10 +28,21 @@ from typing import Any
 from riskratchet._paths import relative_posix
 from riskratchet.analysis import iter_python_files
 from riskratchet.baseline import BaselineVersionError, load_baseline
-from riskratchet.baseline.io import runtime_typescript_identity
+from riskratchet.baseline.io import (
+    runtime_typescript_identity,
+    scoring_block,
+    scoring_block_differences,
+    scoring_envelope_reason,
+)
 from riskratchet.config import invalid_config_values, unknown_config_keys
 from riskratchet.coverage import CoverageData, load_coverage
-from riskratchet.git import is_shallow_repo
+from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_is_available, is_shallow_repo
+from riskratchet.scoring import (
+    DEFAULT_WEIGHTS,
+    SCORING_MODEL_VERSION,
+    InvalidWeightsError,
+    resolve_weights,
+)
 from riskratchet.typescript import _require_tree_sitter, iter_typescript_files
 
 # Bound the overlap walk so `doctor` stays sub-second on a monorepo.
@@ -98,6 +109,9 @@ def diagnose(
         checks.append(_check_branch_data(data, coverage_path))
     checks.append(_check_git(config_dir))
     checks.append(_check_shallow_clone(config_dir))
+    checks.append(
+        _check_scoring_model(baseline_file, cfg=cfg, config_dir=config_dir, coverage_path=coverage_path)
+    )
     typescript_check = _check_typescript(baseline_file, paths=paths, enabled=typescript)
     if typescript_check is not None:
         checks.append(typescript_check)
@@ -484,6 +498,99 @@ def _check_git(config_dir: Path) -> DoctorCheck:
             remediation="git init  # or pass --no-git to silence this",
         )
     return DoctorCheck(name="git", status=CheckStatus.PASS, summary="git repo")
+
+
+# `doctor` sees whether a coverage file exists right now; a real run may be about to create one
+# through auto-coverage. Comparing it here would warn about a difference that will not exist by
+# the time anything is scored, and `doctor`'s own coverage row already reports that state.
+_DOCTOR_IGNORES = ("coverage",)
+
+
+def _check_scoring_model(
+    baseline_file: Path,
+    *,
+    cfg: Mapping[str, Any],
+    config_dir: Path,
+    coverage_path: Path | None,
+) -> DoctorCheck:
+    """State what would score this run, and whether the baseline was scored the same way.
+
+    Always present, unlike the conditional TypeScript row: "what produced this number" is
+    the question a ratchet has to be able to answer even when nothing is wrong, and a PASS
+    row naming the model, weight vector and churn window is how an adopter reads the contract
+    they are gating against without running a scan.
+
+    Resolved from config alone — no report is built — so `doctor` stays cheap. That is exactly
+    how a real run resolves the same five inputs, which is what lets this reach the same
+    verdict `check` does; `test_doctor.py` pins the two together.
+
+    WARN, never FAIL: a baseline scored differently makes the comparison untrustworthy, not
+    the project broken, and `doctor` exits non-zero only on FAIL.
+    """
+    raw_weights = cfg.get("weights")
+    try:
+        weights = resolve_weights(raw_weights if isinstance(raw_weights, Mapping) else None)
+    except InvalidWeightsError:
+        # `doctor` reports bad config; it must never *crash* on it. An unknown weight key or a
+        # negative value raises out of `resolve_weights`, and letting that escape would exit 1
+        # on a setup problem — the failure mode this release exists to remove. The config check
+        # already names the offending key, so this row only says why it cannot judge.
+        return DoctorCheck(
+            name="scoring-model",
+            status=CheckStatus.WARN,
+            summary="cannot resolve the scoring weights (see the config check)",
+            remediation="Fix [tool.riskratchet.weights] in pyproject.toml",
+        )
+    churn_days = cfg.get("churn_window_days")
+    current = scoring_block(
+        model=SCORING_MODEL_VERSION,
+        weights=weights,
+        churn_window_days=(
+            churn_days
+            if isinstance(churn_days, int) and not isinstance(churn_days, bool) and churn_days >= 1
+            else DEFAULT_CHURN_WINDOW_DAYS
+        ),
+        churn_available=churn_is_available(config_dir),
+        # Resolved but never compared (see `_DOCTOR_IGNORES`); kept so the block is the same
+        # shape the engine builds, and so a future caller does not have to rediscover the field.
+        coverage="present" if coverage_path is not None and coverage_path.exists() else "missing",
+    )
+    summary = (
+        f"model {current['model']}, "
+        f"{'default weights' if weights == dict(DEFAULT_WEIGHTS) else 'custom weights'}, "
+        f"churn window {current['churn_window_days']}d"
+    )
+    reasons = _persisted_scoring_reasons(baseline_file, current)
+    if reasons is None:
+        return DoctorCheck(name="scoring-model", status=CheckStatus.PASS, summary=summary)
+    if not reasons:
+        return DoctorCheck(
+            name="scoring-model", status=CheckStatus.PASS, summary=f"{summary}; baseline agrees"
+        )
+    return DoctorCheck(
+        name="scoring-model",
+        status=CheckStatus.WARN,
+        summary=f"baseline scored differently: {'; '.join(reasons)}",
+        remediation=f"riskratchet baseline --output {baseline_file}  # once the difference is intended",
+    )
+
+
+def _persisted_scoring_reasons(baseline_file: Path, current: dict[str, Any]) -> list[str] | None:
+    """Differences against the baseline's recorded provenance, or `None` when there is nothing
+    to compare — no baseline, an unreadable one (the baseline check already says so), or a v3
+    file from 0.3.0-0.3.6 that predates the block. An empty list means it agrees."""
+    if not baseline_file.exists():
+        return None
+    try:
+        baseline = load_baseline(baseline_file)
+    except ValueError:
+        return None
+    envelope = scoring_envelope_reason(baseline)
+    if envelope is not None:
+        return [envelope]
+    if not baseline.scoring:
+        return None
+    return scoring_block_differences(baseline.scoring, current, ignore=_DOCTOR_IGNORES)
 
 
 def _check_config(cfg: Mapping[str, Any]) -> DoctorCheck:

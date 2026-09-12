@@ -16,10 +16,11 @@
     WARN  coverage          no coverage file yet; auto-coverage will create .riskratchet/coverage.json
     WARN  git               not a git repo (churn signals disabled)
     PASS  shallow-clone     full history
+    PASS  scoring-model     model 1, default weights, churn window 90d
     WARN  config            no [tool.riskratchet] in pyproject.toml
     PASS  suppressions      0 patterns
   
-  riskratchet: 3 pass, 3 warn, 1 fail (of 7)
+  riskratchet: 4 pass, 3 warn, 1 fail (of 8)
   
   '''
 # ---

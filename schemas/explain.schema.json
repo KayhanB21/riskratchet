@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/KayhanB21/riskratchet/schemas/explain.schema.json",
+  "$id": "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/explain.schema.json",
   "title": "riskratchet explain",
   "description": "Output of `riskratchet explain --json`. The `function` body mirrors the per-function shape used by `scan --json`'s `functions[]` items so consumers can use one parser across both commands.",
   "type": "object",

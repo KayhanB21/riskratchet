@@ -53,6 +53,13 @@ jobs:
         with:
           name: riskratchet-baseline
           path: .riskratchet.json
+          # `.riskratchet.json` is a dotfile, and upload-artifact has excluded hidden files by
+          # default since v4.4 — so this step uploaded nothing while reporting success, and
+          # `gh run download` answered "no valid artifacts found" on a green run. `warn` is
+          # also the default for a missing file, which is how it stayed quiet; `error` means
+          # the next time this uploads nothing, the run says so.
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Push branch and link to a PR
         # Push the regenerated baseline to a branch and print the PR-compare link
         # in the job summary. We deliberately do NOT call `gh pr create`: many orgs

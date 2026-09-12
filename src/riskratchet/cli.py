@@ -20,11 +20,13 @@ from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
     BaselineVersionError,
     baseline_from_report,
+    baseline_scored_without_churn,
     languages_not_scanned,
     load_baseline,
     regressions_above_threshold,
     regressions_from_diff,
     save_baseline,
+    scoring_model_stale,
     suppress_stale_typescript_renames,
     typescript_identity_stale,
     unscanned_baseline_files,
@@ -125,6 +127,7 @@ from riskratchet.reporting import (
     render_report_summary_text,
     render_report_table,
 )
+from riskratchet.schemas import schema_url
 from riskratchet.scoring import severity
 
 VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
@@ -913,7 +916,7 @@ def check(
         ts_entry=ts.entry,
     )
     if old is not None:
-        old, report = _apply_ts_identity_guard(
+        old, report = _apply_baseline_guards(
             old,
             report,
             ts_enabled=ts.enabled,
@@ -1381,7 +1384,7 @@ def diff(
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
     )
-    old, report = _apply_ts_identity_guard(
+    old, report = _apply_baseline_guards(
         old,
         report,
         ts_enabled=ts.enabled,
@@ -1459,7 +1462,7 @@ def diff(
     )
 
 
-DOCTOR_SCHEMA_URL = "https://github.com/KayhanB21/riskratchet/schemas/doctor.schema.json"
+DOCTOR_SCHEMA_URL = schema_url("doctor")
 
 
 @app.command("init")
@@ -2155,23 +2158,38 @@ def _ts_warn(message: str) -> None:
     typer.secho(f"typescript: {message}", fg=typer.colors.YELLOW, err=True)
 
 
+def _rebaseline_command(
+    paths: list[Path],
+    *,
+    baseline_file: Path,
+    typescript: bool = False,
+    ts_coverage: list[Path] | None = None,
+) -> str:
+    """The exact `riskratchet baseline` invocation that regenerates the baseline in hand.
+
+    Reuses the scanned paths, any `--ts-coverage` reports from this run, and
+    `--output <baseline_file>` so the printed line is copy-pasteable as-is. `--typescript`
+    is added only when this run analyzed TypeScript: printing it on a Python-only project
+    would hand the user a command that exits 2 for want of the extra.
+    """
+    paths_str = " ".join(str(path) for path in paths) or "<paths>"
+    command = f"riskratchet baseline {paths_str}"
+    if typescript:
+        command += " --typescript"
+    for coverage in ts_coverage or []:
+        command += f" --ts-coverage {coverage}"
+    command += f" --output {baseline_file}"
+    return command
+
+
 def _ts_rebaseline_command(
     paths: list[Path],
     *,
     baseline_file: Path,
     ts_coverage: list[Path] | None,
 ) -> str:
-    """The exact `riskratchet baseline` invocation that regenerates a stale-TS baseline.
-
-    Reuses the scanned paths, `--typescript`, any `--ts-coverage` reports from this
-    run, and `--output <baseline_file>` so the printed line is copy-pasteable as-is.
-    """
-    paths_str = " ".join(str(path) for path in paths) or "<paths>"
-    command = f"riskratchet baseline {paths_str} --typescript"
-    for coverage in ts_coverage or []:
-        command += f" --ts-coverage {coverage}"
-    command += f" --output {baseline_file}"
-    return command
+    """The stale-TypeScript-grammar case of `_rebaseline_command`, which always names `--typescript`."""
+    return _rebaseline_command(paths, baseline_file=baseline_file, typescript=True, ts_coverage=ts_coverage)
 
 
 def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
@@ -2253,7 +2271,65 @@ def _warn_out_of_root_paths(resolved: list[Path], config_dir: Path) -> None:
         )
 
 
-def _apply_ts_identity_guard(
+def _warn_scoring_provenance(
+    old: Baseline,
+    report: RiskReport,
+    *,
+    paths: list[Path],
+    baseline_file: Path,
+    ts_enabled: bool,
+    ts_coverage: list[Path] | None,
+) -> None:
+    """Say when the baseline's numbers were not produced the way this run produces them.
+
+    A gate compares two scores as if they were measurements of the same thing. They are
+    only comparable when the same scoring model, the same resolved weights, the same churn
+    window, the same churn availability and the same coverage presence produced both — and
+    until 0.3.7 nothing recorded any of that, so a 0.2.x baseline (scored before 0.3.0
+    redefined `sprawl`) gated a 0.3.x run silently and cleanly.
+
+    Warns, never fails. A mismatch makes the comparison untrustworthy, not the code worse,
+    and exiting non-zero here would break every upgrade — the exact outcome the disclosure
+    exists to prevent. Reasons carry configuration only, no paths or qualnames, so they are
+    safe to print with redaction on.
+    """
+    reasons = scoring_model_stale(old, report)
+    if reasons:
+        typer.secho(
+            "warning: the baseline was not scored the way this run scores:",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        for reason in reasons:
+            typer.secho(f"  - {reason}", fg=typer.colors.YELLOW, err=True)
+        typer.secho(
+            "  comparing them anyway; re-baseline once the difference is the one you intended.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    elif baseline_scored_without_churn(old, report):
+        # The one silent-zero a pre-0.3.7 baseline still betrays: churn 0 on every entry
+        # while this run measures real history. Kept separate from the reasons above because
+        # the remedy is the opposite one — re-baselining bakes the dead churn in.
+        typer.secho(
+            "warning: every function in the baseline has zero churn but this run measured some, so "
+            "the baseline was probably written where git history was unavailable — churn will look "
+            "like a regression everywhere.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    else:
+        return
+    typer.secho(
+        "  re-baseline: "
+        + _rebaseline_command(
+            paths, baseline_file=baseline_file, typescript=ts_enabled, ts_coverage=ts_coverage
+        ),
+        err=True,
+    )
+
+
+def _apply_baseline_guards(
     old: Baseline,
     report: RiskReport,
     *,
@@ -2262,7 +2338,11 @@ def _apply_ts_identity_guard(
     baseline_file: Path,
     ts_coverage: list[Path] | None = None,
 ) -> tuple[Baseline, RiskReport]:
-    """When TS is analyzed against a baseline whose recorded TS grammar/scheme differs from the
+    """Every guard that needs both the loaded baseline and the fresh report, applied once for
+    `check` and `diff` alike: the languages the baseline holds but this run did not analyze, the
+    scoring provenance behind the two sets of numbers, and the TypeScript grammar identity.
+
+    When TS is analyzed against a baseline whose recorded TS grammar/scheme differs from the
     runtime's, the persisted TS fingerprints are stale — match TypeScript by id only (never by a
     cross-grammar fingerprint) and tell the user to re-baseline. Python matching is unaffected.
 
@@ -2270,6 +2350,14 @@ def _apply_ts_identity_guard(
     an adopter who bumped `tree-sitter-typescript` can re-baseline in one paste. Stderr-only, so a
     `--json` stdout stays clean."""
     _warn_unratcheted_languages(old, report)
+    _warn_scoring_provenance(
+        old,
+        report,
+        paths=paths,
+        baseline_file=baseline_file,
+        ts_enabled=ts_enabled,
+        ts_coverage=ts_coverage,
+    )
     if not ts_enabled or not typescript_identity_stale(old):
         return old, report
     _ts_warn(
@@ -2787,6 +2875,10 @@ def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | 
         skipped_missing_coverage=report.skipped_missing_coverage,
         analyzed_functions=report.analyzed_functions or len(report.functions),
         skipped_generated_files=report.skipped_generated_files,
+        # Filtering picks a subset of rows to *show*; it does not rescore anything, so the
+        # provenance of the numbers is the same and must survive. Dropping it here would let
+        # `scan --top` write a baseline claiming no provenance at all.
+        scoring=report.scoring,
     )
 
 

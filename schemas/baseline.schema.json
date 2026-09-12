@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/KayhanB21/riskratchet/schemas/baseline.schema.json",
+  "$id": "https://raw.githubusercontent.com/KayhanB21/riskratchet/master/schemas/baseline.schema.json",
   "title": "riskratchet baseline file",
   "description": "Format of `.riskratchet.json` written by `riskratchet baseline`.",
   "type": "object",
@@ -18,6 +18,46 @@
           "scheme": { "type": "integer", "minimum": 1 },
           "grammar": { "type": "string" }
         }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "description": "Baseline v3 (0.3.7): what produced these scores. Written on every baseline, Python-only included, so a run scored under a different model, weight vector, churn window, churn availability, or coverage presence can say the numbers are not comparable instead of gating against them silently. Absent from baselines written before 0.3.7. Configuration only — it carries no path, qualname, or coverage figure, so it is safe to print under redaction.",
+      "required": ["model", "weights", "churn_window_days", "churn_available", "coverage"],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "`scoring.SCORING_MODEL_VERSION`: the scoring algorithm's own identity, bumped only when a change would score identical inputs differently. Not the package version."
+        },
+        "weights": {
+          "type": "object",
+          "description": "The *resolved* weight vector (defaults merged with `[tool.riskratchet.weights]` and renormalized), rounded to 6 decimal places.",
+          "required": [
+            "coverage_gap",
+            "structural_complexity",
+            "branch_gap",
+            "churn",
+            "public_surface",
+            "sprawl"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "coverage_gap": { "type": "number" },
+            "structural_complexity": { "type": "number" },
+            "branch_gap": { "type": "number" },
+            "churn": { "type": "number" },
+            "public_surface": { "type": "number" },
+            "sprawl": { "type": "number" }
+          }
+        },
+        "churn_window_days": { "type": "integer", "minimum": 1 },
+        "churn_available": {
+          "type": "boolean",
+          "description": "False when churn was switched off or no repository was found, in which case every churn component scored 0 regardless of real history."
+        },
+        "coverage": { "enum": ["present", "missing"] }
       }
     },
     "entries": {

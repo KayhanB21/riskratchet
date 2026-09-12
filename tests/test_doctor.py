@@ -28,7 +28,16 @@ from riskratchet.doctor import CheckStatus, DoctorCheck, _check_baseline, diagno
 runner = CliRunner()
 
 # Emitted on every run, in this order, regardless of project shape.
-ALWAYS_PRESENT_CHECKS = ("paths", "baseline", "coverage", "git", "shallow-clone", "config", "suppressions")
+ALWAYS_PRESENT_CHECKS = (
+    "paths",
+    "baseline",
+    "coverage",
+    "git",
+    "shallow-clone",
+    "scoring-model",
+    "config",
+    "suppressions",
+)
 
 # Read from the schema so the code and the published contract cannot drift.
 SCHEMA_CHECK_NAMES: tuple[str, ...] = tuple(

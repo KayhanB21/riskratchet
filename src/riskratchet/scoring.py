@@ -20,6 +20,19 @@ from riskratchet.models import (
     Severity,
 )
 
+# The scoring model's own version: bump it whenever a change here would produce a
+# different score for identical inputs — a component formula, a saturation threshold,
+# a calibration band, or the set of components itself. It is NOT the package version
+# and it does not move on a release that only changes reporting, config, or plumbing.
+#
+# `1` is the 0.3.x scorer: the model 0.3.0 established when it redefined `sprawl`
+# (CHANGELOG "Baselines must be regenerated"). Baselines written before that carry
+# envelope v1/v2, which is how a pre-0.3.0 file is recognized — see
+# `baseline.io.scoring_model_stale`. A bump here makes every persisted score
+# incomparable, so it travels with a **Breaking** CHANGELOG entry and a release note
+# telling adopters to re-baseline.
+SCORING_MODEL_VERSION = 1
+
 # Default weights for the six risk components. They sum to 1.0 so the total
 # risk score stays bounded in [0, 100] when each component is also in [0, 100].
 # Callers can override individual weights via `[tool.riskratchet.weights]` in
