@@ -21,6 +21,7 @@ from riskratchet.init import (
     InitOutcome,
     RunnerKind,
     detect_python,
+    detect_scan_path,
     detect_test_runner,
     detect_typescript,
     next_steps,
@@ -405,3 +406,145 @@ def test_next_steps_install_the_extra_first_and_name_only_the_reports_the_tree_n
     assert any(step.startswith("pytest --cov") for step in mixed)
     assert mixed[-1] == "riskratchet check src --coverage coverage.json --ts-coverage coverage/lcov.info"
     assert len(next_steps(typescript=False, python=True)) == 3
+
+
+def test_render_ci_snippet_writes_the_coverage_it_names() -> None:
+    """Every rendering must produce `coverage.json` before handing it to the action.
+
+    Through 0.3.6 the snippet named `coverage: coverage.json` with no step that wrote it,
+    so the documented first run was exit 2: a named-but-missing report is a setup error,
+    and dropping the input instead falls back to auto-coverage, which shells out to a
+    `pytest` the action's `uv tool install` environment does not have.
+    """
+    import yaml
+
+    for runner in RunnerKind:
+        steps = yaml.safe_load(render_ci_snippet(runner=runner))
+        writers = [s for s in steps if isinstance(s, dict) and "coverage.json" in str(s.get("run", ""))]
+        assert writers, f"{runner.value}: nothing writes coverage.json"
+
+
+def test_render_ci_snippet_matches_the_detected_runner() -> None:
+    """A unittest project must not be handed a pytest command.
+
+    `init` already knows the runner (it prints it), so the snippet uses the same
+    detection the "Next:" steps do rather than assuming pytest for everyone.
+    """
+    import yaml
+
+    pytest_runs = " ".join(
+        str(s.get("run", "")) for s in yaml.safe_load(render_ci_snippet(runner=RunnerKind.PYTEST))
+    )
+    unittest_runs = " ".join(
+        str(s.get("run", "")) for s in yaml.safe_load(render_ci_snippet(runner=RunnerKind.UNITTEST))
+    )
+    assert "pytest --cov" in pytest_runs
+    assert "unittest discover" in unittest_runs
+    assert "pytest" not in unittest_runs
+
+
+def test_render_ci_snippet_typescript_adds_node_and_ts_inputs() -> None:
+    """A TypeScript tree needs a runner that writes lcov and the inputs to read it."""
+    import yaml
+
+    steps = yaml.safe_load(render_ci_snippet(typescript=True))
+    action = next(s for s in steps if "riskratchet@" in str(s.get("uses", "")))
+    assert action["with"]["typescript"] == "true"
+    assert action["with"]["ts-coverage"] == "coverage/lcov.info"
+    assert any("setup-node" in str(s.get("uses", "")) for s in steps)
+    # The Python half stays: a mixed repo still needs coverage.json.
+    assert action["with"]["coverage"] == "coverage.json"
+
+
+def test_render_ci_snippet_is_valid_yaml_step_list() -> None:
+    """The snippet is pasted under `steps:`; if it does not parse, nothing else matters."""
+    import yaml
+
+    for runner in RunnerKind:
+        for typescript in (False, True):
+            steps = yaml.safe_load(render_ci_snippet(runner=runner, typescript=typescript))
+            assert isinstance(steps, list) and steps
+            assert all(isinstance(step, dict) for step in steps)
+
+
+def test_detect_scan_path_prefers_src_then_lib(tmp_path: Path) -> None:
+    assert detect_scan_path(tmp_path) is None
+    (tmp_path / "lib").mkdir()
+    assert detect_scan_path(tmp_path) == "lib"
+    (tmp_path / "src").mkdir()
+    assert detect_scan_path(tmp_path) == "src"
+
+
+def test_detect_scan_path_finds_a_flat_layout_by_project_name(tmp_path: Path) -> None:
+    """`myapp/` beside a `[project] name = "myapp"` is the other common convention."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "my-app"\nversion = "0.1.0"\n', encoding="utf-8"
+    )
+    (tmp_path / "my_app").mkdir()
+    assert detect_scan_path(tmp_path) == "my_app"
+
+
+def test_detect_scan_path_finds_a_single_obvious_package(tmp_path: Path) -> None:
+    pkg = tmp_path / "myapp"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    assert detect_scan_path(tmp_path) == "myapp"
+
+
+def test_detect_scan_path_refuses_to_guess_between_several_packages(tmp_path: Path) -> None:
+    """Several candidates is a guess, and guessing would silently gate a fraction of the
+    repo. `init` warns and scaffolds the convention instead of picking one."""
+    for name in ("alpha", "beta"):
+        pkg = tmp_path / name
+        pkg.mkdir()
+        (pkg / "__init__.py").write_text("", encoding="utf-8")
+    assert detect_scan_path(tmp_path) is None
+
+
+def test_detect_scan_path_ignores_dot_directories(tmp_path: Path) -> None:
+    hidden = tmp_path / ".venv"
+    hidden.mkdir()
+    (hidden / "__init__.py").write_text("", encoding="utf-8")
+    assert detect_scan_path(tmp_path) is None
+
+
+def test_init_scaffolds_the_detected_path_not_a_hardcoded_src(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The scaffolded config must work on the repo it was scaffolded into.
+
+    Through 0.3.6 `init` wrote `paths = ["src"]` on a flat layout, so `riskratchet
+    baseline` — the next step `init` itself prints — exited 2 on a config `init` had just
+    written.
+    """
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "myapp"\nversion = "0.1.0"\n', encoding="utf-8"
+    )
+    pkg = tmp_path / "myapp"
+    pkg.mkdir()
+    (pkg / "core.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    result = runner.invoke(app, ["init", "--no-snippet", "--no-baseline"])
+    assert result.exit_code == 0, result.output
+    written = (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'paths = ["myapp"]' in written
+    assert 'paths = ["src"]' not in written
+    assert "riskratchet baseline myapp" in result.output
+
+
+def test_init_says_so_when_it_has_to_guess(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A project with nothing to scan yet is a legitimate `init` — so scaffold the
+    convention, but do not let the user discover the guess two commands later."""
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(app, ["init", "--no-snippet", "--no-baseline"])
+    assert result.exit_code == 0, result.output
+    assert 'paths = ["src"]' in (tmp_path / "pyproject.toml").read_text(encoding="utf-8")
+    assert "is a guess" in result.stderr, result.stderr
+
+
+def test_init_stays_quiet_when_it_detected_the_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    result = runner.invoke(app, ["init", "--no-snippet", "--no-baseline"])
+    assert result.exit_code == 0, result.output
+    assert "is a guess" not in result.stderr

@@ -11,7 +11,13 @@ inputs:
     required: false
     default: ''
   coverage:
-    description: 'Path to coverage.json. Optional; auto-coverage runs if absent.'
+    description: |
+      Path to a coverage.json your workflow already wrote. A path named here must exist —
+      a missing one is exit 2, not a silent zero-coverage score. Leaving this empty falls
+      back to auto-coverage, which shells out to `pytest`; that is NOT on the PATH of the
+      `uv tool install` environment this action creates, so an empty value only works for
+      a project with no Python under its scan paths. In short: add a step that writes the
+      report before this one. See the workflow in the README.
     required: false
     default: ''
   typescript:
@@ -165,6 +171,22 @@ runs:
         riskratchet "${args[@]}" > riskratchet-comment.md
         status=$?
         echo "status=$status" >> "$GITHUB_OUTPUT"
+        # A setup error (exit 2) raises before the CLI renders anything, so everything it
+        # said went to stderr and this file is zero bytes. Left empty, the upsert step
+        # below hands `gh` an empty body, GitHub rejects it 422, `set -e` kills the job
+        # there, and the "Surface riskratchet exit status" step never runs — so the one
+        # thing the adopter needed to see, the exit code and its remediation, is the one
+        # thing that gets swallowed. Write a real body instead. The marker must lead: the
+        # upsert matches on it, and a body without it orphans the sticky comment forever.
+        if [ ! -s riskratchet-comment.md ]; then
+          {
+            printf '%s\n\n' '<!-- riskratchet-report -->'
+            printf '### riskratchet could not run\n\n'
+            printf 'riskratchet exited **%s** (setup error) before it could score anything, ' "$status"
+            printf 'so this is not a risk verdict.\n\n'
+            printf 'The cause is in the job log, under the **%s** step.\n' "riskratchet check"
+          } > riskratchet-comment.md
+        fi
         echo "::group::riskratchet output"
         cat riskratchet-comment.md
         echo "::endgroup::"
@@ -179,6 +201,13 @@ runs:
         REPO: ${{ github.repository }}
       run: |
         set -euo pipefail
+        # Never hand `gh` an empty body: it is rejected 422, which fails this step and
+        # skips the exit-status step after it. The check step above guarantees a non-empty
+        # body, so this is a belt on top of that brace.
+        if [ ! -s riskratchet-comment.md ]; then
+          echo "riskratchet: no comment body to post; skipping upsert." >&2
+          exit 0
+        fi
         # Match the existing riskratchet comment (if any) by the marker the
         # CLI emits so we update in place instead of spamming a new one each
         # push.
@@ -193,9 +222,18 @@ runs:
         fi
 
     - name: Surface riskratchet exit status
+      # `always()` so an upsert failure cannot swallow the exit code — but guarded on a
+      # status that actually exists, because without the guard a failure in an *earlier*
+      # step (install, or the input validation above) would leave `status` empty and this
+      # step would annotate someone else's failure as "riskratchet exited ".
+      if: always() && steps.ratchet.outputs.status != ''
       shell: bash
       run: |
         status='${{ steps.ratchet.outputs.status }}'
+        # Belt for the brace above: expressions and the script drift easily.
+        if [ -z "$status" ]; then
+          exit 0
+        fi
         if [ "$status" != "0" ]; then
           echo "::error::riskratchet exited $status — see PR comment for details."
           exit "$status"

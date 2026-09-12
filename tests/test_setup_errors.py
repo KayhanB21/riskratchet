@@ -16,6 +16,7 @@ invariant — not the exact wording of the headline.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from textwrap import dedent
@@ -1407,3 +1408,63 @@ def test_a_named_python_report_keeps_its_verdict_on_a_typescript_only_tree(
     assert marker in result.stderr
     if exit_code == 0:
         assert "Python coverage not applicable" in result.stderr
+
+
+def test_baseline_says_so_when_it_writes_an_empty_baseline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A zero-function baseline is an inert ratchet, and `baseline` used to report it
+    as an ordinary success: "wrote baseline with 0 functions", exit 0, nothing else.
+
+    Every later `check` then prints "No risk regressions detected" and exits 0 forever.
+    `check` has warned about the same condition since 0.3.4 (`_warn_empty_scan`); the
+    command that *creates* it was the one place that stayed quiet.
+    """
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "README.md").write_text("no python here\n", encoding="utf-8")
+    result = runner.invoke(
+        app,
+        ["baseline", "src", "--no-auto-cov", "--no-git", "--allow-missing-coverage"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "wrote baseline with 0 functions" in result.output
+    assert "will pass unconditionally" in result.stderr, result.stderr
+
+
+def test_baseline_stays_quiet_when_it_finds_functions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The warning must not fire on the ordinary path."""
+    monkeypatch.chdir(tmp_path)
+    src = _project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["baseline", str(src), "--no-auto-cov", "--no-git", "--allow-missing-coverage"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "will pass unconditionally" not in result.stderr
+
+
+def test_init_with_baseline_exits_2_when_coverage_cannot_be_produced(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Exit 1 means a gate tripped. `init` gates nothing.
+
+    When the test command cannot produce coverage, `init --with-baseline` used to exit 1,
+    against AGENTS.md's "never let an I/O failure exit 1" — and against the very next line
+    of the same function, where `_save_baseline_or_exit` has always exited 2.
+    """
+    monkeypatch.chdir(tmp_path)
+    _project(tmp_path)
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "x"\nversion = "0.1.0"\n', encoding="utf-8")
+    # A `pytest` on PATH that fails and writes no coverage.json.
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    stub = bin_dir / "pytest"
+    stub.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+    stub.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}")
+    result = runner.invoke(app, ["init", "--with-baseline", "--no-snippet"])
+    assert result.exit_code == 2, (result.exit_code, result.output, result.stderr)
+    assert "baseline skipped" in result.stderr

@@ -26,6 +26,7 @@ STARTER_BLOCK = """[tool.riskratchet]
 paths = ["src"]
 """
 
+
 # The starter for a tree with TypeScript under `src`: the key the Action, the pytest
 # plugin, and every command read (since 0.3.6), plus the report hint as a comment
 # because `init` does not know which runner will write it.
@@ -42,6 +43,59 @@ typescript = true
 # whole project would descend into `node_modules` and flag a Python repo's docs tooling.
 _STARTER_PATH = "src"
 
+# Fallback scan-path candidates, in order, when `src/` does not exist. Deliberately a
+# bounded list and not a walk: `init` must not descend into `node_modules` (see above),
+# and a walk on a large repo would pick something arbitrary. `lib` covers the other common
+# convention; the project's own `[project] name` covers a flat layout (`myapp/myapp.py`);
+# the depth-1 package scan covers everything else that looks like a Python package.
+_FALLBACK_SCAN_DIRS = ("src", "lib")
+
+
+def detect_scan_path(config_dir: Path) -> str | None:
+    """The directory `init` should scaffold as `paths`, or None when nothing fits.
+
+    Through 0.3.6 `init` wrote `paths = ["src"]` unconditionally. On a flat-layout repo
+    (`myapp/`, no `src/`) that config is broken the moment it is written: the very next
+    command `init` tells the user to run — `riskratchet baseline` — exits 2 with "scan
+    paths ... do not exist: src". Scaffolding a path that is not there is not a default,
+    it is a wrong answer, so `init` now looks before it writes.
+    """
+    for candidate in _FALLBACK_SCAN_DIRS:
+        if (config_dir / candidate).is_dir():
+            return candidate
+    named = _project_name_dir(config_dir)
+    if named is not None:
+        return named
+    packages = sorted(
+        entry.name
+        for entry in config_dir.iterdir()
+        if entry.is_dir() and not entry.name.startswith(".") and (entry / "__init__.py").is_file()
+    )
+    # Exactly one obvious package is an answer; several is a guess, and `init` should ask
+    # rather than pick one and quietly gate a third of the repo.
+    if len(packages) == 1:
+        return packages[0]
+    return None
+
+
+def _project_name_dir(config_dir: Path) -> str | None:
+    """`[project] name` as a directory, when it exists — the flat-layout convention."""
+    pyproject = config_dir / "pyproject.toml"
+    if not pyproject.is_file():
+        return None
+    try:
+        data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return None
+    name = data.get("project", {}).get("name")
+    if not isinstance(name, str):
+        return None
+    for candidate in (name, name.replace("-", "_")):
+        if (config_dir / candidate).is_dir():
+            return candidate
+    return None
+
+
 _PYTEST_COV = "pytest --cov --cov-branch --cov-report=json:coverage.json -q"
 _VITEST_COV = (
     "npx vitest run --coverage --coverage.reporter=lcov  # or c8/nyc/jest: lcov.info or coverage-final.json"
@@ -57,6 +111,12 @@ ACTION_REF = "v0.3.6"
 # trailing comment names the human-readable tag for the next bump.
 _CHECKOUT_PIN = "11bd71901bbe5b1630ceea73d27597364c9af683"  # v4.2.2
 _CHECKOUT_TAG = "v4.2.2"
+_SETUP_PYTHON_PIN = "5fda3b95a4ea91299a34e894583c3862153e4b97"  # v7.0.0
+_SETUP_PYTHON_TAG = "v7.0.0"
+_SETUP_NODE_PIN = "a0853c24544627f65ddf259abe73b1d18a591444"  # v5.0.0
+_SETUP_NODE_TAG = "v5.0.0"
+_PYTHON_VERSION = "3.12"
+_NODE_VERSION = "22"
 
 
 class InitOutcome(str, Enum):
@@ -76,7 +136,9 @@ class RunnerKind(str, Enum):
     UNKNOWN = "unknown"
 
 
-def write_starter_config(pyproject: Path, *, force: bool, typescript: bool = False) -> InitOutcome:
+def write_starter_config(
+    pyproject: Path, *, force: bool, typescript: bool = False, scan_path: str = _STARTER_PATH
+) -> InitOutcome:
     """Write or refresh the `[tool.riskratchet]` block in `pyproject.toml`.
 
     Without `force`, existing configuration is preserved (no-op return
@@ -85,7 +147,7 @@ def write_starter_config(pyproject: Path, *, force: bool, typescript: bool = Fal
     intact. Other sections of `pyproject.toml` are never touched.
     `typescript` selects the starter that turns the TypeScript backend on.
     """
-    block = starter_block(typescript=typescript)
+    block = starter_block(typescript=typescript, scan_path=scan_path)
     if not pyproject.exists():
         pyproject.write_text(block, encoding="utf-8")
         return InitOutcome.CREATED
@@ -104,12 +166,18 @@ def write_starter_config(pyproject: Path, *, force: bool, typescript: bool = Fal
     return InitOutcome.APPENDED
 
 
-def starter_block(*, typescript: bool) -> str:
-    """The `[tool.riskratchet]` block `init` writes; Python-only output is unchanged."""
-    return STARTER_BLOCK_TYPESCRIPT if typescript else STARTER_BLOCK
+def starter_block(*, typescript: bool, scan_path: str = _STARTER_PATH) -> str:
+    """The `[tool.riskratchet]` block `init` writes; the `src` rendering is unchanged."""
+    block = STARTER_BLOCK_TYPESCRIPT if typescript else STARTER_BLOCK
+    if scan_path == _STARTER_PATH:
+        return block
+    return block.replace(f'paths = ["{_STARTER_PATH}"]', f'paths = ["{scan_path}"]').replace(
+        f"TypeScript files were found under {_STARTER_PATH}.",
+        f"TypeScript files were found under {scan_path}.",
+    )
 
 
-def detect_typescript(config_dir: Path) -> bool:
+def detect_typescript(config_dir: Path, scan_path: str = _STARTER_PATH) -> bool:
     """True when the starter scan path holds TypeScript files.
 
     Discovery only — `iter_typescript_files` imports without the `[typescript]` extra,
@@ -118,23 +186,23 @@ def detect_typescript(config_dir: Path) -> bool:
     """
     from riskratchet.typescript import iter_typescript_files
 
-    starter = config_dir / _STARTER_PATH
+    starter = config_dir / scan_path
     if not starter.is_dir():
         return False
     return bool(iter_typescript_files([starter], root=config_dir))
 
 
-def detect_python(config_dir: Path) -> bool:
+def detect_python(config_dir: Path, scan_path: str = _STARTER_PATH) -> bool:
     """True when the starter scan path holds Python files."""
     from riskratchet.analysis import iter_python_files
 
-    starter = config_dir / _STARTER_PATH
+    starter = config_dir / scan_path
     if not starter.is_dir():
         return False
     return bool(iter_python_files([starter], root=config_dir))
 
 
-def next_steps(*, typescript: bool, python: bool) -> list[str]:
+def next_steps(*, typescript: bool, python: bool, scan_path: str = _STARTER_PATH) -> list[str]:
     """The "Next:" list `init` prints when it did not run the baseline itself.
 
     Python-only trees (and empty ones) get the same three lines as before 0.3.6. A tree
@@ -144,8 +212,8 @@ def next_steps(*, typescript: bool, python: bool) -> list[str]:
     if not typescript:
         return [
             _PYTEST_COV,
-            f"riskratchet baseline {_STARTER_PATH} --coverage coverage.json",
-            f"riskratchet check {_STARTER_PATH} --coverage coverage.json",
+            f"riskratchet baseline {scan_path} --coverage coverage.json",
+            f"riskratchet check {scan_path} --coverage coverage.json",
         ]
     reports = " --ts-coverage coverage/lcov.info"
     if python:
@@ -154,8 +222,8 @@ def next_steps(*, typescript: bool, python: bool) -> list[str]:
     if python:
         steps.append(_PYTEST_COV)
     steps.append(_VITEST_COV)
-    steps.append(f"riskratchet baseline {_STARTER_PATH}{reports}")
-    steps.append(f"riskratchet check {_STARTER_PATH}{reports}")
+    steps.append(f"riskratchet baseline {scan_path}{reports}")
+    steps.append(f"riskratchet check {scan_path}{reports}")
     return steps
 
 
@@ -175,25 +243,79 @@ def detect_test_runner(config_dir: Path) -> RunnerKind:
     return RunnerKind.UNKNOWN
 
 
-def render_ci_snippet(ref: str = ACTION_REF) -> str:
-    """Return the two-step CI snippet for the P27 composite action.
+def _coverage_run_step(runner: RunnerKind) -> list[str]:
+    """The lines that actually produce `coverage.json`, keyed by the detected runner.
+
+    This exists because the snippet shipped through 0.3.6 had *no* coverage step at all:
+    the action was handed `coverage: coverage.json`, a file nothing in the workflow wrote,
+    and a named-but-missing report is exit 2 by design. Dropping the input instead is also
+    exit 2, because auto-coverage shells out to `pytest`, which is not on the PATH of the
+    `uv tool install riskratchet` environment the action creates. So the workflow has to
+    write the report itself, and `init` has to say so in the runner the project uses —
+    printing `pytest --cov` to a unittest project would just move the failure.
+    """
+    if runner is RunnerKind.UNITTEST:
+        return [
+            "- run: |",
+            "    coverage run -m unittest discover",
+            "    coverage json -o coverage.json",
+        ]
+    step = [f"- run: {_PYTEST_COV}"]
+    if runner is RunnerKind.UNKNOWN:
+        step.insert(0, "# No test runner detected; this assumes pytest — swap in your own")
+        step.insert(1, "# command, as long as it writes coverage.json.")
+    return step
+
+
+def render_ci_snippet(
+    ref: str = ACTION_REF,
+    *,
+    runner: RunnerKind = RunnerKind.PYTEST,
+    typescript: bool = False,
+) -> str:
+    """Return the CI snippet for the P27 composite action.
 
     `ref` defaults to `ACTION_REF` (the release tag), not the runtime
     `__version__`, so a user running `init` on an unreleased build
     still gets a snippet pinning the tag that will exist at release.
+
+    `runner` and `typescript` come from the same detection `next_steps` uses, so the
+    snippet and the manual steps never prescribe different commands.
     """
-    return (
-        "# Add this to .github/workflows/riskratchet.yml:\n"
-        f"- uses: actions/checkout@{_CHECKOUT_PIN}  # {_CHECKOUT_TAG}\n"
-        "  with:\n"
-        "    # Full history: churn uses `git log --since`, which on the default\n"
-        "    # shallow (depth-1) clone sees only HEAD and silently scores every\n"
-        "    # function's churn as zero — so CI would disagree with your baseline.\n"
-        "    fetch-depth: 0\n"
-        f"- uses: KayhanB21/riskratchet@{ref}\n"
-        "  with:\n"
-        "    coverage: coverage.json\n"
-    )
+    lines = [
+        "# Add this to .github/workflows/riskratchet.yml:",
+        f"- uses: actions/checkout@{_CHECKOUT_PIN}  # {_CHECKOUT_TAG}",
+        "  with:",
+        "    # Full history: churn uses `git log --since`, which on the default",
+        "    # shallow (depth-1) clone sees only HEAD and silently scores every",
+        "    # function's churn as zero — so CI would disagree with your baseline.",
+        "    fetch-depth: 0",
+        f"- uses: actions/setup-python@{_SETUP_PYTHON_PIN}  # {_SETUP_PYTHON_TAG}",
+        "  with:",
+        f"    python-version: '{_PYTHON_VERSION}'",
+        "# Install your project and its test dependencies however you normally do:",
+        "- run: pip install -e '.[dev]'",
+    ]
+    lines += _coverage_run_step(runner)
+    if typescript:
+        lines += [
+            f"- uses: actions/setup-node@{_SETUP_NODE_PIN}  # {_SETUP_NODE_TAG}",
+            "  with:",
+            f"    node-version: '{_NODE_VERSION}'",
+            "- run: npm ci",
+            f"- run: {_VITEST_COV}",
+        ]
+    lines += [
+        f"- uses: KayhanB21/riskratchet@{ref}",
+        "  with:",
+        "    coverage: coverage.json",
+    ]
+    if typescript:
+        lines += [
+            "    typescript: 'true'",
+            "    ts-coverage: coverage/lcov.info",
+        ]
+    return "\n".join(lines) + "\n"
 
 
 def _has_section(text: str) -> bool:
