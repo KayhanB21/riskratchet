@@ -54,6 +54,50 @@ def _make_buffered_console() -> tuple[StringIO, Console]:
     return buf, Console(file=buf, force_terminal=False, color_system=None, width=120)
 
 
+def _regression_group(reg: Regression) -> str | None:
+    return reg.current.group if reg.current is not None else None
+
+
+def _add_delta_columns(table: Table, lead: str, *, show_group: bool) -> None:
+    """Declare the shared column set of the regressions and diff tables.
+
+    The terminal twin of markdown's `_table_header`: the two tables differ only in the
+    name of their first column, and declaring them separately is how a Group column
+    added to the rows could end up missing from one header and misaligning every cell
+    after it.
+    """
+    table.add_column(lead)
+    if show_group:
+        table.add_column("Group")
+    table.add_column("Function", no_wrap=True)
+    table.add_column("Before", justify="right")
+    table.add_column("After", justify="right")
+    table.add_column("Delta", justify="right")
+    table.add_column("Reason")
+
+
+def _with_group(lead: list[str], group: str | None, rest: list[str], *, show_group: bool) -> list[str]:
+    """Assemble a table row with the optional Group cell in the position the header uses.
+
+    One assembler for all three tables, so a row cannot put the cell somewhere the
+    header did not and misalign everything after it.
+    """
+    return [*lead, group or "ungrouped", *rest] if show_group else [*lead, *rest]
+
+
+def _shows_group(groups: Iterable[str | None]) -> bool:
+    """Whether a terminal table should carry a Group column.
+
+    Only when `[tool.riskratchet.groups]` actually placed something. The markdown and
+    PR-comment tables carry the column unconditionally — width there is free — but a
+    Rich table has an 80-column budget it already spends on a `no_wrap` Function cell
+    holding a full `path::qualname`. Adding a column of "ungrouped" to every run would
+    squeeze the one cell the reader came for, so the column appears exactly when it
+    carries information.
+    """
+    return any(group for group in groups)
+
+
 def render_report_table(
     report: RiskReport,
     *,
@@ -64,6 +108,7 @@ def render_report_table(
     sorted_fns = _sorted_by_risk(report.functions)
     displayed = sorted_fns if limit is None else sorted_fns[:limit]
 
+    show_group = _shows_group(fn.group for fn in report.functions)
     buf, console = _make_buffered_console()
     table = Table(title="riskratchet scan", show_header=True, header_style="bold")
     table.add_column("Sev")
@@ -72,20 +117,27 @@ def render_report_table(
     table.add_column("CC", justify="right")
     table.add_column("LCov %", justify="right")
     table.add_column("BCov %", justify="right")
+    if show_group:
+        table.add_column("Group")
     table.add_column("Function")
     table.add_column("Lines", justify="right")
 
     for fn in displayed:
         sev = severity(fn.score)
         table.add_row(
-            f"[{_SEVERITY_STYLE[sev]}]{sev.value}[/]",
-            f"{fn.score:.1f}",
-            f"{fn.crap:.1f}",
-            str(fn.complexity.cyclomatic),
-            f"{fn.coverage.line_coverage * 100:.0f}",
-            _branch_cell(fn),
-            fn.id.as_target(),
-            f"{fn.span.start_line}-{fn.span.end_line}",
+            *_with_group(
+                [
+                    f"[{_SEVERITY_STYLE[sev]}]{sev.value}[/]",
+                    f"{fn.score:.1f}",
+                    f"{fn.crap:.1f}",
+                    str(fn.complexity.cyclomatic),
+                    f"{fn.coverage.line_coverage * 100:.0f}",
+                    _branch_cell(fn),
+                ],
+                fn.group,
+                [fn.id.as_target(), f"{fn.span.start_line}-{fn.span.end_line}"],
+                show_group=show_group,
+            )
         )
     console.print(table)
     if limit is not None and len(sorted_fns) > limit:
@@ -128,21 +180,23 @@ def render_regressions_table(
         console.print("[green]No risk regressions detected.[/]")
         _print_baseline_line(console, diff_report)
         return buf.getvalue()
+    show_group = _shows_group(_regression_group(reg) for reg in regressions)
     table = Table(title="riskratchet regressions", show_header=True, header_style="bold red")
-    table.add_column("Kind")
-    table.add_column("Function", no_wrap=True)
-    table.add_column("Before", justify="right")
-    table.add_column("After", justify="right")
-    table.add_column("Delta", justify="right")
-    table.add_column("Reason")
+    _add_delta_columns(table, "Kind", show_group=show_group)
     for reg in regressions:
         table.add_row(
-            reg.kind.value,
-            reg.id.as_target(),
-            _fmt_optional(reg.previous_score),
-            f"{reg.current_score:.1f}",
-            _fmt_optional(reg.delta, signed=True),
-            reg.reason,
+            *_with_group(
+                [reg.kind.value],
+                _regression_group(reg),
+                [
+                    reg.id.as_target(),
+                    _fmt_optional(reg.previous_score),
+                    f"{reg.current_score:.1f}",
+                    _fmt_optional(reg.delta, signed=True),
+                    reg.reason,
+                ],
+                show_group=show_group,
+            )
         )
     console.print(table)
     _print_baseline_line(console, diff_report)
@@ -201,21 +255,23 @@ def render_regressions_summary_text(
 
 def render_diff_table(report: DiffReport, *, links: SourceLinks | None = None) -> str:
     buf, console = _make_buffered_console()
+    show_group = _shows_group(entry.group for entry in report.entries)
     table = Table(title="riskratchet diff", show_header=True, header_style="bold")
-    table.add_column("Status")
-    table.add_column("Function", no_wrap=True)
-    table.add_column("Before", justify="right")
-    table.add_column("After", justify="right")
-    table.add_column("Delta", justify="right")
-    table.add_column("Reason")
+    _add_delta_columns(table, "Status", show_group=show_group)
     for entry in report.entries:
         table.add_row(
-            entry.status.value,
-            entry.id.as_target(),
-            _fmt_optional(entry.previous_score),
-            _fmt_optional(entry.current_score),
-            _fmt_optional(entry.delta, signed=True),
-            entry.reason,
+            *_with_group(
+                [entry.status.value],
+                entry.group,
+                [
+                    entry.id.as_target(),
+                    _fmt_optional(entry.previous_score),
+                    _fmt_optional(entry.current_score),
+                    _fmt_optional(entry.delta, signed=True),
+                    entry.reason,
+                ],
+                show_group=show_group,
+            )
         )
     console.print(table)
     if links is not None:

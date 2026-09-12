@@ -35,6 +35,10 @@
         "typescript",
         "ts_coverage",
         "ts_entry",
+        "redact_paths",
+        "redact_qualnames",
+        "private_comment",
+        "redact_salt",
         "weights",
         "groups"
       ],
@@ -65,6 +69,10 @@
         "typescript": { "type": "boolean" },
         "ts_coverage": { "type": "array", "items": { "type": "string" } },
         "ts_entry": { "type": "array", "items": { "type": "string" } },
+        "redact_paths": { "type": "boolean" },
+        "redact_qualnames": { "type": "boolean" },
+        "private_comment": { "type": "boolean" },
+        "redact_salt": { "type": "string", "enum": ["present", "absent"] },
         "weights": {
           "type": "object",
           "required": [

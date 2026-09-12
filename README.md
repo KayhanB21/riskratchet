@@ -619,6 +619,10 @@ value shown):
 - `--riskratchet-typescript` / `--riskratchet-no-typescript` (default: `typescript`, else off; since 0.3.6)
 - `--riskratchet-ts-coverage` (default: `ts_coverage`; repeatable; since 0.3.6)
 - `--riskratchet-ts-entry` (default: `ts_entry`; repeatable; since 0.3.6)
+- `--riskratchet-no-redact-paths`, `--riskratchet-no-redact-qualnames`,
+  `--riskratchet-no-private-comment`, `--riskratchet-no-allow-missing-coverage`
+  (since 0.3.7) — the plugin has no positive form for these config-only settings, but a
+  setting config can turn on must be one a flag can turn back off at every door
 
 Since 0.3.6 the plugin scores TypeScript exactly as `riskratchet check` does — same
 `[typescript]` extra, same rule for a missing report (the session fails unless
@@ -783,6 +787,16 @@ riskratchet scan src --coverage coverage.json --min-score 50     # hide lower-ri
 riskratchet scan src --coverage coverage.json --top 10           # emit only the top N
 ```
 
+**Group and Language columns (since 0.3.7).** Every per-row table — the three
+terminal tables, both markdown tables, and the PR comment — carries a `Group`
+column when `[tool.riskratchet.groups]` actually placed something, and a
+`Language` column when a non-Python function is in the table. A column appears
+when it carries information, so an ungrouped Python-only repo gets the output it
+got on 0.3.6, byte for byte. Before 0.3.7 the group column existed in exactly
+one of those six tables, where it printed a column of `ungrouped` whether or not
+groups were configured. The `group` and `language` fields have been in `--json`
+since 0.3.0 and are unchanged.
+
 SARIF intentionally has a narrower contract than native JSON: `scan --format
 sarif` emits current findings after the same score filter used for
 annotations, while `check --format sarif` and `diff --format sarif` emit only
@@ -870,6 +884,21 @@ riskratchet check src --coverage coverage.json --redact-qualnames   # hash funct
 riskratchet check src --coverage coverage.json --private-comment    # both + drop source links
 ```
 
+Each has an off-switch, so a setting turned on in `[tool.riskratchet]` can be
+turned back off for a single run (since 0.3.7):
+
+```bash
+riskratchet check src --no-redact-paths        # show real paths this run
+riskratchet check src --no-redact-qualnames    # show real qualnames this run
+riskratchet check src --no-private-comment     # drop the preset, keep the individual keys
+```
+
+`--no-private-comment` turns off the *preset*, not the two keys underneath it: a
+config that sets `redact_paths` on its own still redacts paths. In the other
+direction an explicit `--no-redact-paths` beats an active preset, so no
+combination of config and flags leaves redaction stuck on. `baseline`, `check`
+and `diff` carry `--no-allow-missing-coverage` on the same rule.
+
 **Salt.** Hashes are salted, with this precedence: `--redact-salt TEXT`, then
 `RISKRATCHET_REDACT_SALT`, then `[tool.riskratchet] redact_salt`. With none set,
 the salt is derived from the commit (`GITHUB_REPOSITORY`@`GITHUB_SHA`, else
@@ -893,6 +922,15 @@ riskratchet config show --config pyproject.toml --json
 
 `config validate` exits `2` for malformed TOML, unknown keys, invalid value
 types, or invalid groups.
+
+`config show` reports every key `[tool.riskratchet]` accepts, as this build
+resolved it. Since 0.3.7 that includes the four redaction settings, which were
+the only accepted keys the payload omitted. `redact_salt` is reported as
+`"present"` or `"absent"` and never as its value: `config show --json` lands in
+CI logs and bug reports, and a reader holding the salt can reproduce every hash
+that redaction exists to prevent. Presence is read from config alone — the
+`RISKRATCHET_REDACT_SALT` env var and the commit-derived fallback belong to a
+run, not to the file.
 
 riskratchet finds config by walking upward from the working directory for the
 nearest `pyproject.toml` containing `[tool.riskratchet]` (the nearest one wins
@@ -974,7 +1012,7 @@ visible without breaking a build; `riskratchet config validate` is the strict ch
 | `coverage_cache` | str | `.riskratchet/coverage.json` | Where `auto_coverage` writes. |
 | `auto_coverage` | bool | `true` | Run `test_command` to produce coverage when none is fresh. |
 | `test_command` | str | pytest invocation | Command `auto_coverage` runs; `{output}` is substituted. |
-| `allow_missing_coverage` | bool | `false` | Continue when coverage is absent instead of exiting 2. |
+| `allow_missing_coverage` | bool | `false` | Continue when coverage is absent instead of exiting 2. `--no-allow-missing-coverage` overrides for one run (since 0.3.7). |
 | `missing_coverage` | str | `pessimistic` | Policy for files absent from coverage: `pessimistic`, `optimistic`, or `skip`. |
 | `typescript` | bool | `false` | Also analyze and score TypeScript (since 0.3.6; same as `--typescript`). `--no-typescript` overrides it. Needs the `[typescript]` extra. |
 | `ts_coverage` | list[str] | `[]` | Istanbul/LCOV report(s) for TypeScript coverage, relative to the config file (same as `--ts-coverage`). A missing report is exit 2 on `baseline`/`check`/`diff` and a warning on `scan`/`explain`. |
@@ -988,9 +1026,9 @@ visible without breaking a build; `riskratchet config validate` is the strict ch
 | `fail_existing_above` | float | — | Fail when a function already in the baseline scores above N. |
 | `fail_component_regression_above` | float | `15` | Fail when a single component grows by more than N. |
 | `component_regression_gate` | bool | `true` | **On by default.** Enables the per-component check above. |
-| `redact_paths` / `redact_qualnames` | bool | `false` | Hash paths/qualnames in output. |
-| `private_comment` | bool | `false` | Redact the PR comment. |
-| `redact_salt` | str | — | Salt for the redaction hash, so digests are stable across runs. |
+| `redact_paths` / `redact_qualnames` | bool | `false` | Hash paths/qualnames in output. `--no-redact-paths` / `--no-redact-qualnames` override for one run (since 0.3.7). |
+| `private_comment` | bool | `false` | Redact the PR comment. `--no-private-comment` overrides for one run (since 0.3.7). |
+| `redact_salt` | str | — | Salt for the redaction hash, so digests are stable across runs. `config show` reports it as `"present"` / `"absent"`, never its value. |
 
 ### Component gates
 
@@ -1178,6 +1216,20 @@ are out of scope (they need the type checker).
 ```bash
 riskratchet scan src --typescript --ts-entry src/index.ts
 ```
+
+A `--ts-entry` that is not on disk is a setup error (exit 2) since 0.3.7 — a path you
+named must exist. Before that it only warned that the entry "matched no scanned file"
+and the run scored on with every file-level export flag intact, so a typo widened the
+public surface silently. Command-line paths are relative to the current directory, not
+to the config file. A `[tool.riskratchet] ts_entry` key keeps the warning instead: it is
+a project default a fresh clone may not have generated yet, and failing on it would turn
+a green gate red on a patch upgrade.
+
+`package.json` entry fields are matched only when the value is written as a relative
+specifier (`"./index.ts"`). A bare `"index.ts"` does not resolve today and falls through
+to the `index.{ts,tsx,mts,cts}` heuristic — or, with no such file, to no narrowing at
+all. Fixing that lowers `public_surface` wherever a barrel stops reaching a function, so
+it waits for 0.4.0 with the other score-moving changes.
 
 **Machine-readable output.** With `--json`, scored TypeScript functions ride in the same top-level
 `functions[]` array as Python, each tagged `language: "typescript"` and carrying the identical

@@ -102,6 +102,31 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         help="Disable per-component regression checks.",
     )
     _add_typescript_options(group)
+    _add_off_switches(group)
+
+
+def _add_off_switches(group: pytest.OptionGroup) -> None:
+    """The four settings config can turn on, each with a flag that turns it back off (0.3.7).
+
+    The plugin exposes no positive form for these — they are config-only settings — but
+    AGENTS.md's invariant is about what *config* can turn on, and this door reads the
+    same `[tool.riskratchet]` the CLI does. Leaving them out would mean a repo that sets
+    `redact_paths = true` can unredact a `riskratchet check` run and not a `pytest
+    --riskratchet` one, which is exactly the kind of door-to-door disagreement 0.3.5 was
+    spent removing.
+    """
+    for flag, setting in (
+        ("--riskratchet-no-redact-paths", "redact_paths"),
+        ("--riskratchet-no-redact-qualnames", "redact_qualnames"),
+        ("--riskratchet-no-private-comment", "private_comment"),
+        ("--riskratchet-no-allow-missing-coverage", "allow_missing_coverage"),
+    ):
+        group.addoption(
+            flag,
+            action="store_true",
+            default=False,
+            help=f"Turn off [tool.riskratchet] {setting} for this run.",
+        )
 
 
 def _add_typescript_options(group: pytest.OptionGroup) -> None:
@@ -187,6 +212,8 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     ts_coverage = _typescript_reports_or_fail(session, settings)
     if ts_coverage is None:
         return
+    if not _typescript_entries_ok(session, settings):
+        return
 
     if is_shallow_repo(config_dir):
         # Same notice `cli._build_report_or_exit` gives: on a depth-1 CI clone
@@ -267,6 +294,7 @@ def _settings_or_fail(
         typescript=_typescript_override(config),
         ts_coverage=_resolved_all(rootdir, config.getoption("--riskratchet-ts-coverage")),
         ts_entry=_resolved_all(rootdir, config.getoption("--riskratchet-ts-entry")),
+        no_allow_missing_coverage=bool(config.getoption("--riskratchet-no-allow-missing-coverage")),
     )
     return cfg, config_dir, settings
 
@@ -312,6 +340,32 @@ def _typescript_reports_or_fail(session: pytest.Session, settings: GateSettings)
         session.exitstatus = 1
         return None
     return present
+
+
+def _typescript_entries_ok(session: pytest.Session, settings: GateSettings) -> bool:
+    """`False` after failing the session for a `--riskratchet-ts-entry` that is not on disk.
+
+    The CLI's rule at this door: a path named on the command line must exist. Only the
+    flag is checked, not the resolved list, because a `[tool.riskratchet] ts_entry` key
+    stays the engine's warning in the CLI too — failing a plugin session on a config
+    default would turn a green gate red on a patch upgrade, and this release moves no
+    verdicts.
+    """
+    from riskratchet.config import usable_ts_entries
+
+    if not settings.typescript:
+        return True
+    rootdir = Path(str(session.config.rootpath))
+    named = _resolved_all(rootdir, session.config.getoption("--riskratchet-ts-entry"))
+    if not named:
+        return True
+    _, problems = usable_ts_entries(named)
+    for problem in problems:
+        _emit(session, problem)
+    if problems:
+        session.exitstatus = 1
+        return False
+    return True
 
 
 def _report_or_fail(
@@ -508,6 +562,9 @@ def _report_regressions(
         cfg=cfg,
         config_dir=config_dir,
         warn=lambda message: _emit(session, message),
+        no_redact_paths=bool(session.config.getoption("--riskratchet-no-redact-paths")),
+        no_redact_qualnames=bool(session.config.getoption("--riskratchet-no-redact-qualnames")),
+        no_private_comment=bool(session.config.getoption("--riskratchet-no-private-comment")),
     )
     _emit(session, "riskratchet: regressions detected")
     _emit(session, render_regressions_table(redact_regressions(regressions, redaction)))

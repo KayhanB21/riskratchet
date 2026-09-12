@@ -469,3 +469,50 @@ def test_every_allowed_config_key_is_documented_in_the_readme() -> None:
     for the next key.
     """
     assert _documented_config_keys() >= CONFIG_ALLOWED_KEYS
+
+
+def test_config_show_reports_the_four_redaction_settings() -> None:
+    """`config show` is "what will this run do"; before 0.3.7 it omitted redaction entirely.
+
+    A repo that had turned redaction on in config could not confirm it from the one
+    command whose whole job is answering that, and the four keys were the only members
+    of `CONFIG_ALLOWED_KEYS` missing from the payload.
+    """
+    from riskratchet.config import _resolved_config_payload
+
+    payload = _resolved_config_payload(
+        {"redact_paths": True, "private_comment": True, "redact_salt": "hunter2"}, Path(".")
+    )
+    assert payload["redact_paths"] is True
+    assert payload["redact_qualnames"] is False
+    assert payload["private_comment"] is True
+
+
+def test_config_show_never_prints_the_redaction_salt() -> None:
+    """Presence, never the value — the salt is the one secret in `[tool.riskratchet]`.
+
+    `config show --json` lands in CI logs and bug reports, and a reader holding the salt
+    can reproduce every hash redaction exists to prevent, which makes printing it worse
+    than not redacting at all: it looks private and is not.
+    """
+    import json as _json
+
+    from riskratchet.config import _resolved_config_payload
+
+    payload = _resolved_config_payload({"redact_salt": "hunter2"}, Path("."))
+    assert payload["redact_salt"] == "present"
+    assert "hunter2" not in _json.dumps(payload)
+    assert _resolved_config_payload({}, Path("."))["redact_salt"] == "absent"
+    assert _resolved_config_payload({"redact_salt": "  "}, Path("."))["redact_salt"] == "absent"
+
+
+def test_every_allowed_config_key_appears_in_config_show() -> None:
+    """The trip-wire for the gap above: a new key must reach the payload, not just the parser.
+
+    `redact_salt` is the one key whose *value* must never appear, so it is reported as
+    presence — the same "present"/"absent" spelling the baseline's `scoring.coverage` uses.
+    """
+    from riskratchet.config import _resolved_config_payload
+
+    payload = _resolved_config_payload({}, Path("."))
+    assert set(payload) == set(CONFIG_ALLOWED_KEYS)

@@ -641,3 +641,38 @@ def test_the_two_entry_points_reach_the_same_verdict(
     )
 
     assert via_compare == via_diff
+
+
+def test_render_diff_table_appends_a_source_link_footer() -> None:
+    """The `links` branch of the terminal diff table, which nothing exercised before.
+
+    A Rich table cannot hold a hyperlink cell, so the links ride in a footer below it —
+    and a removed entry has no `current` to link to, so it is skipped rather than
+    linked at a line that no longer exists.
+    """
+    from riskratchet.reporting import SourceLinks
+
+    old = Baseline(
+        version="3",
+        entries={
+            FunctionId("a.py", "kept"): BaselineEntry(
+                id=FunctionId("a.py", "kept"), score=20.0, components=_components(20.0), fingerprint="kept"
+            ),
+            FunctionId("a.py", "gone"): BaselineEntry(
+                id=FunctionId("a.py", "gone"), score=20.0, components=_components(20.0), fingerprint="gone"
+            ),
+        },
+    )
+    diff_report = diff(
+        RiskReport(functions=(_fn("a.py", "kept", 60.0, fingerprint="kept"),), files=()),
+        old,
+        fail_regression_above=5.0,
+    )
+
+    table = render_diff_table(
+        diff_report, links=SourceLinks(repo_url="https://github.com/acme/project", commit_ref="abc123")
+    )
+
+    assert "https://github.com/acme/project/blob/abc123/a.py" in table
+    assert "a.py::kept" in table
+    assert table.count("https://github.com/acme/project") == 1  # the removed entry links nowhere
