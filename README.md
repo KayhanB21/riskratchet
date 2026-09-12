@@ -692,6 +692,26 @@ have edited it recently, which correlates with bugs.
 > `churn = 0`. A `pricing_engine.calculate_total` edited in 14 of the last
 > 90 commits saturates at 10, so `churn = 100`.
 
+**Churn is read from the configuration directory, which may not be your repository
+root.** If `[tool.riskratchet]` lives in `services/api/pyproject.toml`, riskratchet looks
+for history in `services/api` — and a git repository keeps its history at the top level,
+so it finds none. Every function then scores `churn = 0`: not because nothing changed, but
+because nothing was read.
+
+Since 0.3.7 riskratchet says so, on every command and in `doctor`'s `git` row. It does not
+yet change the number. Scoring churn from the repository root would raise the churn
+component on nearly every function in such a project at once, and a patch release must not
+turn a green gate red — so **0.4.0 makes that change**, deliberately and with a release
+note. Until then, run from the repository root if you want churn scored, or pass
+`--no-git` to opt out and silence the warning.
+
+The same applies to every other way churn can come back empty. A shallow clone, a git that
+is not on the PATH, a timeout, a fork that fails under memory pressure: each used to
+produce `churn = 0` in silence, indistinguishable from "this code is stable", and then got
+written into the next baseline as though it were a measurement. All of them now warn, and
+none of them is a gate failure — the scores are missing a component, which is not the same
+as the code being worse.
+
 **`public_surface`: "if this breaks, do callers we can't see break too?"**
 A multiplier on coverage gap: when a function is part of your public API,
 its missing coverage is penalised harder than the same gap on a private

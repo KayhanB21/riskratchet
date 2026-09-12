@@ -155,6 +155,29 @@ success and `2` on usage errors.
   Nothing is removed in the same release it is first deprecated in. (This lived only
   in an uncommitted planning doc until 0.3.7, which meant it did not travel with a
   clone — the same mistake 0.3.6 fixed for the stacked-PR rule.)
+- **A zero that is really a failure must say so.** Churn scores 0 for three unrelated
+  reasons — the code did not change, there was no history to read, or git failed — and only
+  the first is a measurement. Every git helper still degrades to an empty result (there is
+  nothing better to return), but since 0.3.7 none of them does it silently: `collect_function_churn`
+  takes an `on_error` callback, reported once per pass, and all four subprocess sites catch
+  `OSError`, not just `FileNotFoundError`. Never let an I/O failure exit 1 (AGENTS.md's own
+  rule) — and never let it exit 0 without a word either, because a silent zero gets baselined
+  as fact. The exception is a repository with no commits yet: `git log` exits 128 there and
+  there is genuinely nothing to find, so it stays quiet rather than warning on every run.
+- **Churn is anchored at the configuration directory, and 0.3.7 only *says* when that is not
+  the repository root.** `repo_info` / `churn_root_mismatch` (`git.py`) resolve the real root
+  to compare with it; `head_sha` and `is_shallow_repo` ask git rather than probing for
+  `<dir>/.git`, which was wrong for every nested config dir, worktree and submodule. Moving
+  the *scoring* to the repository root is a 0.4.0 change: it needs the pathspecs re-anchored
+  (they are config-dir-relative, so pointing `-C` at the toplevel matches nothing), and it
+  raises the churn component on nearly every function in a monorepo package at once, which a
+  patch release must not do.
+- **`doctor` and the engine must answer the same question, not a similar one.** `_check_git`
+  shelled `git rev-parse --git-dir`, which succeeds from any subdirectory, so `doctor` PASSed
+  "git repo" on exactly the layout where churn is dead. It now calls the same `churn_is_available`
+  / `churn_root_mismatch` the engine does. The agreement test puts the config **two** levels
+  below the git root, because a fix that resolves only the immediate parent passes a one-level
+  fixture and is still wrong.
 - **Scoring provenance.** Every baseline records a top-level `scoring` block — model
   version, *resolved* weights, churn window, churn availability, coverage presence —
   and all three doors (`cli`, `pytest_plugin`, `doctor`'s `scoring-model` row) say when

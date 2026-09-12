@@ -155,7 +155,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # Imported lazily so that enabling the plugin entry point does not pull the
     # whole package in before pytest-cov has a chance to start coverage. Without
     # this, all module-level lines in riskratchet/* show as "missing".
-    from riskratchet.git import is_shallow_repo
+    from riskratchet.git import churn_root_mismatch, is_shallow_repo
 
     rootdir = Path(str(config.rootpath))
     baseline_path = _resolve(rootdir, config.getoption("--riskratchet-baseline"))
@@ -196,6 +196,18 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
             session,
             "riskratchet: shallow clone detected; churn signals score as zero. "
             "Use actions/checkout with 'fetch-depth: 0' (or run 'git fetch --unshallow').",
+        )
+
+    repo_root = churn_root_mismatch(config_dir)
+    if repo_root is not None:
+        # Same notice `cli._warn_churn_root_mismatch` gives. Churn is anchored at the config
+        # directory, so a package below the repository root scores 0 churn for every function
+        # — silently, and indistinguishably from code nobody has touched.
+        _emit(
+            session,
+            f"riskratchet: churn is scoring 0 for every function — the git repository root is "
+            f"{repo_root}, but riskratchet is anchored at {config_dir}, where there is no "
+            "history to read. 0.4.0 will score churn from the repository root.",
         )
 
     report = _report_or_fail(
@@ -336,6 +348,7 @@ def _report_or_fail(
             typescript=settings.typescript,
             ts_coverage_paths=ts_coverage,
             ts_entries=settings.ts_entry,
+            on_churn_error=lambda message: _emit(session, f"riskratchet: {message}"),
             on_ts_warning=lambda message: _emit(session, f"typescript: {message}"),
             on_ts_error=lambda path, message: _emit(
                 session, f"typescript: skipping {_rel_or_str(path, config_dir)}: {message}"
