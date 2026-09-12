@@ -189,11 +189,15 @@ jobs:
           name = "scratch"
           version = "0.1.0"
 
-          # Without this the test's `from src.app import classify` is a collection-time
-          # ModuleNotFoundError: pytest's default `prepend` import mode puts the *test
-          # file's* rootdir on sys.path (here `tests/`), not the workspace root.
+          # `pythonpath` because pytest's default `prepend` import mode puts the *test
+          # file's* rootdir on sys.path (here `tests/`), not the workspace root, so
+          # `from src.app import classify` would be a collection-time ModuleNotFoundError.
+          # `testpaths` because riskratchet itself is checked out into this workspace as
+          # `riskratchet-src/`, and a bare `pytest` collects that too — 1198 tests whose
+          # dev dependencies are deliberately not installed here.
           [tool.pytest.ini_options]
           pythonpath = ["."]
+          testpaths = ["tests"]
 
           [tool.riskratchet]
           paths = ["src"]
