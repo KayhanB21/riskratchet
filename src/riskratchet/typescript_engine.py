@@ -76,6 +76,7 @@ def analyze_typescript(
     groups: Mapping[str, Sequence[str]] | None = None,
     on_warning: WarnFn = None,
     on_error: Any = None,
+    on_churn_error: WarnFn = None,
 ) -> RiskReport:
     """Discover, enrich, and **score** the TypeScript functions under `paths`.
 
@@ -135,6 +136,7 @@ def analyze_typescript(
         [(fn.id, fn.span) for fn in discovered],
         days=churn_days,
         enabled=use_git,
+        on_error=on_churn_error,
     )
 
     risks: list[FunctionRisk] = []

@@ -18,6 +18,7 @@ envelope is contract-stable and validated against
 
 from __future__ import annotations
 
+import stat
 import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -36,7 +37,12 @@ from riskratchet.baseline.io import (
 )
 from riskratchet.config import invalid_config_values, unknown_config_keys
 from riskratchet.coverage import CoverageData, load_coverage
-from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS, churn_is_available, is_shallow_repo
+from riskratchet.git import (
+    DEFAULT_CHURN_WINDOW_DAYS,
+    churn_is_available,
+    churn_root_mismatch,
+    is_shallow_repo,
+)
 from riskratchet.scoring import (
     DEFAULT_WEIGHTS,
     SCORING_MODEL_VERSION,
@@ -47,7 +53,6 @@ from riskratchet.typescript import _require_tree_sitter, iter_typescript_files
 
 # Bound the overlap walk so `doctor` stays sub-second on a monorepo.
 _OVERLAP_FILE_CAP = 2000
-_TS_SUFFIXES = (".ts", ".tsx", ".mts", ".cts")
 _TS_COVERAGE_COMMAND = "npx vitest run --coverage --coverage.reporter=lcov  # or c8/nyc/jest"
 
 
@@ -98,7 +103,15 @@ def diagnose(
     if typescript and not python_files:
         coverage_check, data = _coverage_not_applicable(), None
     else:
-        coverage_check, data = _check_coverage(coverage_path, source_paths=paths, origin=coverage_origin)
+        coverage_check, data = _check_coverage(
+            # The files the scan would reach, not the scan paths: staleness is only meaningful
+            # for files that are actually scored, and walking the paths raw descended into
+            # `.venv`. `None` means the walk failed, which the overlap check reports; an empty
+            # list then simply makes the staleness probe say nothing.
+            coverage_path,
+            source_paths=python_files or [],
+            origin=coverage_origin,
+        )
     checks = [
         _check_paths(paths, typescript=typescript),
         _check_baseline(baseline_file),
@@ -259,6 +272,10 @@ def _check_coverage(
     Parsing is the point: `exists()` + mtime alone reported PASS on a file that
     made `check` die with a `ValueError`, which is the one situation where a
     doctor is actively harmful.
+
+    `source_paths` is the list of files a scan would reach — already filtered by
+    `include` / `exclude` and already free of hidden directories — not the scan paths
+    themselves. See `_find_newer`.
     """
     if coverage_path is None:
         return (
@@ -319,7 +336,7 @@ def _check_coverage(
             None,
         )
     cov_mtime = coverage_path.stat().st_mtime
-    newer = _find_newer(source_paths, cov_mtime, suffixes=(".py",))
+    newer = _find_newer(source_paths, cov_mtime)
     if newer is not None:
         return (
             DoctorCheck(
@@ -409,6 +426,10 @@ def _check_shallow_clone(config_dir: Path) -> DoctorCheck:
 
     `actions/checkout` defaults to depth 1, which is the usual way CI ends up
     scoring differently from a locally-generated baseline.
+
+    Since 0.3.7 `is_shallow_repo` asks git instead of probing for `<dir>/.git/shallow`, so
+    this row is finally able to fire from a configuration directory below the repository
+    root — where it previously reported "full history" for every shallow clone.
     """
     if is_shallow_repo(config_dir):
         return DoctorCheck(
@@ -475,22 +496,33 @@ def _check_typescript(baseline_file: Path, *, paths: list[Path], enabled: bool =
 
 
 def _check_git(config_dir: Path) -> DoctorCheck:
-    try:
-        rc = subprocess.run(
-            ["git", "rev-parse", "--git-dir"],
-            cwd=config_dir,
-            capture_output=True,
-            timeout=5,
-            check=False,
-        )
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    """Report whether churn can actually be collected here — the engine's question, not git's.
+
+    This used to shell `git rev-parse --git-dir`, which succeeds from *any* subdirectory of a
+    repository. The engine asks something different and stricter: churn is collected relative
+    to the configuration directory, so it needs history *there*. On a monorepo package the two
+    disagreed completely — `doctor` said PASS "git repo" on precisely the layout where every
+    function's churn scores 0, which is the one place the pre-flight most needed to speak up.
+
+    Asking `churn_is_available` and `churn_root_mismatch` — the same predicates the engine
+    uses — is what keeps the two from drifting apart again.
+    """
+    if not _git_on_path():
         return DoctorCheck(
             name="git",
             status=CheckStatus.WARN,
             summary="git not on PATH (churn signals disabled)",
             remediation="install git, or pass --no-git to silence this",
         )
-    if rc.returncode != 0:
+    root = churn_root_mismatch(config_dir)
+    if root is not None:
+        return DoctorCheck(
+            name="git",
+            status=CheckStatus.WARN,
+            summary=f"churn scores 0 here: the repository root is {root}, not this directory",
+            remediation="run riskratchet from the repository root, or pass --no-git to silence this",
+        )
+    if not churn_is_available(config_dir):
         return DoctorCheck(
             name="git",
             status=CheckStatus.WARN,
@@ -498,6 +530,19 @@ def _check_git(config_dir: Path) -> DoctorCheck:
             remediation="git init  # or pass --no-git to silence this",
         )
     return DoctorCheck(name="git", status=CheckStatus.PASS, summary="git repo")
+
+
+def _git_on_path() -> bool:
+    """Whether `git` can be executed at all, told apart from "this is not a repository".
+
+    A separate probe because the two need different remediations — "install git" and
+    "git init" are not interchangeable advice — and `repo_info` collapses both to `None`.
+    """
+    try:
+        subprocess.run(["git", "--version"], capture_output=True, timeout=5, check=False)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return True
 
 
 # `doctor` sees whether a coverage file exists right now; a real run may be about to create one
@@ -716,7 +761,7 @@ def _check_ts_coverage(reports: list[Path], *, files: list[Path] | None, config_
             remediation=_TS_COVERAGE_COMMAND,
         )
     oldest = min(p.stat().st_mtime for p in reports)
-    newer = _find_newer(list(files or []), oldest, suffixes=_TS_SUFFIXES)
+    newer = _find_newer(list(files or []), oldest)
     if newer is not None:
         return DoctorCheck(
             name="ts-coverage",
@@ -777,16 +822,36 @@ def _has_typescript_files(path: Path) -> bool:
         return False
 
 
-def _find_newer(source_paths: list[Path], cov_mtime: float, *, suffixes: tuple[str, ...]) -> str | None:
-    """Return the first file with one of `suffixes` newer than `cov_mtime`, or None."""
-    for src in source_paths:
-        if not src.exists():
+def _find_newer(scanned_files: list[Path], cov_mtime: float) -> str | None:
+    """Return the first *scanned* file newer than `cov_mtime`, or None.
+
+    Takes the file list the scan would actually reach — never a directory to walk. The old
+    version rglob'd each scan path itself, with no hidden-parent filter and no `include` /
+    `exclude`, so on the default `paths = ["."]` it descended into `.venv` and reported
+    "coverage older than .venv/.../urllib3/_version.py (stale)" with the remediation "re-run
+    pytest", which cannot possibly help: that file is not in the coverage report because it is
+    not part of the project. A file riskratchet does not score has no bearing on whether
+    coverage of the files it does score is fresh.
+
+    Reusing `iter_python_files` / `iter_typescript_files` through `_scanned_files` — rather
+    than growing a second walker here — is what makes that automatic: those already skip
+    hidden parents and already anchor `include` / `exclude` at the config directory. A
+    hand-rolled copy would have had to resolve the patterns per scan path, which matches
+    `include = ["src/**"]` against the wrong string and silently disables the check.
+
+    `stat()` is guarded: a dangling symlink under the scanned tree used to raise
+    `FileNotFoundError` straight out of `doctor`, exiting 1 on an I/O failure.
+    """
+    for candidate in scanned_files:
+        try:
+            info = candidate.stat()
+        except OSError:
+            # A dangling symlink or a file deleted mid-walk tells us nothing about freshness.
             continue
-        if src.is_file() and src.suffix in suffixes and src.stat().st_mtime > cov_mtime:
-            return str(src)
-        if src.is_dir():
-            for suffix in suffixes:
-                for candidate in src.rglob(f"*{suffix}"):
-                    if candidate.stat().st_mtime > cov_mtime:
-                        return str(candidate)
+        # Regular files only, from the one stat we already paid for. A directory's mtime moves
+        # when anything inside it is added or removed, which says nothing about whether the
+        # coverage of the files under it is stale — and a caller handing this a directory
+        # would otherwise get a confident, wrong answer.
+        if stat.S_ISREG(info.st_mode) and info.st_mtime > cov_mtime:
+            return str(candidate)
     return None

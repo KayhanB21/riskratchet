@@ -65,7 +65,7 @@ from riskratchet.config import (
 )
 from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
-from riskratchet.git import is_shallow_repo
+from riskratchet.git import churn_root_mismatch, is_shallow_repo
 from riskratchet.init import (
     _STARTER_PATH,
     InitOutcome,
@@ -2450,6 +2450,8 @@ def _build_report_or_exit(
             fg=typer.colors.YELLOW,
             err=True,
         )
+    if use_git:
+        _warn_churn_root_mismatch(config_dir)
     try:
         return _warned_about_inert_allow(
             build_report(
@@ -2471,6 +2473,7 @@ def _build_report_or_exit(
                 on_ts_warning=_ts_warn,
                 on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
                 on_coverage_error=_coverage_shard_warn,
+                on_churn_error=_churn_warn,
             ),
             allow,
         )
@@ -2531,6 +2534,40 @@ def _warn_dropped_baseline_entries(count: int) -> None:
         f"riskratchet: baseline: skipped {_count(count, 'malformed entry', 'malformed entries')}; "
         "those functions are not "
         "ratcheted. Run 'riskratchet baseline' to regenerate.",
+        fg=typer.colors.YELLOW,
+        err=True,
+    )
+
+
+def _churn_warn(message: str) -> None:
+    """Report a git failure during churn collection.
+
+    Stderr, yellow, and never an exit code. Churn failing is not a gate verdict — the scores
+    are simply missing a component — but it must not read as "nothing changed", which is what
+    a silent zero says. The plugin routes the same messages into the pytest report instead.
+    """
+    typer.secho(f"riskratchet: {message}", fg=typer.colors.YELLOW, err=True)
+
+
+def _warn_churn_root_mismatch(config_dir: Path) -> None:
+    """Say when churn is being collected from somewhere that is not the repository root.
+
+    riskratchet anchors churn at the configuration directory. Put `[tool.riskratchet]` in
+    `services/api/pyproject.toml` and there is no `.git` there, so the whole churn weight
+    scores 0 for every function — silently, and indistinguishably from a codebase nobody has
+    touched. It then writes those zeroes into the baseline as though they were measurements.
+
+    0.3.7 says so; it does not move the scores. Re-anchoring churn to the repository root
+    would raise the churn component on nearly every function in such a project at once, and a
+    patch release must not turn a green gate red. 0.4.0 makes that change deliberately.
+    """
+    root = churn_root_mismatch(config_dir)
+    if root is None:
+        return
+    typer.secho(
+        f"warning: churn is scoring 0 for every function — the git repository root is {root}, "
+        f"but riskratchet is anchored at {config_dir}, where there is no history to read. "
+        "0.4.0 will score churn from the repository root; pass --no-git to silence this until then.",
         fg=typer.colors.YELLOW,
         err=True,
     )

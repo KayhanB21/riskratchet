@@ -191,49 +191,40 @@ def test_find_newer_covers_all_branches(tmp_path: Path) -> None:
 
     cov_mtime = 1_000_000.0
 
-    # non-existent path is skipped → None
-    assert _find_newer([tmp_path / "nope.py"], cov_mtime, suffixes=(".py",)) is None
+    # a missing path is skipped rather than raising → None. Since 0.3.7 the same guard covers
+    # a dangling symlink, which used to raise FileNotFoundError straight out of `doctor`.
+    assert _find_newer([tmp_path / "nope.py"], cov_mtime) is None
+    dangling = tmp_path / "dangling.py"
+    dangling.symlink_to(tmp_path / "does-not-exist.py")
+    assert _find_newer([dangling], cov_mtime) is None
 
-    # a file that is not .py is skipped
-    other = tmp_path / "data.txt"
-    other.write_text("x\n", encoding="utf-8")
-    os.utime(other, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer([other], cov_mtime, suffixes=(".py",)) is None
+    # a directory is never a freshness signal, even when its own mtime is newer
+    a_dir = tmp_path / "pkg"
+    a_dir.mkdir()
+    os.utime(a_dir, (cov_mtime + 100, cov_mtime + 100))
+    assert _find_newer([a_dir], cov_mtime) is None
 
-    # a .py file newer than cov_mtime is returned
+    # a file newer than cov_mtime is returned
     newer = tmp_path / "newer.py"
     newer.write_text("a = 1\n", encoding="utf-8")
     os.utime(newer, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer([newer], cov_mtime, suffixes=(".py",)) == str(newer)
+    assert _find_newer([newer], cov_mtime) == str(newer)
 
-    # a .py file older than cov_mtime is not returned
+    # a file older than cov_mtime is not returned
     older = tmp_path / "older.py"
     older.write_text("b = 1\n", encoding="utf-8")
     os.utime(older, (cov_mtime - 100, cov_mtime - 100))
-    assert _find_newer([older], cov_mtime, suffixes=(".py",)) is None
+    assert _find_newer([older], cov_mtime) is None
 
-    # a directory containing a newer .py returns that file
-    pkg = tmp_path / "pkg"
-    pkg.mkdir()
-    nested = pkg / "mod.py"
-    nested.write_text("c = 1\n", encoding="utf-8")
-    os.utime(nested, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer([pkg], cov_mtime, suffixes=(".py",)) == str(nested)
-
-    # a directory whose .py files are all older → None
-    olddir = tmp_path / "olddir"
-    olddir.mkdir()
-    oldnested = olddir / "old.py"
-    oldnested.write_text("d = 1\n", encoding="utf-8")
-    os.utime(oldnested, (cov_mtime - 100, cov_mtime - 100))
-    assert _find_newer([olddir], cov_mtime, suffixes=(".py",)) is None
-
-    # 0.3.6: the same walk serves the TypeScript report, keyed on the TS suffixes
-    ts = pkg / "mod.ts"
+    # 0.3.6: the same probe serves the TypeScript report. Since 0.3.7 it takes the already
+    # language-filtered file list, so it needs no suffix argument to tell them apart.
+    ts = tmp_path / "mod.ts"
     ts.write_text("export const x = 1;\n", encoding="utf-8")
     os.utime(ts, (cov_mtime + 100, cov_mtime + 100))
-    assert _find_newer([pkg], cov_mtime, suffixes=(".ts", ".tsx")) == str(ts)
-    assert _find_newer([ts], cov_mtime, suffixes=(".py",)) is None
+    assert _find_newer([ts], cov_mtime) == str(ts)
+
+    # the first newer file wins; order is the caller's (sorted by the scan walkers)
+    assert _find_newer([older, newer], cov_mtime) == str(newer)
 
 
 def test_check_coverage_covers_all_branches(tmp_path: Path) -> None:
@@ -256,18 +247,20 @@ def test_check_coverage_covers_all_branches(tmp_path: Path) -> None:
     cov.write_text('{"files": {}}', encoding="utf-8")
     base = 1_000_000.0
 
+    # `source_paths` is the *scanned file* list since 0.3.7, not the scan directories: the old
+    # contract rglob'd each directory itself and descended into `.venv`.
     # 1. no coverage configured → WARN
-    assert _check_coverage(None, source_paths=[src_dir])[0].status is CheckStatus.WARN
+    assert _check_coverage(None, source_paths=[src_file])[0].status is CheckStatus.WARN
     # 2. configured but the file doesn't exist → FAIL
-    assert _check_coverage(tmp_path / "absent.json", source_paths=[src_dir])[0].status is CheckStatus.FAIL
+    assert _check_coverage(tmp_path / "absent.json", source_paths=[src_file])[0].status is CheckStatus.FAIL
     # 3. coverage older than a source file → WARN (stale)
     os.utime(cov, (base, base))
     os.utime(src_file, (base + 100, base + 100))
-    assert _check_coverage(cov, source_paths=[src_dir])[0].status is CheckStatus.WARN
+    assert _check_coverage(cov, source_paths=[src_file])[0].status is CheckStatus.WARN
     # 4. coverage newer than every source file → PASS (fresh) — the previously-flaky branch
     os.utime(src_file, (base - 100, base - 100))
     os.utime(cov, (base, base))
-    fresh, _ = _check_coverage(cov, source_paths=[src_dir])
+    fresh, _ = _check_coverage(cov, source_paths=[src_file])
     assert fresh.status is CheckStatus.PASS
     assert "fresh" in fresh.summary
 
@@ -465,10 +458,13 @@ def test_branch_data_passes_with_cov_branch(tmp_path: Path) -> None:
 
 
 def test_shallow_clone_warns(tmp_path: Path) -> None:
-    (tmp_path / ".git").mkdir()
-    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+    from git_fixtures import make_shallow_clone
 
-    check = _diagnose(tmp_path)["shallow-clone"]
+    clone = make_shallow_clone(tmp_path)
+    (clone / "src").mkdir()
+    (clone / "src" / "m.py").write_text("def f(): return 1\n", encoding="utf-8")
+
+    check = _diagnose(clone)["shallow-clone"]
 
     assert check.status is CheckStatus.WARN
     assert "fetch-depth: 0" in (check.remediation or "")

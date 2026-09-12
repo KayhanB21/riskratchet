@@ -425,10 +425,11 @@ def test_shallow_clone_emits_churn_warning(tmp_path: Path, monkeypatch: pytest.M
     still uses a depth-1 checkout gets told why their scores disagree with the
     baseline instead of silently getting different numbers.
     """
-    monkeypatch.chdir(tmp_path)
-    src = _project(tmp_path)
-    (tmp_path / ".git").mkdir()
-    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
+    from git_fixtures import make_shallow_clone
+
+    clone = make_shallow_clone(tmp_path)
+    monkeypatch.chdir(clone)
+    src = _project(clone)
 
     result = runner.invoke(app, ["scan", str(src), "--no-auto-cov"])
 

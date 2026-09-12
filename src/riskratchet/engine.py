@@ -64,6 +64,7 @@ def analyze(
     missing_coverage_policy: MissingCoveragePolicy = MissingCoveragePolicy.PESSIMISTIC,
     groups: Mapping[str, Sequence[str]] | None = None,
     on_coverage_error: Any = None,
+    on_churn_error: Any = None,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -106,6 +107,7 @@ def analyze(
         [(fn.id, fn.span) for parsed in parsed_files for fn in parsed.functions],
         days=churn_days,
         enabled=use_git,
+        on_error=on_churn_error,
     )
 
     for parsed in parsed_files:

@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from git_fixtures import make_shallow_clone
 from riskratchet.git import (
     churn_for_file,
     churn_for_function,
@@ -135,18 +136,32 @@ def test_collect_handles_renamed_and_deleted_files(tmp_path: Path) -> None:
     assert counts["c.py"] >= 1
 
 
-def test_is_shallow_repo_detects_shallow_marker(tmp_path: Path) -> None:
-    """`.git/shallow` is git's own marker for a truncated history.
+def test_is_shallow_repo_detects_a_real_depth_one_clone(tmp_path: Path) -> None:
+    """Churn degrades silently on a shallow clone (every git helper collapses a failure to an
+    empty result), so this predicate is what makes the condition reportable instead of
+    invisible. Asserted against a clone git actually made."""
+    full = tmp_path / "full"
+    full.mkdir()
+    _init_repo(full)
+    _commit(full, "a.py", "x = 1\n")
+    assert is_shallow_repo(full) is False
 
-    Churn degrades silently on a shallow clone (every git helper collapses a
-    failure to an empty result), so this predicate is what makes the condition
-    reportable instead of invisible.
-    """
-    (tmp_path / ".git").mkdir()
+    clone = make_shallow_clone(tmp_path)
+    assert is_shallow_repo(clone) is True
+
+
+def test_is_shallow_repo_sees_a_shallow_clone_from_a_subdirectory(tmp_path: Path) -> None:
+    """The regression this predicate had from the start: `.git/shallow` lives at the top
+    level, so probing for it under a nested configuration directory answered "full history"
+    for every monorepo package — the layouts most likely to be checked out shallow."""
+    clone = make_shallow_clone(tmp_path)
+    nested = clone / "services" / "api"
+    nested.mkdir(parents=True)
+    assert is_shallow_repo(nested) is True
+
+
+def test_is_shallow_repo_is_false_outside_a_repository(tmp_path: Path) -> None:
     assert is_shallow_repo(tmp_path) is False
-
-    (tmp_path / ".git" / "shallow").write_text("deadbeef\n", encoding="utf-8")
-    assert is_shallow_repo(tmp_path) is True
 
 
 def test_is_shallow_repo_false_without_git_dir(tmp_path: Path) -> None:
