@@ -9,6 +9,31 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+### Fixed
+
+- **The pytest plugin now reads `[tool.riskratchet] baseline` and `coverage`.** They were
+  the last two plugin options declared with a real-valued default (`.riskratchet.json` /
+  `coverage.json`), and a default that is a real value cannot be told apart from the user
+  passing it — the rule `resolve_gate_settings` has documented since 0.3.5 — so the config
+  tier was unreachable for both. A repo that configured either gated `riskratchet check`
+  against one file and `pytest --riskratchet` against another. The missing-baseline message
+  made it worse by naming a remediation that could not work: it reported `.riskratchet.json`
+  missing and said to run `riskratchet baseline`, which writes to the *configured* path. It
+  now names the resolved path and the exact command that writes there, `--output` included.
+
+### Changed
+
+- The plugin's baseline and coverage resolution moved into `GateSettings`, the dataclass
+  that exists so a second entry point does not resolve config from memory — these were the
+  two keys it omitted. Precedence is unchanged in shape (**option > config > default**), and
+  a config value anchors to the config directory while an explicit flag stays relative to the
+  pytest rootdir, matching the CLI's contract. **A repo whose `[tool.riskratchet] baseline`
+  or `coverage` differs from the defaults will see the plugin start reading a different file,
+  and may start failing where it used to pass** — it is now reading the same file
+  `riskratchet check` does.
+
 ## [0.3.7] - 2026-09-11
 
 Scoped from an audit rather than the backlog, because the audit found something

@@ -531,3 +531,94 @@ def test_the_plugin_can_require_the_coverage_config_allowed_to_be_absent(
     assert resolve_gate_settings(cfg, Path(".")).allow_missing_coverage is True
     settings = resolve_gate_settings(cfg, Path("."), no_allow_missing_coverage=True)
     assert settings.allow_missing_coverage is False
+
+
+# --- 0.3.8: the two config keys the plugin could not read -------------------------------
+#
+# `--riskratchet-baseline` and `--riskratchet-coverage` were the only options carrying a
+# real-valued `default=`, so `config.resolve_gate_settings`'s own rule applied to them and
+# nobody noticed: a value indistinguishable from one the user typed means config never
+# wins. The CLI gated against the configured file and the plugin against its own literal.
+
+
+def _project_with(pytester: pytest.Pytester, extra_config: str, baseline_at: str) -> Path:
+    """`_configured_project` with the baseline somewhere other than the default."""
+    _write(pytester.path / "lib" / "app.py", _RISKY)
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(_CONFIG + extra_config, encoding="utf-8")
+    baseline = pytester.path / baseline_at
+    baseline.parent.mkdir(parents=True, exist_ok=True)
+    baseline.write_text(
+        json.dumps(_baseline_payload([_entry("lib/app.py", "risky", 10.0)])), encoding="utf-8"
+    )
+    return baseline
+
+
+def test_the_plugin_reads_the_baseline_path_from_config(pytester: pytest.Pytester) -> None:
+    """`baseline = "risk/custom.json"` gated the CLI and was invisible to the plugin.
+
+    Worse than a silent disagreement: the plugin reported `.riskratchet.json` missing and
+    told the user to run `riskratchet baseline`, which writes to the configured path — so
+    following the tool's own instruction could never satisfy the tool.
+    """
+    _project_with(pytester, 'baseline = "risk/custom.json"\n', "risk/custom.json")
+
+    result = pytester.runpytest_subprocess("--cov=lib", "--cov-report=json:coverage.json", "--riskratchet")
+
+    assert result.ret == 1, result.stdout.str()
+    text = _collapsed(result.stdout.str())
+    assert "baseline file not found" not in text
+    assert "regressions detected" in text
+
+
+def test_the_plugin_reads_the_coverage_path_from_config(pytester: pytest.Pytester) -> None:
+    """The same defect on the other key: `coverage = "reports/cov.json"` was never read."""
+    _project_with(pytester, 'coverage = "reports/cov.json"\n', ".riskratchet.json")
+
+    result = pytester.runpytest_subprocess("--cov=lib", "--cov-report=json:reports/cov.json", "--riskratchet")
+
+    assert result.ret == 1, result.stdout.str()
+    assert "coverage file not found" not in _collapsed(result.stdout.str())
+
+
+def test_an_explicit_baseline_option_still_beats_config(pytester: pytest.Pytester) -> None:
+    """Precedence is option > config > default, the order the CLI has always used.
+
+    Reading config must not cost the flag its win, or a one-off run against another
+    baseline becomes impossible in any repo that configured one.
+    """
+    _project_with(pytester, 'baseline = "risk/custom.json"\n', "risk/custom.json")
+    other = pytester.path / "elsewhere.json"
+    other.write_text(json.dumps(_baseline_payload([_entry("lib/app.py", "risky", 99.0)])), encoding="utf-8")
+
+    result = pytester.runpytest_subprocess(
+        "--cov=lib",
+        "--cov-report=json:coverage.json",
+        "--riskratchet",
+        "--riskratchet-baseline",
+        str(other),
+    )
+
+    # Baselined at 99.0, so nothing regressed against *this* file — the configured one
+    # (10.0) would have failed the session.
+    assert result.ret == 0, result.stdout.str()
+
+
+def test_a_missing_baseline_names_a_command_that_writes_it(pytester: pytest.Pytester) -> None:
+    """The remediation has to be able to succeed.
+
+    `Run \\`riskratchet baseline\\` first` writes to the configured path, which is not the
+    path the message said was missing. The fix reuses `_rebaseline_command`, which carries
+    `--output`, so the printed command and the reported path are the same file by
+    construction.
+    """
+    _project_with(pytester, 'baseline = "risk/custom.json"\n', "risk/custom.json")
+    (pytester.path / "risk" / "custom.json").unlink()
+
+    result = pytester.runpytest_subprocess("--cov=lib", "--cov-report=json:coverage.json", "--riskratchet")
+
+    assert result.ret == 1, result.stdout.str()
+    text = _collapsed(result.stdout.str())
+    assert "baseline file not found" in text
+    assert "risk/custom.json" in text
+    assert "--output risk/custom.json" in text

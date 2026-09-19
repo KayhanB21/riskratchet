@@ -247,8 +247,12 @@ def test_addoption_registers_every_documented_flag() -> None:
     [
         ("--riskratchet", False),
         ("--riskratchet-paths", None),
-        ("--riskratchet-baseline", ".riskratchet.json"),
-        ("--riskratchet-coverage", "coverage.json"),
+        # 0.3.8: these two were the exceptions this test documented the rule against and
+        # then exempted — their real-valued defaults were why `[tool.riskratchet] baseline`
+        # and `coverage` could not be read at all. The effective defaults moved to
+        # `resolve_gate_settings`, where the other tiers already lived.
+        ("--riskratchet-baseline", None),
+        ("--riskratchet-coverage", None),
         ("--riskratchet-fail-new-above", None),
         ("--riskratchet-fail-regression-above", None),
         ("--riskratchet-fail-existing-above", None),

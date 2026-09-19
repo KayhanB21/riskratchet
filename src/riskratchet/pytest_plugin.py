@@ -58,14 +58,14 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     group.addoption(
         "--riskratchet-baseline",
         action="store",
-        default=".riskratchet.json",
-        help="Path to the baseline JSON. Defaults to .riskratchet.json.",
+        default=None,
+        help="Path to the baseline JSON. Defaults to [tool.riskratchet] baseline, else .riskratchet.json.",
     )
     group.addoption(
         "--riskratchet-coverage",
         action="store",
-        default="coverage.json",
-        help="Path to the coverage JSON. Defaults to coverage.json.",
+        default=None,
+        help="Path to the coverage JSON. Defaults to [tool.riskratchet] coverage, else coverage.json.",
     )
     group.addoption(
         "--riskratchet-fail-new-above",
@@ -183,25 +183,29 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     from riskratchet.git import churn_root_mismatch, is_shallow_repo
 
     rootdir = Path(str(config.rootpath))
-    baseline_path = _resolve(rootdir, config.getoption("--riskratchet-baseline"))
-    coverage_path = _resolve(rootdir, config.getoption("--riskratchet-coverage"))
     resolved = _settings_or_fail(session, rootdir)
     if resolved is None:
         return
     cfg, config_dir, settings = resolved
+    # Resolved *after* config discovery, and by the same helper the CLI uses: before 0.3.8
+    # both came from this plugin's own `default=` literals two lines above this call, so
+    # `[tool.riskratchet] baseline` / `coverage` could never be read at all.
+    baseline_path = settings.baseline
+    coverage_path = settings.coverage
 
     if not baseline_path.exists():
         _emit(
             session,
-            f"riskratchet: baseline file not found: {baseline_path}. Run `riskratchet baseline` first.",
+            f"riskratchet: baseline file not found: {baseline_path}. Write one with:",
         )
+        _emit(session, f"  {_rebaseline_command(settings, baseline_path, settings.ts_coverage)}")
         session.exitstatus = 1
         return
     if not coverage_path.exists():
         _emit(
             session,
             f"riskratchet: coverage file not found: {coverage_path}. "
-            "Run pytest with `--cov --cov-report=json:coverage.json`.",
+            f"Run pytest with `--cov --cov-branch --cov-report=json:{coverage_path}`.",
         )
         session.exitstatus = 1
         return
@@ -286,6 +290,8 @@ def _settings_or_fail(
         cfg,
         config_dir,
         paths=_resolved_all(rootdir, config.getoption("--riskratchet-paths")),
+        baseline=_resolved_one(rootdir, config.getoption("--riskratchet-baseline")),
+        coverage=_resolved_one(rootdir, config.getoption("--riskratchet-coverage")),
         fail_new_above=config.getoption("--riskratchet-fail-new-above"),
         fail_regression_above=config.getoption("--riskratchet-fail-regression-above"),
         fail_existing_above=config.getoption("--riskratchet-fail-existing-above"),
@@ -626,6 +632,16 @@ def _resolved_all(rootdir: Path, values: list[str] | None) -> list[Path] | None:
     if not values:
         return None
     return [_resolve(rootdir, value) for value in values]
+
+
+def _resolved_one(rootdir: Path, value: object) -> Path | None:
+    """Anchor a single option's value to the pytest rootdir; `None` when it was not passed.
+
+    `None` is the whole point: it is what lets `[tool.riskratchet]` be consulted. An option
+    that defaults to a real path hands this a value indistinguishable from one the user
+    typed, and config loses every time (`config.resolve_gate_settings`).
+    """
+    return None if value is None else _resolve(rootdir, value)
 
 
 def _rel_or_str(path: object, root: Path) -> str:

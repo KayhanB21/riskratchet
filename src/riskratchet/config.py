@@ -56,6 +56,13 @@ else:
 VALID_MISSING_COVERAGE = tuple(policy.value for policy in MissingCoveragePolicy)
 CONFIG_SCHEMA_URL = schema_url("config")
 
+# The two filenames every entry point falls back to when config names neither. Constants
+# because they are *defaults*, not options: spelled inline in a `default=` they become
+# indistinguishable from the user passing them, which is exactly how the pytest plugin
+# came to ignore `[tool.riskratchet] baseline` and `coverage` (see `resolve_gate_settings`).
+DEFAULT_BASELINE_FILENAME = ".riskratchet.json"
+DEFAULT_COVERAGE_FILENAME = "coverage.json"
+
 
 def _format_setup_error(headline: str, fixes: list[tuple[str, str]]) -> str:
     """Build a multi-line stderr message: headline + numbered remediations.
@@ -539,6 +546,43 @@ def resolved_ts_paths(
     if cli_value:
         return list(cli_value)
     return [_anchor_config_path(Path(item), config_dir) for item in _config_string_list(cfg, key)]
+
+
+def resolved_baseline(cli_value: Path | None, cfg: Mapping[str, Any], config_dir: Path) -> Path:
+    """Resolve the baseline file: an explicit value wins, then `baseline`, then the default.
+
+    The same resolution `check` / `diff` / `doctor` / `baseline` do inline, named once so a
+    second entry point cannot drift from it. `cli_value` is whatever the caller was handed
+    explicitly and stays caller-relative; config values anchor to the config directory, the
+    contract `coverage` and `ts_coverage` already follow.
+
+    The *default* anchors to the config directory too, because that is where
+    `riskratchet baseline` writes it — a plugin that fell back to its own rootdir would
+    look for a file the CLI never puts there.
+    """
+    if cli_value is not None:
+        return cli_value
+    return _anchor_config_path(Path(str(cfg.get("baseline", DEFAULT_BASELINE_FILENAME))), config_dir)
+
+
+def resolved_coverage_report(cli_value: Path | None, cfg: Mapping[str, Any], config_dir: Path) -> Path:
+    """Resolve a single pre-written coverage report: explicit value, then `coverage`, then the default.
+
+    For entry points that do not run auto-coverage (the pytest plugin, whose report
+    pytest-cov has already written this session). The CLI's own resolution is richer —
+    `_resolve_coverage_inputs` also weighs `coverage_map`, the auto-coverage cache and
+    `--no-auto-cov` — but it agrees with this one on the two tiers that exist here.
+
+    Unlike `resolved_baseline` the *default* is deliberately left relative: `coverage.json`
+    with no config key behind it means "the report the test run just wrote", which lands at
+    the invocation directory, not next to a config file the user may never have written.
+    """
+    if cli_value is not None:
+        return cli_value
+    configured = cfg.get("coverage")
+    if isinstance(configured, str) and configured:
+        return _anchor_config_path(Path(configured), config_dir)
+    return Path(DEFAULT_COVERAGE_FILENAME)
 
 
 def _config_string_list(cfg: Mapping[str, Any], key: str) -> list[str]:
@@ -1051,9 +1095,15 @@ class GateSettings:
 
     `tests/test_pytest_plugin.py::test_the_plugin_and_the_cli_reach_the_same_verdict`
     is the trip-wire: it fails if this and the CLI ever disagree again.
+
+    0.3.8 added `baseline` and `coverage`. They were the two keys this dataclass omitted,
+    and so the two the plugin still resolved from memory — from its own `default=` literals,
+    which meant it could not read them from config at all.
     """
 
     paths: list[Path]
+    baseline: Path
+    coverage: Path
     include: list[str]
     exclude: list[str]
     allow: list[str]
@@ -1077,6 +1127,8 @@ def resolve_gate_settings(
     config_dir: Path,
     *,
     paths: list[Path] | None = None,
+    baseline: Path | None = None,
+    coverage: Path | None = None,
     fail_new_above: float | None = None,
     fail_regression_above: float | None = None,
     fail_existing_above: float | None = None,
@@ -1094,9 +1146,17 @@ def resolve_gate_settings(
     value — the plugin's old `50.0`, `5.0`, `"src"` — cannot be told apart from the
     user passing that same value, so config could never win. That is why the plugin
     silently ignored `[tool.riskratchet]` rather than merely deprioritising it.
+
+    The same rule caught `baseline` and `coverage` two releases later: they kept their
+    real-valued `default=` in the plugin's own option table until 0.3.8, so a repo that
+    configured either gated the CLI against one file and the plugin against another —
+    and the plugin's "run `riskratchet baseline` first" named a command that would write
+    somewhere else again.
     """
     return GateSettings(
         paths=_resolved_paths(paths, cfg, config_dir),
+        baseline=resolved_baseline(baseline, cfg, config_dir),
+        coverage=resolved_coverage_report(coverage, cfg, config_dir),
         include=list(cfg.get("include", [])),
         exclude=list(cfg.get("exclude", [])),
         allow=list(cfg.get("allow", [])),
