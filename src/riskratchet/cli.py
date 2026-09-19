@@ -65,6 +65,9 @@ from riskratchet.config import (
 from riskratchet.config import (
     resolve_redaction as _resolve_redaction,
 )
+from riskratchet.config import (
+    resolved_baseline as _resolved_baseline,
+)
 from riskratchet.diagnostics import Diagnostics, write_debug_json
 from riskratchet.doctor import CheckStatus, DoctorCheck, diagnose, summarize
 from riskratchet.git import churn_root_mismatch, is_shallow_repo
@@ -576,7 +579,7 @@ def scan(
         summary=summary,
     )
     if effective_format == "table" and not quiet and not summary and output is None:
-        baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+        baseline_file = _resolved_baseline(None, cfg, config_dir)
         _emit_scan_next_step_footer(filtered, baseline_file=baseline_file, config_present=bool(cfg))
     _emit_diagnostics(
         diag,
@@ -723,7 +726,7 @@ def baseline(
         churn_days=resolved_churn_days,
         root=config_dir,
     )
-    target = output or _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    target = _resolved_baseline(output, cfg, config_dir)
     _refuse_to_erase_baseline(report, target)
     _save_baseline_or_exit(baseline_from_report(report), target)
     _emit_diagnostics(
@@ -877,9 +880,7 @@ def check(
             err=True,
         )
         raise typer.Exit(code=2)
-    baseline_file = baseline_path or _anchor_config_path(
-        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
-    )
+    baseline_file = _resolved_baseline(baseline_path, cfg, config_dir)
     baseline_present = baseline_file.exists()
     if not baseline_present and fail_above_resolved is None:
         typer.secho(
@@ -1380,9 +1381,7 @@ def diff(
         config_dir=config_dir,
     )
     diag = Diagnostics(command="diff")
-    baseline_file = baseline_path or _anchor_config_path(
-        Path(cfg.get("baseline", ".riskratchet.json")), config_dir
-    )
+    baseline_file = _resolved_baseline(baseline_path, cfg, config_dir)
     if not baseline_file.exists():
         typer.secho(
             _format_setup_error(
@@ -1729,7 +1728,7 @@ def _run_baseline_from_init(config_dir: Path) -> None:
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
     )
-    baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    baseline_file = _resolved_baseline(None, cfg, config_dir)
     _refuse_to_erase_baseline(report, baseline_file)
     _save_baseline_or_exit(baseline_from_report(report), baseline_file)
     typer.secho(
@@ -1758,7 +1757,7 @@ def doctor(
     # diagnose. A bad value is reported as its own `config` WARN row instead.
     _warn_config_problems(cfg)
     paths = _resolved_paths(None, cfg, config_dir)
-    baseline_file = _anchor_config_path(Path(cfg.get("baseline", ".riskratchet.json")), config_dir)
+    baseline_file = _resolved_baseline(None, cfg, config_dir)
     coverage_path, coverage_origin = _doctor_coverage_source(cfg, config_dir)
     checks = diagnose(
         config_dir=config_dir,

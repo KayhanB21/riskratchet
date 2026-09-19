@@ -596,6 +596,14 @@ wins. It also refuses to pass a session whose scan found nothing while the
 baseline holds entries, and warns on a shallow clone — the same guards the CLI
 has.
 
+> **Changed in 0.3.8.** These were the last two options whose default was a real
+> path rather than "unset", so `[tool.riskratchet] baseline` and `coverage` could not
+> be read at all: `riskratchet check` gated against the configured file while the
+> plugin gated against its own literal — and the missing-baseline message told you to
+> run `riskratchet baseline`, which writes to the configured path, so following it
+> could never help. A flag still beats config; a config value anchors to the config
+> directory, an explicit flag to the pytest rootdir.
+
 > **Changed in 0.3.5.** Before this the plugin read no config at all. A repo
 > with `paths = ["lib"]` had it scanning a non-existent `src`; a repo that had
 > tightened `fail_regression_above` to `1` still got its hardcoded `5`; custom
@@ -609,8 +617,8 @@ value shown):
 
 - `--riskratchet` (required to enable)
 - `--riskratchet-paths` (default: `paths`, else `src`; repeatable)
-- `--riskratchet-baseline` (default: `.riskratchet.json`)
-- `--riskratchet-coverage` (default: `coverage.json`)
+- `--riskratchet-baseline` (default: `baseline`, else `.riskratchet.json`; since 0.3.8)
+- `--riskratchet-coverage` (default: `coverage`, else `coverage.json`; since 0.3.8)
 - `--riskratchet-fail-new-above` (default: `50`)
 - `--riskratchet-fail-regression-above` (default: `5`)
 - `--riskratchet-fail-existing-above` (default: unset)
