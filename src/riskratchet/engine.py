@@ -1,8 +1,16 @@
 """Orchestration layer: walks files, gathers signals, builds a RiskReport.
 
-The CLI and the future pytest plugin both call `analyze`; nothing here is
-specific to argument parsing or output formatting. Parse errors are emitted
-as warnings on stderr and the offending file is skipped.
+The CLI and the pytest plugin both call `analyze`; nothing here is specific
+to argument parsing or output formatting. A file that fails to parse is
+skipped, and a file with no coverage entry is reported.
+
+Both of those are disclosures *about the code under analysis*, so the caller
+formats them: pass `on_warning` / `on_error` and the engine hands you the
+`Path` and the reason, leaving you to relativize and redact. Without a
+callback the engine still writes to stderr, so a direct library call is never
+silent -- the same rule `git.py` states for churn errors. Before 0.3.8 there
+was no callback at all: these two lines were `print()` calls, which is how
+they went on naming real modules under `redact_paths`.
 """
 
 from __future__ import annotations
@@ -49,6 +57,29 @@ from riskratchet.scoring import (
 )
 
 
+def _say_warning(on_warning: Any, path: Path, root: Path, message: str) -> None:
+    """Report a file the scan reached but could not match to coverage.
+
+    Hands the caller the absolute `Path` so it can pick the spelling: a redacted warning
+    only correlates with its report row if the caller hashes `relative_posix(path,
+    config_dir)`, because that is the spelling `FunctionId.path` carries and
+    `redact_function_id` hashes. Hashing anything else produces a digest that matches
+    nothing, which is a warning no one can act on.
+    """
+    if on_warning is not None:
+        on_warning(path, message)
+        return
+    print(f"warning: {relative_posix(path, root)} {message}", file=sys.stderr)
+
+
+def _say_error(on_error: Any, path: Path, root: Path, message: str) -> None:
+    """Report a file that failed to parse. Same contract as `_say_warning`."""
+    if on_error is not None:
+        on_error(path, message)
+        return
+    print(f"warning: skipping {relative_posix(path, root)}: {message}", file=sys.stderr)
+
+
 def analyze(
     paths: Sequence[Path],
     *,
@@ -65,6 +96,8 @@ def analyze(
     groups: Mapping[str, Sequence[str]] | None = None,
     on_coverage_error: Any = None,
     on_churn_error: Any = None,
+    on_warning: Any = None,
+    on_error: Any = None,
 ) -> RiskReport:
     """Analyze `paths` and return a full risk report.
 
@@ -74,6 +107,13 @@ def analyze(
 
     Pass either `coverage_path` (single coverage file) or `coverage_map` (one
     coverage file per repo-relative prefix). Passing both raises `ValueError`.
+
+    `on_warning(path, message)` reports a file the scan reached but could not
+    match to coverage; `on_error(path, message)` reports one that failed to
+    parse. Both receive the absolute `Path`, matching `analyze_typescript`'s
+    `on_error`, because the caller -- not the engine -- knows which root the
+    path must be relative to and whether redaction is active. Omit them and
+    the engine writes the same two lines to stderr it always has.
     """
     if coverage_path is not None and coverage_map:
         raise ValueError("coverage_path and coverage_map are mutually exclusive")
@@ -100,7 +140,7 @@ def analyze(
     function_risks: list[FunctionRisk] = []
     suppressed_functions = 0
     skipped_missing_coverage = 0
-    parsed_files, file_stats_list, skipped_generated_files = _parse_sources(py_files, root_path)
+    parsed_files, file_stats_list, skipped_generated_files = _parse_sources(py_files, root_path, on_error)
 
     churn_by_function = collect_function_churn(
         root_path,
@@ -122,10 +162,7 @@ def analyze(
             skipped_missing_coverage += function_risks_skipped
             continue
         if coverage_present and file_coverage is None:
-            print(
-                f"warning: {parsed.relative_path} has no matching entry in coverage data",
-                file=sys.stderr,
-            )
+            _say_warning(on_warning, parsed.path, root_path, "has no matching entry in coverage data")
         risks = _risks_for_file(
             parsed,
             coverage_data,
@@ -157,7 +194,9 @@ def analyze(
     )
 
 
-def _parse_sources(py_files: list[Path], root_path: Path) -> tuple[list[ParsedFile], list[FileStats], int]:
+def _parse_sources(
+    py_files: list[Path], root_path: Path, on_error: Any = None
+) -> tuple[list[ParsedFile], list[FileStats], int]:
     """Parse every discovered file into the ones to score, the stats of every file reached,
     and the count of generated files.
 
@@ -172,7 +211,7 @@ def _parse_sources(py_files: list[Path], root_path: Path) -> tuple[list[ParsedFi
     for py_path in py_files:
         parsed = parse_file(py_path, root=root_path)
         if isinstance(parsed, ParseError):
-            print(f"warning: skipping {parsed.path}: {parsed.message}", file=sys.stderr)
+            _say_error(on_error, parsed.path, root_path, parsed.message)
             file_stats_list.append(
                 FileStats(
                     path=relative_posix(parsed.path, root_path),

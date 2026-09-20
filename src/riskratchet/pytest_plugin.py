@@ -9,6 +9,12 @@ missing-coverage policy all come from the project's own config, with any
 between 0.3.2 and 0.3.4 — config validation, the zero-function check, the
 shallow-clone warning — and redacts its output when the project asked for it.
 
+Since 0.3.8 "its output" includes the per-file warnings raised during analysis,
+not only the regressions table. Those warnings named real modules on stderr no
+matter what `redact_paths` said, because redaction was resolved after the report
+was already built. Setup errors — a missing baseline, an unreadable coverage
+file — deliberately stay raw: they name a file you must go fix.
+
 It did none of that before 0.3.5. Dating from 0.2.0, it had drifted twenty
 releases behind: it scored with default weights against a baseline written with
 configured ones, scanned a hardcoded `src`, used its own thresholds, and printed
@@ -39,6 +45,7 @@ if TYPE_CHECKING:
 
     from riskratchet.config import GateSettings
     from riskratchet.models import Baseline, Regression, RiskReport
+    from riskratchet.redaction import RedactionConfig
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -192,6 +199,11 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # `[tool.riskratchet] baseline` / `coverage` could never be read at all.
     baseline_path = settings.baseline
     coverage_path = settings.coverage
+    # Resolved here, before the report exists, because `_report_or_fail` hands this to the
+    # warning emitter. `_report_regressions` used to resolve its own copy at the very end of
+    # the session, so every per-file warning this plugin printed was raw -- the leak
+    # README's 0.3.5 note claimed was already fixed at this door.
+    redaction = _resolved_redaction(session, cfg, config_dir)
 
     if not baseline_path.exists():
         _emit(
@@ -242,7 +254,12 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         )
 
     report = _report_or_fail(
-        session, settings, config_dir=config_dir, coverage_path=coverage_path, ts_coverage=ts_coverage
+        session,
+        settings,
+        config_dir=config_dir,
+        coverage_path=coverage_path,
+        ts_coverage=ts_coverage,
+        redaction=redaction,
     )
     if report is None:
         return
@@ -256,7 +273,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     if not regressions:
         return
 
-    _report_regressions(session, regressions, cfg=cfg, config_dir=config_dir)
+    _report_regressions(session, regressions, redaction=redaction)
     session.exitstatus = 1
 
 
@@ -381,6 +398,7 @@ def _report_or_fail(
     config_dir: Path,
     coverage_path: Path,
     ts_coverage: list[Path],
+    redaction: RedactionConfig,
 ) -> RiskReport | None:
     """Build the report through the shared seam, or fail the session explaining why.
 
@@ -411,7 +429,13 @@ def _report_or_fail(
             on_churn_error=lambda message: _emit(session, f"riskratchet: {message}"),
             on_ts_warning=lambda message: _emit(session, f"typescript: {message}"),
             on_ts_error=lambda path, message: _emit(
-                session, f"typescript: skipping {_rel_or_str(path, config_dir)}: {message}"
+                session, f"typescript: skipping {_disclosed(path, config_dir, redaction)}: {message}"
+            ),
+            on_warning=lambda path, message: _emit(
+                session, f"warning: {_disclosed(path, config_dir, redaction)} {message}"
+            ),
+            on_error=lambda path, message: _emit(
+                session, f"warning: skipping {_disclosed(path, config_dir, redaction)}: {message}"
             ),
         )
     except (ImportError, FileNotFoundError, ValueError) as exc:
@@ -542,25 +566,22 @@ def _gated(
     )
 
 
-def _report_regressions(
-    session: pytest.Session,
-    regressions: list[Regression],
-    *,
-    cfg: dict[str, Any],
-    config_dir: Path,
-) -> None:
-    """Render the regressions table, redacted if the project asked for that.
+def _resolved_redaction(session: pytest.Session, cfg: dict[str, Any], config_dir: Path) -> RedactionConfig:
+    """Resolve this run's redaction settings, once, as early as the config allows.
 
-    Redaction is an output transform applied after the gate, so it can never change the
-    verdict — but it does have to happen. `redact_regressions` exists for exactly this
-    table, and the plugin used to print raw paths and qualnames straight into CI logs
-    for repos running `redact_paths` / `private_comment`.
+    Called from `pytest_sessionfinish` the moment `config_dir` is known, because two
+    separate consumers need it: the per-file warning emitter (which runs *during*
+    analysis) and the regressions table (which runs after). Resolving it at the second
+    one, as this plugin did before 0.3.8, leaves the first unredacted.
+
+    Messages emitted before this point cannot redact -- `resolve_redaction` reads the
+    config file, so anything reporting a problem *with* that file necessarily precedes
+    it. Those are setup errors addressed to whoever ran pytest, and they stay raw by
+    the same rule the CLI applies.
     """
     from riskratchet.config import resolve_redaction
-    from riskratchet.redaction import redact_regressions
-    from riskratchet.reporting import render_regressions_table
 
-    redaction = resolve_redaction(
+    return resolve_redaction(
         redact_paths=False,
         redact_qualnames=False,
         private_comment=False,
@@ -572,6 +593,24 @@ def _report_regressions(
         no_redact_qualnames=bool(session.config.getoption("--riskratchet-no-redact-qualnames")),
         no_private_comment=bool(session.config.getoption("--riskratchet-no-private-comment")),
     )
+
+
+def _report_regressions(
+    session: pytest.Session,
+    regressions: list[Regression],
+    *,
+    redaction: RedactionConfig,
+) -> None:
+    """Render the regressions table, redacted if the project asked for that.
+
+    Redaction is an output transform applied after the gate, so it can never change the
+    verdict — but it does have to happen. `redact_regressions` exists for exactly this
+    table, and the plugin used to print raw paths and qualnames straight into CI logs
+    for repos running `redact_paths` / `private_comment`.
+    """
+    from riskratchet.redaction import redact_regressions
+    from riskratchet.reporting import render_regressions_table
+
     _emit(session, "riskratchet: regressions detected")
     _emit(session, render_regressions_table(redact_regressions(regressions, redaction)))
 
@@ -651,6 +690,21 @@ def _rel_or_str(path: object, root: Path) -> str:
         return relative_posix(Path(str(path)), root)
     except (ValueError, OSError):
         return str(path)
+
+
+def _disclosed(path: object, config_dir: Path, redaction: RedactionConfig) -> str:
+    """Name a file under analysis on the session's message stream.
+
+    The plugin's half of `cli._Disclosures`, and it applies the same two rules: hash
+    `relative_posix(path, config_dir)`, because that is the spelling `FunctionId.path`
+    carries and `redact_function_id` hashes, so a warning's digest is the one its row
+    in the regressions table shows; and use it only for disclosures *about the scanned
+    code*, never for setup errors like a missing baseline, where a hashed filename
+    would make the remediation unfollowable.
+    """
+    from riskratchet.redaction import redact_path_string
+
+    return redact_path_string(_rel_or_str(path, config_dir), redaction)
 
 
 def _emit(session: pytest.Session, message: str) -> None:

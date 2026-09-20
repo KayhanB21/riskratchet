@@ -552,6 +552,7 @@ def scan(
         ts_enabled=ts.enabled,
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
+        redaction=redaction,
     )
     filtered = _filtered_report(report, min_score=min_score, top=top or (None if limit == 0 else limit))
     _populate_run_diagnostics(
@@ -970,6 +971,7 @@ def check(
         ts_enabled=ts.enabled,
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
+        redaction=redaction,
     )
     if old is not None:
         old, report = _apply_baseline_guards(
@@ -1203,6 +1205,20 @@ def explain(
         ts_enabled=ts.enabled,
     )
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
+    # Resolved *before* the report is built, not after it: `_build_report_or_exit` hands
+    # this config to the warning emitter, so a run that resolved redaction later emitted
+    # every per-file warning raw and only hashed the report at the end (0.3.8).
+    redaction = _resolve_redaction(
+        redact_paths=redact_paths,
+        redact_qualnames=redact_qualnames,
+        private_comment=private_comment,
+        no_redact_paths=no_redact_paths,
+        no_redact_qualnames=no_redact_qualnames,
+        no_private_comment=no_private_comment,
+        redact_salt=redact_salt,
+        cfg=cfg,
+        config_dir=config_dir,
+    )
     # `root=config_dir`, not the process cwd. `analyze` defaults to `Path.cwd()`, so
     # `explain` computed `FunctionId.path` against a different root than every other
     # command: run from a nested package it rejected the very target `check` had just
@@ -1226,6 +1242,7 @@ def explain(
         ts_enabled=ts.enabled,
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
+        redaction=redaction,
     )
     _populate_run_diagnostics(
         diag,
@@ -1248,17 +1265,6 @@ def explain(
         fn = report.find(f"{_rel_or_str(file_path, config_dir)}::{qualname}")
     if fn is None:
         _exit_target_not_found(target, report)
-    redaction = _resolve_redaction(
-        redact_paths=redact_paths,
-        redact_qualnames=redact_qualnames,
-        private_comment=private_comment,
-        no_redact_paths=no_redact_paths,
-        no_redact_qualnames=no_redact_qualnames,
-        no_private_comment=no_private_comment,
-        redact_salt=redact_salt,
-        cfg=cfg,
-        config_dir=config_dir,
-    )
     fn = redact_function(fn, redaction)
     _emit_explanation(
         fn,
@@ -1452,6 +1458,7 @@ def diff(
         ts_enabled=ts.enabled,
         ts_coverage=ts.coverage,
         ts_entry=ts.entry,
+        redaction=redaction,
     )
     old, report = _apply_baseline_guards(
         old,
@@ -2442,6 +2449,50 @@ def _apply_baseline_guards(
     return suppress_stale_typescript_renames(old, report)
 
 
+class _Disclosures:
+    """The one owner of stderr warnings that name a file under analysis.
+
+    Two rules live here so no caller reproduces them from memory, which is how the
+    banner came to be the only redacted line on the stream:
+
+    1.  **Spelling.** A warning is hashed as `relative_posix(path, config_dir)` --
+        the spelling `FunctionId.path` carries and `redact_function_id` hashes. Any
+        other spelling yields a digest matching no row in the report, so the reader
+        cannot tell which function the warning is about.
+    2.  **Scope.** Only disclosures *about the code under analysis* come through
+        here. Setup errors addressed to whoever ran the command (a missing baseline,
+        an unreadable coverage file) stay raw, because a hashed filename in a
+        remediation makes it unfollowable. See the redaction section of the README.
+
+    Warnings raised before the config is read cannot redact: `resolve_redaction` needs
+    the file being parsed. That is a documented limit, not an oversight.
+    """
+
+    def __init__(self, config_dir: Path, redaction: RedactionConfig | None = None) -> None:
+        self._config_dir = config_dir
+        self._redaction = redaction or RedactionConfig()
+
+    def _name(self, path: Any) -> str:
+        return redact_path_string(_rel_or_str(path, self._config_dir), self._redaction)
+
+    def warning(self, path: Any, message: str) -> None:
+        typer.secho(f"warning: {self._name(path)} {message}", fg=typer.colors.YELLOW, err=True)
+
+    def error(self, path: Any, message: str) -> None:
+        typer.secho(f"warning: skipping {self._name(path)}: {message}", fg=typer.colors.YELLOW, err=True)
+
+    def ts_error(self, path: Any, message: str) -> None:
+        _ts_warn(f"skipping {self._name(path)}: {message}")
+
+    def engine_kwargs(self) -> dict[str, Any]:
+        """The `on_warning` / `on_error` pair for `engine.analyze`, wired as one unit.
+
+        `analyze` is called from six places in this module; handing them a pair rather
+        than two loose lambdas is what keeps one of them from quietly going unredacted.
+        """
+        return {"on_warning": self.warning, "on_error": self.error}
+
+
 def _rel_or_str(path: Any, root: Path) -> str:
     from ._paths import relative_posix
 
@@ -2502,6 +2553,7 @@ def _build_report_or_exit(
     ts_enabled: bool,
     ts_coverage: list[Path] | None,
     ts_entry: list[Path] | None,
+    redaction: RedactionConfig | None = None,
 ) -> RiskReport:
     """Build a report for `scan`/`check`/`diff`/`baseline`, converting setup
     failures into actionable stderr.
@@ -2512,6 +2564,13 @@ def _build_report_or_exit(
     boundary keeps the error handling honest in all four places at once, and
     mirrors `_load_baseline_or_exit`: a bad file is a setup problem, so it
     exits 2 with the command to run next, never a traceback.
+
+    `redaction` is the resolved config for *this* run, and it is wired here rather
+    than at the six call sites because this is the only place both backends' per-file
+    warnings pass through. Pass it and those warnings hash; omit it (as `baseline`
+    does, writing a file that must carry real identities) and they stay raw. Callers
+    must therefore resolve redaction **before** calling this -- `explain` did not,
+    until 0.3.8.
     """
     if use_git and is_shallow_repo(config_dir):
         typer.secho(
@@ -2522,6 +2581,7 @@ def _build_report_or_exit(
         )
     if use_git:
         _warn_churn_root_mismatch(config_dir)
+    disclose = _Disclosures(config_dir, redaction)
     try:
         return _warned_about_inert_allow(
             build_report(
@@ -2541,7 +2601,8 @@ def _build_report_or_exit(
                 ts_coverage_paths=ts_coverage or [],
                 ts_entries=ts_entry or [],
                 on_ts_warning=_ts_warn,
-                on_ts_error=lambda path, msg: _ts_warn(f"skipping {_rel_or_str(path, config_dir)}: {msg}"),
+                on_ts_error=disclose.ts_error,
+                **disclose.engine_kwargs(),
                 on_coverage_error=_coverage_shard_warn,
                 on_churn_error=_churn_warn,
             ),

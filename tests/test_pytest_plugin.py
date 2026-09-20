@@ -622,3 +622,43 @@ def test_a_missing_baseline_names_a_command_that_writes_it(pytester: pytest.Pyte
     assert "baseline file not found" in text
     assert "risk/custom.json" in text
     assert "--output risk/custom.json" in text
+
+
+# --- 0.3.8: the plugin's warning stream redacts too ----------------------
+
+
+_BROKEN = "def alpha(x:\n"  # unparseable: reported as a skipped file
+
+
+def test_the_plugin_does_not_name_scanned_files_in_warnings(pytester: pytest.Pytester) -> None:
+    """The door README's 0.3.5 note already claimed was fixed.
+
+    `private_comment = true` is in `_CONFIG`, so the regressions table hashes. The
+    per-file warnings raised during analysis did not, because the plugin resolved
+    redaction in `_report_regressions` — after the report was already built.
+    """
+    _configured_project(pytester)
+    _write(pytester.path / "lib" / "acquisition_target.py", _BROKEN)
+
+    result = pytester.runpytest_subprocess("--cov=lib", "--cov-report=json:coverage.json", "--riskratchet")
+
+    text = result.stdout.str()
+    assert "syntax error" in text  # still disclosed...
+    assert "acquisition_target" not in text  # ...without naming the module
+    assert "lib/app.py" not in text
+
+
+def test_a_missing_baseline_still_names_the_file_under_redaction(pytester: pytest.Pytester) -> None:
+    """The line redaction does not cross, at the plugin door.
+
+    A hashed path here would leave no way to follow the remediation printed with it.
+    """
+    _configured_project(pytester)
+    (pytester.path / ".riskratchet.json").unlink()
+
+    result = pytester.runpytest_subprocess("--cov=lib", "--cov-report=json:coverage.json", "--riskratchet")
+
+    assert result.ret == 1
+    text = _collapsed(result.stdout.str())
+    assert ".riskratchet.json" in text
+    assert "riskratchet baseline" in text

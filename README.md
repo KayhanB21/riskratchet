@@ -603,6 +603,10 @@ has.
 > run `riskratchet baseline`, which writes to the configured path, so following it
 > could never help. A flag still beats config; a config value anchors to the config
 > directory, an explicit flag to the pytest rootdir.
+>
+> Also in 0.3.8: the per-file warnings the plugin raises while scanning now redact
+> when you have asked for that, so `private_comment = true` covers the whole
+> session's output rather than the regressions table alone.
 
 > **Changed in 0.3.5.** Before this the plugin read no config at all. A repo
 > with `paths = ["lib"]` had it scanning a non-existent `src`; a repo that had
@@ -610,7 +614,9 @@ has.
 > `weights` were ignored, so its scores could not be compared with the baseline
 > the CLI wrote; and `private_comment = true` did not stop it printing raw paths
 > into CI logs. Expect it to start agreeing with `riskratchet check` — including
-> failing where it used to pass.
+> failing where it used to pass. (The last of those was only half fixed: the
+> regressions table redacted from 0.3.5, but the warnings raised while scanning
+> kept naming real modules until 0.3.8.)
 
 Available flags (each defaults to the `[tool.riskratchet]` value, then to the
 value shown):
@@ -882,9 +888,34 @@ When redaction is active, the diagnostics surfaces above (banner, `--verbose`,
 `--debug-json`) hash their paths too, so a `--private-comment` run does not leak
 through diagnostics.
 
-For closed-source repos, redaction hashes identifiers in **every** output
-format while leaving the ratchet decision unchanged (redaction runs after
-baseline matching):
+**What redacts, and what deliberately doesn't.** Two kinds of message reach
+stderr, and they follow opposite rules:
+
+- **Disclosures about the code under analysis** redact: the regressions table,
+  the report in every format, the diagnostics surfaces, and — since 0.3.8 — the
+  per-file warnings raised while scanning (a file that fails to parse, a file
+  with no entry in the coverage data), at the CLI door and the pytest-plugin
+  door alike. A redacted warning carries the same digest as the matching row in
+  the report, so you can still tell which file it is about.
+- **Setup errors addressed to whoever ran the command** stay raw: a missing
+  baseline, an unreadable coverage report, an invalid config key. Hashing the
+  filename in "baseline file not found: `.riskratchet.json`" would leave you no
+  way to act on it. `doctor` follows the same rule for the same reason, and
+  takes no redaction flags.
+
+Two limits worth naming, so the contract is checkable rather than aspirational:
+
+- A message about the config file itself is raised before that file has been
+  read, so it cannot redact. `resolve_redaction` gets its settings from the file
+  being reported on.
+- Two setup notices name directories you configured — "scan path outside the
+  config directory" and the churn root mismatch. Both stay raw under the rule
+  above: each one asks you to change a path you chose, and a hashed directory
+  would leave nothing to act on. The banner still hashes the same scan roots.
+
+For closed-source repos, redaction hashes identifiers in every output format
+and in the warnings raised alongside them, while leaving the ratchet decision
+unchanged (redaction runs after baseline matching):
 
 ```bash
 riskratchet check src --coverage coverage.json --redact-paths       # hash file paths

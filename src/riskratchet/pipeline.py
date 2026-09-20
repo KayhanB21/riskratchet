@@ -39,6 +39,8 @@ def build_report(
     typescript: bool = False,
     ts_coverage_paths: Sequence[Path] | None = None,
     ts_entries: Sequence[Path] | None = None,
+    on_warning: Any = None,
+    on_error: Any = None,
     on_ts_warning: Any = None,
     on_ts_error: Any = None,
     on_coverage_error: Any = None,
@@ -50,6 +52,12 @@ def build_report(
     complexity calibration and optional `ts_coverage_paths` / `ts_entries`) and merges the two — the
     Python functions first, then TypeScript. The Python-only path is byte-for-byte what
     `engine.analyze` produced before this seam existed.
+
+    `on_warning` / `on_error` are the Python backend's per-file disclosures; `on_ts_warning` /
+    `on_ts_error` are the TypeScript backend's. They stay separate because only the TypeScript
+    pair existed before 0.3.8, and the Python engine printed its two warnings itself -- which is
+    how they kept naming real modules under `redact_paths`. Both backends now hand the caller a
+    `Path` and a reason, and the caller decides the spelling.
     """
     report = analyze(
         paths,
@@ -66,6 +74,8 @@ def build_report(
         groups=groups,
         on_coverage_error=on_coverage_error,
         on_churn_error=on_churn_error,
+        on_warning=on_warning,
+        on_error=on_error,
     )
     if not typescript:
         return report

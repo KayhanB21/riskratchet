@@ -320,3 +320,133 @@ def test_explicit_salt_silences_warning(tmp_path: Path, monkeypatch: pytest.Monk
     )
     assert result.exit_code == 0
     assert "redacting without a salt" not in result.stderr
+
+
+# --- 0.3.8: the warning stream redacts too -------------------------------
+#
+# README promised redaction "hashes identifiers in every output format", and the 0.3.5
+# note claimed the plugin no longer printed raw paths into CI logs. Neither covered the
+# per-file warnings `engine.analyze` raised during a scan: they went straight to stderr
+# with `print()`, so a `--private-comment` run hashed its report and named the real
+# modules two lines above it.
+
+
+BROKEN = "def alpha(x:\n"  # unparseable: reported as a skipped file
+
+
+def _leaky_project(tmp_path: Path) -> Path:
+    """A project whose scan raises both per-file disclosures: a parse failure and a
+    file absent from coverage data."""
+    (tmp_path / "pyproject.toml").write_text(
+        '[project]\nname = "leak-fixture"\nversion = "0.0.0"\n', encoding="utf-8"
+    )
+    src = tmp_path / "src" / "secretpkg"
+    src.mkdir(parents=True, exist_ok=True)
+    (src / "acquisition_target.py").write_text(BROKEN, encoding="utf-8")
+    (src / "ok.py").write_text(COMPLEX + "\n", encoding="utf-8")
+    (tmp_path / "coverage.json").write_text(
+        json.dumps({"meta": {"version": "7.0.0"}, "files": {}}), encoding="utf-8"
+    )
+    return src
+
+
+def test_warnings_do_not_name_scanned_files_under_redaction(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    _leaky_project(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            "src",
+            "--no-git",
+            "--no-auto-cov",
+            "--coverage",
+            "coverage.json",
+            "--private-comment",
+            "--redact-salt",
+            "s",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    # Both warnings are still raised -- redaction must not silence a disclosure.
+    assert "has no matching entry in coverage data" in result.stderr
+    assert "syntax error" in result.stderr
+    # ...but neither names the module.
+    assert "secretpkg" not in result.stderr
+    assert "acquisition_target" not in result.stderr
+    assert "ok.py" not in result.stderr
+
+
+def test_a_redacted_warning_carries_the_same_digest_as_its_report_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The point of a redacted warning is that you can still tell which function it is about.
+
+    `redact_function_id` hashes `FunctionId.path`, which is `relative_posix(path, config_dir)`.
+    A warning that hashes any other spelling -- the absolute path, say -- produces a digest
+    matching no row in the report, which is a warning nobody can act on.
+    """
+    monkeypatch.chdir(tmp_path)
+    _leaky_project(tmp_path)
+    args = ["--no-git", "--no-auto-cov", "--coverage", "coverage.json", "--redact-paths"]
+    result = runner.invoke(app, ["scan", "src", *args, "--redact-salt", "s", "--format", "json"])
+    assert result.exit_code == 0, result.output
+
+    expected = redact_function_id(
+        FunctionId(path="src/secretpkg/ok.py", qualname="alpha"),
+        RedactionConfig(redact_paths=True, salt="s"),
+    ).path
+    assert f"warning: {expected} has no matching entry in coverage data" in result.stderr
+    # And that digest is the one the report itself prints.
+    assert expected in result.stdout
+
+
+def test_warnings_stay_stable_when_run_from_outside_the_config_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Running from elsewhere used to print the absolute path -- the whole tree, username
+    included -- because the parse-failure warning named `parsed.path`, not the root-relative
+    spelling every other surface uses."""
+    project = tmp_path / "project"
+    project.mkdir()
+    _leaky_project(project)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            str(project / "src"),
+            "--config",
+            str(project / "pyproject.toml"),
+            "--no-git",
+            "--no-auto-cov",
+            "--coverage",
+            str(project / "coverage.json"),
+            "--private-comment",
+            "--redact-salt",
+            "s",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert str(tmp_path) not in result.stderr
+    assert "secretpkg" not in result.stderr
+
+
+def test_setup_errors_still_name_the_file_you_must_fix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The line redaction does not cross. A missing coverage report is addressed to whoever
+    ran the command, and a hashed filename would make the remediation unfollowable."""
+    monkeypatch.chdir(tmp_path)
+    _leaky_project(tmp_path)
+    result = runner.invoke(
+        app,
+        ["scan", "src", "--no-git", "--no-auto-cov", "--coverage", "absent.json", "--private-comment"],
+    )
+    assert result.exit_code == 2, result.output
+    assert "absent.json" in result.stderr
