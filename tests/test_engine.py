@@ -227,3 +227,69 @@ def test_a_file_that_fails_to_parse_is_still_listed(
     assert listed["broken.py"].total_lines == 3
     assert report.skipped_generated_files == 0
     assert "skipping" in capsys.readouterr().err
+
+
+# --- 0.3.8: per-file disclosures are the caller's to format --------------
+
+
+def test_on_error_receives_the_path_and_the_engine_stays_quiet(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A caller that supplies `on_error` formats the message itself.
+
+    The engine hands over the `Path`, not a finished sentence, because only the caller
+    knows which root to relativize against and whether redaction is on. Before 0.3.8
+    there was no callback: `engine.analyze` printed the path itself, which is why a
+    `--private-comment` run still named real modules on stderr.
+    """
+    _write(tmp_path, "broken.py", "def alpha(x:\n")
+    seen: list[tuple[Path, str]] = []
+
+    analyze([tmp_path], root=tmp_path, use_git=False, on_error=lambda p, m: seen.append((p, m)))
+
+    assert len(seen) == 1
+    path, message = seen[0]
+    assert isinstance(path, Path)
+    assert path.name == "broken.py"
+    assert "syntax error" in message
+    assert capsys.readouterr().err == ""  # the callback took ownership of the stream
+
+
+def test_on_warning_receives_the_path_of_a_file_absent_from_coverage(tmp_path: Path) -> None:
+    _write(tmp_path, "m.py", "def alpha(x):\n    return x + 1\n")
+    (tmp_path / "cov.json").write_text(
+        json.dumps({"meta": {"version": "7.0.0"}, "files": {}}), encoding="utf-8"
+    )
+    seen: list[tuple[Path, str]] = []
+
+    analyze(
+        [tmp_path],
+        root=tmp_path,
+        coverage_path=tmp_path / "cov.json",
+        use_git=False,
+        on_warning=lambda p, m: seen.append((p, m)),
+    )
+
+    assert len(seen) == 1
+    path, message = seen[0]
+    assert path.name == "m.py"
+    assert "no matching entry in coverage data" in message
+
+
+def test_without_a_callback_the_engine_names_the_file_relative_to_the_root(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A direct library call is never silent, and never prints an absolute path.
+
+    The default used to interpolate `parsed.path`, so a run from outside the root
+    disclosed the whole tree -- username included -- on stderr.
+    """
+    nested = tmp_path / "pkg"
+    nested.mkdir()
+    _write(nested, "broken.py", "def alpha(x:\n")
+
+    analyze([nested], root=tmp_path, use_git=False)
+
+    err = capsys.readouterr().err
+    assert "warning: skipping pkg/broken.py:" in err
+    assert str(tmp_path) not in err

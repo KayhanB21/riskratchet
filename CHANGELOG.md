@@ -23,6 +23,18 @@ release; renames or removals are called out below under **Breaking**.
   missing and said to run `riskratchet baseline`, which writes to the *configured* path. It
   now names the resolved path and the exact command that writes there, `--output` included.
 
+- **Redaction now reaches the warning stream.** With `redact_paths` (or `private_comment`)
+  active, a scan hashed its report and then named real modules two lines above it: the
+  per-file warnings `engine.analyze` raises — a file that fails to parse, a file absent from
+  the coverage data — went straight to stderr with `print()`, reachable by no redaction
+  setting. The parse-failure warning printed the **absolute** path, so a run from outside the
+  config directory disclosed the whole tree, username included. Both doors leaked: the CLI,
+  and the pytest plugin that README's 0.3.5 note said was fixed. A redacted warning now
+  carries the same digest as the matching row in the report, so it stays actionable.
+
+- **`riskratchet explain` resolved redaction after building its report**, so its warnings
+  could not redact even in principle. It now resolves before, as the other commands do.
+
 ### Changed
 
 - The plugin's baseline and coverage resolution moved into `GateSettings`, the dataclass
@@ -33,6 +45,19 @@ release; renames or removals are called out below under **Breaking**.
   or `coverage` differs from the defaults will see the plugin start reading a different file,
   and may start failing where it used to pass** — it is now reading the same file
   `riskratchet check` does.
+
+- `engine.analyze` and `pipeline.build_report` accept `on_warning(path, message)` and
+  `on_error(path, message)`, mirroring the callbacks `analyze_typescript` already had. The
+  engine hands the caller a `Path` and a reason rather than a finished sentence, because only
+  the caller knows which root to relativize against and whether redaction is active —
+  redaction stays an output transform and the engine never learns about it. **Library callers
+  that supply neither still get both warnings on stderr**, now naming the file relative to
+  `root` rather than by absolute path.
+
+- README's redaction section states which messages redact and which stay raw, and why:
+  disclosures about the code under analysis hash, setup errors addressed to the operator do
+  not. It previously claimed redaction covered "every output format", which the warning
+  stream contradicted.
 
 ## [0.3.7] - 2026-09-11
 
