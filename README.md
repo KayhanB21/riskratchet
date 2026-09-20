@@ -115,7 +115,7 @@ warnings → `baseline` → `check`.
 ## GitHub Action
 
 The composite action ships in `action.yml` so adopters don't have to
-copy a workflow file — `uses: KayhanB21/riskratchet@v0.3.7` is the
+copy a workflow file — `uses: KayhanB21/riskratchet@v0.3.8` is the
 canonical reference. The action installs riskratchet via `uv tool
 install`, runs `check` (`--format pr-comment` in both baseline and
 no-baseline modes), upserts a sticky PR comment, and surfaces the
@@ -144,7 +144,7 @@ jobs:
       # Install your project and its test dependencies however you normally do:
       - run: pip install -e '.[dev]'
       - run: pytest --cov --cov-branch --cov-report=json:coverage.json -q
-      - uses: KayhanB21/riskratchet@v0.3.7
+      - uses: KayhanB21/riskratchet@v0.3.8
         with:
           coverage: coverage.json
 ```
@@ -300,7 +300,7 @@ repos:
         always_run: true
 
   - repo: https://github.com/KayhanB21/riskratchet
-    rev: v0.3.7
+    rev: v0.3.8
     hooks:
       - id: riskratchet
         args:
@@ -487,7 +487,7 @@ read it against the document you are holding:
 | Document | `version` is |
 | --- | --- |
 | `scan` / `check` / `diff` / `explain` / `--summary` JSON | the **output contract** version, riskratchet's own `MAJOR.MINOR` (`"0.3"`) |
-| `config show --json`, `doctor --json` | the **package** version (`"0.3.7"`) |
+| `config show --json`, `doctor --json` | the **package** version (`"0.3.8"`) |
 | `--debug-json` | an **integer** contract version of its own, independent of both |
 | `.riskratchet.json` | the **baseline format** version (`"3"`), independent of all three |
 
@@ -1189,7 +1189,7 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npx vitest run --coverage --coverage.reporter=lcov   # or c8 / nyc / jest
-      - uses: KayhanB21/riskratchet@v0.3.7
+      - uses: KayhanB21/riskratchet@v0.3.8
         with:
           typescript: 'true'                  # or leave empty and set `typescript = true` in config
           ts-coverage: coverage/lcov.info
