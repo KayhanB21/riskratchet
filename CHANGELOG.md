@@ -11,6 +11,8 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-09-25
+
 ### Fixed
 
 - **A baselined function that is still in the code is no longer reported as deleted.** An
@@ -24,6 +26,14 @@ release; renames or removals are called out below under **Breaking**.
   these entries by cause. `check`, `diff`, and the pytest plugin print one counts-only
   warning, and the diff `reason` names the cause. The verdict, the scores, the `removed`
   status, and all nine JSON schemas don't change.
+
+### Changed
+
+- **The ruff quality set is on.** `select` adds 21 rule families (`C4`, `PTH`, `RET`, `TID`,
+  `PIE`, `PERF`, `FURB`, `LOG`, `G`, `ISC`, `RSE`, `PGH`, `SLOT`, `TC`, `DTZ`, `T20`, `BLE`,
+  `FA`, `YTT`, `ASYNC`, and `EXE`). The library's four stderr fallbacks write through one
+  helper, `riskratchet._stderr.write_stderr`, so `T20` flags any new `print()` in `src/`.
+  No behavior, output, or score changes.
 
 ## [0.3.8] - 2026-09-19
 
