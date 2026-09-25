@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
 
@@ -19,6 +19,7 @@ from riskratchet import __version__
 from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
     BaselineVersionError,
+    baseline_disclosures,
     baseline_from_report,
     baseline_scored_without_churn,
     languages_not_scanned,
@@ -29,8 +30,6 @@ from riskratchet.baseline import (
     scoring_model_stale,
     suppress_stale_typescript_renames,
     typescript_identity_stale,
-    unscanned_baseline_files,
-    unscanned_files_message,
 )
 from riskratchet.baseline import (
     diff as diff_baseline,
@@ -1023,7 +1022,7 @@ def check(
             fail_existing_above=fail_existing_above_val,
         )
         # Before redaction: the rule needs real paths; it prints counts only.
-        _warn_unscanned_baseline_files(
+        _warn_baseline_disclosures(
             diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
         )
         _note_renames_gated_as_new(diff_report, fail_new_above=fail_new_above_val)
@@ -1497,9 +1496,7 @@ def diff(
         ),
         groups=_resolved_groups(cfg),
     )
-    _warn_unscanned_baseline_files(
-        diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
-    )
+    _warn_baseline_disclosures(diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths)
     if redaction.active:
         diff_report = redact_diff(diff_report, redaction)
     links = _links_for(repo_url, commit_ref, redaction)
@@ -2291,21 +2288,22 @@ def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
         )
 
 
-def _warn_unscanned_baseline_files(
+def _warn_baseline_disclosures(
     diff_report: DiffReport, *, report: RiskReport, config_dir: Path, scan_roots: list[Path]
 ) -> None:
-    """Say when baselined files under the scanned paths were not scanned this run.
+    """Say which baselined entries this run did not gate, counts only.
 
     Three of four baseline entries hidden by an `exclude` used to produce "No risk
     regressions detected." and exit 0 — only the PR comment's collapsed diff said
-    `Removed: 3`. Warn, never fail: the rule cannot tell a filter from an intent, so it
-    names the count and the two fixes and leaves the verdict alone.
+    `Removed: 3` (fixed in 0.3.6). An `allow` match, a `@generated` header, a parse
+    failure, or `missing_coverage = "skip"` did the same until 0.3.9. Warn, never fail:
+    the rule cannot tell a filter from an intent, so it names the counts and leaves the
+    verdict alone.
     """
-    entries, files = unscanned_baseline_files(
+    for message in baseline_disclosures(
         diff_report, report=report, config_dir=config_dir, scan_roots=scan_roots
-    )
-    if entries:
-        typer.secho(unscanned_files_message(entries, files), fg=typer.colors.YELLOW, err=True)
+    ):
+        typer.secho(message, fg=typer.colors.YELLOW, err=True)
 
 
 def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float) -> None:
@@ -2317,7 +2315,8 @@ def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float
     `--fail-regression-above 1` passed with no signal. The matcher contract stays;
     this says out loud which gate applied.
     """
-    removed = len(diff_report.by_status(DiffStatus.REMOVED))
+    # An entry still in the code was not renamed; `_warn_baseline_disclosures` owns it.
+    removed = sum(entry.left_because is None for entry in diff_report.by_status(DiffStatus.REMOVED))
     new = len(diff_report.by_status(DiffStatus.NEW))
     if not removed or not new:
         return
@@ -3035,18 +3034,14 @@ def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | 
         functions = [fn for fn in functions if fn.score >= min_score]
     if top is not None:
         functions = functions[:top]
-    return RiskReport(
+    # Filtering picks a subset of rows to *show*; it does not rescore anything, so every
+    # other field (provenance, disclosure counts, what went unscored) must survive.
+    # Rebuilding the report field by field once let `scan --top` write a baseline claiming
+    # no provenance at all, so this copies instead.
+    return replace(
+        report,
         functions=tuple(functions),
-        files=report.files,
-        coverage_status=report.coverage_status,
-        suppressed_functions=report.suppressed_functions,
-        skipped_missing_coverage=report.skipped_missing_coverage,
         analyzed_functions=report.analyzed_functions or len(report.functions),
-        skipped_generated_files=report.skipped_generated_files,
-        # Filtering picks a subset of rows to *show*; it does not rescore anything, so the
-        # provenance of the numbers is the same and must survive. Dropping it here would let
-        # `scan --top` write a baseline claiming no provenance at all.
-        scoring=report.scoring,
     )
 
 

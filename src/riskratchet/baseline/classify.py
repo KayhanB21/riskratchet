@@ -30,6 +30,7 @@ from riskratchet.models import (
     FunctionRisk,
     RiskComponents,
     RiskReport,
+    unscored_breakdown,
 )
 
 
@@ -100,6 +101,55 @@ def unscanned_files_message(entries: int, files: int) -> str:
         "but not scanned this run (include / exclude?) — they are not being gated. "
         "Widen the filters, or run `riskratchet baseline` to drop them deliberately."
     )
+
+
+def left_the_gate_message(diff_report: DiffReport) -> str | None:
+    """The warning both doors print when baselined functions are still in the code but were
+    not scored this run (0.3.9), or None when there are none.
+
+    `unscanned_baseline_files` cannot see these: the file was reached, so its rule reads the
+    missing function as a deletion. An `allow` match, a `@generated` marker, a parse failure,
+    and `missing_coverage = "skip"` each keep the file in `report.files` while taking the
+    function out of the gate. Warn, never fail, for the reason that rule gives: the tool
+    cannot tell a filter from an intent. Counts only, so it is safe under redaction.
+    """
+    counts = diff_report.left_the_gate()
+    if not counts:
+        return None
+    total = sum(counts.values())
+    subject = (
+        "1 baseline entry is still in the code but was not scored this run"
+        if total == 1
+        else f"{total} baseline entries are still in the code but were not scored this run"
+    )
+    pronoun = "it is" if total == 1 else "they are"
+    return (
+        f"warning: {subject} {unscored_breakdown(counts)}; {pronoun} not being gated. "
+        "`riskratchet diff` names the reason for each one."
+    )
+
+
+def baseline_disclosures(
+    diff_report: DiffReport,
+    *,
+    report: RiskReport,
+    config_dir: Path,
+    scan_roots: Sequence[Path],
+) -> list[str]:
+    """Every warning about baseline entries this run did not gate, in the order both doors
+    print them: entries whose file was not reached (a filter), then entries whose function
+    is still in the code but was not scored. One list, so the CLI and the pytest plugin
+    cannot drift on which disclosures exist."""
+    messages: list[str] = []
+    entries, files = unscanned_baseline_files(
+        diff_report, report=report, config_dir=config_dir, scan_roots=scan_roots
+    )
+    if entries:
+        messages.append(unscanned_files_message(entries, files))
+    left = left_the_gate_message(diff_report)
+    if left is not None:
+        messages.append(left)
+    return messages
 
 
 def _lexically_under(path: str, root: str) -> bool:

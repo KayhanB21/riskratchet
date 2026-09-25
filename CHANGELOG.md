@@ -9,6 +9,22 @@ in `scan --json`, `check --json`, and the baseline file are stable within
 a minor version. Additive changes (new optional fields) may land in any
 release; renames or removals are called out below under **Breaking**.
 
+## [Unreleased]
+
+### Fixed
+
+- **A baselined function that is still in the code is no longer reported as deleted.** An
+  `allow` pattern, a `@generated` header, a file that fails to parse, and
+  `missing_coverage = "skip"` each take a function out of the gate while its file stays in
+  `files[]`. The 0.3.7 `exclude` warning treats a missing function in a reached file as a
+  deletion, so none of these four triggered it. A PR that made three baselined functions
+  riskier and removed each one this way exited 0 with `No risk regressions detected.` Its
+  PR comment filed all three under **Removed functions** with the reason
+  `removed function from baseline`. The `Baseline:` line in every `check` format now counts
+  these entries by cause. `check`, `diff`, and the pytest plugin print one counts-only
+  warning, and the diff `reason` names the cause. The verdict, the scores, the `removed`
+  status, and all nine JSON schemas don't change.
+
 ## [0.3.8] - 2026-09-19
 
 ### Fixed

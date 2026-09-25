@@ -22,6 +22,7 @@ from riskratchet.models import (
     RegressionKind,
     RiskReport,
     Severity,
+    unscored_breakdown,
 )
 from riskratchet.schemas import schema_url
 from riskratchet.scoring import severity
@@ -192,10 +193,14 @@ def baseline_line(report: DiffReport | None) -> str | None:
     counts = baseline_coverage(report)
     if counts is None:
         return None
-    return (
+    line = (
         f"Baseline: {counts['entries']} entries · {counts['compared']} compared · "
         f"{counts['removed']} not seen this run"
     )
+    # 0.3.9: say how many of the unseen are still in the code. The PR comment files them
+    # under a collapsed "Removed", so this line is the only place a reader sees it unasked.
+    left = report.left_the_gate()
+    return f"{line} {unscored_breakdown(left)}" if left else line
 
 
 def _regressions_summary(

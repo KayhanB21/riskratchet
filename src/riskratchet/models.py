@@ -37,6 +37,38 @@ class DiffStatus(str, Enum):
     UNCHANGED = "unchanged"
 
 
+class UnscoredCause(str, Enum):
+    """Why a function the scan reached produced no scored row (0.3.9).
+
+    A baselined function that lands here is still in the code, so its diff entry must not
+    read as a deletion. Pure data; the wording lives in `baseline.diff` and `baseline.classify`.
+    """
+
+    SUPPRESSED = "suppressed"
+    GENERATED = "generated"
+    PARSE_ERROR = "parse_error"
+    MISSING_COVERAGE = "missing_coverage"
+
+    @property
+    def label(self) -> str:
+        """The short form every count-only disclosure uses: `1 suppressed by allow`."""
+        return _UNSCORED_LABELS[self]
+
+
+_UNSCORED_LABELS = {
+    UnscoredCause.SUPPRESSED: "suppressed by allow",
+    UnscoredCause.GENERATED: "in a @generated file",
+    UnscoredCause.PARSE_ERROR: "failed to parse",
+    UnscoredCause.MISSING_COVERAGE: "skipped for missing coverage",
+}
+
+
+def unscored_breakdown(counts: dict[UnscoredCause, int]) -> str:
+    """`(1 suppressed by allow, 1 failed to parse)`: the one spelling the `Baseline:` line
+    and the warning share. Counts only, so it is safe under redaction."""
+    return "(" + ", ".join(f"{n} {cause.label}" for cause, n in counts.items()) + ")"
+
+
 @dataclass(frozen=True, slots=True)
 class FunctionId:
     """Stable identifier for a function across runs.
@@ -176,6 +208,13 @@ class RiskReport:
     # sets it, and `baseline_from_report` writes no `scoring` block when it is None
     # rather than inventing one that claims defaults.
     scoring: ScoringInputs | None = None
+    # What the scan reached but did not score, and why (0.3.9). The counts above say how
+    # many; these say which, so a baselined entry that leaves the gate is never reported as
+    # deleted. Per function where the backend knows the function (an `allow` match, a file
+    # skipped for missing coverage), per file where it does not (a parse failure). Real
+    # paths: `redact_report` drops both, and nothing renders them.
+    unscored_functions: tuple[tuple[FunctionId, UnscoredCause], ...] = ()
+    unscored_files: tuple[tuple[str, UnscoredCause], ...] = ()
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}
@@ -259,6 +298,10 @@ class DiffEntry:
     reason: str = ""
     previous_targets: tuple[FunctionId, ...] = ()
     match_confidence: float | None = None
+    # Set on a REMOVED entry whose function is still in the code but was not scored this
+    # run (0.3.9). Not serialized: the JSON schemas are strict, so the cause travels in
+    # `reason`.
+    left_because: UnscoredCause | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -271,6 +314,15 @@ class DiffReport:
 
     def by_status(self, status: DiffStatus) -> tuple[DiffEntry, ...]:
         return tuple(entry for entry in self.entries if entry.status is status)
+
+    def left_the_gate(self) -> dict[UnscoredCause, int]:
+        """REMOVED entries whose function is still in the code, counted by cause, in
+        `UnscoredCause` order. Empty when every REMOVED entry is a deletion or a filter."""
+        counts = {cause: 0 for cause in UnscoredCause}
+        for entry in self.entries:
+            if entry.status is DiffStatus.REMOVED and entry.left_because is not None:
+                counts[entry.left_because] += 1
+        return {cause: n for cause, n in counts.items() if n}
 
     def regressions(self) -> list[Regression]:
         out: list[Regression] = []

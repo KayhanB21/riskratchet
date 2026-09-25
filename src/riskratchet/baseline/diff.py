@@ -28,6 +28,7 @@ from riskratchet.models import (
     FunctionId,
     FunctionRisk,
     RiskReport,
+    UnscoredCause,
 )
 
 
@@ -95,9 +96,12 @@ def diff(
         )
 
     current_ids = {fn.id for fn in new.functions}
+    unscored_functions = dict(new.unscored_functions)
+    unscored_files = dict(new.unscored_files)
     for previous in old.entries.values():
         if previous.id in used_old_ids or previous.id in current_ids:
             continue
+        cause = unscored_functions.get(previous.id) or unscored_files.get(previous.id.path)
         entries.append(
             DiffEntry(
                 id=previous.id,
@@ -107,12 +111,29 @@ def diff(
                 delta=None,
                 previous=previous,
                 group=_group_for_baseline_entry(previous, groups),
-                reason=f"removed function from baseline with score {previous.score:.1f}",
+                reason=_removed_reason(previous.score, cause),
+                left_because=cause,
             )
         )
 
     entries.sort(key=_diff_sort_key)
     return DiffReport(entries=tuple(entries), baseline_entries=len(old.entries))
+
+
+_LEFT_THE_GATE_REASONS = {
+    UnscoredCause.SUPPRESSED: "suppressed by an allow pattern",
+    UnscoredCause.GENERATED: "its file carries a @generated marker",
+    UnscoredCause.PARSE_ERROR: "its file failed to parse",
+    UnscoredCause.MISSING_COVERAGE: "its file has no coverage entry and missing_coverage is skip",
+}
+
+
+def _removed_reason(score: float, cause: UnscoredCause | None) -> str:
+    """A deletion keeps the pre-0.3.9 text. A function that is still in the code names why it
+    has no row, and never a path or a pattern, so the reason is safe under redaction."""
+    if cause is None:
+        return f"removed function from baseline with score {score:.1f}"
+    return f"{_LEFT_THE_GATE_REASONS[cause]} this run (was {score:.1f})"
 
 
 def _diff_status_for_existing(

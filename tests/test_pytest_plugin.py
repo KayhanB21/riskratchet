@@ -475,6 +475,31 @@ def test_the_plugin_renders_the_unscanned_files_warning(pytester: pytest.Pyteste
     )
 
 
+def test_the_plugin_says_when_a_baselined_function_left_the_gate(pytester: pytest.Pytester) -> None:
+    """0.3.9: an `allow` match keeps the file reached, so the unscanned-files rule reads the
+    missing function as a deletion. This door names it too, counts only."""
+    _write(pytester.path / "lib" / "app.py", _RISKY)
+    _write(pytester.path / "lib" / "parked.py", "def parked():\n    return 1\n")
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["lib"]\nallow = ["lib/parked.py::parked"]\n', encoding="utf-8"
+    )
+    (pytester.path / ".riskratchet.json").write_text(
+        json.dumps(
+            _baseline_payload([_entry("lib/app.py", "risky", 99.0), _entry("lib/parked.py", "parked", 1.0)])
+        ),
+        encoding="utf-8",
+    )
+
+    result = _plugin(pytester)
+
+    assert result.ret == 0, result.stdout.str()  # a warning, never a failed session
+    assert (
+        "1 baseline entry is still in the code but was not scored this run (1 suppressed by allow)"
+        in _collapsed(result.stdout.str())
+    )
+
+
 def test_the_plugin_refuses_a_named_ts_entry_that_does_not_exist(pytester: pytest.Pytester) -> None:
     """The third door enforces AGENTS.md:166 too, with pytest's exit convention.
 
