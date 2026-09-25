@@ -186,7 +186,7 @@ def analyze(
         suppressed_functions=suppressed_functions,
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(function_risks) + suppressed_functions,
-        skipped_generated_files=sum(cause is UnscoredCause.GENERATED for _, cause in unscored_files),
+        skipped_generated_files=_count_generated(unscored_files),
         unscored_functions=tuple(unscored_functions),
         unscored_files=tuple(unscored_files),
         scoring=ScoringInputs(
@@ -196,6 +196,10 @@ def analyze(
             churn_available=churn_is_available(root_path, enabled=use_git),
         ),
     )
+
+
+def _count_generated(unscored_files: list[tuple[str, UnscoredCause]]) -> int:
+    return sum(cause is UnscoredCause.GENERATED for _, cause in unscored_files)
 
 
 def _parse_sources(

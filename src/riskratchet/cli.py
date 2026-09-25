@@ -19,10 +19,10 @@ from riskratchet import __version__
 from riskratchet.auto_coverage import DEFAULT_CACHE_PATH
 from riskratchet.baseline import (
     BaselineVersionError,
+    baseline_disclosures,
     baseline_from_report,
     baseline_scored_without_churn,
     languages_not_scanned,
-    left_the_gate_message,
     load_baseline,
     regressions_above_threshold,
     regressions_from_diff,
@@ -30,8 +30,6 @@ from riskratchet.baseline import (
     scoring_model_stale,
     suppress_stale_typescript_renames,
     typescript_identity_stale,
-    unscanned_baseline_files,
-    unscanned_files_message,
 )
 from riskratchet.baseline import (
     diff as diff_baseline,
@@ -1024,10 +1022,9 @@ def check(
             fail_existing_above=fail_existing_above_val,
         )
         # Before redaction: the rule needs real paths; it prints counts only.
-        _warn_unscanned_baseline_files(
+        _warn_baseline_disclosures(
             diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
         )
-        _warn_left_the_gate(diff_report)
         _note_renames_gated_as_new(diff_report, fail_new_above=fail_new_above_val)
     else:
         assert fail_above_resolved is not None
@@ -1499,10 +1496,7 @@ def diff(
         ),
         groups=_resolved_groups(cfg),
     )
-    _warn_unscanned_baseline_files(
-        diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
-    )
-    _warn_left_the_gate(diff_report)
+    _warn_baseline_disclosures(diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths)
     if redaction.active:
         diff_report = redact_diff(diff_report, redaction)
     links = _links_for(repo_url, commit_ref, redaction)
@@ -2294,27 +2288,21 @@ def _warn_unratcheted_languages(old: Baseline, report: RiskReport) -> None:
         )
 
 
-def _warn_unscanned_baseline_files(
+def _warn_baseline_disclosures(
     diff_report: DiffReport, *, report: RiskReport, config_dir: Path, scan_roots: list[Path]
 ) -> None:
-    """Say when baselined files under the scanned paths were not scanned this run.
+    """Say which baselined entries this run did not gate, counts only.
 
     Three of four baseline entries hidden by an `exclude` used to produce "No risk
     regressions detected." and exit 0 — only the PR comment's collapsed diff said
-    `Removed: 3`. Warn, never fail: the rule cannot tell a filter from an intent, so it
-    names the count and the two fixes and leaves the verdict alone.
+    `Removed: 3` (fixed in 0.3.6). An `allow` match, a `@generated` header, a parse
+    failure, or `missing_coverage = "skip"` did the same until 0.3.9. Warn, never fail:
+    the rule cannot tell a filter from an intent, so it names the counts and leaves the
+    verdict alone.
     """
-    entries, files = unscanned_baseline_files(
+    for message in baseline_disclosures(
         diff_report, report=report, config_dir=config_dir, scan_roots=scan_roots
-    )
-    if entries:
-        typer.secho(unscanned_files_message(entries, files), fg=typer.colors.YELLOW, err=True)
-
-
-def _warn_left_the_gate(diff_report: DiffReport) -> None:
-    """Say when baselined functions are still in the code but were not scored this run."""
-    message = left_the_gate_message(diff_report)
-    if message is not None:
+    ):
         typer.secho(message, fg=typer.colors.YELLOW, err=True)
 
 
@@ -2327,7 +2315,7 @@ def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float
     `--fail-regression-above 1` passed with no signal. The matcher contract stays;
     this says out loud which gate applied.
     """
-    # An entry still in the code was not renamed; `_warn_left_the_gate` owns it.
+    # An entry still in the code was not renamed; `_warn_baseline_disclosures` owns it.
     removed = sum(entry.left_because is None for entry in diff_report.by_status(DiffStatus.REMOVED))
     new = len(diff_report.by_status(DiffStatus.NEW))
     if not removed or not new:

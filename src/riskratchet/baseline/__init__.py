@@ -21,6 +21,7 @@ submodule layout is an implementation detail.
 from __future__ import annotations
 
 from riskratchet.baseline.classify import (
+    baseline_disclosures,
     languages_not_scanned,
     left_the_gate_message,
     unscanned_baseline_files,
@@ -54,6 +55,7 @@ __all__ = [
     "BASELINE_VERSION",
     "SUPPORTED_BASELINE_VERSIONS",
     "BaselineVersionError",
+    "baseline_disclosures",
     "baseline_from_report",
     "baseline_scored_without_churn",
     "compare",

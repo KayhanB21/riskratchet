@@ -541,13 +541,7 @@ def _gated(
     disclosure: baseline entries under the scanned paths that this run did not reach
     (an `include` / `exclude` that hides a baselined file) are said out loud, counts only.
     The plugin used `compare` until 0.3.6; the diff is what knows what was *not* seen."""
-    from riskratchet.baseline import (
-        diff,
-        left_the_gate_message,
-        regressions_from_diff,
-        unscanned_baseline_files,
-        unscanned_files_message,
-    )
+    from riskratchet.baseline import baseline_disclosures, diff, regressions_from_diff
 
     diff_report = diff(
         report,
@@ -557,14 +551,10 @@ def _gated(
         component_regression_gate=settings.component_regression_gate,
         groups=settings.groups,
     )
-    entries, files = unscanned_baseline_files(
+    for message in baseline_disclosures(
         diff_report, report=report, config_dir=config_dir, scan_roots=settings.paths
-    )
-    if entries:
-        _emit(session, "riskratchet: " + unscanned_files_message(entries, files))
-    left = left_the_gate_message(diff_report)
-    if left is not None:
-        _emit(session, "riskratchet: " + left)
+    ):
+        _emit(session, "riskratchet: " + message)
     return regressions_from_diff(
         diff_report, fail_new_above=settings.fail_new_above, fail_existing_above=settings.fail_existing_above
     )

@@ -129,6 +129,29 @@ def left_the_gate_message(diff_report: DiffReport) -> str | None:
     )
 
 
+def baseline_disclosures(
+    diff_report: DiffReport,
+    *,
+    report: RiskReport,
+    config_dir: Path,
+    scan_roots: Sequence[Path],
+) -> list[str]:
+    """Every warning about baseline entries this run did not gate, in the order both doors
+    print them: entries whose file was not reached (a filter), then entries whose function
+    is still in the code but was not scored. One list, so the CLI and the pytest plugin
+    cannot drift on which disclosures exist."""
+    messages: list[str] = []
+    entries, files = unscanned_baseline_files(
+        diff_report, report=report, config_dir=config_dir, scan_roots=scan_roots
+    )
+    if entries:
+        messages.append(unscanned_files_message(entries, files))
+    left = left_the_gate_message(diff_report)
+    if left is not None:
+        messages.append(left)
+    return messages
+
+
 def _lexically_under(path: str, root: str) -> bool:
     return path == root or path.startswith(root.rstrip(os.sep) + os.sep)
 
