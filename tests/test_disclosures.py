@@ -13,15 +13,18 @@ key per cwd and its SARIF `uri` disagreed with its own `properties.path`.
 from __future__ import annotations
 
 import json
-import os
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
-from click.testing import Result
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from click.testing import Result
 
 runner = CliRunner()
 
@@ -181,7 +184,7 @@ def test_a_symlinked_scan_root_keeps_its_keys(tmp_path: Path, monkeypatch: pytes
     real.mkdir()
     (real / "a.py").write_text(_TWO_FUNCTIONS, encoding="utf-8")
     try:
-        os.symlink(real, tmp_path / "src", target_is_directory=True)
+        (tmp_path / "src").symlink_to(real, target_is_directory=True)
     except (OSError, NotImplementedError):
         pytest.skip("symlinks not available")
     (tmp_path / "pyproject.toml").write_text('[tool.riskratchet]\npaths = ["src"]\n', encoding="utf-8")

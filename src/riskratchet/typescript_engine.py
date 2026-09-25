@@ -22,10 +22,9 @@ so a default Python-only scan never imports it at all.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet import typescript as ts
 from riskratchet import typescript_coverage as tscov
@@ -58,6 +57,9 @@ from riskratchet.scoring import (
     resolve_weights,
     total_risk,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 WarnFn = Any  # Callable[[str], None] | None — kept loose so callers can pass a bound typer helper.
 

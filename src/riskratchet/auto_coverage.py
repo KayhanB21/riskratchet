@@ -17,10 +17,11 @@ from __future__ import annotations
 
 import shlex
 import subprocess
-import sys
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
+
+from riskratchet._stderr import write_stderr
 
 Runner = Callable[[str, Path], int]
 Logger = Callable[[str], None]
@@ -66,7 +67,7 @@ def ensure_coverage(
     cache_path: Path,
     test_command: str,
     enabled: bool,
-    cwd: Path = Path("."),
+    cwd: Path = Path(),
     runner: Runner | None = None,
     log: Logger | None = None,
 ) -> AutoCoverageResult:
@@ -76,7 +77,7 @@ def ensure_coverage(
     measures the whole project (the config directory) rather than whatever
     nested directory the CLI happened to be invoked from.
     """
-    say = log or _stderr_log
+    say = log or write_stderr
 
     if requested is not None and requested.exists():
         return AutoCoverageResult(path=requested, source="explicit")
@@ -160,7 +161,3 @@ def _default_runner(command: str, cwd: Path) -> int:
         # error the user must fix, so it has to reach exit 2 instead.
         raise CoverageCommandError(command, f"could not be run: {exc.strerror or exc}") from exc
     return result.returncode
-
-
-def _stderr_log(message: str) -> None:
-    print(message, file=sys.stderr)

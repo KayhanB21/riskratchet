@@ -137,6 +137,12 @@ target-version = "py310"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
+# The first eight families catch syntax errors and obvious bugs. The rest (0.3.9) find real
+# defects without imposing a house style. Left out on purpose: `A` (the `format` parameter
+# belongs to the Typer CLI), `D` (a docstring goes on the functions that earn one), `S` (every
+# `subprocess.run(["git", ...])` is the product), `ANN` (`mypy --strict` covers `src/`),
+# `C901` and `PLR0913` (riskratchet scores complexity itself), `EM` and `TRY003` (setup errors
+# are long by design), and `FBT` (Typer boolean flags).
 select = [
     "E",
     "F",
@@ -146,10 +152,34 @@ select = [
     "UP",
     "SIM",
     "RUF",
+    "C4",
+    "PTH",
+    "RET",
+    "TID",
+    "PIE",
+    "PERF",
+    "FURB",
+    "LOG",
+    "G",
+    "ISC",
+    "RSE",
+    "PGH",
+    "SLOT",
+    "TC",
+    "DTZ",
+    "T20",
+    "BLE",
+    "FA",
+    "YTT",
+    "ASYNC",
+    "EXE",
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["E501"]
+# Calibration and experiment harnesses report by printing. `src/` has no entry here: its one
+# sanctioned stderr write lives in `riskratchet/_stderr.py`.
+"bin/**" = ["T201"]
 
 [tool.mypy]
 python_version = "3.10"

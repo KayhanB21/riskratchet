@@ -7,7 +7,7 @@ term" while the baseline still flags it. These tests pin that math.
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.rescore import (
@@ -17,6 +17,9 @@ from bin.calibration.rescore import (
     regression_count_under,
     rescore_report,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # A function whose body never changes between base and head — only the file it
 # lives in grows, so any score change is a pure artifact of the file-line term.

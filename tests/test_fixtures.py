@@ -13,13 +13,16 @@ the tool catches.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from riskratchet.baseline import compare, load_baseline
 from riskratchet.engine import analyze
-from riskratchet.models import RiskReport
 from riskratchet.scoring import severity as severity_of
+
+if TYPE_CHECKING:
+    from riskratchet.models import RiskReport
 
 FIXTURE_ROOT = Path(__file__).parent / "fixtures"
 

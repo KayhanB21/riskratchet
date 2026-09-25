@@ -8,7 +8,7 @@ git is available in CI; no network, no gh, no clone.
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.change_counting import (
     _parse_new_hunks,
@@ -20,6 +20,9 @@ from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import SnapshotPopulation
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _V0 = """\
 def helper():

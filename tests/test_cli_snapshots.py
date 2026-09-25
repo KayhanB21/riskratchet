@@ -13,14 +13,18 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
-import pytest
-from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
+    from syrupy.assertion import SnapshotAssertion
 
 runner = CliRunner()
 
@@ -129,8 +133,7 @@ def test_scan_json_schema_is_stable(tmp_path: Path) -> None:
 def _normalize_markdown(text: str) -> str:
     """Strip path noise and round floats so the snapshot is stable."""
     # Replace any prefix (including no prefix) with a placeholder.
-    text = re.sub(r"`(?:[^`]*?/)?src/m\.py", "`TMP/src/m.py", text)
-    return text
+    return re.sub(r"`(?:[^`]*?/)?src/m\.py", "`TMP/src/m.py", text)
 
 
 def test_scan_markdown_snapshot_is_stable(

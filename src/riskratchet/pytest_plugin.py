@@ -706,4 +706,7 @@ def _emit(session: pytest.Session, message: str) -> None:
     if reporter is not None:
         reporter.write_line(message)
     else:
-        print(message)
+        # No terminal reporter (a plugin run with `-p no:terminal`): pytest's own output
+        # goes to stdout then, so this does too. Not `write_stderr`, which is the library's
+        # fallback for a caller that gave no callback.
+        print(message)  # noqa: T201

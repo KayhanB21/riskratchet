@@ -13,12 +13,13 @@ The B7 completeness audit added the `const`/`let` and `readonly`-parameter regre
 from __future__ import annotations
 
 import importlib.metadata
-from pathlib import Path
 
 import pytest
 
 pytest.importorskip("tree_sitter")
 pytest.importorskip("tree_sitter_typescript")
+
+from typing import TYPE_CHECKING
 
 from riskratchet.typescript import discover_typescript
 from riskratchet.typescript_identity import (
@@ -28,6 +29,9 @@ from riskratchet.typescript_identity import (
     grammar_version,
     signature_fingerprint,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_grammar_version_matches_installed_distribution() -> None:

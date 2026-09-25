@@ -7,13 +7,17 @@ cache and output paths are redirected into tmp_path. No network/gh/clone.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pytest
 from bin.calibration import coverage_replay, harness
 from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import DefectLabels, SnapshotPopulation
 from bin.calibration.serial import report_to_dict
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 _SNAP = "S" * 40
 

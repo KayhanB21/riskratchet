@@ -553,8 +553,8 @@ def test_the_plugin_can_require_the_coverage_config_allowed_to_be_absent(
     from riskratchet.config import resolve_gate_settings
 
     cfg = {"allow_missing_coverage": True}
-    assert resolve_gate_settings(cfg, Path(".")).allow_missing_coverage is True
-    settings = resolve_gate_settings(cfg, Path("."), no_allow_missing_coverage=True)
+    assert resolve_gate_settings(cfg, Path()).allow_missing_coverage is True
+    settings = resolve_gate_settings(cfg, Path(), no_allow_missing_coverage=True)
     assert settings.allow_missing_coverage is False
 
 

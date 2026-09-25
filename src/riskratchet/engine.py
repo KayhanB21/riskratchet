@@ -15,13 +15,12 @@ they went on naming real modules under `redact_paths`.
 
 from __future__ import annotations
 
-import sys
-from collections.abc import Mapping, Sequence
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet._paths import relative_posix
+from riskratchet._stderr import write_stderr
 from riskratchet.analysis import ParsedFile, ParseError, iter_python_files, parse_file
 from riskratchet.complexity import complexity_for_file
 from riskratchet.coverage import (
@@ -57,6 +56,9 @@ from riskratchet.scoring import (
     total_risk,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
 
 def _say_warning(on_warning: Any, path: Path, root: Path, message: str) -> None:
     """Report a file the scan reached but could not match to coverage.
@@ -70,7 +72,7 @@ def _say_warning(on_warning: Any, path: Path, root: Path, message: str) -> None:
     if on_warning is not None:
         on_warning(path, message)
         return
-    print(f"warning: {relative_posix(path, root)} {message}", file=sys.stderr)
+    write_stderr(f"warning: {relative_posix(path, root)} {message}")
 
 
 def _say_error(on_error: Any, path: Path, root: Path, message: str) -> None:
@@ -78,7 +80,7 @@ def _say_error(on_error: Any, path: Path, root: Path, message: str) -> None:
     if on_error is not None:
         on_error(path, message)
         return
-    print(f"warning: skipping {relative_posix(path, root)}: {message}", file=sys.stderr)
+    write_stderr(f"warning: skipping {relative_posix(path, root)}: {message}")
 
 
 def analyze(

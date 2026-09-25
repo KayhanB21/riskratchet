@@ -11,9 +11,12 @@ from __future__ import annotations
 import importlib.util
 import math
 from pathlib import Path
-from types import ModuleType
+from typing import TYPE_CHECKING
 
 from bin.calibration import stats
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 EXPERIMENT_PATH = Path(__file__).resolve().parent.parent / "bin" / "experiments" / "sprawl_vs_complexity.py"
 

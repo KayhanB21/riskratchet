@@ -9,11 +9,11 @@ from __future__ import annotations
 
 import re
 import subprocess
-import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from riskratchet._stderr import write_stderr
 from riskratchet.models import ChurnStats, FunctionId, FunctionSpan
 
 DEFAULT_CHURN_WINDOW_DAYS = 90
@@ -129,9 +129,9 @@ class _ChurnFailures:
         if self._on_error is not None:
             self._on_error(message)
         else:
-            # No callback supplied (a direct library call). Still never silent: `engine.py`
-            # already writes its own coverage warning straight to stderr, so this matches.
-            print(f"warning: {message}", file=sys.stderr)
+            # No callback supplied (a direct library call). Still never silent, and the
+            # same fallback `engine.py` uses for its coverage and parse warnings.
+            write_stderr(f"warning: {message}")
 
 
 def churn_is_available(root: Path, *, enabled: bool = True) -> bool:

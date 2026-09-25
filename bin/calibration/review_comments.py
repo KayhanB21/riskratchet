@@ -20,16 +20,20 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.defects import SnapshotPopulation, track_to_snapshot
 from bin.calibration.git_checkout import CommandRunner, default_runner
 from bin.calibration.predict import auc_from_mwu
-from bin.calibration.proneness import PronenessLabels
 from bin.calibration.prs import Runner, _default_runner, enumerate_merged_prs, repo_slug
 from bin.calibration.szz import Implication, _function_for_line, functions_at_revision
 from riskratchet.baseline import baseline_from_report
-from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from bin.calibration.proneness import PronenessLabels
+    from riskratchet.models import FunctionId
 
 # Maintainability-flavoured review asks. Deliberately narrow — false positives ("split
 # view", "refactor the tests") are the main risk, so we lean toward precision.
@@ -154,8 +158,7 @@ def flag_agreement_auc(flags: ReviewFlags, labels: PronenessLabels) -> float:
     flagged = set(flags.counts)
     flagged_scores: list[float] = []
     unflagged_scores: list[float] = []
-    for fid in flagged:
-        flagged_scores.append(float(labels.future.get(fid, (0, 0))[0]))
+    flagged_scores.extend(float(labels.future.get(fid, (0, 0))[0]) for fid in flagged)
     seen = flagged
     for fid, (commits, _lines) in labels.future.items():
         if fid not in seen:

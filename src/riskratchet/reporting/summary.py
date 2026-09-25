@@ -8,9 +8,8 @@ formatters, summary-payload builders, and the schema URL constants.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet import __version__
 from riskratchet.models import (
@@ -26,6 +25,9 @@ from riskratchet.models import (
 )
 from riskratchet.schemas import schema_url
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # Derived, never spelled out: `riskratchet.schemas` owns the one base URL and the set of
 # published names, so a constant here cannot point somewhere the shipped files do not.
@@ -237,7 +239,7 @@ def _diff_summary(report: DiffReport) -> dict[str, Any]:
 
 
 def _summary_line(report: RiskReport) -> str:
-    counts: dict[Severity, int] = {sev: 0 for sev in Severity}
+    counts: dict[Severity, int] = dict.fromkeys(Severity, 0)
     for fn in report.functions:
         counts[severity(fn.score)] += 1
     parts = [
@@ -342,8 +344,7 @@ def _group_summary_lines(groups: dict[str, Any]) -> list[str]:
         for key in sorted(values):
             value = values[key]
             if isinstance(value, dict):
-                for nested_key in sorted(value):
-                    parts.append(f"{key}.{nested_key}={value[nested_key]}")
+                parts.extend(f"{key}.{nested_key}={value[nested_key]}" for nested_key in sorted(value))
             else:
                 parts.append(f"{key}={value}")
         lines.append(" ".join(parts))

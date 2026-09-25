@@ -9,12 +9,15 @@ from __future__ import annotations
 
 import json
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.config import PrLabel
 from bin.calibration.corpus import analyze_report
 from bin.calibration.prs import PrRef, enumerate_merged_prs, parse_pr_list, repo_slug
 from bin.calibration.replay import join_label, replay_paths
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _SIMPLE = "def process(items):\n    return sum(items)\n"
 
@@ -83,16 +86,16 @@ def test_replay_digest_is_stable(tmp_path: Path) -> None:
     head_root = tmp_path / "head"
     _tree(base_root, _SIMPLE)
     _tree(head_root, _GNARLY)
-    kwargs = dict(
-        repo="demo",
-        pr=7,
-        base_sha="0" * 40,
-        head_sha="1" * 40,
-        base_paths=[base_root / "src"],
-        base_root=base_root,
-        head_paths=[head_root / "src"],
-        head_root=head_root,
-    )
+    kwargs = {
+        "repo": "demo",
+        "pr": 7,
+        "base_sha": "0" * 40,
+        "head_sha": "1" * 40,
+        "base_paths": [base_root / "src"],
+        "base_root": base_root,
+        "head_paths": [head_root / "src"],
+        "head_root": head_root,
+    }
     first = replay_paths(**kwargs).to_digest()  # type: ignore[arg-type]
     second = replay_paths(**kwargs).to_digest()  # type: ignore[arg-type]
     assert first == second

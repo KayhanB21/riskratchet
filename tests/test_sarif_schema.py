@@ -31,7 +31,7 @@ runner = CliRunner()
 
 @pytest.fixture(scope="module")
 def sarif_validator() -> Draft202012Validator:
-    schema = cast(dict[str, Any], json.loads(SARIF_SCHEMA.read_text(encoding="utf-8")))
+    schema = cast("dict[str, Any]", json.loads(SARIF_SCHEMA.read_text(encoding="utf-8")))
     return Draft202012Validator(schema)
 
 
@@ -77,7 +77,7 @@ def _run(args: list[str], *, config: Path) -> tuple[int, str]:
 
 
 def _assert_valid(validator: Draft202012Validator, payload: str) -> dict[str, Any]:
-    log = cast(dict[str, Any], json.loads(payload))
+    log = cast("dict[str, Any]", json.loads(payload))
     errors = sorted(validator.iter_errors(log), key=lambda e: list(e.path))
     assert not errors, "\n".join(f"{list(e.path)}: {e.message}" for e in errors[:10])
     return log

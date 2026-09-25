@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -22,6 +22,9 @@ from riskratchet.auto_coverage import (
     _default_runner,
     ensure_coverage,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 _FAKE_COVERAGE = {"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}}
 
@@ -309,7 +312,7 @@ def test_a_test_command_that_is_not_on_path_raises_rather_than_crashing() -> Non
     exactly like a risk regression.
     """
     with pytest.raises(CoverageCommandError) as excinfo:
-        _default_runner("riskratchet-no-such-runner-exists --out x.json", Path("."))
+        _default_runner("riskratchet-no-such-runner-exists --out x.json", Path())
 
     assert "could not be run" in str(excinfo.value)
     assert excinfo.value.command.startswith("riskratchet-no-such-runner-exists")
@@ -318,7 +321,7 @@ def test_a_test_command_that_is_not_on_path_raises_rather_than_crashing() -> Non
 def test_an_unparseable_test_command_raises_rather_than_crashing() -> None:
     """An unbalanced quote in a configured `test_command` reached `shlex.split`."""
     with pytest.raises(CoverageCommandError) as excinfo:
-        _default_runner("pytest --cov 'unclosed", Path("."))
+        _default_runner("pytest --cov 'unclosed", Path())
 
     assert "could not be parsed" in str(excinfo.value)
 
@@ -326,7 +329,7 @@ def test_an_unparseable_test_command_raises_rather_than_crashing() -> None:
 def test_an_empty_test_command_raises_rather_than_crashing() -> None:
     """`subprocess.run([])` raises IndexError, which is not a useful message."""
     with pytest.raises(CoverageCommandError) as excinfo:
-        _default_runner("   ", Path("."))
+        _default_runner("   ", Path())
 
     assert "is empty" in str(excinfo.value)
 

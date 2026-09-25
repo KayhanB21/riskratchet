@@ -16,10 +16,12 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.reporting import DEBUG_SCHEMA_URL
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 DEBUG_OUTPUT_VERSION = 1
 """Schema version of the `--debug-json` envelope. Its own contract, bumped

@@ -9,15 +9,8 @@ externally (URLs only).
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from riskratchet.models import (
-    DiffEntry,
-    DiffReport,
-    FunctionRisk,
-    Regression,
-    RiskReport,
-)
 from riskratchet.reporting.summary import (
     DIFF_SCHEMA_URL,
     EXPLAIN_SCHEMA_URL,
@@ -33,6 +26,15 @@ from riskratchet.reporting.summary import (
     baseline_coverage,
 )
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:
+    from riskratchet.models import (
+        DiffEntry,
+        DiffReport,
+        FunctionRisk,
+        Regression,
+        RiskReport,
+    )
 
 
 def render_report_json(

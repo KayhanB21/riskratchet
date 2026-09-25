@@ -14,7 +14,10 @@ from __future__ import annotations
 
 import sys
 from enum import Enum
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -336,7 +339,7 @@ def _replace_section(existing: str, new_block: str) -> str:
     end_idx: int | None = None
     for i, line in enumerate(lines):
         stripped = line.lstrip()
-        is_rr_table = stripped.startswith("[tool.riskratchet]") or stripped.startswith("[tool.riskratchet.")
+        is_rr_table = stripped.startswith(("[tool.riskratchet]", "[tool.riskratchet."))
         if start_idx is None and is_rr_table:
             start_idx = i
             continue

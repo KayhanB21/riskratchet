@@ -15,14 +15,18 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
 
 if sys.version_info >= (3, 11):
     import tomllib
 else:  # pragma: no cover - exercised only on 3.10
     import tomli as tomllib  # type: ignore[import-not-found]
 
+from typing import TYPE_CHECKING
+
 from bin.calibration.corpus import CALIBRATION_DIR
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 REPOS_DIR = CALIBRATION_DIR / "repos"
 LABELS_PATH = CALIBRATION_DIR / "pr-labels.toml"

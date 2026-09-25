@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import DefectLabels, SnapshotPopulation
@@ -11,6 +11,9 @@ from bin.calibration.predict import auc_from_mwu, evaluate_candidates
 from bin.calibration.rescore import CANDIDATES
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_auc_perfect_and_reversed_and_empty() -> None:

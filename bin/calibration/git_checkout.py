@@ -9,8 +9,7 @@ import point for the SZZ code (``fixes``/``szz``/``defects``) and adds a thin
 
 from __future__ import annotations
 
-import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.coverage_replay import (
     CommandRunner,
@@ -18,6 +17,10 @@ from bin.calibration.coverage_replay import (
     ensure_clone,
     revision_cache_dir,
 )
+
+if TYPE_CHECKING:
+    import subprocess
+    from pathlib import Path
 
 __all__ = [
     "CommandRunner",

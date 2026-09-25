@@ -9,13 +9,16 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pytest
 from bin.calibration import coverage_replay
 from bin.calibration.config import RepoConfig
 from bin.calibration.corpus import analyze_report
 from bin.calibration.coverage_replay import replay_revision, revision_cache_dir
 from bin.calibration.serial import report_from_dict, report_to_dict
+
+if TYPE_CHECKING:
+    import pytest
 
 _FN = "def f(x):\n    if x > 0:\n        return x\n    return -x\n"
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -28,6 +28,9 @@ from riskratchet.models import (
     RiskComponents,
     RiskReport,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fn(path: str, name: str, language: str, fingerprint: str) -> FunctionRisk:

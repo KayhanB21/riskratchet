@@ -30,6 +30,7 @@ scoring or weight change ships from this; a weight change stays 0.3.0-gated.**
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.optimize import minimize
@@ -37,7 +38,9 @@ from scipy.stats import binomtest
 
 from bin.calibration.predict import auc_from_mwu
 from bin.calibration.rescore import _file_term, _function_term
-from riskratchet.models import FunctionId, FunctionRisk, RiskReport
+
+if TYPE_CHECKING:
+    from riskratchet.models import FunctionId, FunctionRisk, RiskReport
 
 # The seven continuous predictors. Order matters: FILE_LINE_INDEX points at the term
 # the whole ablation is about. The first five are the already-normalized component

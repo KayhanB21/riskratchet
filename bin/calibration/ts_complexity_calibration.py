@@ -66,17 +66,15 @@ class TsRepo:
 
 def _load_manifest(path: Path) -> list[TsRepo]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
-    repos = []
-    for entry in data.get("repo", []):
-        repos.append(
-            TsRepo(
-                name=str(entry["name"]),
-                url=str(entry["url"]),
-                ref=str(entry.get("ref", "main")),
-                paths=tuple(str(p) for p in entry.get("paths", [])),
-            )
+    return [
+        TsRepo(
+            name=str(entry["name"]),
+            url=str(entry["url"]),
+            ref=str(entry.get("ref", "main")),
+            paths=tuple(str(p) for p in entry.get("paths", [])),
         )
-    return repos
+        for entry in data.get("repo", [])
+    ]
 
 
 def _is_product_file(path: Path) -> bool:

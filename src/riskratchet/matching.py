@@ -34,13 +34,15 @@ import copy
 import hashlib
 import math
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from riskratchet.models import (
-    BaselineEntry,
-    FunctionId,
-    FunctionRisk,
-    RiskComponents,
-)
+if TYPE_CHECKING:
+    from riskratchet.models import (
+        BaselineEntry,
+        FunctionId,
+        FunctionRisk,
+        RiskComponents,
+    )
 
 MATCH_THRESHOLD = 0.65
 """Minimum total similarity for the top candidate to be considered a rename.

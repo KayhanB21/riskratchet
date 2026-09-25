@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
-import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -28,6 +28,9 @@ from riskratchet.init import (
     render_ci_snippet,
     write_starter_config,
 )
+
+if TYPE_CHECKING:
+    import pytest
 
 runner = CliRunner()
 

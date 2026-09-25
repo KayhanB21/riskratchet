@@ -10,9 +10,7 @@ how to move a `Baseline` to and from JSON.
 from __future__ import annotations
 
 import json
-from collections.abc import Collection
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.models import (
     Baseline,
@@ -21,6 +19,10 @@ from riskratchet.models import (
     RiskComponents,
     RiskReport,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
+    from pathlib import Path
 
 # Weights are floats that survive a JSON round-trip exactly at this precision, and the
 # only comparison anyone makes of them is "is this the same scoring setup?". Rounding

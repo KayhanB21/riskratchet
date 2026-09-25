@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from dataclasses import replace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
-from syrupy.assertion import SnapshotAssertion
 
 from riskratchet.baseline import compare, diff, regressions_from_diff
 from riskratchet.models import (
@@ -33,6 +31,11 @@ from riskratchet.reporting import (
     render_diff_pr_comment,
     render_diff_table,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from syrupy.assertion import SnapshotAssertion
 
 
 def _components(score: float = 50.0) -> RiskComponents:

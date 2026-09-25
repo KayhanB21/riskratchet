@@ -460,7 +460,7 @@ def _check_typescript(baseline_file: Path, *, paths: list[Path], enabled: bool =
         # as no dist at all, and `check` would exit 2 on exactly that import.
         _require_tree_sitter()
         runtime = runtime_typescript_identity()
-    except Exception:
+    except Exception:  # noqa: BLE001  a broken dist can raise anything on import; it counts as absent
         return DoctorCheck(
             name="typescript",
             status=CheckStatus.FAIL if enabled else CheckStatus.WARN,

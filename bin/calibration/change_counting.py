@@ -17,13 +17,17 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timedelta
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.defects import SnapshotPopulation, track_to_snapshot
 from bin.calibration.git_checkout import CommandRunner, default_runner, git
 from bin.calibration.szz import Implication, functions_at_revision
 from riskratchet.baseline import baseline_from_report
-from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from riskratchet.models import FunctionId
 
 # New-side hunk: `@@ -old_start[,old_len] +new_start[,new_len] @@`.
 _NEW_HUNK_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")

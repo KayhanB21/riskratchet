@@ -87,7 +87,7 @@ def parse_rationale(body: str) -> str | None:
         stripped = re.sub(r"\s", "", rest)
         if len(stripped) >= MIN_RATIONALE_LENGTH:
             text = rest.strip()
-            return text if text else None
+            return text or None
     return None
 
 

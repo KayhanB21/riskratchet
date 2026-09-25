@@ -7,9 +7,7 @@ repositories in a temporary directory instead of mocking subprocess.
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
-
-import pytest
+from typing import TYPE_CHECKING
 
 from git_fixtures import make_shallow_clone
 from riskratchet.git import (
@@ -20,6 +18,11 @@ from riskratchet.git import (
     is_shallow_repo,
 )
 from riskratchet.models import FunctionId, FunctionSpan
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 
 def _init_repo(root: Path) -> None:

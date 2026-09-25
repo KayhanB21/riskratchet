@@ -12,14 +12,17 @@ keeping the "no mandatory Node dependency" non-goal mechanical and greppable.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.coverage import MissingCoveragePolicy
 from riskratchet.engine import analyze
 from riskratchet.git import DEFAULT_CHURN_WINDOW_DAYS
-from riskratchet.models import RiskReport
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+    from pathlib import Path
+
+    from riskratchet.models import RiskReport
 
 
 def build_report(

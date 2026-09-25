@@ -39,7 +39,7 @@ import json
 import sys
 import time
 from dataclasses import replace
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.config import REPOS_DIR, RepoConfig, load_corpus, load_labels
 from bin.calibration.corpus import CALIBRATION_DIR
@@ -51,6 +51,9 @@ from bin.calibration.replay import OutcomeRecord, join_label, replay_reports
 from bin.calibration.rescore import LabeledPr, evaluate
 from bin.calibration.serial import report_from_dict
 from riskratchet.models import FunctionId, RiskReport
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 ROLLUP_PATH = CALIBRATION_DIR / "pr-replay-rollup.json"
 CANDIDATES_PATH = CALIBRATION_DIR / "sprawl-candidates.json"

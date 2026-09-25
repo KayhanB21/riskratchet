@@ -10,9 +10,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.git_checkout import CommandRunner, default_runner, git
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Word-boundary, prefix-allowed: \bfix matches fix/fixes/fixed/fixing, not "prefix".
 DEFAULT_FIX_KEYWORDS: tuple[str, ...] = ("fix", "bug", "close", "resolve", "hotfix")

@@ -23,14 +23,17 @@ body and the exit code agree in both directions.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
 from riskratchet.models import RegressionKind
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 runner = CliRunner()
 

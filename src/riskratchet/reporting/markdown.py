@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from riskratchet.models import (
     DiffEntry,
@@ -28,6 +28,9 @@ from riskratchet.reporting.summary import (
     baseline_line,
 )
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 # Rows shown inside a collapsed `<details>` block before the rest are summarized.
 _PR_COMMENT_ROW_CAP = 20
@@ -205,8 +208,9 @@ def render_report_markdown(
         "",
         *_report_header(include_group=group, include_language=language),
     ]
-    for fn in displayed:
-        lines.append(_markdown_row(fn, links=links, include_group=group, include_language=language))
+    lines.extend(
+        _markdown_row(fn, links=links, include_group=group, include_language=language) for fn in displayed
+    )
     if limit is not None and len(sorted_fns) > limit:
         lines.append("")
         lines.append(f"_... {len(sorted_fns) - limit} more functions hidden._")
@@ -275,10 +279,10 @@ def render_regressions_markdown(
         "",
         *_table_header("Kind", include_group=group, include_language=language),
     ]
-    for reg in regressions:
-        lines.append(
-            _regression_markdown_row(reg, links=links, include_group=group, include_language=language)
-        )
+    lines.extend(
+        _regression_markdown_row(reg, links=links, include_group=group, include_language=language)
+        for reg in regressions
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -392,8 +396,10 @@ def render_diff_markdown(report: DiffReport, *, links: SourceLinks | None = None
         "",
         *_table_header("Status", include_group=group, include_language=language),
     ]
-    for entry in report.entries:
-        lines.append(_diff_markdown_row(entry, links=links, include_group=group, include_language=language))
+    lines.extend(
+        _diff_markdown_row(entry, links=links, include_group=group, include_language=language)
+        for entry in report.entries
+    )
     return "\n".join(lines) + "\n"
 
 

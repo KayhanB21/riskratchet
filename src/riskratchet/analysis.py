@@ -12,13 +12,16 @@ import copy
 import hashlib
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from riskratchet._paths import any_match as _any_match
 from riskratchet._paths import has_hidden_parent as _has_hidden_parent
 from riskratchet._paths import relative_posix as _relative_posix
 from riskratchet.matching import signature_fingerprint
 from riskratchet.models import FileStats, FunctionId, FunctionSpan
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Line-anchored: `@generated` counts as a generated-file marker only inside a leading
 # `#` comment, never in a string or a docstring. The same claim the TypeScript backend

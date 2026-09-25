@@ -14,13 +14,15 @@ when the project provides one coverage file per package.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riskratchet.models import CoverageStats, FunctionSpan
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from pathlib import Path
 
 
 class MissingCoveragePolicy(str, Enum):

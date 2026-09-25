@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import ast
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from riskratchet.analysis import (
     ParseError,
@@ -13,6 +13,9 @@ from riskratchet.analysis import (
     iter_python_files,
     parse_file,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _write(tmp_path: Path, name: str, source: str) -> Path:

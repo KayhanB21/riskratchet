@@ -97,14 +97,14 @@ def test_structural_complexity_respects_custom_calibration() -> None:
 
 def test_compute_components_threads_complexity_calibration() -> None:
     # compute_components must forward the calibration to structural_complexity_score.
-    kwargs = dict(
-        is_public=True,
-        span=_span(10),
-        complexity=ComplexityStats(cyclomatic=21),
-        coverage=CoverageStats(line_coverage=1.0, branch_coverage=None),
-        churn=ChurnStats(commits=0),
-        file_stats=_file(100),
-    )
+    kwargs = {
+        "is_public": True,
+        "span": _span(10),
+        "complexity": ComplexityStats(cyclomatic=21),
+        "coverage": CoverageStats(line_coverage=1.0, branch_coverage=None),
+        "churn": ChurnStats(commits=0),
+        "file_stats": _file(100),
+    }
     default = compute_components(**kwargs)  # type: ignore[arg-type]
     widened = compute_components(**kwargs, complexity_calibration=(1.0, 41.0))  # type: ignore[arg-type]
     assert default.structural_complexity == 100.0

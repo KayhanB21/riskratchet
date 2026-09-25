@@ -318,7 +318,7 @@ class DiffReport:
     def left_the_gate(self) -> dict[UnscoredCause, int]:
         """REMOVED entries whose function is still in the code, counted by cause, in
         `UnscoredCause` order. Empty when every REMOVED entry is a deletion or a filter."""
-        counts = {cause: 0 for cause in UnscoredCause}
+        counts = dict.fromkeys(UnscoredCause, 0)
         for entry in self.entries:
             if entry.status is DiffStatus.REMOVED and entry.left_because is not None:
                 counts[entry.left_because] += 1

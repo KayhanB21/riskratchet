@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
 from pathlib import PurePosixPath
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
 
 GroupMap = dict[str, tuple[str, ...]]
 
@@ -63,8 +65,7 @@ def _normalize_prefix(value: Any, *, group: str) -> str:
 
 def _normalize_path(value: str) -> str:
     path = value.replace("\\", "/").strip()
-    if path.startswith("./"):
-        path = path[2:]
+    path = path.removeprefix("./")
     return PurePosixPath(path).as_posix()
 
 

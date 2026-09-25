@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import SnapshotPopulation, build_labels, track_to_snapshot
@@ -10,6 +10,9 @@ from bin.calibration.szz import Implication
 
 from riskratchet.analysis import DiscoveredFunction, ParsedFile, parse_file
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _PARSE = (
     "def parse(text):\n    value = text.strip()\n    if not value:\n        return None\n    return value\n"

@@ -8,10 +8,12 @@ direct McCabe walk over the AST node we already hold.
 from __future__ import annotations
 
 import ast
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from riskratchet.analysis import DiscoveredFunction, ParsedFile
 from riskratchet.models import ComplexityStats
+
+if TYPE_CHECKING:
+    from riskratchet.analysis import DiscoveredFunction, ParsedFile
 
 
 def complexity_for_file(parsed: ParsedFile) -> dict[int, ComplexityStats]:

@@ -30,9 +30,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from reporting_fixtures import (
@@ -53,6 +53,9 @@ from riskratchet.reporting import (
     render_regressions_table,
     render_report_pr_comment,
 )
+
+if TYPE_CHECKING:
+    from syrupy.assertion import SnapshotAssertion
 
 runner = CliRunner()
 

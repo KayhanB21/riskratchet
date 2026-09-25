@@ -11,12 +11,16 @@ module is pure given two analyzable source trees.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from bin.calibration.config import PrLabel
 from bin.calibration.corpus import analyze_report
 from riskratchet.baseline import baseline_from_report, diff
 from riskratchet.models import DiffReport, DiffStatus, RiskReport
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from bin.calibration.config import PrLabel
 
 UNLABELED = "unlabeled"
 

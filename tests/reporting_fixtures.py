@@ -21,8 +21,8 @@ existing renderer unit tests).
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from riskratchet.models import (
     ChurnStats,
@@ -41,6 +41,9 @@ from riskratchet.models import (
     RiskReport,
 )
 from riskratchet.reporting import SourceLinks
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _components(score: float = 50.0) -> RiskComponents:

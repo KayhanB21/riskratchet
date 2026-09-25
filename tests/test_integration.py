@@ -21,10 +21,13 @@ import os
 import shutil
 import subprocess
 import sys
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 RISKRATCHET_BIN = shutil.which("riskratchet")
 PRECOMMIT_BIN = shutil.which("pre-commit")

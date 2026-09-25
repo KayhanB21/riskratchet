@@ -17,11 +17,14 @@ import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from bin.calibration.config import RepoConfig
 from bin.calibration.corpus import CACHE_DIR, CORPUS_DIR, analyze_report
 from bin.calibration.serial import report_from_dict, report_to_dict
-from riskratchet.models import RiskReport
+
+if TYPE_CHECKING:
+    from bin.calibration.config import RepoConfig
+    from riskratchet.models import RiskReport
 
 # (argv, cwd, timeout_seconds) -> completed process.
 CommandRunner = Callable[[list[str], Path | None, int], "subprocess.CompletedProcess[str]"]

@@ -81,14 +81,14 @@ def _regression() -> Regression:
 
 def test_root_callback_version_help_and_subcommand_paths() -> None:
     with pytest.raises(typer.Exit) as version_exit:
-        _root(cast(Any, _Ctx("scan")), version=True)
+        _root(cast("Any", _Ctx("scan")), version=True)
     assert version_exit.value.exit_code == 0
 
     with pytest.raises(typer.Exit) as help_exit:
-        _root(cast(Any, _Ctx(None)), version=False)
+        _root(cast("Any", _Ctx(None)), version=False)
     assert help_exit.value.exit_code == 0
 
-    assert _root(cast(Any, _Ctx("scan")), version=False) is None
+    assert _root(cast("Any", _Ctx("scan")), version=False) is None
 
 
 @pytest.mark.parametrize(
@@ -160,7 +160,7 @@ def test_resolved_paths_falls_back_to_config() -> None:
 
 
 def test_resolved_paths_defaults_to_cwd_when_nothing_configured() -> None:
-    assert _resolved_paths([], {}, Path.cwd()) == [Path(".")]
+    assert _resolved_paths([], {}, Path.cwd()) == [Path()]
 
 
 def test_resolved_paths_prefers_explicit_argument() -> None:
