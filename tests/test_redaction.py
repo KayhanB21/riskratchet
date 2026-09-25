@@ -10,10 +10,9 @@ persisted baseline file is never redacted.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
-import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -26,6 +25,11 @@ from riskratchet.redaction import (
     redact_function_id,
     resolve_salt,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 runner = CliRunner()
 

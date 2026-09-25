@@ -17,8 +17,7 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from typer.testing import CliRunner
@@ -34,6 +33,9 @@ from riskratchet.git import (
     repo_info,
 )
 from riskratchet.models import FunctionId, FunctionSpan
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 runner = CliRunner()
 
@@ -397,13 +399,13 @@ def test_doctor_tells_missing_git_apart_from_a_missing_repository(
     rows even though `repo_info` collapses both to `None`."""
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "m.py").write_text("def f(): return 1\n", encoding="utf-8")
-    kwargs = dict(
-        config_dir=tmp_path,
-        cfg={"paths": ["src"]},
-        paths=[tmp_path / "src"],
-        baseline_file=tmp_path / ".riskratchet.json",
-        coverage_path=None,
-    )
+    kwargs = {
+        "config_dir": tmp_path,
+        "cfg": {"paths": ["src"]},
+        "paths": [tmp_path / "src"],
+        "baseline_file": tmp_path / ".riskratchet.json",
+        "coverage_path": None,
+    }
 
     # git absent entirely
     monkeypatch.setattr(subprocess, "run", _Exploder(FileNotFoundError(2, "git")))

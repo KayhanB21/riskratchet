@@ -118,19 +118,18 @@ def regressions_above_threshold(report: RiskReport, *, threshold: float) -> list
     `previous_score=None` and `delta=None`. Sorted by descending current
     score, ties broken by stable function id.
     """
-    out: list[Regression] = []
-    for fn in report.functions:
-        if fn.score > threshold:
-            out.append(
-                Regression(
-                    id=fn.id,
-                    kind=RegressionKind.ABOVE_THRESHOLD,
-                    current_score=fn.score,
-                    previous_score=None,
-                    delta=None,
-                    reason=(f"score {fn.score:.1f} exceeds threshold {threshold:.1f} (no baseline)"),
-                    current=fn,
-                )
-            )
+    out = [
+        Regression(
+            id=fn.id,
+            kind=RegressionKind.ABOVE_THRESHOLD,
+            current_score=fn.score,
+            previous_score=None,
+            delta=None,
+            reason=(f"score {fn.score:.1f} exceeds threshold {threshold:.1f} (no baseline)"),
+            current=fn,
+        )
+        for fn in report.functions
+        if fn.score > threshold
+    ]
     out.sort(key=lambda r: (-r.current_score, r.id.as_target()))
     return out

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import SnapshotPopulation
@@ -23,6 +23,9 @@ from bin.calibration.review_comments import (
 )
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _SRC = """\
 def helper():

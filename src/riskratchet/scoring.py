@@ -8,7 +8,7 @@ and tests can introspect them.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from typing import TYPE_CHECKING
 
 from riskratchet.models import (
     ChurnStats,
@@ -19,6 +19,9 @@ from riskratchet.models import (
     RiskComponents,
     Severity,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # The scoring model's own version: bump it whenever a change here would produce a
 # different score for identical inputs — a component formula, a saturation threshold,

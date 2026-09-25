@@ -15,9 +15,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from click.testing import Result
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
@@ -29,6 +29,9 @@ from riskratchet.config import (
     invalid_config_values,
     unknown_config_keys,
 )
+
+if TYPE_CHECKING:
+    from click.testing import Result
 
 runner = CliRunner()
 
@@ -481,7 +484,7 @@ def test_config_show_reports_the_four_redaction_settings() -> None:
     from riskratchet.config import _resolved_config_payload
 
     payload = _resolved_config_payload(
-        {"redact_paths": True, "private_comment": True, "redact_salt": "hunter2"}, Path(".")
+        {"redact_paths": True, "private_comment": True, "redact_salt": "hunter2"}, Path()
     )
     assert payload["redact_paths"] is True
     assert payload["redact_qualnames"] is False
@@ -499,11 +502,11 @@ def test_config_show_never_prints_the_redaction_salt() -> None:
 
     from riskratchet.config import _resolved_config_payload
 
-    payload = _resolved_config_payload({"redact_salt": "hunter2"}, Path("."))
+    payload = _resolved_config_payload({"redact_salt": "hunter2"}, Path())
     assert payload["redact_salt"] == "present"
     assert "hunter2" not in _json.dumps(payload)
-    assert _resolved_config_payload({}, Path("."))["redact_salt"] == "absent"
-    assert _resolved_config_payload({"redact_salt": "  "}, Path("."))["redact_salt"] == "absent"
+    assert _resolved_config_payload({}, Path())["redact_salt"] == "absent"
+    assert _resolved_config_payload({"redact_salt": "  "}, Path())["redact_salt"] == "absent"
 
 
 def test_every_allowed_config_key_appears_in_config_show() -> None:
@@ -514,5 +517,5 @@ def test_every_allowed_config_key_appears_in_config_show() -> None:
     """
     from riskratchet.config import _resolved_config_payload
 
-    payload = _resolved_config_payload({}, Path("."))
+    payload = _resolved_config_payload({}, Path())
     assert set(payload) == set(CONFIG_ALLOWED_KEYS)

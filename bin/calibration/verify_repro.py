@@ -18,10 +18,13 @@ import hashlib
 import json
 import subprocess
 import sys
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import CALIBRATION_DIR
 from bin.calibration.coverage_replay import revision_cache_dir
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 REPOS_DIR = CALIBRATION_DIR / "repos"
 RESULT_PATH = CALIBRATION_DIR / "repro-verification.json"

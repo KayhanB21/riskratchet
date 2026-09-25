@@ -26,7 +26,7 @@ runner = CliRunner()
 
 
 def _load_debug_schema() -> dict[str, Any]:
-    return cast(dict[str, Any], json.loads((SCHEMAS_DIR / "debug.schema.json").read_text(encoding="utf-8")))
+    return cast("dict[str, Any]", json.loads((SCHEMAS_DIR / "debug.schema.json").read_text(encoding="utf-8")))
 
 
 def _project(tmp_path: Path) -> Path:

@@ -23,7 +23,6 @@ lives outside `cli.py`).
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NoReturn
@@ -31,6 +30,8 @@ from typing import TYPE_CHECKING, Any, NoReturn
 import typer
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Mapping, Sequence
+
     from riskratchet.diagnostics import Diagnostics
 
 from riskratchet.analysis import iter_python_files
@@ -278,16 +279,12 @@ def _string_list_problems(cfg: Mapping[str, Any]) -> list[str]:
 
 
 def _scalar_type_problems(cfg: Mapping[str, Any]) -> list[str]:
-    out = []
-    for key in ("coverage", "baseline", "coverage_cache", "test_command", "redact_salt"):
-        if key in cfg and not isinstance(cfg[key], str):
-            out.append(f"{key} must be a string.")
-    for key in _NUMBER_KEYS:
-        if key in cfg and not _is_number(cfg[key]):
-            out.append(f"{key} must be a number.")
-    for key in _BOOL_KEYS:
-        if key in cfg and not isinstance(cfg[key], bool):
-            out.append(f"{key} must be a boolean.")
+    string_keys = ("coverage", "baseline", "coverage_cache", "test_command", "redact_salt")
+    out = [f"{key} must be a string." for key in string_keys if key in cfg and not isinstance(cfg[key], str)]
+    out.extend(f"{key} must be a number." for key in _NUMBER_KEYS if key in cfg and not _is_number(cfg[key]))
+    out.extend(
+        f"{key} must be a boolean." for key in _BOOL_KEYS if key in cfg and not isinstance(cfg[key], bool)
+    )
     return out
 
 
@@ -513,7 +510,7 @@ def _resolved_paths(
     # No paths given anywhere: scan the current directory, not the whole
     # project. The implicit default follows the same cwd-relative rule as an
     # explicit CLI path, so a no-arg run in a subdirectory stays scoped to it.
-    return [Path(".")]
+    return [Path()]
 
 
 def resolved_typescript(cli_value: bool | None, cfg: Mapping[str, Any]) -> bool:
@@ -750,7 +747,7 @@ def _skip_python_coverage(
     _record_coverage_diag(diagnostics, mode="none", source="not_applicable")
 
 
-def _resolve_coverage(
+def _resolve_coverage(  # noqa: RET503  ends in `_exit_no_coverage_produced`, a NoReturn call
     value: Path | None,
     cfg: dict[str, Any],
     *,

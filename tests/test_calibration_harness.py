@@ -8,15 +8,19 @@ into tmp_path.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pytest
 from bin.calibration import coverage_replay, harness
 from bin.calibration.config import PrLabel
 from bin.calibration.corpus import analyze_report
 from bin.calibration.coverage_replay import RevisionResult
 from bin.calibration.prs import PrRef
 from bin.calibration.serial import report_to_dict
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 _SIMPLE = "def f(items):\n    return sum(items)\n"
 _GNARLY = (

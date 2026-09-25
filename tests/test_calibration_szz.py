@@ -9,11 +9,14 @@ function. git is available in CI; no network, no gh, no clone.
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.szz import implications_for_fix
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _A = """\
 def helper():

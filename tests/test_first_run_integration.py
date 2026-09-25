@@ -12,13 +12,17 @@ if the per-command unit tests still pass. Coverage data is hand-written
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
-import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 runner = CliRunner()
 

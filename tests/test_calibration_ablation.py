@@ -8,12 +8,13 @@ Run it with: `uv run --group calibration pytest tests/test_calibration_ablation.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
 pytest.importorskip("scipy")
 pytest.importorskip("numpy")
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 from bin.calibration.ablation import (
@@ -30,6 +31,9 @@ from bin.calibration.corpus import CALIBRATION_DIR, analyze_report
 from bin.calibration.defects import SnapshotPopulation
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _N_PREDICTORS = len(CONTINUOUS_PREDICTORS)
 

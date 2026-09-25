@@ -89,14 +89,14 @@ def _build_candidates() -> tuple[Candidate, ...]:
         Candidate("baseline", "pre-0.3.0 blend (fn+file)/2 — historical control", _baseline_sprawl),
         Candidate("drop_file_line", "sprawl = function-length term only (shipped in 0.3.0)", _drop_file_line),
     ]
-    for fw in SHARE_SWEEP:
-        candidates.append(
-            Candidate(
-                f"shrink_file_share@{fw:.2f}",
-                f"{fw:.2f} function / {1.0 - fw:.2f} file blend",
-                _make_shrink(fw),
-            )
+    candidates.extend(
+        Candidate(
+            f"shrink_file_share@{fw:.2f}",
+            f"{fw:.2f} function / {1.0 - fw:.2f} file blend",
+            _make_shrink(fw),
         )
+        for fw in SHARE_SWEEP
+    )
     for free, saturation in BAND_SWEEP:
         candidates.append(
             Candidate(

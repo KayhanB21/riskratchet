@@ -11,13 +11,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from bin.calibration.config import RepoConfig
 from bin.calibration.coverage_replay import replay_revision
 from bin.calibration.fixes import DEFAULT_FIX_KEYWORDS, mine_fix_commits
 from bin.calibration.git_checkout import CommandRunner, default_runner, ensure_clone, git
 from bin.calibration.szz import Implication, implications_for_fix
-from riskratchet.analysis import DiscoveredFunction
 from riskratchet.baseline import baseline_from_report
 from riskratchet.matching import MATCH_THRESHOLD, match_rename
 from riskratchet.models import (
@@ -32,6 +31,10 @@ from riskratchet.models import (
     RiskComponents,
     RiskReport,
 )
+
+if TYPE_CHECKING:
+    from bin.calibration.config import RepoConfig
+    from riskratchet.analysis import DiscoveredFunction
 
 
 @dataclass(frozen=True)

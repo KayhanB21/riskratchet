@@ -25,7 +25,7 @@ runner = CliRunner()
 
 
 def _load_schema(name: str) -> dict[str, Any]:
-    return cast(dict[str, Any], json.loads((SCHEMAS_DIR / name).read_text(encoding="utf-8")))
+    return cast("dict[str, Any]", json.loads((SCHEMAS_DIR / name).read_text(encoding="utf-8")))
 
 
 def _project(tmp_path: Path) -> Path:
@@ -470,7 +470,7 @@ def test_loader_accepts_every_baseline_the_schema_accepts(tmp_path: Path) -> Non
         loaded = load_baseline(path)
 
         assert loaded.version == payload["version"]
-        assert len(loaded.entries) == len(cast(list[Any], payload["entries"]))
+        assert len(loaded.entries) == len(cast("list[Any]", payload["entries"]))
 
 
 @pytest.mark.parametrize("policy", list(MissingCoveragePolicy), ids=lambda p: p.value)

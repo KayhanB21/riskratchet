@@ -8,10 +8,9 @@ modules; this file should stay easy to scan.
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Annotated, Any, NoReturn
+from typing import TYPE_CHECKING, Annotated, Any, NoReturn
 
 import typer
 
@@ -133,6 +132,9 @@ from riskratchet.reporting import (
 )
 from riskratchet.schemas import schema_url
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 VALID_FORMATS = ("table", "json", "markdown", "sarif", "github", "pr-comment")
 VALID_BASELINE_FORMATS = ("riskratchet",)
@@ -286,10 +288,10 @@ def _root(
 ) -> None:
     if version:
         typer.echo(__version__)
-        raise typer.Exit()
+        raise typer.Exit
     if ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @config_app.command("validate")

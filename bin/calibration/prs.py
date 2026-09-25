@@ -13,8 +13,10 @@ import subprocess
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from bin.calibration.config import RepoConfig
+if TYPE_CHECKING:
+    from bin.calibration.config import RepoConfig
 
 # A command runner: argv -> stdout. Injectable so tests never shell out to gh.
 Runner = Callable[[list[str]], str]
@@ -32,8 +34,7 @@ class PrRef:
 def repo_slug(url: str) -> str:
     """Derive ``owner/name`` from a GitHub clone URL."""
     trimmed = url.rstrip("/")
-    if trimmed.endswith(".git"):
-        trimmed = trimmed[: -len(".git")]
+    trimmed = trimmed.removesuffix(".git")
     parts = trimmed.split("/")
     if len(parts) < 2:
         raise ValueError(f"cannot derive owner/name from URL: {url!r}")

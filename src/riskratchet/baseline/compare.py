@@ -10,13 +10,14 @@ functions above `fail_existing_above`. Non-failing statuses are the
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from riskratchet.baseline.classify import (
     _classify_against_baseline,
     _component_regression,
     _current_fingerprint_counts,
     _unique_old_entries_by_fingerprint,
 )
-from riskratchet.matching import MatchResult
 from riskratchet.models import (
     Baseline,
     FunctionId,
@@ -25,6 +26,9 @@ from riskratchet.models import (
     RegressionKind,
     RiskReport,
 )
+
+if TYPE_CHECKING:
+    from riskratchet.matching import MatchResult
 
 
 def compare(

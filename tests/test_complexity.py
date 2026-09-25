@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from riskratchet.analysis import ParseError, parse_file
 from riskratchet.complexity import complexity_for_file
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _parse(tmp_path: Path, source: str) -> object:

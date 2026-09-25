@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from bin.calibration.change_counting import (
     ChangeCount,
@@ -19,11 +20,13 @@ from bin.calibration.change_counting import (
     count_changes,
     past_window_start,
 )
-from bin.calibration.config import RepoConfig
 from bin.calibration.coverage_free import score_snapshot_coverage_free
 from bin.calibration.defects import SnapshotPopulation, resolve_snapshot
 from bin.calibration.git_checkout import CommandRunner, default_runner, ensure_clone, git
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from bin.calibration.config import RepoConfig
 
 CHANGE_PRONE_QUANTILE = 0.25  # top quartile of future edit-count = change-prone
 

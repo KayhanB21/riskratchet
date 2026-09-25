@@ -9,9 +9,12 @@ for external repos lives in ``coverage_replay.py``; this module is just
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from riskratchet.engine import analyze
-from riskratchet.models import FunctionRisk, RiskReport
+
+if TYPE_CHECKING:
+    from riskratchet.models import FunctionRisk, RiskReport
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALIBRATION_DIR = REPO_ROOT / "data" / "calibration"

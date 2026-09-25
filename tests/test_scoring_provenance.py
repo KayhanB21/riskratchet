@@ -16,9 +16,8 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 from textwrap import dedent
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from jsonschema import Draft202012Validator  # type: ignore[import-untyped]
@@ -47,6 +46,9 @@ from riskratchet.models import (
 )
 from riskratchet.schemas import load_schema
 from riskratchet.scoring import DEFAULT_WEIGHTS, SCORING_MODEL_VERSION
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 runner = CliRunner()
 

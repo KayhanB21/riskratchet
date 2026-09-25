@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import math
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from typer.testing import CliRunner
@@ -23,6 +23,9 @@ from riskratchet.scoring import (
     resolve_weights,
     total_risk,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_resolve_weights_none_returns_defaults() -> None:
@@ -42,7 +45,7 @@ def test_resolve_weights_partial_override_renormalizes() -> None:
 
 
 def test_resolve_weights_arbitrary_positive_numbers_normalize() -> None:
-    resolved = resolve_weights({k: 1.0 for k in DEFAULT_WEIGHTS})
+    resolved = resolve_weights(dict.fromkeys(DEFAULT_WEIGHTS, 1.0))
     for value in resolved.values():
         assert math.isclose(value, 1.0 / 6)
 
@@ -64,7 +67,7 @@ def test_resolve_weights_rejects_non_numeric() -> None:
 
 def test_resolve_weights_rejects_all_zero() -> None:
     with pytest.raises(InvalidWeightsError, match="greater than zero"):
-        resolve_weights({k: 0.0 for k in DEFAULT_WEIGHTS})
+        resolve_weights(dict.fromkeys(DEFAULT_WEIGHTS, 0.0))
 
 
 def test_total_risk_honours_custom_weights() -> None:

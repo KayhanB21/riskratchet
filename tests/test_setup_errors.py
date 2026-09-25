@@ -18,16 +18,20 @@ from __future__ import annotations
 import json
 import os
 import sys
-from pathlib import Path
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import pytest
-from click.testing import Result
 from typer.testing import CliRunner
 
 from riskratchet import auto_coverage
 from riskratchet.auto_coverage import _default_runner as _real_default_runner
 from riskratchet.cli import app
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from click.testing import Result
 
 runner = CliRunner()
 

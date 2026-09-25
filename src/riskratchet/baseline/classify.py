@@ -16,9 +16,9 @@ itself lives in the top-level `riskratchet.matching` module because
 from __future__ import annotations
 
 import os
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from riskratchet.matching import MatchResult, match_rename
 from riskratchet.models import (
@@ -32,6 +32,9 @@ from riskratchet.models import (
     RiskReport,
     unscored_breakdown,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def languages_not_scanned(old: Baseline, report: RiskReport) -> dict[str, int]:
@@ -75,7 +78,7 @@ def unscanned_baseline_files(
     """
     scanned_languages = {fn.language for fn in report.functions}
     reached = {stats.path for stats in report.files}
-    roots = [os.path.normpath(os.path.join(config_dir, root)) for root in scan_roots]
+    roots = [os.path.normpath(Path(config_dir) / root) for root in scan_roots]
     entries = 0
     files: set[str] = set()
     for entry in diff_report.by_status(DiffStatus.REMOVED):
@@ -83,8 +86,8 @@ def unscanned_baseline_files(
         language = previous.language if previous is not None else "python"
         if language not in scanned_languages or entry.id.path in reached:
             continue
-        absolute = os.path.normpath(os.path.join(config_dir, entry.id.path))
-        if not os.path.exists(absolute) or not any(_lexically_under(absolute, root) for root in roots):
+        absolute = os.path.normpath(Path(config_dir) / entry.id.path)
+        if not Path(absolute).exists() or not any(_lexically_under(absolute, root) for root in roots):
             continue
         entries += 1
         files.add(entry.id.path)

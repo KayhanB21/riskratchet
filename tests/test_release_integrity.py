@@ -6,9 +6,8 @@ import re
 import sys
 from importlib.metadata import PackageNotFoundError, metadata, version
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
-import pytest
 import yaml  # type: ignore[import-untyped]
 from typer.testing import CliRunner
 
@@ -16,6 +15,9 @@ from riskratchet import __version__
 from riskratchet import _version as version_mod
 from riskratchet.cli import app
 from riskratchet.init import ACTION_REF
+
+if TYPE_CHECKING:
+    import pytest
 
 if sys.version_info >= (3, 11):
     import tomllib

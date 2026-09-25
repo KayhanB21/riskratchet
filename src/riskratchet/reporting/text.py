@@ -3,8 +3,8 @@ verbose function explanation used by `riskratchet explain`."""
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from io import StringIO
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.table import Table
@@ -32,6 +32,9 @@ from riskratchet.reporting.summary import (
     baseline_line,
 )
 from riskratchet.scoring import severity
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 _SEVERITY_STYLE: dict[Severity, str] = {
     Severity.LOW: "green",

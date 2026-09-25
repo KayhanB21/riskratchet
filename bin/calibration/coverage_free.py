@@ -13,15 +13,18 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
+from typing import TYPE_CHECKING
 
-from bin.calibration.config import RepoConfig
 from bin.calibration.corpus import analyze_report
 from bin.calibration.coverage_replay import _prepare_worktree, ensure_clone, revision_cache_dir
 from bin.calibration.defects import SnapshotPopulation
 from bin.calibration.git_checkout import CommandRunner, default_runner
 from bin.calibration.serial import report_from_dict, report_to_dict
-from riskratchet.models import RiskReport
 from riskratchet.scoring import total_risk
+
+if TYPE_CHECKING:
+    from bin.calibration.config import RepoConfig
+    from riskratchet.models import RiskReport
 
 # Coverage components zeroed; the other four renormalized to sum to 1. The model reads raw
 # components, so this only sets each function's cosmetic `score` in the cached file (honest:

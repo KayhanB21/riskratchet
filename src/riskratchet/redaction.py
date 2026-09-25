@@ -34,7 +34,6 @@ from __future__ import annotations
 
 import hashlib
 import os
-from collections.abc import Callable
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
@@ -49,6 +48,8 @@ from riskratchet.models import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from riskratchet.diagnostics import Diagnostics
 
 REDACT_SALT_ENV = "RISKRATCHET_REDACT_SALT"

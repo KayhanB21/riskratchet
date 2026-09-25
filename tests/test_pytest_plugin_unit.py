@@ -97,13 +97,13 @@ def test_resolve_relative_path_anchors_to_root(tmp_path: Path) -> None:
 
 def test_emit_prefers_terminal_reporter_when_available() -> None:
     reporter = _StubReporter()
-    session = _make_session(Path("."), reporter=reporter)
+    session = _make_session(Path(), reporter=reporter)
     _emit(session, "hello")  # type: ignore[arg-type]
     assert reporter.lines == ["hello"]
 
 
 def test_emit_falls_back_to_print_when_no_reporter(capsys: pytest.CaptureFixture[str]) -> None:
-    session = _make_session(Path("."), reporter=None)
+    session = _make_session(Path(), reporter=None)
     _emit(session, "fallback")  # type: ignore[arg-type]
     assert "fallback" in capsys.readouterr().out
 

@@ -15,14 +15,16 @@ refuses to run, never what anything is worth.
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
 from riskratchet.config import resolve_redaction
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 runner = CliRunner()
 

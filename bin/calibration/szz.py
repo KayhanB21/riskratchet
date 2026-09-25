@@ -14,10 +14,13 @@ import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.git_checkout import CommandRunner, default_runner, git
 from riskratchet.analysis import DiscoveredFunction, ParseError, parse_file
-from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from riskratchet.models import FunctionId
 
 # Old-side hunk: `@@ -old_start[,old_len] +new_start[,new_len] @@`.
 _OLD_HUNK_RE = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+\d+(?:,\d+)? @@")

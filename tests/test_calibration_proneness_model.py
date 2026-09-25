@@ -40,7 +40,7 @@ def _dataset(signal_col: int | None, *, n_repos: int = 4, per_repo: int = 80, se
 
 
 def _tiers(ds: Dataset) -> dict[str, str]:
-    return {r: "polished" for r in ds.repos}
+    return dict.fromkeys(ds.repos, "polished")
 
 
 def test_structure_beats_activity_when_structure_carries_the_signal() -> None:

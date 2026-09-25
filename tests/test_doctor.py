@@ -13,17 +13,20 @@ the schema enum rather than a frozen count.
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
 from pathlib import Path
 from textwrap import dedent
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
-from syrupy.assertion import SnapshotAssertion
 from typer.testing import CliRunner
 
 from riskratchet.cli import app
 from riskratchet.doctor import CheckStatus, DoctorCheck, _check_baseline, diagnose, summarize
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from syrupy.assertion import SnapshotAssertion
 
 runner = CliRunner()
 
@@ -58,9 +61,9 @@ def test_diagnose_pass_pass_path() -> None:
     # Build a temp-dir via pytest fixture happens at CLI test layer; here
     # we sanity-check the helper independently of the CLI.
     checks = diagnose(
-        config_dir=Path("."),
+        config_dir=Path(),
         cfg={"paths": ["src"]},
-        paths=[Path("src")] if Path("src").exists() else [Path(".")],
+        paths=[Path("src")] if Path("src").exists() else [Path()],
         baseline_file=Path(".riskratchet.json"),
         coverage_path=Path("coverage.json"),
     )

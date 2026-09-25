@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.coverage_free import (
@@ -11,6 +11,9 @@ from bin.calibration.coverage_free import (
 )
 
 from riskratchet.scoring import total_risk
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_weights_drop_coverage_and_renormalize() -> None:

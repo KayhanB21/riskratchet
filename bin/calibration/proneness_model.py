@@ -18,6 +18,7 @@ tier. Features are coverage-free, so untested repos are in scope. **Analysis onl
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.stats import binomtest
@@ -30,10 +31,12 @@ from bin.calibration.ablation import (
     _round,
     cross_val_loro,
 )
-from bin.calibration.defects import SnapshotPopulation
-from bin.calibration.proneness import PronenessLabels
 from bin.calibration.rescore import _file_term, _function_term
-from riskratchet.models import FunctionRisk
+
+if TYPE_CHECKING:
+    from bin.calibration.defects import SnapshotPopulation
+    from bin.calibration.proneness import PronenessLabels
+    from riskratchet.models import FunctionRisk
 
 FEATURES: tuple[str, ...] = (
     "past_churn",

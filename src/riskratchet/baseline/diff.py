@@ -9,7 +9,7 @@ The failing subset is projected back into `Regression` objects by the
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING
 
 from riskratchet.baseline.classify import (
     _classify_against_baseline,
@@ -18,7 +18,6 @@ from riskratchet.baseline.classify import (
     _unique_old_entries_by_fingerprint,
 )
 from riskratchet.groups import group_for_path
-from riskratchet.matching import MatchResult
 from riskratchet.models import (
     Baseline,
     BaselineEntry,
@@ -30,6 +29,11 @@ from riskratchet.models import (
     RiskReport,
     UnscoredCause,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from riskratchet.matching import MatchResult
 
 
 def diff(

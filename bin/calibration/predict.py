@@ -15,13 +15,17 @@ component is non-predictive regardless of blend.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from bin.calibration import stats
-from bin.calibration.defects import DefectLabels, SnapshotPopulation
 from bin.calibration.rescore import CANDIDATES, rescore_report
-from riskratchet.models import FunctionId, FunctionRisk, RiskReport
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from bin.calibration.defects import DefectLabels, SnapshotPopulation
+    from riskratchet.models import FunctionId, FunctionRisk, RiskReport
 
 
 def auc_from_mwu(buggy: list[float], clean: list[float]) -> float:

@@ -41,7 +41,7 @@ def test_a_symlinked_root_keeps_the_spelling_it_was_given(
     real.mkdir()
     (real / "x.py").write_text("", encoding="utf-8")
     try:
-        os.symlink(real, tmp_path / "src", target_is_directory=True)
+        (tmp_path / "src").symlink_to(real, target_is_directory=True)
     except (OSError, NotImplementedError):
         pytest.skip("symlinks not available")
     monkeypatch.chdir(tmp_path)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bin.calibration.corpus import analyze_report
 from bin.calibration.defects import SnapshotPopulation
@@ -13,6 +13,9 @@ from bin.calibration.proneness import (
 )
 
 from riskratchet.models import FunctionId
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def fid(i: int) -> FunctionId:
