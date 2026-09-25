@@ -539,6 +539,10 @@ riskratchet check src --baseline .riskratchet.json \
 Function patterns match dotted qualified names. Patterns containing `/` or
 `**` match repo-relative POSIX paths.
 
+If an `allow` pattern suppresses a function that the baseline holds, `check`
+reports the entry as left the gate, not deleted. For more information, see
+[Baseline format](#baseline-format).
+
 The default missing-coverage policy is pessimistic: unmapped functions are
 treated as uncovered. For partial local runs:
 
@@ -1378,6 +1382,18 @@ bill of health. When entries it did not see live in files that still exist under
 paths — an `include` / `exclude` hiding a baselined file, as opposed to a deleted file or a
 deliberate `riskratchet check packages/api` subset — it warns on stderr with counts only
 (safe under redaction) and names the two fixes. The verdict is never changed by either.
+
+**A baselined function that is still in the code (since 0.3.9).** Four things take a function
+out of the gate while its file stays in `files[]`: an `allow` pattern, a `@generated` header,
+a file that fails to parse, and `missing_coverage = "skip"` for a file absent from the
+coverage report. Before 0.3.9, `check` reported each one as `removed function from baseline`
+and said nothing else. Now the `Baseline:` line counts them by cause, for example
+`3 not seen this run (1 suppressed by allow, 1 in a @generated file, 1 failed to parse)`.
+`check`, `diff`, and the pytest plugin print one warning with the same counts. The diff
+entry's `reason` names the cause, and its `status` stays `removed`, so the JSON schemas
+don't change. The warning and the reason carry counts and causes only, never a path or a
+pattern, so both are safe under redaction. The verdict doesn't change: as with `exclude`,
+riskratchet can't tell a filter from an intent. A function you deleted keeps the old reason.
 
 **The `identity` block (v3).** When a baseline contains TypeScript entries it also records
 `identity.typescript` — the `tree-sitter-typescript` grammar version and the fingerprint scheme

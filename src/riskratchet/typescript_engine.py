@@ -44,9 +44,11 @@ from riskratchet.models import (
     ComplexityStats,
     CoverageStats,
     FileStats,
+    FunctionId,
     FunctionRisk,
     RiskReport,
     ScoringInputs,
+    UnscoredCause,
 )
 from riskratchet.scoring import (
     SCORING_MODEL_VERSION,
@@ -142,13 +144,16 @@ def analyze_typescript(
     risks: list[FunctionRisk] = []
     suppressed = 0
     skipped_missing_coverage = 0
+    unscored_functions: list[tuple[FunctionId, UnscoredCause]] = []
     for fn in discovered:
         if _is_allowed(fn.id.path, fn.id.qualname, allow):
             suppressed += 1
+            unscored_functions.append((fn.id, UnscoredCause.SUPPRESSED))
             continue
         coverage_stats = _resolve_coverage(fn.coverage, has_coverage, missing_coverage_policy)
         if coverage_stats is None:  # SKIP policy, file absent from coverage
             skipped_missing_coverage += 1
+            unscored_functions.append((fn.id, UnscoredCause.MISSING_COVERAGE))
             continue
         rel = fn.id.path
         file_stats = FileStats(
@@ -196,6 +201,8 @@ def analyze_typescript(
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(risks) + suppressed,
         skipped_generated_files=len(skipped.generated),
+        unscored_functions=tuple(unscored_functions),
+        unscored_files=skipped.unscored(),
         scoring=ScoringInputs(
             model=SCORING_MODEL_VERSION,
             weights=resolved_weights,
@@ -226,6 +233,12 @@ class _SkippedFiles:
     def on_skip(self, path: Path, _reason: str) -> None:
         self.generated.add(relative_posix(path, self._root))
 
+    def unscored(self) -> tuple[tuple[str, UnscoredCause], ...]:
+        return tuple(
+            [(rel, UnscoredCause.PARSE_ERROR) for rel in sorted(self.failed)]
+            + [(rel, UnscoredCause.GENERATED) for rel in sorted(self.generated)]
+        )
+
 
 def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
     """Concatenate a Python and a TypeScript report into one. Ids never collide (`.py` vs `.ts`
@@ -240,6 +253,8 @@ def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
         skipped_missing_coverage=python.skipped_missing_coverage + typescript.skipped_missing_coverage,
         analyzed_functions=(python.analyzed_functions or 0) + (typescript.analyzed_functions or 0),
         skipped_generated_files=python.skipped_generated_files + typescript.skipped_generated_files,
+        unscored_functions=python.unscored_functions + typescript.unscored_functions,
+        unscored_files=python.unscored_files + typescript.unscored_files,
         # One value, not a merge: `build_report` hands both backends the same weights, churn
         # window and root, so the two `ScoringInputs` are equal by construction. Falling back
         # to the TypeScript one keeps a hand-built Python report (tests, downstream callers)

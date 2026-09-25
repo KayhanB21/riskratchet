@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from riskratchet.baseline.classify import (
     languages_not_scanned,
+    left_the_gate_message,
     unscanned_baseline_files,
     unscanned_files_message,
 )
@@ -58,6 +59,7 @@ __all__ = [
     "compare",
     "diff",
     "languages_not_scanned",
+    "left_the_gate_message",
     "load_baseline",
     "regressions_above_threshold",
     "regressions_from_diff",

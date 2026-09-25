@@ -47,6 +47,7 @@ from riskratchet.models import (
     FunctionRisk,
     RiskReport,
     ScoringInputs,
+    UnscoredCause,
 )
 from riskratchet.scoring import (
     SCORING_MODEL_VERSION,
@@ -140,7 +141,8 @@ def analyze(
     function_risks: list[FunctionRisk] = []
     suppressed_functions = 0
     skipped_missing_coverage = 0
-    parsed_files, file_stats_list, skipped_generated_files = _parse_sources(py_files, root_path, on_error)
+    unscored_functions: list[tuple[FunctionId, UnscoredCause]] = []
+    parsed_files, file_stats_list, unscored_files = _parse_sources(py_files, root_path, on_error)
 
     churn_by_function = collect_function_churn(
         root_path,
@@ -157,9 +159,8 @@ def analyze(
             and file_coverage is None
             and missing_coverage_policy is MissingCoveragePolicy.SKIP
         ):
-            function_risks_skipped = len(parsed.functions)
-            function_risks.extend([])
-            skipped_missing_coverage += function_risks_skipped
+            skipped_missing_coverage += len(parsed.functions)
+            unscored_functions.extend((fn.id, UnscoredCause.MISSING_COVERAGE) for fn in parsed.functions)
             continue
         if coverage_present and file_coverage is None:
             _say_warning(on_warning, parsed.path, root_path, "has no matching entry in coverage data")
@@ -174,6 +175,7 @@ def analyze(
         for risk in risks:
             if _is_allowed(risk, allow):
                 suppressed_functions += 1
+                unscored_functions.append((risk.id, UnscoredCause.SUPPRESSED))
             else:
                 function_risks.append(risk)
 
@@ -184,7 +186,9 @@ def analyze(
         suppressed_functions=suppressed_functions,
         skipped_missing_coverage=skipped_missing_coverage,
         analyzed_functions=len(function_risks) + suppressed_functions,
-        skipped_generated_files=skipped_generated_files,
+        skipped_generated_files=sum(cause is UnscoredCause.GENERATED for _, cause in unscored_files),
+        unscored_functions=tuple(unscored_functions),
+        unscored_files=tuple(unscored_files),
         scoring=ScoringInputs(
             model=SCORING_MODEL_VERSION,
             weights=resolved_weights,
@@ -196,9 +200,9 @@ def analyze(
 
 def _parse_sources(
     py_files: list[Path], root_path: Path, on_error: Any = None
-) -> tuple[list[ParsedFile], list[FileStats], int]:
+) -> tuple[list[ParsedFile], list[FileStats], list[tuple[str, UnscoredCause]]]:
     """Parse every discovered file into the ones to score, the stats of every file reached,
-    and the count of generated files.
+    and the files reached but not scored, with the reason.
 
     `files` means every file the scan reached: a syntax-error file is listed with zero
     functions (as the TypeScript backend already did) and a `@generated` file is listed,
@@ -207,25 +211,21 @@ def _parse_sources(
     """
     parsed_files: list[ParsedFile] = []
     file_stats_list: list[FileStats] = []
-    skipped_generated_files = 0
+    unscored_files: list[tuple[str, UnscoredCause]] = []
     for py_path in py_files:
         parsed = parse_file(py_path, root=root_path)
         if isinstance(parsed, ParseError):
             _say_error(on_error, parsed.path, root_path, parsed.message)
-            file_stats_list.append(
-                FileStats(
-                    path=relative_posix(parsed.path, root_path),
-                    total_lines=parsed.total_lines,
-                    function_count=0,
-                )
-            )
+            rel = relative_posix(parsed.path, root_path)
+            file_stats_list.append(FileStats(path=rel, total_lines=parsed.total_lines, function_count=0))
+            unscored_files.append((rel, UnscoredCause.PARSE_ERROR))
             continue
         file_stats_list.append(parsed.file_stats)
         if parsed.generated:
-            skipped_generated_files += 1
+            unscored_files.append((parsed.relative_path, UnscoredCause.GENERATED))
             continue
         parsed_files.append(parsed)
-    return parsed_files, file_stats_list, skipped_generated_files
+    return parsed_files, file_stats_list, unscored_files
 
 
 def _risks_for_file(

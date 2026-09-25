@@ -186,10 +186,14 @@ def _scrub(text: str, mapping: dict[str, str]) -> str:
 def redact_report(report: RiskReport, cfg: RedactionConfig) -> RiskReport:
     if not cfg.active:
         return report
-    # `report.files` is only ever surfaced as a count, so it needs no redaction.
+    # `report.files` is only ever surfaced as a count, so it needs no redaction. The
+    # unscored lists carry real paths and are read only by `diff`, which runs before this,
+    # so they are dropped rather than hashed: nothing downstream of redaction needs them.
     return replace(
         report,
         functions=tuple(redact_function_risk(fn, cfg) for fn in report.functions),
+        unscored_functions=(),
+        unscored_files=(),
     )
 
 

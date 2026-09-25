@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Annotated, Any, NoReturn
 
@@ -22,6 +22,7 @@ from riskratchet.baseline import (
     baseline_from_report,
     baseline_scored_without_churn,
     languages_not_scanned,
+    left_the_gate_message,
     load_baseline,
     regressions_above_threshold,
     regressions_from_diff,
@@ -1026,6 +1027,7 @@ def check(
         _warn_unscanned_baseline_files(
             diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
         )
+        _warn_left_the_gate(diff_report)
         _note_renames_gated_as_new(diff_report, fail_new_above=fail_new_above_val)
     else:
         assert fail_above_resolved is not None
@@ -1500,6 +1502,7 @@ def diff(
     _warn_unscanned_baseline_files(
         diff_report, report=report, config_dir=config_dir, scan_roots=resolved_paths
     )
+    _warn_left_the_gate(diff_report)
     if redaction.active:
         diff_report = redact_diff(diff_report, redaction)
     links = _links_for(repo_url, commit_ref, redaction)
@@ -2308,6 +2311,13 @@ def _warn_unscanned_baseline_files(
         typer.secho(unscanned_files_message(entries, files), fg=typer.colors.YELLOW, err=True)
 
 
+def _warn_left_the_gate(diff_report: DiffReport) -> None:
+    """Say when baselined functions are still in the code but were not scored this run."""
+    message = left_the_gate_message(diff_report)
+    if message is not None:
+        typer.secho(message, fg=typer.colors.YELLOW, err=True)
+
+
 def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float) -> None:
     """When entries left the baseline and others appeared, name the rule that gated them.
 
@@ -2317,7 +2327,8 @@ def _note_renames_gated_as_new(diff_report: DiffReport, *, fail_new_above: float
     `--fail-regression-above 1` passed with no signal. The matcher contract stays;
     this says out loud which gate applied.
     """
-    removed = len(diff_report.by_status(DiffStatus.REMOVED))
+    # An entry still in the code was not renamed; `_warn_left_the_gate` owns it.
+    removed = sum(entry.left_because is None for entry in diff_report.by_status(DiffStatus.REMOVED))
     new = len(diff_report.by_status(DiffStatus.NEW))
     if not removed or not new:
         return
@@ -3035,18 +3046,14 @@ def _filtered_report(report: RiskReport, *, min_score: float | None, top: int | 
         functions = [fn for fn in functions if fn.score >= min_score]
     if top is not None:
         functions = functions[:top]
-    return RiskReport(
+    # Filtering picks a subset of rows to *show*; it does not rescore anything, so every
+    # other field (provenance, disclosure counts, what went unscored) must survive.
+    # Rebuilding the report field by field once let `scan --top` write a baseline claiming
+    # no provenance at all, so this copies instead.
+    return replace(
+        report,
         functions=tuple(functions),
-        files=report.files,
-        coverage_status=report.coverage_status,
-        suppressed_functions=report.suppressed_functions,
-        skipped_missing_coverage=report.skipped_missing_coverage,
         analyzed_functions=report.analyzed_functions or len(report.functions),
-        skipped_generated_files=report.skipped_generated_files,
-        # Filtering picks a subset of rows to *show*; it does not rescore anything, so the
-        # provenance of the numbers is the same and must survive. Dropping it here would let
-        # `scan --top` write a baseline claiming no provenance at all.
-        scoring=report.scoring,
     )
 
 

@@ -543,6 +543,7 @@ def _gated(
     The plugin used `compare` until 0.3.6; the diff is what knows what was *not* seen."""
     from riskratchet.baseline import (
         diff,
+        left_the_gate_message,
         regressions_from_diff,
         unscanned_baseline_files,
         unscanned_files_message,
@@ -561,6 +562,9 @@ def _gated(
     )
     if entries:
         _emit(session, "riskratchet: " + unscanned_files_message(entries, files))
+    left = left_the_gate_message(diff_report)
+    if left is not None:
+        _emit(session, "riskratchet: " + left)
     return regressions_from_diff(
         diff_report, fail_new_above=settings.fail_new_above, fail_existing_above=settings.fail_existing_above
     )
