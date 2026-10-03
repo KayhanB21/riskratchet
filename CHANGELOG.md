@@ -11,6 +11,8 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.3.10] - 2026-10-02
+
 ### Fixed
 
 - **`--coverage` is the coverage source, with or without a configured `coverage_map`.** With
