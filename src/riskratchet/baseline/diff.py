@@ -121,7 +121,9 @@ def diff(
         )
 
     entries.sort(key=_diff_sort_key)
-    return DiffReport(entries=tuple(entries), baseline_entries=len(old.entries))
+    return DiffReport(
+        entries=tuple(entries), baseline_entries=len(old.entries), coverage_note=new.coverage_note()
+    )
 
 
 _LEFT_THE_GATE_REASONS = {

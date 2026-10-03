@@ -31,6 +31,28 @@ release; renames or removals are called out below under **Breaking**.
   lists every shard, and a missing or malformed one is FAIL, as it is exit 2 at `check`.
   With both keys set, `doctor` inspected `coverage` although every scan read the map. The
   `coverage-overlap` advice for a map no longer says to rerun tests from the project root.
+- **A coverage report that matches no scanned file says so.** `coverage_status` reads
+  `present` whenever a report loads. If its `files` keys name another tree, nothing matches,
+  every function scores as uncovered, and a PR that deletes every test moves no score.
+  `check` printed `No risk regressions detected.`, and only stderr had one warning per file.
+  `scan`, `baseline`, `check`, `diff`, `explain`, and the pytest plugin now print one
+  warning, `coverage matched 0 of N scanned files`. The same words appear in the scan
+  summary line, in the markdown report's `**Coverage:**` line, and on the `Baseline:` line
+  of every `check` format. The note is a count, so it is safe under redaction. A partial
+  match prints nothing. The verdict and all nine JSON schemas don't change.
+
+### Changed
+
+- **A `coverage_map` shard can key its files relative to its own prefix. Scores drop where
+  a shard matched nothing before.** `pytest --cov` run from `packages/alpha` writes
+  `src/m.py`, and the lookup asked that shard for `packages/alpha/src/m.py` only. So the
+  per-package setup that `coverage_map` exists for scored every function at 0% coverage. The
+  lookup now tries the repository-relative path first and then the path relative to the
+  shard's prefix, as an exact match. A report that matched before matches the same entry.
+  In a repository whose shards matched nothing, `coverage_gap` and `branch_gap` fall to
+  their real values on the first run, so `check` reports those functions as improved and no
+  gate fails. Regenerate the baseline after upgrading, or the ratchet keeps the 0% scores
+  as its bar. The scoring model version doesn't change.
 
 ## [0.3.9] - 2026-09-25
 

@@ -769,3 +769,54 @@ def test_a_coverage_flag_beats_the_configured_map_in_gate_settings(tmp_path: Pat
 
     assert resolve_gate_settings(cfg, tmp_path).coverage_map == {"packages/a": tmp_path / "cov-a.json"}
     assert resolve_gate_settings(cfg, tmp_path, coverage=tmp_path / "one.json").coverage_map == {}
+
+
+# --- 0.3.10: per-package shards score, and a report that matches nothing says so ----------
+
+
+def _package_relative_project(pytester: pytest.Pytester) -> None:
+    """The shards hold keys relative to their package, as `pytest --cov` writes them when it
+    runs from the package directory. Every line of `risky` is covered in `a`, none in `b`."""
+    _write(pytester.path / "packages" / "a" / "app.py", _RISKY)
+    _write(pytester.path / "packages" / "b" / "app.py", _RISKY.replace("risky", "other"))
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(_MAP_CONFIG, encoding="utf-8")
+    lines = list(range(1, 13))
+    (pytester.path / "cov-a.json").write_text(
+        json.dumps({"files": {"app.py": {"executed_lines": lines, "missing_lines": []}}}), encoding="utf-8"
+    )
+    (pytester.path / "cov-b.json").write_text(
+        json.dumps({"files": {"app.py": {"executed_lines": [], "missing_lines": lines}}}), encoding="utf-8"
+    )
+
+
+def test_package_relative_shards_score_at_both_doors(pytester: pytest.Pytester) -> None:
+    """Before 0.3.10 neither shard matched, so `risky` and `other` scored identically at 0%."""
+    _package_relative_project(pytester)
+
+    scan = runner.invoke(app, ["scan", "--format", "json", "--no-git"])
+    assert scan.exit_code == 0, scan.output
+    scores = {fn["qualname"]: fn["score"] for fn in json.loads(scan.stdout)["functions"]}
+    assert scores["risky"] < scores["other"]
+    assert "no matching entry in coverage data" not in scan.stderr
+
+    written = runner.invoke(app, ["baseline", "--no-git"])
+    assert written.exit_code == 0, written.output
+    plugin = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+
+    assert plugin.ret == 0, plugin.stdout.str()
+    assert "no matching entry in coverage data" not in plugin.stdout.str()
+    assert "coverage matched 0 of" not in plugin.stdout.str()
+
+
+def test_the_plugin_says_when_coverage_matched_nothing(pytester: pytest.Pytester) -> None:
+    _map_project(pytester)
+    for shard in ("cov-a.json", "cov-b.json"):
+        (pytester.path / shard).write_text(
+            json.dumps({"files": {"elsewhere/x.py": {"executed_lines": [1], "missing_lines": []}}}),
+            encoding="utf-8",
+        )
+
+    result = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+
+    assert "riskratchet: coverage matched 0 of 2 scanned files" in _collapsed(result.stdout.str())

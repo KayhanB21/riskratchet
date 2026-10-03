@@ -201,7 +201,7 @@ def render_report_markdown(
         f"**Functions analyzed:** {summary['analyzed_functions']}",
         f"**Functions emitted:** {summary['emitted_functions']}",
         f"**Files analyzed:** {summary['total_files']}",
-        f"**Coverage:** {summary['coverage_status']}",
+        f"**Coverage:** {summary['coverage_status']}" + _coverage_note_suffix(report),
         f"**Suppressed:** {summary['suppressed_functions']}",
         f"**Skipped (missing coverage):** {summary['skipped_missing_coverage']}",
         f"**Skipped (generated files):** {summary['skipped_generated_files']}",
@@ -284,6 +284,11 @@ def render_regressions_markdown(
         for reg in regressions
     )
     return "\n".join(lines) + "\n"
+
+
+def _coverage_note_suffix(report: RiskReport) -> str:
+    note = report.coverage_note()
+    return f", {note.removeprefix('coverage ')}" if note else ""
 
 
 def _baseline_markdown_lines(diff_report: DiffReport | None) -> list[str]:

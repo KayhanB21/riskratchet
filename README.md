@@ -1035,6 +1035,13 @@ alpha = "packages/alpha"
 beta = "packages/beta"
 ```
 
+A shard's `files` keys can be relative to the repository root
+(`packages/alpha/src/m.py`) or, since 0.3.10, relative to the shard's own prefix
+(`src/m.py`), which is what `pytest --cov` writes when it runs from the package
+directory. The repository-relative spelling is tried first. If a coverage report
+matches none of the scanned files, the run says `coverage matched 0 of N scanned
+files` on stderr, in the summary, and on the `Baseline:` line of `check`.
+
 `--coverage FILE` on the command line replaces the configured map for that run
 (since 0.3.10; before that the flag was ignored whenever a map was configured).
 `--coverage` and `--coverage-map` together are exit `2`. The pytest plugin and

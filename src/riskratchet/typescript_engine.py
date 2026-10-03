@@ -257,6 +257,9 @@ def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
         skipped_generated_files=python.skipped_generated_files + typescript.skipped_generated_files,
         unscored_functions=python.unscored_functions + typescript.unscored_functions,
         unscored_files=python.unscored_files + typescript.unscored_files,
+        # Python's own: the TypeScript loader refuses a report that matches nothing.
+        coverage_checked_files=python.coverage_checked_files,
+        coverage_unmatched_files=python.coverage_unmatched_files,
         # One value, not a merge: `build_report` hands both backends the same weights, churn
         # window and root, so the two `ScoringInputs` are equal by construction. Falling back
         # to the TypeScript one keeps a hand-built Python report (tests, downstream callers)

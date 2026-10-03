@@ -2637,7 +2637,7 @@ def _build_report_or_exit(
         _warn_churn_root_mismatch(config_dir)
     disclose = _Disclosures(config_dir, redaction)
     try:
-        return _warned_about_inert_allow(
+        return _warned_about_unmatched_coverage(
             build_report(
                 resolved_paths,
                 root=config_dir,
@@ -2686,6 +2686,20 @@ def _build_report_or_exit(
             err=True,
         )
         raise typer.Exit(code=2) from exc
+
+
+def _warned_about_unmatched_coverage(report: RiskReport, allow: list[str]) -> RiskReport:
+    """Say so, once, when the coverage report matched none of the scanned files (0.3.10).
+
+    The per-file warnings were already there, one line each, and nothing added them up:
+    `coverage_status` read "present", the PR comment showed 0% on every row, and `check`
+    printed "No risk regressions detected." over a gate that could no longer see coverage
+    change. `doctor` had this as its `coverage-overlap` row; the gate did not.
+    """
+    warning = report.coverage_warning()
+    if warning is not None:
+        typer.secho(f"warning: {warning}", fg=typer.colors.YELLOW, err=True)
+    return _warned_about_inert_allow(report, allow)
 
 
 def _warned_about_inert_allow(report: RiskReport, allow: list[str]) -> RiskReport:

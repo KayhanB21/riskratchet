@@ -255,6 +255,9 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     )
     if report is None:
         return
+    coverage_warning = report.coverage_warning()
+    if coverage_warning is not None:
+        _emit(session, f"riskratchet: {coverage_warning}")
     if _refuses_to_gate_nothing(session, report, baseline_entries=len(baseline.entries)):
         return
     baseline, report = _guarded_typescript_identity(

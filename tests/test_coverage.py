@@ -294,3 +294,78 @@ def test_an_empty_report_is_still_valid(tmp_path: Path) -> None:
     path.write_text("{}", encoding="utf-8")
 
     assert load_istanbul_coverage(path).file_paths == ()
+
+
+# --- 0.3.10: a shard may key its files relative to its own prefix ------------------------
+#
+# `pytest --cov` run from `packages/alpha` writes `src/m.py`, not `packages/alpha/src/m.py`.
+# The lookup asked each shard for the repository-relative path only, so the per-package
+# setup `coverage_map` exists for matched nothing and every function scored as uncovered.
+
+_COVERED = {"executed_lines": [1, 2], "missing_lines": []}
+_UNCOVERED = {"executed_lines": [], "missing_lines": [1, 2]}
+
+
+def _shard(tmp_path: Path, name: str, files: dict[str, object]) -> Path:
+    path = tmp_path / name
+    path.write_text(json.dumps({"files": files}), encoding="utf-8")
+    return path
+
+
+def test_a_shard_keyed_relative_to_its_prefix_matches(tmp_path: Path) -> None:
+    alpha = _shard(tmp_path, "a.json", {"src/m.py": _COVERED})
+    beta = _shard(tmp_path, "b.json", {"src/m.py": _UNCOVERED})
+
+    multi = load_coverage_map({"packages/alpha": alpha, "packages/beta": beta})
+
+    # Same relative key in both shards: the prefix decides which report answers.
+    assert multi.lookup("packages/alpha/src/m.py") == _COVERED
+    assert multi.lookup("packages/beta/src/m.py") == _UNCOVERED
+
+
+def test_the_repository_relative_key_still_wins_over_the_prefix_relative_one(tmp_path: Path) -> None:
+    """A report that matched before 0.3.10 must match the same entry now."""
+    shard = _shard(tmp_path, "a.json", {"packages/alpha/m.py": _COVERED, "m.py": _UNCOVERED})
+
+    multi = load_coverage_map({"packages/alpha": shard})
+
+    assert multi.lookup("packages/alpha/m.py") == _COVERED
+
+
+def test_the_prefix_relative_match_is_exact_not_by_basename(tmp_path: Path) -> None:
+    """`core.py` must not pick up `vendored/core.py`: the single-file suffix rule would."""
+    shard = _shard(tmp_path, "a.json", {"vendored/core.py": _COVERED})
+
+    multi = load_coverage_map({"packages/alpha": shard})
+
+    assert multi.lookup("packages/alpha/core.py") is None
+    assert multi.lookup("packages/alpha/vendored/core.py") == _COVERED
+
+
+def test_a_prefix_relative_miss_keeps_walking_to_a_broader_shard(tmp_path: Path) -> None:
+    narrow = _shard(tmp_path, "narrow.json", {"other.py": _UNCOVERED})
+    broad = _shard(tmp_path, "broad.json", {"alpha/legacy.py": _COVERED})
+
+    multi = load_coverage_map({"packages": broad, "packages/alpha": narrow})
+
+    assert multi.lookup("packages/alpha/legacy.py") == _COVERED
+    assert multi.lookup("packages/alpha/other.py") == _UNCOVERED
+
+
+def test_a_path_outside_every_prefix_is_not_matched_by_a_relative_key(tmp_path: Path) -> None:
+    shard = _shard(tmp_path, "a.json", {"m.py": _COVERED})
+
+    multi = load_coverage_map({"packages/alpha": shard})
+
+    assert multi.lookup("m.py") is None
+    assert multi.lookup("packages/beta/m.py") is None
+
+
+def test_a_catch_all_prefix_has_no_prefix_relative_spelling(tmp_path: Path) -> None:
+    """An empty prefix is the repository root, so the two spellings are the same path."""
+    shard = _shard(tmp_path, "all.json", {"src/m.py": _COVERED})
+
+    multi = load_coverage_map({"": shard})
+
+    assert multi.lookup("src/m.py") == _COVERED
+    assert multi.lookup("src/missing.py") is None
