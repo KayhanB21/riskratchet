@@ -1541,3 +1541,126 @@ def test_config_validate_rejects_invalid_coverage_map(tmp_path: Path) -> None:
     result = runner.invoke(app, ["config", "validate", "--config", str(config)])
     assert result.exit_code == 2
     assert "coverage_map" in result.stderr
+
+
+# --- 0.3.10: `--coverage` is the coverage source, with or without a configured map -------
+#
+# `_resolve_coverage_inputs` read `coverage_map` first and returned, so with a map in
+# config the `--coverage` flag was never looked at: the run scored from the map, and a
+# flag naming a file that did not exist passed where the README promises exit 2.
+
+
+def _monorepo_with_baseline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    written = runner.invoke(app, ["baseline", "--no-git"])
+    assert written.exit_code == 0, written.stdout + written.stderr
+    return root
+
+
+def _coverage_command(command: str, tmp_path: Path) -> list[str]:
+    extra = ["--output", str(tmp_path / "out.json")] if command == "baseline" else []
+    return [command, *extra, "--no-git"]
+
+
+@pytest.mark.parametrize("command", ["scan", "baseline", "check", "diff"])
+def test_a_named_coverage_file_that_is_missing_is_exit_2_over_a_configured_map(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _monorepo_with_baseline(tmp_path, monkeypatch)
+
+    result = runner.invoke(app, [*_coverage_command(command, tmp_path), "--coverage", "nope.json"])
+
+    assert result.exit_code == 2, result.stdout + result.stderr
+    assert "coverage file not found: nope.json" in result.stderr
+
+
+@pytest.mark.parametrize("command", ["scan", "baseline", "check", "diff"])
+def test_a_named_coverage_file_beats_a_configured_map(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _monorepo_with_baseline(tmp_path, monkeypatch)
+    (root / "single.json").write_text(json.dumps({"files": {}}), encoding="utf-8")
+
+    result = runner.invoke(app, [*_coverage_command(command, tmp_path), "--coverage", "single.json"])
+
+    banner = next(line for line in result.stderr.splitlines() if line.startswith("riskratchet: command="))
+    assert "coverage=single=single.json" in banner
+    assert "map=" not in banner
+
+
+def test_a_named_coverage_file_changes_the_scores_a_configured_map_gave(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The banner is a claim; this is the measurement behind it."""
+    root = _monorepo_with_baseline(tmp_path, monkeypatch)
+    (root / "single.json").write_text(json.dumps({"files": {}}), encoding="utf-8")
+
+    def scores(*extra: str) -> dict[str, float]:
+        result = runner.invoke(app, ["scan", "--format", "json", "--no-git", *extra])
+        assert result.exit_code == 0, result.stdout + result.stderr
+        return {fn["qualname"]: fn["score"] for fn in json.loads(result.stdout)["functions"]}
+
+    from_map = scores()
+    from_flag = scores("--coverage", "single.json")
+
+    # An empty report covers nothing, so the well-covered alpha functions must score worse.
+    assert from_flag["add"] > from_map["add"]
+
+
+def test_both_coverage_flags_together_are_exit_2(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+
+    result = runner.invoke(
+        app,
+        [
+            "scan",
+            "--no-git",
+            "--coverage",
+            "coverage-alpha.json",
+            "--coverage-map",
+            "packages/alpha=coverage-alpha.json",
+        ],
+    )
+
+    assert result.exit_code == 2, result.stdout + result.stderr
+    assert "--coverage and --coverage-map are mutually exclusive" in result.stderr
+
+
+def test_explain_reads_a_named_coverage_file_over_a_configured_map(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`explain` passed both sources to the engine, which refused the pair: exit 2 where
+    the other four commands silently ignored the flag. One boundary, one answer."""
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+
+    result = runner.invoke(
+        app,
+        ["explain", "packages/alpha/core.py::add", "--no-git", "--coverage", "coverage-alpha.json"],
+    )
+
+    assert result.exit_code == 0, result.stdout + result.stderr
+    assert "mutually exclusive" not in result.stderr
+
+
+def test_config_that_sets_both_coverage_keys_says_which_one_is_used(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _copy_monorepo(tmp_path)
+    monkeypatch.chdir(root)
+    pyproject = root / "pyproject.toml"
+    pyproject.write_text(
+        pyproject.read_text(encoding="utf-8").replace(
+            'paths = ["packages/alpha", "packages/beta"]',
+            'paths = ["packages/alpha", "packages/beta"]\ncoverage = "coverage-alpha.json"',
+        ),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["scan", "--no-git"])
+
+    assert result.exit_code == 0, result.stdout + result.stderr
+    assert "sets both coverage and coverage_map" in result.stderr
+    assert "coverage=map=" in result.stderr

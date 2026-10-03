@@ -23,7 +23,7 @@ lives outside `cli.py`).
 from __future__ import annotations
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NoReturn
 
@@ -910,25 +910,48 @@ def _ensure_coverage_map_exists(
     """
     if allow_missing:
         return
-    missing = [(prefix, path) for prefix, path in coverage_map.items() if not path.exists()]
-    if not missing:
+    problems = missing_coverage_shard_messages(coverage_map, skip_hint="<command> --allow-missing-coverage")
+    if not problems:
         return
-    for prefix, path in missing:
-        typer.secho(
-            _format_setup_error(
-                f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
-                [
-                    (
-                        "Generate coverage at this path:",
-                        f"pytest --cov --cov-branch --cov-report=json:{path} -q",
-                    ),
-                    ("Skip the coverage requirement for this run:", "<command> --allow-missing-coverage"),
-                ],
-            ),
-            fg=typer.colors.RED,
-            err=True,
-        )
+    for problem in problems:
+        typer.secho(problem, fg=typer.colors.RED, err=True)
     raise typer.Exit(code=2)
+
+
+def missing_coverage_shard_messages(coverage_map: Mapping[str, Path], *, skip_hint: str) -> list[str]:
+    """One setup error per `coverage_map` shard that is not on disk, in map order.
+
+    The typer-free half of `_ensure_coverage_map_exists`, for an entry point that owns its
+    own exit convention (the pytest plugin, since 0.3.10). `skip_hint` is the spelling of
+    "continue without it" at that door: a flag for the CLI, a config key for the plugin.
+    """
+    return [
+        _format_setup_error(
+            f"riskratchet: coverage-map[{prefix}] file not found: {path}.",
+            [
+                ("Generate coverage at this path:", f"pytest --cov --cov-branch --cov-report=json:{path} -q"),
+                ("Skip the coverage requirement for this run:", skip_hint),
+            ],
+        )
+        for prefix, path in coverage_map.items()
+        if not path.exists()
+    ]
+
+
+def coverage_sources_conflict(cfg: Mapping[str, Any]) -> str | None:
+    """Say which coverage source is used when config sets both `coverage` and `coverage_map`.
+
+    The two are mutually exclusive and the map has always won, in silence — while `doctor`
+    inspected `coverage`, so the two commands described different files. A warning rather
+    than exit 2: refusing would turn a green gate red on a patch upgrade.
+    """
+    has_map = isinstance(cfg.get("coverage_map"), dict) and bool(cfg.get("coverage_map"))
+    if not has_map or not _nonempty_string(cfg.get("coverage")):
+        return None
+    return (
+        "riskratchet: [tool.riskratchet] sets both coverage and coverage_map; they are mutually "
+        "exclusive, and coverage_map is the one this run uses. Remove one of them."
+    )
 
 
 def _ensure_ts_coverage_exists(
@@ -1117,6 +1140,10 @@ class GateSettings:
     ts_coverage: list[Path]
     ts_entry: list[Path]
     allow_missing_coverage: bool
+    # Since 0.3.10. Empty when an explicit coverage file was passed: a flag beats config,
+    # so `coverage` is then the one source. Otherwise the configured map, which wins over
+    # `coverage` exactly as it does in the CLI.
+    coverage_map: dict[str, Path] = field(default_factory=dict)
 
 
 def resolve_gate_settings(
@@ -1178,6 +1205,7 @@ def resolve_gate_settings(
         allow_missing_coverage=_resolved_tristate(
             False, no_allow_missing_coverage, cfg.get("allow_missing_coverage")
         ),
+        coverage_map={} if coverage is not None else _resolved_coverage_map(None, cfg, config_dir),
     )
 
 

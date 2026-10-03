@@ -796,3 +796,120 @@ def test_doctor_fails_when_the_extra_cannot_be_imported(
     rows = {row["name"]: row for row in json.loads(result.stdout)["checks"]}
     assert rows["typescript"]["status"] == "fail"
     assert rows["typescript"]["remediation"] == "pip install 'riskratchet[typescript]'"
+
+
+# --- 0.3.10: `doctor` inspects every coverage-map shard -----------------------------------
+#
+# `_doctor_coverage_source` took `next(iter(coverage_map.values()))`, so the `coverage` row
+# described the first shard and a second one that was missing -- exit 2 at `check` -- read
+# as PASS.
+
+
+def _diagnose_map(tmp_path: Path, shards: dict[str, Path]) -> dict[str, DoctorCheck]:
+    src = tmp_path / "src"
+    if not src.exists():
+        # Older than any shard a test writes afterwards would make the row "stale".
+        src.mkdir()
+        (src / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    return _checks_by_name(
+        diagnose(
+            config_dir=tmp_path,
+            cfg={"paths": ["src"]},
+            paths=[src],
+            baseline_file=tmp_path / ".riskratchet.json",
+            coverage_path=next(iter(shards.values())),
+            coverage_origin="coverage_map",
+            coverage_map=shards,
+        )
+    )
+
+
+def _shard(path: Path, files: dict[str, Any]) -> Path:
+    path.write_text(json.dumps({"files": files}), encoding="utf-8")
+    return path
+
+
+def test_doctor_names_every_coverage_map_shard(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    a = _shard(tmp_path / "a.json", {"src/m.py": {"executed_lines": [1, 2], "missing_lines": []}})
+    b = _shard(tmp_path / "b.json", {})
+
+    check = _diagnose_map(tmp_path, {"src": a, "other": b})["coverage"]
+
+    assert check.status is CheckStatus.PASS
+    assert "a.json" in check.summary
+    assert "b.json" in check.summary
+
+
+def test_doctor_fails_on_a_missing_second_shard(tmp_path: Path) -> None:
+    a = _shard(tmp_path / "a.json", {})
+
+    check = _diagnose_map(tmp_path, {"src": a, "other": tmp_path / "gone.json"})["coverage"]
+
+    assert check.status is CheckStatus.FAIL
+    assert "gone.json" in check.summary
+    assert "a.json" not in check.summary
+
+
+def test_doctor_fails_on_a_malformed_shard(tmp_path: Path) -> None:
+    a = _shard(tmp_path / "a.json", {})
+    bad = tmp_path / "bad.json"
+    bad.write_text("not json", encoding="utf-8")
+
+    check = _diagnose_map(tmp_path, {"src": a, "other": bad})["coverage"]
+
+    assert check.status is CheckStatus.FAIL
+    assert "malformed" in check.summary
+
+
+def test_doctor_overlap_advice_for_a_map_does_not_say_run_from_the_root(tmp_path: Path) -> None:
+    """ "Re-run from the project root" is the opposite of what a per-package map is for."""
+    a = _shard(tmp_path / "a.json", {"elsewhere.py": {"executed_lines": [1], "missing_lines": []}})
+
+    check = _diagnose_map(tmp_path, {"src": a})["coverage-overlap"]
+
+    assert check.status is CheckStatus.WARN
+    assert check.remediation is not None
+    assert "project root" not in check.remediation
+    assert "coverage_map prefix" in check.remediation
+
+
+def test_doctor_finds_branch_data_in_any_shard(tmp_path: Path) -> None:
+    a = _shard(tmp_path / "a.json", {})
+    b = _shard(
+        tmp_path / "b.json",
+        {
+            "x.py": {
+                "executed_lines": [1],
+                "missing_lines": [],
+                "executed_branches": [],
+                "missing_branches": [],
+            }
+        },
+    )
+
+    assert _diagnose_map(tmp_path, {"src": a, "other": b})["branch-data"].status is CheckStatus.PASS
+
+
+def test_doctor_reads_the_map_first_when_config_sets_both_keys(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`check` scores from the map; `doctor` used to inspect `coverage` and describe another file."""
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "m.py").write_text("def f():\n    return 1\n", encoding="utf-8")
+    _shard(tmp_path / "a.json", {})
+    _shard(tmp_path / "single.json", {})
+    (tmp_path / "pyproject.toml").write_text(
+        '[tool.riskratchet]\npaths = ["src"]\ncoverage = "single.json"\n'
+        '[tool.riskratchet.coverage_map]\nsrc = "a.json"\n',
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = runner.invoke(app, ["doctor", "--json"])
+
+    rows = {row["name"]: row for row in json.loads(result.stdout)["checks"]}
+    assert "a.json" in rows["coverage"]["summary"]
+    assert "single.json" not in rows["coverage"]["summary"]
+    assert "sets both coverage and coverage_map" in result.stderr
