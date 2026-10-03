@@ -154,8 +154,13 @@ def analyze(
         on_error=on_churn_error,
     )
 
+    coverage_checked_files = 0
+    coverage_unmatched_files = 0
     for parsed in parsed_files:
         file_coverage = coverage_data.lookup(parsed.relative_path)
+        if coverage_present and parsed.functions:
+            coverage_checked_files += 1
+            coverage_unmatched_files += file_coverage is None
         if (
             coverage_present
             and file_coverage is None
@@ -191,6 +196,8 @@ def analyze(
         skipped_generated_files=_count_generated(unscored_files),
         unscored_functions=tuple(unscored_functions),
         unscored_files=tuple(unscored_files),
+        coverage_checked_files=coverage_checked_files,
+        coverage_unmatched_files=coverage_unmatched_files,
         scoring=ScoringInputs(
             model=SCORING_MODEL_VERSION,
             weights=resolved_weights,

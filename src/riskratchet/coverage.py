@@ -58,6 +58,14 @@ class CoverageData:
                 return self._files[candidate]
         return None
 
+    def lookup_exact(self, path: str) -> dict[str, Any] | None:
+        """The entry keyed exactly `path`, with none of `lookup`'s suffix matching.
+
+        For a path that is already short (`core.py`, relative to a `coverage_map` prefix):
+        the suffix rule would hand it any file in the report with that basename.
+        """
+        return self._files.get(path)
+
 
 def load_coverage(path: Path) -> CoverageData:
     """Load coverage.json from disk. Raises FileNotFoundError if missing."""
@@ -102,6 +110,13 @@ class MultiCoverageData:
     only exposes `lookup`. Internally, the prefix list is sorted by
     descending length so the longest-match wins (e.g. `packages/alpha`
     beats `packages`).
+
+    Since 0.3.10 a shard may key its files relative to its own prefix. That is what
+    `pytest --cov` writes when it runs from the package directory, which is the setup a
+    per-package map exists for: `packages/alpha/src/m.py` is `src/m.py` in that report.
+    The repository-relative spelling is tried first, so a report that matched before
+    0.3.10 matches the same entry now. The prefix-relative match is exact, never by
+    suffix, so a short path cannot pick up an unrelated file with the same basename.
     """
 
     _shards: tuple[tuple[str, CoverageData], ...] = field(default_factory=tuple)
@@ -115,7 +130,7 @@ class MultiCoverageData:
         normalized = relative_posix_path.replace("\\", "/")
         for prefix, data in self._shards:
             if prefix == "" or normalized == prefix or normalized.startswith(prefix + "/"):
-                hit = data.lookup(relative_posix_path)
+                hit = data.lookup(relative_posix_path) or _prefix_relative_hit(data, prefix, normalized)
                 if hit is not None:
                     return hit
         return None
@@ -159,6 +174,12 @@ def _load_shard(path: Path, on_error: Any) -> CoverageData | None:
     if on_error is not None:
         on_error(path, message)
     return None
+
+
+def _prefix_relative_hit(data: CoverageData, prefix: str, normalized: str) -> dict[str, Any] | None:
+    if not prefix or not normalized.startswith(prefix + "/"):
+        return None
+    return data.lookup_exact(normalized[len(prefix) + 1 :])
 
 
 def _normalize_prefix(raw: str) -> str:

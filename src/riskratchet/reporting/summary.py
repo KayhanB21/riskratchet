@@ -202,7 +202,11 @@ def baseline_line(report: DiffReport | None) -> str | None:
     # 0.3.9: say how many of the unseen are still in the code. The PR comment files them
     # under a collapsed "Removed", so this line is the only place a reader sees it unasked.
     left = report.left_the_gate()
-    return f"{line} {unscored_breakdown(left)}" if left else line
+    if left:
+        line = f"{line} {unscored_breakdown(left)}"
+    # 0.3.10: a coverage report that matched no scanned file. Without this a `check` whose
+    # every function scores as uncovered reads exactly like one with honest coverage.
+    return f"{line} · {report.coverage_note}" if report.coverage_note else line
 
 
 def _regressions_summary(
@@ -261,6 +265,10 @@ def _summary_line(report: RiskReport) -> str:
     suffix = ("; " + ", ".join(extra)) if extra else ""
     summary = f"Summary: {len(report.functions)} functions across {len(report.files)} files. "
     line = summary + ", ".join(parts) + suffix
+    note = report.coverage_note()
+    if note:
+        # "present" is true of the file and false of the project: nothing in it matched.
+        line += f". Coverage: {note.removeprefix('coverage ')} (the report lists other paths)"
     if report.coverage_status == "missing":
         # Every caller of this line needs the disclosure, not just the table:
         # the PR comment renders an `LCov` column reading 0% for every row, and

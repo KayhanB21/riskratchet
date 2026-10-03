@@ -63,6 +63,18 @@ _UNSCORED_LABELS = {
 }
 
 
+def coverage_overlap_note(checked: int, unmatched: int) -> str | None:
+    """`coverage matched 0 of 12 scanned files`, or None when at least one file matched.
+
+    The one spelling every renderer and the stderr warning share (0.3.10). A count, never a
+    path, so it is safe under redaction. Only the all-or-nothing case is said: a partial
+    match is the ordinary state of a project with untested modules.
+    """
+    if not checked or unmatched < checked:
+        return None
+    return f"coverage matched 0 of {checked} scanned file{'' if checked == 1 else 's'}"
+
+
 def unscored_breakdown(counts: dict[UnscoredCause, int]) -> str:
     """`(1 suppressed by allow, 1 failed to parse)`: the one spelling the `Baseline:` line
     and the warning share. Counts only, so it is safe under redaction."""
@@ -215,6 +227,27 @@ class RiskReport:
     # paths: `redact_report` drops both, and nothing renders them.
     unscored_functions: tuple[tuple[FunctionId, UnscoredCause], ...] = ()
     unscored_files: tuple[tuple[str, UnscoredCause], ...] = ()
+    # How many Python files with at least one function were looked up in a coverage report
+    # that was present, and how many of those it had no entry for (0.3.10). Equal and
+    # non-zero means the report measures some other tree: `coverage_status` still reads
+    # "present", every function scores as uncovered, and the gate no longer sees coverage
+    # change. Counts, so redaction keeps them. Not serialized: the schemas are unchanged.
+    coverage_checked_files: int = 0
+    coverage_unmatched_files: int = 0
+
+    def coverage_note(self) -> str | None:
+        return coverage_overlap_note(self.coverage_checked_files, self.coverage_unmatched_files)
+
+    def coverage_warning(self) -> str | None:
+        """The sentence the CLI and the pytest plugin both print when coverage matched nothing."""
+        note = self.coverage_note()
+        if note is None:
+            return None
+        return (
+            f"{note}, so no function has coverage data this run and a change in test coverage "
+            "cannot move a score. The report's `files` keys name other paths; "
+            "`riskratchet doctor` shows the overlap."
+        )
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}
@@ -311,6 +344,9 @@ class DiffReport:
     # of them this run compared: every baseline entry appears in `entries` exactly once,
     # matched or REMOVED, but only the producer knows the total without re-deriving it.
     baseline_entries: int | None = None
+    # `RiskReport.coverage_note()` of the run this diff compared (0.3.10), carried here
+    # because the `check` renderers are handed the diff and never the report.
+    coverage_note: str | None = None
 
     def by_status(self, status: DiffStatus) -> tuple[DiffEntry, ...]:
         return tuple(entry for entry in self.entries if entry.status is status)
