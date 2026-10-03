@@ -54,6 +54,7 @@ from riskratchet.config import (
     _resolved_paths,
     _resolved_tristate,
     _resolved_weights,
+    coverage_sources_conflict,
     invalid_config_values,
     resolve_gate_settings,
     resolved_ts_paths,
@@ -1182,7 +1183,6 @@ def explain(
     file_path = _anchor_config_path(Path(file_part), config_dir)
     if not file_path.exists():
         file_path = Path(file_part)
-    resolved_coverage_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
     ts = _resolve_ts_settings(
         typescript,
         no_typescript,
@@ -1194,16 +1194,23 @@ def explain(
         allow_missing=False,
         required=False,
     )
-    coverage_path = _resolve_coverage(
+    # The shared boundary since 0.3.10. `explain` resolved the map and the single file
+    # separately and passed both on, so `--coverage` over a configured map was exit 2
+    # ("mutually exclusive") here while the other four commands ignored the flag.
+    coverage_path, resolved_coverage_map = _resolve_coverage_inputs(
         coverage,
-        cfg,
+        coverage_map,
+        cfg=cfg,
+        config_dir=config_dir,
         sources=[file_path],
         no_auto_cov=no_auto_cov,
         required=False,
         allow_missing=False,  # see the note in `scan`
-        config_dir=config_dir,
-        diagnostics=diag,
-        ts_enabled=ts.enabled,
+        map_allow_missing=True,
+        diag=diag,
+        ts=ts,
+        include=[],
+        exclude=[],
     )
     resolved_churn_days = _resolved_churn_days(churn_days, cfg)
     # Resolved *before* the report is built, not after it: `_build_report_or_exit` hands
@@ -1765,6 +1772,9 @@ def doctor(
     paths = _resolved_paths(None, cfg, config_dir)
     baseline_file = _resolved_baseline(None, cfg, config_dir)
     coverage_path, coverage_origin = _doctor_coverage_source(cfg, config_dir)
+    conflict = coverage_sources_conflict(cfg)
+    if conflict is not None:
+        typer.secho(conflict, fg=typer.colors.YELLOW, err=True)
     checks = diagnose(
         config_dir=config_dir,
         cfg=cfg,
@@ -1772,6 +1782,7 @@ def doctor(
         baseline_file=baseline_file,
         coverage_path=coverage_path,
         coverage_origin=coverage_origin,
+        coverage_map=_doctor_coverage_map(cfg, config_dir),
         typescript=resolved_typescript(None, cfg),
         ts_coverage=resolved_ts_paths(None, cfg, "ts_coverage", config_dir),
     )
@@ -1797,6 +1808,11 @@ def _doctor_coverage_source(cfg: Mapping[str, Any], config_dir: Path) -> tuple[P
     "no coverage configured" — riskratchet's own pyproject.toml included.
     """
     auto_on = cfg.get("auto_coverage") is not False
+    # The map first, as `check` reads it (0.3.10): with both keys set `doctor` used to
+    # inspect `coverage` while every scanning command scored from the map.
+    shards = _doctor_coverage_map(cfg, config_dir)
+    if shards:
+        return next(iter(shards.values())), "coverage_map"
     coverage_value = cfg.get("coverage")
     if isinstance(coverage_value, str):
         # `coverage_auto` means "named in config, but auto-coverage would fill it"
@@ -1804,14 +1820,23 @@ def _doctor_coverage_source(cfg: Mapping[str, Any], config_dir: Path) -> tuple[P
         return _anchor_config_path(Path(coverage_value), config_dir), (
             "coverage_auto" if auto_on else "coverage"
         )
-    coverage_map = cfg.get("coverage_map")
-    if isinstance(coverage_map, dict) and coverage_map:
-        first = next(iter(coverage_map.values()))
-        return _anchor_config_path(Path(str(first)), config_dir), "coverage_map"
     if auto_on:
         cache = cfg.get("coverage_cache", str(DEFAULT_CACHE_PATH))
         return _anchor_config_path(Path(str(cache)), config_dir), "coverage_cache"
     return None, "coverage"
+
+
+def _doctor_coverage_map(cfg: Mapping[str, Any], config_dir: Path) -> dict[str, Path]:
+    """The configured map with anchored paths, or `{}`. Never exits: a malformed table is
+    the `config` row's finding, and `doctor` must not bail out on what it diagnoses."""
+    raw = cfg.get("coverage_map")
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        prefix: _anchor_config_path(Path(path), config_dir)
+        for prefix, path in raw.items()
+        if isinstance(prefix, str) and isinstance(path, str) and prefix.strip() and path.strip()
+    }
 
 
 def _doctor_check_payload(check: DoctorCheck) -> dict[str, object]:
@@ -2204,8 +2229,12 @@ def _resolve_coverage_inputs(
     means the 0.3.6 rule — Python coverage is not applicable on a tree with no Python
     under the scan paths — is applied in all four at once rather than remembered per
     command. Returns `(coverage_path, coverage_map)`; at most one of them is set.
+
+    Since 0.3.10 an explicit `--coverage` beats a configured `coverage_map`, the rule every
+    other flag follows. The map used to be read first, so the flag was ignored, and a
+    `--coverage` naming a file that did not exist passed where the README promises exit 2.
     """
-    resolved_map = _resolved_coverage_map(coverage_map, cfg, config_dir)
+    resolved_map = _coverage_map_unless_named(coverage, coverage_map, cfg, config_dir)
     if resolved_map:
         _ensure_coverage_map_exists(resolved_map, allow_missing=map_allow_missing)
         diag.set_coverage(
@@ -2228,6 +2257,30 @@ def _resolve_coverage_inputs(
         exclude=exclude,
     )
     return coverage_path, resolved_map
+
+
+def _coverage_map_unless_named(
+    coverage: Path | None, coverage_map: list[str] | None, cfg: dict[str, Any], config_dir: Path
+) -> dict[str, Path]:
+    """The per-prefix map this run reads: none when `--coverage` names the one source.
+
+    Both flags together is exit 2. Each is an assertion about this run, and the engine
+    already refuses the pair, but with a "regenerate the report" remediation that does
+    not help. Config that sets both keys keeps using the map and says so.
+    """
+    if coverage is not None and coverage_map:
+        typer.secho(
+            "riskratchet: --coverage and --coverage-map are mutually exclusive; pass one of them.",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if coverage is not None:
+        return {}
+    conflict = None if coverage_map else coverage_sources_conflict(cfg)
+    if conflict is not None:
+        typer.secho(conflict, fg=typer.colors.YELLOW, err=True)
+    return _resolved_coverage_map(coverage_map, cfg, config_dir)
 
 
 def _ts_warn(message: str) -> None:

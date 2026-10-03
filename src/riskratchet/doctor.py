@@ -36,7 +36,7 @@ from riskratchet.baseline.io import (
     scoring_envelope_reason,
 )
 from riskratchet.config import invalid_config_values, unknown_config_keys
-from riskratchet.coverage import CoverageData, load_coverage
+from riskratchet.coverage import CoverageData, MultiCoverageData, load_coverage
 from riskratchet.git import (
     DEFAULT_CHURN_WINDOW_DAYS,
     churn_is_available,
@@ -80,6 +80,7 @@ def diagnose(
     coverage_origin: str = "coverage",
     typescript: bool = False,
     ts_coverage: Sequence[Path] = (),
+    coverage_map: Mapping[str, Path] | None = None,
 ) -> list[DoctorCheck]:
     """Run every check and return the results in declaration order.
 
@@ -91,7 +92,9 @@ def diagnose(
     the path came from (`coverage`, `coverage_map`, `coverage_cache`) so the
     remediation can be specific. `typescript` and `ts_coverage` are the
     resolved `[tool.riskratchet]` values (since 0.3.6): `doctor` diagnoses
-    the config, so it takes no flags of its own.
+    the config, so it takes no flags of its own. `coverage_map` is the configured
+    per-prefix map (since 0.3.10); when set it is the coverage source, as it is for
+    `check`, and every shard is inspected rather than the first one alone.
 
     The coverage file is parsed once and reused by the overlap and
     branch-data checks; those two are skipped when it isn't loadable, and
@@ -100,8 +103,11 @@ def diagnose(
     never disagree about whether a project is usable.
     """
     python_files = _scanned_files(paths, config_dir=config_dir, cfg=cfg, language="python")
+    data: CoverageData | MultiCoverageData | None
     if typescript and not python_files:
         coverage_check, data = _coverage_not_applicable(), None
+    elif coverage_map:
+        coverage_check, data = _check_coverage_map(coverage_map, source_paths=python_files or [])
     else:
         coverage_check, data = _check_coverage(
             # The files the scan would reach, not the scan paths: staleness is only meaningful
@@ -118,7 +124,11 @@ def diagnose(
         coverage_check,
     ]
     if data is not None:
-        checks.append(_check_coverage_overlap(data, files=python_files, config_dir=config_dir))
+        checks.append(
+            _check_coverage_overlap(
+                data, files=python_files, config_dir=config_dir, sharded=bool(coverage_map)
+            )
+        )
         checks.append(_check_branch_data(data, coverage_path))
     checks.append(_check_git(config_dir))
     checks.append(_check_shallow_clone(config_dir))
@@ -357,11 +367,78 @@ def _check_coverage(
     )
 
 
+def _check_coverage_map(
+    coverage_map: Mapping[str, Path], *, source_paths: list[Path]
+) -> tuple[DoctorCheck, MultiCoverageData | None]:
+    """The `coverage` row for a `coverage_map`: every shard, not the first one.
+
+    Before 0.3.10 `doctor` inspected `next(iter(coverage_map.values()))` and reported
+    that single file as the project's coverage, so a second shard that was missing or
+    malformed — exit 2 at `check` — read as PASS here. A missing or malformed shard is
+    a FAIL for the same reason a missing `coverage` file is.
+    """
+    missing = [path for path in coverage_map.values() if not path.exists()]
+    if missing:
+        return (
+            DoctorCheck(
+                name="coverage",
+                status=CheckStatus.FAIL,
+                summary=f"coverage-map shard not found: {', '.join(str(p) for p in missing)}",
+                remediation=f"pytest --cov --cov-branch --cov-report=json:{missing[0]} -q",
+            ),
+            None,
+        )
+    shards: dict[str, CoverageData] = {}
+    for prefix, path in coverage_map.items():
+        shard, reason = _shard_or_reason(path)
+        if shard is None:
+            return (
+                DoctorCheck(
+                    name="coverage",
+                    status=CheckStatus.FAIL,
+                    summary=f"coverage-map shard is malformed: {reason}",
+                    remediation=f"pytest --cov --cov-branch --cov-report=json:{path} -q",
+                ),
+                None,
+            )
+        shards[prefix] = shard
+    data = MultiCoverageData.from_map(shards)
+    names = ", ".join(str(path) for path in coverage_map.values())
+    oldest = min(coverage_map.values(), key=lambda path: path.stat().st_mtime)
+    newer = _find_newer(source_paths, oldest.stat().st_mtime)
+    if newer is not None:
+        return (
+            DoctorCheck(
+                name="coverage",
+                status=CheckStatus.WARN,
+                summary=f"coverage-map shard {oldest} older than {newer} (stale)",
+                remediation=f"pytest --cov --cov-branch --cov-report=json:{oldest} -q",
+            ),
+            data,
+        )
+    return (
+        DoctorCheck(
+            name="coverage",
+            status=CheckStatus.PASS,
+            summary=f"{len(coverage_map)} coverage-map shard(s): {names} (fresh)",
+        ),
+        data,
+    )
+
+
+def _shard_or_reason(path: Path) -> tuple[CoverageData | None, str | None]:
+    try:
+        return load_coverage(path), None
+    except ValueError as exc:
+        return None, str(exc)
+
+
 def _check_coverage_overlap(
-    data: CoverageData,
+    data: CoverageData | MultiCoverageData,
     *,
     files: list[Path] | None,
     config_dir: Path,
+    sharded: bool = False,
 ) -> DoctorCheck:
     """Warn when the coverage report barely mentions the files being scanned.
 
@@ -387,7 +464,12 @@ def _check_coverage_overlap(
             name="coverage-overlap",
             status=CheckStatus.WARN,
             summary=f"0 of {len(files)} scanned files appear in coverage",
-            remediation="coverage measures a different tree — re-run the test command from the project root",
+            remediation=(
+                "no shard lists a scanned file — compare the `files` keys in each shard with its "
+                "coverage_map prefix"
+                if sharded
+                else "coverage measures a different tree — re-run the test command from the project root"
+            ),
         )
     if hits * 2 < len(files):
         return DoctorCheck(
@@ -403,7 +485,7 @@ def _check_coverage_overlap(
     )
 
 
-def _check_branch_data(data: CoverageData, coverage_path: Path | None) -> DoctorCheck:
+def _check_branch_data(data: CoverageData | MultiCoverageData, coverage_path: Path | None) -> DoctorCheck:
     """Warn when coverage carries no branch data.
 
     `branch_gap` returns 0.0 when `branch_coverage is None`, so 15% of the
@@ -702,12 +784,16 @@ def _check_suppressions(cfg: Mapping[str, Any]) -> DoctorCheck:
     )
 
 
-def _has_branch_data(data: CoverageData) -> bool:
-    """True when any file payload carries the keys `--cov-branch` produces."""
-    for path in data.file_paths:
-        payload = data.lookup(path)
-        if isinstance(payload, dict) and ("executed_branches" in payload or "missing_branches" in payload):
-            return True
+def _has_branch_data(data: CoverageData | MultiCoverageData) -> bool:
+    """True when any file payload, in any shard, carries the keys `--cov-branch` produces."""
+    shards = data.shards if isinstance(data, MultiCoverageData) else (data,)
+    for shard in shards:
+        for path in shard.file_paths:
+            payload = shard.lookup(path)
+            if isinstance(payload, dict) and (
+                "executed_branches" in payload or "missing_branches" in payload
+            ):
+                return True
     return False
 
 

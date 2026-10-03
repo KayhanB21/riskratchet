@@ -11,6 +11,27 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`--coverage` is the coverage source, with or without a configured `coverage_map`.** With
+  `[tool.riskratchet.coverage_map]` in config, `scan`, `baseline`, `check`, and `diff` read
+  the map and never looked at the flag. `check --coverage nope.json` exited 0 and scored
+  from the map, although a named coverage file that doesn't exist is documented as exit 2.
+  `explain` passed both sources on and exited 2 with `mutually exclusive`. All five commands
+  now share one rule: the flag beats the configured map, and a missing named file is exit 2.
+  `--coverage` together with `--coverage-map` is exit 2. Config that sets both `coverage`
+  and `coverage_map` keeps using the map, as before, and now prints a warning that says so.
+- **The pytest plugin reads `coverage_map`.** The plugin knew `coverage` only. On a
+  monorepo it failed the session with `coverage file not found: coverage.json` and told you
+  to write that file, which `riskratchet check` doesn't read. The plugin now gates from the
+  configured shards, as `check` does. A missing shard fails the session unless
+  `allow_missing_coverage = true`. `--riskratchet-coverage` overrides the map.
+- **`doctor` inspects every `coverage_map` shard.** The `coverage` row described the first
+  shard only, so a second shard that was missing or malformed read as PASS. The row now
+  lists every shard, and a missing or malformed one is FAIL, as it is exit 2 at `check`.
+  With both keys set, `doctor` inspected `coverage` although every scan read the map. The
+  `coverage-overlap` advice for a map no longer says to rerun tests from the project root.
+
 ## [0.3.9] - 2026-09-25
 
 ### Fixed

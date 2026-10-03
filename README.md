@@ -628,7 +628,9 @@ value shown):
 - `--riskratchet` (required to enable)
 - `--riskratchet-paths` (default: `paths`, else `src`; repeatable)
 - `--riskratchet-baseline` (default: `baseline`, else `.riskratchet.json`; since 0.3.8)
-- `--riskratchet-coverage` (default: `coverage`, else `coverage.json`; since 0.3.8)
+- `--riskratchet-coverage` (default: `coverage`, else `coverage.json`; since 0.3.8). With
+  `[tool.riskratchet.coverage_map]` in config and this flag left off, the plugin gates from
+  the map's shards, as `riskratchet check` does (since 0.3.10). Passing the flag overrides the map.
 - `--riskratchet-fail-new-above` (default: `50`)
 - `--riskratchet-fail-regression-above` (default: `5`)
 - `--riskratchet-fail-existing-above` (default: unset)
@@ -1033,6 +1035,12 @@ alpha = "packages/alpha"
 beta = "packages/beta"
 ```
 
+`--coverage FILE` on the command line replaces the configured map for that run
+(since 0.3.10; before that the flag was ignored whenever a map was configured).
+`--coverage` and `--coverage-map` together are exit `2`. The pytest plugin and
+`doctor` read the same map: the plugin gates from its shards, and `doctor`
+checks every shard.
+
 One repo-level baseline (recommended for tight coupling) is global; one
 baseline per package is useful when packages release independently. Every
 command prints a diagnostic banner to stderr summarizing the resolved root,
@@ -1051,7 +1059,7 @@ visible without breaking a build; `riskratchet config validate` is the strict ch
 | `allow` | list[str] | `[]` | Suppress matching functions from reporting **and** gating. A pattern containing `::` matches the full `path::qualname` target riskratchet prints, one containing `/` or `**` matches the path, anything else matches the qualname. Patterns that suppress nothing warn. |
 | `baseline` | str | `.riskratchet.json` | Baseline file path. |
 | `coverage` | str | — | Single coverage.json path. |
-| `coverage_map` | table | — | Per-prefix coverage, e.g. `"packages/a" = "a/cov.json"`. Mutually exclusive with `coverage`. |
+| `coverage_map` | table | — | Per-prefix coverage, e.g. `"packages/a" = "a/cov.json"`. Mutually exclusive with `coverage`: if both are set, the map is used and the run warns. An explicit `--coverage` beats the map (since 0.3.10). |
 | `coverage_cache` | str | `.riskratchet/coverage.json` | Where `auto_coverage` writes. |
 | `auto_coverage` | bool | `true` | Run `test_command` to produce coverage when none is fresh. |
 | `test_command` | str | pytest invocation | Command `auto_coverage` runs; `{output}` is substituted. |
@@ -1116,6 +1124,8 @@ the two commands disagreed about whether the same project was usable. A path fro
 `[tool.riskratchet] coverage` is different — it is a default auto-coverage may legitimately fill on a
 fresh clone — so that one **warns and names the file it used instead**, and `doctor` reports it as
 `WARN` for the same reason. `--allow-missing-coverage` downgrades the flag form to the same warning.
+Since 0.3.10 this holds when `[tool.riskratchet.coverage_map]` is configured too: the flag used to
+lose to the map, so the missing file was never checked.
 
 Finally, a **report riskratchet cannot write** — `--output`, `--debug-json-file`, or
 `baseline --output` pointing at a directory or a read-only location — is exit `2`, not the exit `1`

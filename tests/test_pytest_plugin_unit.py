@@ -410,3 +410,73 @@ def test_usable_ts_entries_splits_present_from_missing(tmp_path: Path) -> None:
     assert len(problems) == 1
     assert "TypeScript entry file not found" in problems[0]
     assert "relative to the current directory" in problems[0]
+
+
+# --- 0.3.10: `_coverage_source_ok`, in-process -------------------------------------------
+
+
+def _source_session(tmp_path: Path) -> tuple[_StubSession, _StubReporter]:
+    reporter = _StubReporter()
+    return _make_session(tmp_path, reporter=reporter), reporter
+
+
+def test_coverage_source_ok_passes_for_a_single_file_on_disk(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _coverage_source_ok
+
+    (tmp_path / "coverage.json").write_text('{"files": {}}', encoding="utf-8")
+    session, reporter = _source_session(tmp_path)
+    settings = resolve_gate_settings({}, tmp_path, coverage=tmp_path / "coverage.json")
+
+    assert _coverage_source_ok(session, {}, settings) is True  # type: ignore[arg-type]
+    assert reporter.lines == []
+
+
+def test_coverage_source_ok_fails_the_session_for_a_missing_single_file(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _coverage_source_ok
+
+    session, reporter = _source_session(tmp_path)
+    settings = resolve_gate_settings({}, tmp_path, coverage=tmp_path / "coverage.json")
+
+    assert _coverage_source_ok(session, {}, settings) is False  # type: ignore[arg-type]
+    assert session.exitstatus == 1
+    assert "coverage file not found" in reporter.lines[0]
+
+
+def test_coverage_source_ok_checks_every_shard_of_a_configured_map(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _coverage_source_ok
+
+    (tmp_path / "a.json").write_text('{"files": {}}', encoding="utf-8")
+    cfg = {"coverage_map": {"packages/a": "a.json", "packages/b": "b.json"}}
+    session, reporter = _source_session(tmp_path)
+
+    assert _coverage_source_ok(session, cfg, resolve_gate_settings(cfg, tmp_path)) is False  # type: ignore[arg-type]
+    assert session.exitstatus == 1
+    assert len(reporter.lines) == 1
+    assert "coverage-map[packages/b] file not found" in reporter.lines[0]
+
+    (tmp_path / "b.json").write_text('{"files": {}}', encoding="utf-8")
+    session, reporter = _source_session(tmp_path)
+    assert _coverage_source_ok(session, cfg, resolve_gate_settings(cfg, tmp_path)) is True  # type: ignore[arg-type]
+    assert reporter.lines == []
+
+
+def test_coverage_source_ok_leaves_a_missing_shard_to_the_loader_when_allowed(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _coverage_source_ok
+
+    cfg = {"coverage_map": {"packages/a": "a.json"}, "allow_missing_coverage": True}
+    session, reporter = _source_session(tmp_path)
+
+    assert _coverage_source_ok(session, cfg, resolve_gate_settings(cfg, tmp_path)) is True  # type: ignore[arg-type]
+    assert session.exitstatus == 0
+    assert reporter.lines == []
+
+
+def test_coverage_source_ok_says_which_source_wins_when_config_sets_both(tmp_path: Path) -> None:
+    from riskratchet.pytest_plugin import _coverage_source_ok
+
+    (tmp_path / "a.json").write_text('{"files": {}}', encoding="utf-8")
+    cfg = {"coverage": "one.json", "coverage_map": {"packages/a": "a.json"}}
+    session, reporter = _source_session(tmp_path)
+
+    assert _coverage_source_ok(session, cfg, resolve_gate_settings(cfg, tmp_path)) is True  # type: ignore[arg-type]
+    assert "sets both coverage and coverage_map" in reporter.lines[0]

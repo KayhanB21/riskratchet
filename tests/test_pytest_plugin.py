@@ -687,3 +687,85 @@ def test_a_missing_baseline_still_names_the_file_under_redaction(pytester: pytes
     text = _collapsed(result.stdout.str())
     assert ".riskratchet.json" in text
     assert "riskratchet baseline" in text
+
+
+# --- 0.3.10: the plugin reads `coverage_map` ----------------------------------------------
+#
+# `GateSettings` carried `coverage` and nothing else, so on a monorepo the plugin failed
+# asking for a root `coverage.json` that `riskratchet check` never reads -- and writing one
+# made the two doors score from different coverage.
+
+_MAP_CONFIG = """
+[tool.riskratchet]
+paths = ["packages"]
+exclude = ["**/tests/**"]
+
+[tool.riskratchet.coverage_map]
+"packages/a" = "cov-a.json"
+"packages/b" = "cov-b.json"
+"""
+
+
+def _map_project(pytester: pytest.Pytester) -> None:
+    """Two packages, one shard each, and a baseline the CLI wrote from those shards."""
+    _write(pytester.path / "packages" / "a" / "app.py", _RISKY)
+    _write(pytester.path / "packages" / "b" / "app.py", _RISKY.replace("risky", "other"))
+    _write(pytester.path / "tests" / "test_app.py", "def test_truthy():\n    assert True\n")
+    (pytester.path / "pyproject.toml").write_text(_MAP_CONFIG, encoding="utf-8")
+    for shard in ("cov-a.json", "cov-b.json"):
+        (pytester.path / shard).write_text(json.dumps({"files": {}}), encoding="utf-8")
+    written = runner.invoke(app, ["baseline", "--no-git"])
+    assert written.exit_code == 0, written.output
+
+
+def test_the_plugin_gates_from_the_configured_coverage_map(pytester: pytest.Pytester) -> None:
+    """No root `coverage.json` exists and none is asked for: the shards are the source."""
+    _map_project(pytester)
+
+    plugin = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+    cli = runner.invoke(app, ["check", "--no-git"])
+
+    assert cli.exit_code == 0, cli.output
+    assert plugin.ret == 0, plugin.stdout.str()
+    assert "coverage file not found" not in plugin.stdout.str()
+
+
+def test_the_plugin_fails_the_session_for_a_missing_shard(pytester: pytest.Pytester) -> None:
+    _map_project(pytester)
+    (pytester.path / "cov-b.json").unlink()
+
+    result = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+
+    assert result.ret == 1, result.stdout.str()
+    text = _collapsed(result.stdout.str())
+    assert "coverage-map[packages/b] file not found" in text
+    assert "allow_missing_coverage = true" in text
+
+
+def test_the_plugin_tolerates_a_missing_shard_when_config_allows_it(pytester: pytest.Pytester) -> None:
+    _map_project(pytester)
+    (pytester.path / "cov-b.json").unlink()
+    pyproject = pytester.path / "pyproject.toml"
+    pyproject.write_text(
+        pyproject.read_text(encoding="utf-8").replace(
+            'paths = ["packages"]', 'paths = ["packages"]\nallow_missing_coverage = true'
+        ),
+        encoding="utf-8",
+    )
+
+    result = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+
+    text = _collapsed(result.stdout.str())
+    assert "coverage-map[packages/b] file not found" not in text
+    assert "coverage-map shard unusable" in text
+    assert "treating that prefix as no coverage" in text
+
+
+def test_a_coverage_flag_beats_the_configured_map_in_gate_settings(tmp_path: Path) -> None:
+    """`--riskratchet-coverage` is how the plugin turns a configured map back off."""
+    from riskratchet.config import resolve_gate_settings
+
+    cfg = {"coverage_map": {"packages/a": "cov-a.json"}}
+
+    assert resolve_gate_settings(cfg, tmp_path).coverage_map == {"packages/a": tmp_path / "cov-a.json"}
+    assert resolve_gate_settings(cfg, tmp_path, coverage=tmp_path / "one.json").coverage_map == {}

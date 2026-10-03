@@ -124,6 +124,10 @@ class MultiCoverageData:
     def prefixes(self) -> tuple[str, ...]:
         return tuple(prefix for prefix, _ in self._shards)
 
+    @property
+    def shards(self) -> tuple[CoverageData, ...]:
+        return tuple(data for _, data in self._shards)
+
 
 def load_coverage_map(
     coverage_map: Mapping[str, Path],

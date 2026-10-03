@@ -198,7 +198,6 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     # both came from this plugin's own `default=` literals two lines above this call, so
     # `[tool.riskratchet] baseline` / `coverage` could never be read at all.
     baseline_path = settings.baseline
-    coverage_path = settings.coverage
     # Resolved here, before the report exists, because `_report_or_fail` hands this to the
     # warning emitter. `_report_regressions` used to resolve its own copy at the very end of
     # the session, so every per-file warning this plugin printed was raw -- the leak
@@ -213,13 +212,7 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         _emit(session, f"  {_rebaseline_command(settings, baseline_path, settings.ts_coverage)}")
         session.exitstatus = 1
         return
-    if not coverage_path.exists():
-        _emit(
-            session,
-            f"riskratchet: coverage file not found: {coverage_path}. "
-            f"Run pytest with `--cov --cov-branch --cov-report=json:{coverage_path}`.",
-        )
-        session.exitstatus = 1
+    if not _coverage_source_ok(session, cfg, settings):
         return
 
     baseline = _loaded_baseline(session, baseline_path)
@@ -257,7 +250,6 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
         session,
         settings,
         config_dir=config_dir,
-        coverage_path=coverage_path,
         ts_coverage=ts_coverage,
         redaction=redaction,
     )
@@ -275,6 +267,43 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
 
     _report_regressions(session, regressions, redaction=redaction)
     session.exitstatus = 1
+
+
+def _coverage_source_ok(session: pytest.Session, cfg: dict[str, Any], settings: GateSettings) -> bool:
+    """`False` after failing the session for a coverage source that is not on disk.
+
+    Since 0.3.10 the source is the configured `coverage_map` when there is one and no
+    `--riskratchet-coverage` overrides it, which is the CLI's order. The plugin read
+    `coverage` alone before, so on a monorepo it failed asking for a root `coverage.json`
+    that `riskratchet check` never reads, and writing one made the two doors score from
+    different coverage. A missing shard follows the CLI rule: fatal unless
+    `allow_missing_coverage`, in which case the loader skips it and says so.
+    """
+    from riskratchet.config import coverage_sources_conflict, missing_coverage_shard_messages
+
+    if not settings.coverage_map:
+        if settings.coverage.exists():
+            return True
+        _emit(
+            session,
+            f"riskratchet: coverage file not found: {settings.coverage}. "
+            f"Run pytest with `--cov --cov-branch --cov-report=json:{settings.coverage}`.",
+        )
+        session.exitstatus = 1
+        return False
+    conflict = coverage_sources_conflict(cfg)
+    if conflict is not None:
+        _emit(session, conflict)
+    if settings.allow_missing_coverage:
+        return True
+    problems = missing_coverage_shard_messages(
+        settings.coverage_map, skip_hint="allow_missing_coverage = true  # in [tool.riskratchet]"
+    )
+    for problem in problems:
+        _emit(session, problem)
+    if problems:
+        session.exitstatus = 1
+    return not problems
 
 
 def _settings_or_fail(
@@ -396,7 +425,6 @@ def _report_or_fail(
     settings: GateSettings,
     *,
     config_dir: Path,
-    coverage_path: Path,
     ts_coverage: list[Path],
     redaction: RedactionConfig,
 ) -> RiskReport | None:
@@ -414,7 +442,15 @@ def _report_or_fail(
         return build_report(
             settings.paths,
             root=config_dir,
-            coverage_path=coverage_path,
+            # One or the other, never both: `resolve_gate_settings` leaves the map empty
+            # when a coverage file was named, and the engine refuses the pair.
+            coverage_path=None if settings.coverage_map else settings.coverage,
+            coverage_map=settings.coverage_map or None,
+            on_coverage_error=lambda path, message: _emit(
+                session,
+                f"riskratchet: coverage-map shard unusable: {path} ({message}); "
+                "treating that prefix as no coverage.",
+            ),
             include=settings.include,
             exclude=settings.exclude,
             allow=settings.allow,
