@@ -51,6 +51,14 @@ from riskratchet.scoring import (
 )
 from riskratchet.typescript import _require_tree_sitter, iter_typescript_files
 
+# What to do when no scanned file appears in coverage, keyed by "is the source a coverage_map".
+# Rerunning from the project root is the opposite of what a per-package map is for.
+_ZERO_OVERLAP_ADVICE = {
+    False: "coverage measures a different tree — re-run the test command from the project root",
+    True: "no shard lists a scanned file — compare the `files` keys in each shard with its "
+    "coverage_map prefix",
+}
+
 # Bound the overlap walk so `doctor` stays sub-second on a monorepo.
 _OVERLAP_FILE_CAP = 2000
 _TS_COVERAGE_COMMAND = "npx vitest run --coverage --coverage.reporter=lcov  # or c8/nyc/jest"
@@ -103,18 +111,16 @@ def diagnose(
     never disagree about whether a project is usable.
     """
     python_files = _scanned_files(paths, config_dir=config_dir, cfg=cfg, language="python")
-    data: CoverageData | MultiCoverageData | None
     if typescript and not python_files:
         coverage_check, data = _coverage_not_applicable(), None
-    elif coverage_map:
-        coverage_check, data = _check_coverage_map(coverage_map, source_paths=python_files or [])
     else:
-        coverage_check, data = _check_coverage(
+        coverage_check, data = _check_coverage_source(
+            coverage_path,
+            coverage_map,
             # The files the scan would reach, not the scan paths: staleness is only meaningful
             # for files that are actually scored, and walking the paths raw descended into
             # `.venv`. `None` means the walk failed, which the overlap check reports; an empty
             # list then simply makes the staleness probe say nothing.
-            coverage_path,
             source_paths=python_files or [],
             origin=coverage_origin,
         )
@@ -124,11 +130,8 @@ def diagnose(
         coverage_check,
     ]
     if data is not None:
-        checks.append(
-            _check_coverage_overlap(
-                data, files=python_files, config_dir=config_dir, sharded=bool(coverage_map)
-            )
-        )
+        advice = _ZERO_OVERLAP_ADVICE[bool(coverage_map)]
+        checks.append(_check_coverage_overlap(data, files=python_files, config_dir=config_dir, advice=advice))
         checks.append(_check_branch_data(data, coverage_path))
     checks.append(_check_git(config_dir))
     checks.append(_check_shallow_clone(config_dir))
@@ -367,6 +370,20 @@ def _check_coverage(
     )
 
 
+def _check_coverage_source(
+    coverage_path: Path | None,
+    coverage_map: Mapping[str, Path] | None,
+    *,
+    source_paths: list[Path],
+    origin: str,
+) -> tuple[DoctorCheck, CoverageData | MultiCoverageData | None]:
+    """The `coverage` row for whichever source `check` would read: the map when one is
+    configured (since 0.3.10), else the single file."""
+    if coverage_map:
+        return _check_coverage_map(coverage_map, source_paths=source_paths)
+    return _check_coverage(coverage_path, source_paths=source_paths, origin=origin)
+
+
 def _check_coverage_map(
     coverage_map: Mapping[str, Path], *, source_paths: list[Path]
 ) -> tuple[DoctorCheck, MultiCoverageData | None]:
@@ -438,7 +455,7 @@ def _check_coverage_overlap(
     *,
     files: list[Path] | None,
     config_dir: Path,
-    sharded: bool = False,
+    advice: str = _ZERO_OVERLAP_ADVICE[False],
 ) -> DoctorCheck:
     """Warn when the coverage report barely mentions the files being scanned.
 
@@ -464,12 +481,7 @@ def _check_coverage_overlap(
             name="coverage-overlap",
             status=CheckStatus.WARN,
             summary=f"0 of {len(files)} scanned files appear in coverage",
-            remediation=(
-                "no shard lists a scanned file — compare the `files` keys in each shard with its "
-                "coverage_map prefix"
-                if sharded
-                else "coverage measures a different tree — re-run the test command from the project root"
-            ),
+            remediation=advice,
         )
     if hits * 2 < len(files):
         return DoctorCheck(
