@@ -11,6 +11,49 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.3.11] - 2026-10-10
+
+### Fixed
+
+- **`init --with-baseline` scores from the coverage that `check` reads.** It always ran one
+  `pytest --cov` at the root and scored from the `coverage.json` that wrote, whatever
+  `[tool.riskratchet]` named. With a `coverage_map`, the baseline described a root report
+  while `check` read the shards, so the first `check` exited 1 with regressions. With
+  `coverage = "build/cov.json"`, the first `check` exited 2 with `coverage file not found`.
+  With a `coverage_map`, `init` now runs no tests and scores from the shards on disk; a
+  missing shard is exit 2 unless `allow_missing_coverage = true`. With a `coverage` path,
+  pytest writes its report to that path. With neither key, `init` writes `coverage.json`
+  next to the config, as before.
+- **`init --with-baseline` without `pytest` on `PATH` is exit 2.** It was a raw
+  `FileNotFoundError` traceback with exit 1, which is the ordinary state under
+  `uvx riskratchet` or `pipx`. `init` now prints the "baseline skipped" message and writes
+  no baseline.
+- **A `coverage_map` prefix can start with a dot.** The prefix was normalized with
+  `.lstrip("./")`, which strips characters, so `.tools/a` became `tools/a` and matched
+  nothing: every function under it scored 0% line coverage. Only a leading `./` is removed
+  now. Scores drop under a dot-prefixed key whose shard matched nothing before.
+- **A TypeScript coverage report that matches no scanned file says so.** 0.3.10 added the
+  `coverage matched 0 of N scanned files` note for Python files only. An Istanbul or LCOV
+  report keyed to another tree printed one stderr line, and no stdout format said anything.
+  `scan`, `baseline`, `check`, `diff`, `explain`, and the pytest plugin now print
+  `TypeScript coverage matched 0 of N scanned files` once on stderr and in the summary, the
+  markdown report, the PR comment, and the `Baseline:` line of `check`. The Python and
+  TypeScript counts are kept apart, so one report that matches doesn't hide one that
+  doesn't. The note is a warning with counts only. The verdict, the exit code, and all nine
+  JSON schemas don't change.
+
+### Changed
+
+- **A malformed `coverage_map` shard is exit 2.** A shard that exists and can't be parsed
+  was a warning: every function under its prefix scored as uncovered, and `check` then
+  exited 1 with regressions for what is an I/O failure. The same bytes passed as
+  `--coverage` were exit 2, and `doctor` reported FAIL. `scan`, `baseline`, `check`, `diff`,
+  `explain`, `init --with-baseline`, and the pytest plugin now treat a malformed shard as a
+  setup error. **A gate that passes with a corrupt shard, which needs
+  `missing_coverage = "optimistic"` or `"skip"`, starts failing with exit 2.**
+  `allow_missing_coverage` covers a shard that is missing, never one that is malformed.
+  Regenerate the shard to fix it.
+
 ## [0.3.10] - 2026-10-02
 
 ### Fixed
