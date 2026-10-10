@@ -151,29 +151,29 @@ def load_coverage_map(
 ) -> MultiCoverageData:
     """Load one CoverageData per prefix and wrap them in a MultiCoverageData.
 
-    A shard that is missing or malformed is skipped and reported through
-    `on_error(path, message)` rather than aborting the whole run — the caller
-    (`config._ensure_coverage_map_exists`) may have already promised the user
-    "treating as no coverage", and a raise here would break that promise. This
-    mirrors `typescript_coverage.load_istanbul_coverage_files`, so both backends
-    degrade the same way. Without `on_error`, unusable shards are skipped
-    silently.
+    A missing shard is skipped and reported through `on_error(path, message)` rather than
+    aborting the run: the caller (`config._ensure_coverage_map_exists`) has either
+    already refused it or promised the user "treating as no coverage". A malformed shard
+    raises `ValueError`, which the entry points turn into a setup error. Without
+    `on_error`, a missing shard is skipped silently.
     """
     loaded = ((prefix, _load_shard(path, on_error)) for prefix, path in coverage_map.items())
     return MultiCoverageData.from_map({prefix: data for prefix, data in loaded if data is not None})
 
 
 def _load_shard(path: Path, on_error: Any) -> CoverageData | None:
-    """Load one coverage shard, or report why it is unusable and return None."""
+    """Load one coverage shard, or report that it is missing and return None.
+
+    A shard that exists and cannot be parsed raises `ValueError` (0.3.11), as a single
+    `--coverage` file always has. It used to be skipped with a warning: every function
+    under its prefix scored 0%, and the gate exited 1 for what is an I/O failure.
+    """
     try:
         return load_coverage(path)
     except FileNotFoundError:
-        message = "file not found"
-    except ValueError as exc:
-        message = str(exc)
-    if on_error is not None:
-        on_error(path, message)
-    return None
+        if on_error is not None:
+            on_error(path, "file not found")
+        return None
 
 
 def _prefix_relative_hit(data: CoverageData, prefix: str, normalized: str) -> dict[str, Any] | None:
@@ -183,7 +183,12 @@ def _prefix_relative_hit(data: CoverageData, prefix: str, normalized: str) -> di
 
 
 def _normalize_prefix(raw: str) -> str:
-    return raw.replace("\\", "/").strip().lstrip("./").rstrip("/")
+    """`./packages/a/` -> `packages/a`. Only a leading `./` goes: `.lstrip("./")` strips
+    characters, so until 0.3.11 `.tools/a` became `tools/a` and matched nothing."""
+    prefix = raw.replace("\\", "/").strip()
+    while prefix.startswith("./"):
+        prefix = prefix[2:]
+    return "" if prefix == "." else prefix.rstrip("/")
 
 
 def coverage_for_span(

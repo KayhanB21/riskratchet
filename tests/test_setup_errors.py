@@ -386,22 +386,29 @@ def test_scan_with_missing_coverage_map_shard_continues(
     assert "pytest --cov" in result.stderr
 
 
-def test_scan_with_malformed_coverage_map_shard_continues(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("command", ["scan", "baseline", "check", "diff", "explain"])
+def test_a_malformed_coverage_map_shard_is_exit_2(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, command: str
 ) -> None:
+    """0.3.11: it was a warning. Every function under the prefix then scored 0%, so `check`
+    exited 1 for an I/O failure, while the same bytes passed as `--coverage` were exit 2.
+    `--allow-missing-coverage` does not cover it: the shard is there, and it is corrupt."""
     monkeypatch.chdir(tmp_path)
     src = _project(tmp_path)
+    _seed_baseline(src)
     junk = tmp_path / "junk.json"
     junk.write_text("not json", encoding="utf-8")
+    target = ["src/m.py::trivial"] if command == "explain" else [str(src)]
+    allow = ["--allow-missing-coverage"] if command in {"baseline", "check", "diff"} else []
 
     result = runner.invoke(
         app,
-        ["scan", str(src), "--coverage-map", f"src={junk}", "--no-auto-cov", "--no-git"],
+        [command, *target, "--coverage-map", f"src={junk}", "--no-auto-cov", "--no-git", *allow],
     )
 
-    assert result.exit_code == 0, result.output
-    assert "coverage-map shard unusable" in result.stderr
-    assert "could not read" in result.stderr
+    assert result.exit_code == 2, (result.output, result.stderr)
+    assert "could not read coverage file" in result.stderr
+    assert "junk.json" in result.stderr
 
 
 def test_strict_missing_coverage_map_shard_still_fails(
