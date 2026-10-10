@@ -56,7 +56,9 @@ from riskratchet.config import (
     _resolved_weights,
     coverage_sources_conflict,
     invalid_config_values,
+    missing_coverage_shard_messages,
     resolve_gate_settings,
+    resolved_coverage_report,
     resolved_ts_paths,
     resolved_typescript,
     unknown_config_keys,
@@ -1670,38 +1672,6 @@ def _run_baseline_from_init(config_dir: Path) -> None:
     nothing, so exit 1 was always the wrong code here; it also disagreed with
     `_save_baseline_or_exit` on the very next line, which has always exited 2.
     """
-    import subprocess
-
-    coverage_path = config_dir / "coverage.json"
-    typer.echo("")
-    typer.secho(
-        f"running: pytest --cov --cov-branch --cov-report=json:{coverage_path} -q",
-        fg=typer.colors.CYAN,
-    )
-    result = subprocess.run(
-        [
-            "pytest",
-            "--cov",
-            "--cov-branch",
-            f"--cov-report=json:{coverage_path}",
-            "-q",
-        ],
-        cwd=config_dir,
-        check=False,
-    )
-    if result.returncode != 0 or not coverage_path.exists():
-        typer.secho(
-            "pytest --cov did not produce coverage.json; baseline skipped. "
-            "Run the three Next: steps manually.",
-            fg=typer.colors.YELLOW,
-            err=True,
-        )
-        # Exit 2, not 1. Exit 1 means a gate tripped (AGENTS.md: "Never let an I/O failure
-        # exit 1"), and nothing was gated here — the test command could not produce the
-        # coverage this needs, which is a setup failure like every other one. `init` also
-        # already exits 2 through `_save_baseline_or_exit`, so 1 was the odd one out.
-        raise typer.Exit(code=2)
-    typer.secho("running: riskratchet baseline (anchored to config dir)", fg=typer.colors.CYAN)
     # Read the project's own config rather than guessing. `init --with-baseline` runs
     # even when the starter block was SKIPPED — i.e. on an already-configured project —
     # and it used to hardcode `src` and `.riskratchet.json` and pass no `weights`,
@@ -1711,6 +1681,12 @@ def _run_baseline_from_init(config_dir: Path) -> None:
     # new/removed entries plus spurious regressions.
     cfg, _ = _discover_config(None)
     settings = resolve_gate_settings(cfg, config_dir)
+    coverage_path, coverage_map = _init_coverage_source(
+        cfg, config_dir, allow_missing=settings.allow_missing_coverage
+    )
+    if coverage_path is not None:
+        _run_pytest_cov_for_init(coverage_path, config_dir)
+    typer.secho("running: riskratchet baseline (anchored to config dir)", fg=typer.colors.CYAN)
     scan_paths = settings.paths or [config_dir]
     # Through the shared boundary, so `typescript = true` scores TypeScript here too and
     # a missing extra or an unreadable report is exit 2 with the fix, not a traceback.
@@ -1729,7 +1705,7 @@ def _run_baseline_from_init(config_dir: Path) -> None:
         scan_paths,
         config_dir=config_dir,
         coverage_path=coverage_path,
-        coverage_map=None,
+        coverage_map=coverage_map or None,
         include=settings.include,
         exclude=settings.exclude,
         allow=settings.allow,
@@ -1748,6 +1724,78 @@ def _run_baseline_from_init(config_dir: Path) -> None:
         f"wrote baseline with {len(report.functions)} functions to {baseline_file}",
         fg=typer.colors.GREEN,
     )
+
+
+def _init_coverage_source(
+    cfg: dict[str, Any], config_dir: Path, *, allow_missing: bool
+) -> tuple[Path | None, dict[str, Path]]:
+    """The coverage `init --with-baseline` scores from: the source the first `check` reads.
+
+    Returns `(coverage_path, coverage_map)` with exactly one set. Until 0.3.11 this was
+    always `coverage.json` next to the config, whatever the config said. With a
+    `coverage_map` the baseline was scored from one root report while `check` scored from
+    the shards, so the first `check` reported regressions; with `coverage = "build/cov.json"`
+    the first `check` could not find its report at all.
+
+    A map means no test run here: one `pytest --cov` at the root cannot write a report
+    per package, so the shards must already be on disk, under the rule `check` applies.
+    """
+    shards = _coverage_map_unless_named(None, None, cfg, config_dir)
+    if not shards:
+        return config_dir / resolved_coverage_report(None, cfg, config_dir), {}
+    # `init` has no `--allow-missing-coverage`, so the hint names the config key.
+    problems = (
+        []
+        if allow_missing
+        else missing_coverage_shard_messages(
+            shards, skip_hint="allow_missing_coverage = true  # in [tool.riskratchet]"
+        )
+    )
+    for problem in problems:
+        typer.secho(problem, fg=typer.colors.RED, err=True)
+    if problems:
+        raise typer.Exit(code=2)
+    return None, shards
+
+
+def _run_pytest_cov_for_init(coverage_path: Path, config_dir: Path) -> None:
+    """Run `pytest --cov` from `config_dir`, writing `coverage_path`; exit 2 if it cannot."""
+    import subprocess
+
+    typer.echo("")
+    typer.secho(
+        f"running: pytest --cov --cov-branch --cov-report=json:{coverage_path} -q",
+        fg=typer.colors.CYAN,
+    )
+    coverage_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        returncode = subprocess.run(
+            [
+                "pytest",
+                "--cov",
+                "--cov-branch",
+                f"--cov-report=json:{coverage_path}",
+                "-q",
+            ],
+            cwd=config_dir,
+            check=False,
+        ).returncode
+    except OSError:
+        # `pytest` not on PATH, the ordinary state under `uvx riskratchet` or pipx. It
+        # used to escape as a raw FileNotFoundError traceback, exit 1.
+        returncode = None
+    if returncode != 0 or not coverage_path.exists():
+        typer.secho(
+            f"pytest --cov did not produce {coverage_path.name}; baseline skipped. "
+            "Run the three Next: steps manually.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+        # Exit 2, not 1. Exit 1 means a gate tripped (AGENTS.md: "Never let an I/O failure
+        # exit 1"), and nothing was gated here — the test command could not produce the
+        # coverage this needs, which is a setup failure like every other one. `init` also
+        # already exits 2 through `_save_baseline_or_exit`, so 1 was the odd one out.
+        raise typer.Exit(code=2)
 
 
 @app.command()

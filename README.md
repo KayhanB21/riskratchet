@@ -86,6 +86,14 @@ riskratchet init --with-baseline  # also run pytest --cov + baseline
 riskratchet init --force          # replace existing [tool.riskratchet]
 ```
 
+`--with-baseline` scores from the coverage that `check` reads. If
+`[tool.riskratchet]` sets `coverage`, pytest writes its report to that
+path; with no `coverage` key it writes `coverage.json` next to the
+config. If the config sets `coverage_map`, `init` runs no tests and
+scores from the shards already on disk, and a missing shard is exit 2
+unless `allow_missing_coverage = true`. When `pytest` cannot start or
+writes no report, `init` exits 2 and writes no baseline.
+
 `riskratchet doctor` is a pre-flight that names whatever would make
 `check` fail to start (missing paths, missing/malformed baseline,
 missing/stale coverage, no git history, unknown config keys, invalid
