@@ -113,6 +113,7 @@ def analyze_typescript(
     file_line_counts: dict[str, int] = {}
     file_fn_counts: dict[str, int] = {}
     unmeasured_files = 0
+    measurable_files = 0
     skipped = _SkippedFiles(root_path, on_error)
     for path in files:
         rel = relative_posix(path, root_path)
@@ -124,6 +125,7 @@ def analyze_typescript(
         file_fn_counts[rel] = len(found)
         if has_coverage:
             file_cov = coverage.lookup(rel)
+            measurable_files += bool(found)
             if file_cov is None and found:
                 unmeasured_files += 1
             found = _enrich_coverage(found, file_cov, rel, on_warning)
@@ -205,6 +207,8 @@ def analyze_typescript(
         skipped_generated_files=len(skipped.generated),
         unscored_functions=tuple(unscored_functions),
         unscored_files=skipped.unscored(),
+        ts_coverage_checked_files=measurable_files,
+        ts_coverage_unmatched_files=unmeasured_files,
         scoring=ScoringInputs(
             model=SCORING_MODEL_VERSION,
             weights=resolved_weights,
@@ -257,9 +261,11 @@ def merge_reports(python: RiskReport, typescript: RiskReport) -> RiskReport:
         skipped_generated_files=python.skipped_generated_files + typescript.skipped_generated_files,
         unscored_functions=python.unscored_functions + typescript.unscored_functions,
         unscored_files=python.unscored_files + typescript.unscored_files,
-        # Python's own: the TypeScript loader refuses a report that matches nothing.
+        # Each backend's own pair, never summed: see `RiskReport.ts_coverage_checked_files`.
         coverage_checked_files=python.coverage_checked_files,
         coverage_unmatched_files=python.coverage_unmatched_files,
+        ts_coverage_checked_files=typescript.ts_coverage_checked_files,
+        ts_coverage_unmatched_files=typescript.ts_coverage_unmatched_files,
         # One value, not a merge: `build_report` hands both backends the same weights, churn
         # window and root, so the two `ScoringInputs` are equal by construction. Falling back
         # to the TypeScript one keeps a hand-built Python report (tests, downstream callers)

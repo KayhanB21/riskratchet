@@ -63,16 +63,17 @@ _UNSCORED_LABELS = {
 }
 
 
-def coverage_overlap_note(checked: int, unmatched: int) -> str | None:
+def coverage_overlap_note(checked: int, unmatched: int, *, label: str = "coverage") -> str | None:
     """`coverage matched 0 of 12 scanned files`, or None when at least one file matched.
 
     The one spelling every renderer and the stderr warning share (0.3.10). A count, never a
     path, so it is safe under redaction. Only the all-or-nothing case is said: a partial
-    match is the ordinary state of a project with untested modules.
+    match is the ordinary state of a project with untested modules. `label` names the
+    backend's report (0.3.11), so a TypeScript report that matched nothing says which.
     """
     if not checked or unmatched < checked:
         return None
-    return f"coverage matched 0 of {checked} scanned file{'' if checked == 1 else 's'}"
+    return f"{label} matched 0 of {checked} scanned file{'' if checked == 1 else 's'}"
 
 
 def unscored_breakdown(counts: dict[UnscoredCause, int]) -> str:
@@ -235,19 +236,43 @@ class RiskReport:
     coverage_checked_files: int = 0
     coverage_unmatched_files: int = 0
 
+    # The same pair for TypeScript files and the Istanbul/LCOV reports (0.3.11). Kept apart
+    # from the Python pair: summed, one backend matching everything would hide the other
+    # matching nothing.
+    ts_coverage_checked_files: int = 0
+    ts_coverage_unmatched_files: int = 0
+
+    def _coverage_notes(self) -> tuple[str | None, str | None]:
+        return (
+            coverage_overlap_note(self.coverage_checked_files, self.coverage_unmatched_files),
+            coverage_overlap_note(
+                self.ts_coverage_checked_files,
+                self.ts_coverage_unmatched_files,
+                label="TypeScript coverage",
+            ),
+        )
+
     def coverage_note(self) -> str | None:
-        return coverage_overlap_note(self.coverage_checked_files, self.coverage_unmatched_files)
+        notes = [note for note in self._coverage_notes() if note is not None]
+        return "; ".join(notes) or None
 
     def coverage_warning(self) -> str | None:
         """The sentence the CLI and the pytest plugin both print when coverage matched nothing."""
-        note = self.coverage_note()
-        if note is None:
-            return None
-        return (
-            f"{note}, so no function has coverage data this run and a change in test coverage "
-            "cannot move a score. The report's `files` keys name other paths; "
-            "`riskratchet doctor` shows the overlap."
-        )
+        python, typescript = self._coverage_notes()
+        sentences = []
+        if python is not None:
+            sentences.append(
+                f"{python}, so no function has coverage data this run and a change in test coverage "
+                "cannot move a score. The report's `files` keys name other paths; "
+                "`riskratchet doctor` shows the overlap."
+            )
+        if typescript is not None:
+            sentences.append(
+                f"{typescript}, so no TypeScript function has coverage data this run and a change "
+                "in test coverage cannot move its score. The report names other paths; "
+                "`riskratchet doctor` shows the overlap."
+            )
+        return " ".join(sentences) or None
 
     def by_id(self) -> dict[FunctionId, FunctionRisk]:
         return {fn.id: fn for fn in self.functions}

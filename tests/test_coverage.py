@@ -194,7 +194,11 @@ def test_load_coverage_map_skips_missing_shard_with_callback(tmp_path: Path) -> 
     assert errors == [(tmp_path / "absent.json", "file not found")]
 
 
-def test_load_coverage_map_skips_unreadable_shard(tmp_path: Path) -> None:
+def test_load_coverage_map_raises_for_a_malformed_shard(tmp_path: Path) -> None:
+    """0.3.11: a shard that exists and cannot be parsed is an error, as one `--coverage` file is.
+
+    It used to be skipped through `on_error`, so its prefix scored 0% and the gate exited 1.
+    """
     good = _write(
         tmp_path,
         {"files": {"pkg/foo.py": {"executed_lines": [1], "missing_lines": []}}},
@@ -202,26 +206,54 @@ def test_load_coverage_map_skips_unreadable_shard(tmp_path: Path) -> None:
     junk = tmp_path / "junk.json"
     junk.write_text("not json", encoding="utf-8")
     errors: list[tuple[Path, str]] = []
+    with pytest.raises(ValueError, match="could not read coverage file"):
+        load_coverage_map(
+            {"pkg": good, "bad": junk},
+            on_error=lambda path, message: errors.append((path, message)),
+        )
+    assert errors == []
+
+
+def test_load_coverage_map_skips_a_missing_shard(tmp_path: Path) -> None:
+    good = _write(
+        tmp_path,
+        {"files": {"pkg/foo.py": {"executed_lines": [1], "missing_lines": []}}},
+    )
+    gone = tmp_path / "absent.json"
+    errors: list[tuple[Path, str]] = []
     multi = load_coverage_map(
-        {"pkg": good, "bad": junk},
+        {"pkg": good, "gone": gone},
         on_error=lambda path, message: errors.append((path, message)),
     )
 
     assert multi.lookup("pkg/foo.py") is not None
-    assert len(errors) == 1
-    assert errors[0][0] == junk
-    assert "could not read" in errors[0][1]
+    assert errors == [(gone, "file not found")]
 
 
-def test_load_coverage_map_without_callback_skips_silently(tmp_path: Path) -> None:
-    """`on_error` is optional: unusable shards are simply absent."""
-    junk = tmp_path / "junk.json"
-    junk.write_text("not json", encoding="utf-8")
+def test_load_coverage_map_without_callback_skips_a_missing_shard_silently(tmp_path: Path) -> None:
+    """`on_error` is optional: a missing shard is simply absent."""
+    multi = load_coverage_map({"gone": tmp_path / "absent.json"})
 
-    multi = load_coverage_map({"bad": junk, "gone": tmp_path / "absent.json"})
-
-    assert multi.lookup("bad/foo.py") is None
+    assert multi.lookup("gone/foo.py") is None
     assert multi.prefixes == ()
+
+
+@pytest.mark.parametrize(
+    ("prefix", "path"),
+    [
+        (".tools/a", ".tools/a/src/m.py"),
+        ("./packages/a", "packages/a/src/m.py"),
+        ("././packages/a/", "packages/a/src/m.py"),
+        (".", "src/m.py"),
+    ],
+)
+def test_a_map_prefix_loses_only_a_leading_dot_slash(tmp_path: Path, prefix: str, path: str) -> None:
+    """0.3.11: `.lstrip("./")` strips characters, so `.tools/a` became `tools/a` and matched nothing."""
+    shard = _write(tmp_path, {"files": {"src/m.py": {"executed_lines": [1], "missing_lines": []}}})
+
+    multi = load_coverage_map({prefix: shard})
+
+    assert multi.lookup(path) is not None
 
 
 # --- 0.3.4: every JSON loader that raises must reject a non-object root --------

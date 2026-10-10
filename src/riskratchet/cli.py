@@ -2824,9 +2824,8 @@ def _coverage_shard_warn(path: Path, message: str) -> None:
     """Report a `--coverage-map` shard that could not be loaded.
 
     `_ensure_coverage_map_exists` promises "treating as no coverage" for a
-    missing shard, but the loader used to raise anyway. The warning now fires
-    where the shard is actually dropped, so a missing *and* a malformed shard
-    get the same one message with the same remediation.
+    missing shard, and this fires where the shard is actually dropped. Since 0.3.11
+    only a missing shard reaches it: a malformed one raises and is exit 2.
     """
     typer.secho(
         _format_setup_error(

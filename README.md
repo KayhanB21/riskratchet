@@ -1048,7 +1048,15 @@ A shard's `files` keys can be relative to the repository root
 (`src/m.py`), which is what `pytest --cov` writes when it runs from the package
 directory. The repository-relative spelling is tried first. If a coverage report
 matches none of the scanned files, the run says `coverage matched 0 of N scanned
-files` on stderr, in the summary, and on the `Baseline:` line of `check`.
+files` on stderr, in the summary, and on the `Baseline:` line of `check`. Since
+0.3.11 a TypeScript report gets the same note, spelled `TypeScript coverage
+matched 0 of N scanned files`, and the two counts are kept apart.
+
+A shard that exists and cannot be parsed is exit `2` at every command and fails
+the pytest plugin's session (since 0.3.11; before that it was a warning, and its
+prefix scored as uncovered). `allow_missing_coverage` covers a shard that is
+missing, never one that is malformed. A map prefix may start with a dot
+(`.tools/a`); a leading `./` is ignored.
 
 `--coverage FILE` on the command line replaces the configured map for that run
 (since 0.3.10; before that the flag was ignored whenever a map was configured).

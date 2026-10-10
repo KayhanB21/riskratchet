@@ -742,6 +742,26 @@ def test_the_plugin_fails_the_session_for_a_missing_shard(pytester: pytest.Pytes
     assert "allow_missing_coverage = true" in text
 
 
+def test_the_plugin_fails_the_session_for_a_malformed_shard(pytester: pytest.Pytester) -> None:
+    """0.3.11: it was a warning, and `allow_missing_coverage` does not make it one again."""
+    _map_project(pytester)
+    (pytester.path / "cov-b.json").write_text("[]", encoding="utf-8")
+    pyproject = pytester.path / "pyproject.toml"
+    pyproject.write_text(
+        pyproject.read_text(encoding="utf-8").replace(
+            'paths = ["packages"]\n', 'paths = ["packages"]\nallow_missing_coverage = true\n'
+        ),
+        encoding="utf-8",
+    )
+
+    result = pytester.runpytest_subprocess("--riskratchet", "-p", "no:cacheprovider")
+
+    assert result.ret == 1, result.stdout.str()
+    text = _collapsed(result.stdout.str())
+    assert "cov-b.json must be a JSON object" in text
+    assert "treating that prefix as no coverage" not in text
+
+
 def test_the_plugin_tolerates_a_missing_shard_when_config_allows_it(pytester: pytest.Pytester) -> None:
     _map_project(pytester)
     (pytester.path / "cov-b.json").unlink()

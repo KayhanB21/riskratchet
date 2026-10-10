@@ -903,9 +903,9 @@ def _ensure_coverage_map_exists(
 ) -> None:
     """Fail when a coverage-map path is missing and the policy forbids it.
 
-    When `allow_missing`, this is a no-op: the loader skips unusable shards and
+    When `allow_missing`, this is a no-op: the loader skips a missing shard and
     warns from `cli._coverage_shard_warn`, which fires where the shard is
-    actually dropped and covers malformed files too — not just absent ones.
+    actually dropped. A malformed shard is never allowed: it raises in the loader.
     Warning here as well would double-report the same shard.
     """
     if allow_missing:
