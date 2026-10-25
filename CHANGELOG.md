@@ -11,6 +11,23 @@ release; renames or removals are called out below under **Breaking**.
 
 ## [Unreleased]
 
+## [0.3.12] - 2026-10-25
+
+### Changed
+
+- **The GitHub Action pins newer setup actions.** `action.yml` moves
+  `actions/setup-python` from v7.0.0 to v7.1.0 and `astral-sh/setup-uv` from v10.2.0 to
+  v10.3.1, each still pinned by commit SHA. Inputs, outputs, and behavior don't change.
+
+### Security
+
+- **The dev lockfile no longer pins a vulnerable `filelock`.** `filelock` 3.29.0 had six
+  advisories (CVE-2026-112906, -112907, -112913, -112914, -112937, and -112940), fixed in
+  4.2.1. `uv.lock` now pins `filelock` 4.2.4 and `virtualenv` 21.14.13. Fixed `filelock`
+  releases need Python 3.11+, so `pre-commit` now installs only on Python 3.11 and later.
+  On Python 3.10, install `pre-commit` separately to run the hooks. The published wheel
+  never depended on `filelock`, and its runtime dependencies don't change.
+
 ## [0.3.11] - 2026-10-10
 
 ### Fixed
