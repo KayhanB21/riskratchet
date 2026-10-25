@@ -115,10 +115,16 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.6",
     "mypy>=1.10",
-    "pre-commit>=3.7",
+    # pre-commit pulls in filelock via virtualenv, and every filelock release that
+    # fixes CVE-2026-112940 and its siblings requires Python 3.11+. CI never runs
+    # pre-commit, so the marker keeps the 3.10 lock fork free of the vulnerable pin.
+    "pre-commit>=3.7; python_version >= '3.11'",
     "hypothesis>=6.100",
     "jsonschema>=4.21",
     "syrupy>=4",
+    # The workflow and action.yml tests import yaml directly. It used to arrive
+    # only through pre-commit, which the 3.10 fork no longer installs.
+    "pyyaml>=6.0",
 ]
 # Dev-only, calibration-research-only. NOT a runtime dependency: the published
 # wheel keeps the five deps above. Used solely by the `ablate` subcommand and its
